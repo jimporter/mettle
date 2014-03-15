@@ -11,11 +11,8 @@ int main() {
       std::cout << " (" << results.skips.size() << " skipped)";
     std::cout << std::endl;
 
-    if (results.fails.size()) {
-      for (auto i : results.fails) {
-        std::cout << "  " << i.first << " FAILED: " << i.second << std::endl;
-      }
-    }
+    for (auto i : results.fails)
+      std::cout << "  " << i.first << " FAILED: " << i.second << std::endl;
   }
 }
 
