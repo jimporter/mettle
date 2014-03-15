@@ -9,8 +9,6 @@
 
 namespace mettle {
 
-std::vector<std::function<void()>> suites;
-
 namespace detail {
   template<size_t ...>
   struct index_sequence { };
@@ -40,6 +38,21 @@ namespace detail {
   }
 }
 
+struct suite_results {
+  suite_results(const std::string &name) : suite_name(name) {}
+
+  size_t total_tests() const {
+    return passes.size() + fails.size() + skips.size();
+  }
+
+  std::string suite_name;
+  std::vector<std::string> passes;
+  std::vector<std::pair<std::string, std::string>> fails;
+  std::vector<std::string> skips;
+};
+
+std::vector<std::function<suite_results(void)>> suites;
+
 template<typename ...T>
 class suite {
 public:
@@ -58,46 +71,58 @@ public:
     teardown_ = f;
   }
 
+  void skip_test(const std::string &name, const function_type &f) {
+    tests_.push_back({ name, f, true });
+  }
+
   void test(const std::string &name, const function_type &f) {
     tests_.push_back({ name, f });
   }
 
-  void run() {
-    std::vector<std::string> passes;
-    std::vector<std::pair<std::string, std::string>> fails;
+  suite_results run() {
+    suite_results results(name_);
 
     for(auto test : tests_) {
       std::tuple<T...> fixtures;
       if(setup_)
         detail::apply(setup_, fixtures);
 
+      if(test.skip) {
+        results.skips.push_back(test.name);
+        continue;
+      }
+
       try {
-        detail::apply(test.second, fixtures);
-        passes.push_back(test.first);
+        detail::apply(test.function, fixtures);
+        results.passes.push_back(test.name);
       }
       catch (const expectation_error &e) {
-        fails.push_back({ test.first, e.what() });
+        results.fails.push_back({ test.name, e.what() });
       }
       catch(...) {
-        fails.push_back({ test.first, "unknown error" });
+        results.fails.push_back({ test.name, "unknown error" });
       }
 
       if(teardown_)
         detail::apply(teardown_, fixtures);
     }
 
-    std::cout << passes.size() << "/" << (passes.size() + fails.size())
-              << " tests passed" << std::endl;
-    if (fails.size()) {
-      for (auto i : fails) {
-        std::cout << " " << i.first << " FAILED: " << i.second << std::endl;
-      }
-    }
+    return results;
   }
 private:
+  struct test_info {
+    test_info(const std::string &name, const function_type &function,
+              bool skip = false)
+      : name(name), function(function), skip(skip) {}
+
+    std::string name;
+    function_type function;
+    bool skip;
+  };
+
   std::string name_;
   function_type setup_, teardown_;
-  std::vector<std::pair<std::string, function_type>> tests_;
+  std::vector<test_info> tests_;
 };
 
 } // namespace mettle
