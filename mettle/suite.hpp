@@ -93,9 +93,10 @@ protected:
   std::vector<test_info> tests_;
 };
 
-template<typename ...T>
-class suite : public suite_base {
+template<typename Exception, typename ...T>
+class basic_suite : public suite_base {
 public:
+  using exception_type = Exception;
   using function_type = std::function<void(T&...)>;
 
   using suite_base::suite_base;
@@ -128,7 +129,7 @@ private:
         detail::apply(f, fixtures);
         passed = true;
       }
-      catch (const expectation_error &e) {
+      catch (const exception_type &e) {
         message = e.what();
       }
       catch(...) {
@@ -146,6 +147,9 @@ private:
 
   function_type setup_, teardown_;
 };
+
+template<typename ...T>
+using suite = basic_suite<expectation_error, T...>;
 
 } // namespace mettle
 
