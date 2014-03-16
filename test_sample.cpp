@@ -26,6 +26,9 @@ suite<basic_data> basic("basic suite", []() {
 
 suite<> basic2("another basic suite", []() {
   basic2.test("a test", []() {
-      expect(true, is_not(equals(true)));
+    expect(true, is_not(equals(true)));
+  });
+
+  basic2.skip_test("a skipped test", []() {
   });
 });
