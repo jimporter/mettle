@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_SUITE_HPP
 #define INC_METTLE_SUITE_HPP
 
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <string>
@@ -11,7 +12,7 @@ namespace mettle {
 
 namespace detail {
   template<size_t ...>
-  struct index_sequence { };
+  struct index_sequence {};
 
   template<size_t N, size_t ...S>
   struct make_index_seq_impl : make_index_seq_impl<N-1, N-1, S...> { };
@@ -38,30 +39,66 @@ namespace detail {
   }
 }
 
-struct suite_results {
-  suite_results(const std::string &name) : suite_name(name) {}
+class suite_base;
+std::vector<suite_base*> suites;
 
-  size_t total_tests() const {
-    return passes.size() + fails.size() + skips.size();
+class suite_base {
+public:
+  struct test_result {
+    bool passed;
+    std::string message;
+  };
+
+  struct test_info {
+    using function_type = std::function<test_result()>;
+
+    test_info(const std::string &name, const function_type &function,
+              bool skip = false)
+      : name(name), function(function), skip(skip) {}
+
+    std::string name;
+    function_type function;
+    bool skip;
+  };
+
+  using iterator = std::vector<test_info>::const_iterator;
+
+  suite_base(const std::string &name, const std::function<void()> &f)
+    : name_(name) {
+    f();
+    suites.push_back(this);
   }
 
-  std::string suite_name;
-  std::vector<std::string> passes;
-  std::vector<std::pair<std::string, std::string>> fails;
-  std::vector<std::string> skips;
+  virtual ~suite_base() {
+    suites.erase(std::find(suites.begin(), suites.end(), this));
+  }
+
+  iterator begin() const {
+    return tests_.begin();
+  }
+
+  iterator end() const {
+    return tests_.end();
+  }
+
+  const std::string & name() const {
+    return name_;
+  }
+
+  size_t size() const {
+    return tests_.size();
+  }
+protected:
+  std::string name_;
+  std::vector<test_info> tests_;
 };
 
-std::vector<std::function<suite_results(void)>> suites;
-
 template<typename ...T>
-class suite {
+class suite : public suite_base {
 public:
   using function_type = std::function<void(T&...)>;
 
-  suite(const std::string &name, const std::function<void()> &f) : name_(name) {
-    f();
-    suites.push_back(std::bind(&suite::run, this));
-  }
+  using suite_base::suite_base;
 
   void setup(const function_type &f) {
     setup_ = f;
@@ -72,57 +109,42 @@ public:
   }
 
   void skip_test(const std::string &name, const function_type &f) {
-    tests_.push_back({ name, f, true });
+    add_test(name, f, true);
   }
 
   void test(const std::string &name, const function_type &f) {
-    tests_.push_back({ name, f });
+    add_test(name, f, false);
   }
-
-  suite_results run() {
-    suite_results results(name_);
-
-    for(auto test : tests_) {
+private:
+  void add_test(const std::string &name, const function_type &f, bool skip) {
+    test_info::function_type test_function = [f, this]() -> test_result {
       std::tuple<T...> fixtures;
       if(setup_)
         detail::apply(setup_, fixtures);
 
-      if(test.skip) {
-        results.skips.push_back(test.name);
-        continue;
-      }
-
+      bool passed = false;
+      std::string message;
       try {
-        detail::apply(test.function, fixtures);
-        results.passes.push_back(test.name);
+        detail::apply(f, fixtures);
+        passed = true;
       }
       catch (const expectation_error &e) {
-        results.fails.push_back({ test.name, e.what() });
+        message = e.what();
       }
       catch(...) {
-        results.fails.push_back({ test.name, "unknown error" });
+        message = "unknown error";
       }
 
       if(teardown_)
         detail::apply(teardown_, fixtures);
-    }
 
-    return results;
+      return { passed, message };
+    };
+
+    tests_.push_back({ name, test_function, skip });
   }
-private:
-  struct test_info {
-    test_info(const std::string &name, const function_type &function,
-              bool skip = false)
-      : name(name), function(function), skip(skip) {}
 
-    std::string name;
-    function_type function;
-    bool skip;
-  };
-
-  std::string name_;
   function_type setup_, teardown_;
-  std::vector<test_info> tests_;
 };
 
 } // namespace mettle
