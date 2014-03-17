@@ -63,11 +63,7 @@ public:
 
   using iterator = std::vector<test_info>::const_iterator;
 
-  suite_base(const std::string &name, const std::function<void()> &f)
-    : name_(name) {
-    f();
-    suites.push_back(this);
-  }
+  suite_base(const std::string &name) : name_(name) {}
 
   virtual ~suite_base() {
     suites.erase(std::find(suites.begin(), suites.end(), this));
@@ -99,34 +95,53 @@ public:
   using exception_type = Exception;
   using function_type = std::function<void(T&...)>;
 
-  using suite_base::suite_base;
+  basic_suite(const std::string &name,
+              const std::function<void(basic_suite &)> &f) : suite_base(name) {
+    initializing_ = true;
+    f(*this);
+    suites.push_back(this);
+    initializing_ = false;
+  }
 
   void setup(const function_type &f) {
+    must_be_initializing(__func__);
     setup_ = f;
   }
 
   void teardown(const function_type &f) {
+    must_be_initializing(__func__);
     teardown_ = f;
   }
 
   void skip_test(const std::string &name, const function_type &f) {
+    must_be_initializing(__func__);
     add_test(name, f, true);
   }
 
   void test(const std::string &name, const function_type &f) {
+    must_be_initializing(__func__);
     add_test(name, f, false);
   }
 private:
+  void must_be_initializing(const std::string &func) {
+    if(!initializing_) {
+      throw std::runtime_error(
+        "can only call " + func + "() while initializing");
+    }
+  }
+
   void add_test(const std::string &name, const function_type &f, bool skip) {
     test_info::function_type test_function = [f, this]() -> test_result {
       std::tuple<T...> fixtures;
-      if(setup_)
-        detail::apply(setup_, fixtures);
 
       bool passed = false;
       std::string message;
       try {
+        if(setup_)
+          detail::apply(setup_, fixtures);
         detail::apply(f, fixtures);
+        if(teardown_)
+          detail::apply(teardown_, fixtures);
         passed = true;
       }
       catch (const exception_type &e) {
@@ -136,9 +151,6 @@ private:
         message = "unknown error";
       }
 
-      if(teardown_)
-        detail::apply(teardown_, fixtures);
-
       return { passed, message };
     };
 
@@ -146,6 +158,7 @@ private:
   }
 
   function_type setup_, teardown_;
+  bool initializing_;
 };
 
 template<typename ...T>

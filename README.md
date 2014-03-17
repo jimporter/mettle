@@ -18,19 +18,19 @@ struct basic_data {
   int foo;
 };
 
-suite<basic_data> basic("basic suite", []() {
-  basic.setup([](basic_data &) {
+suite<basic_data> basic("basic suite", [](suite<basic_data> &_) {
+  _.setup([](basic_data &) {
   });
 
-  basic.teardown([](basic_data &) {
+  _.teardown([](basic_data &) {
   });
 
-  basic.test("a test", [](basic_data &) {
+  _.test("a test", [](basic_data &) {
     expect(true, equals(true));
   });
 
   for(int i = 0; i < 4; i++) {
-    basic.test("test number " + std::to_string(i), [i](basic_data &) {
+    _.test("test number " + std::to_string(i), [i](basic_data &) {
       expect(i % 2, equals(0));
     });
   }

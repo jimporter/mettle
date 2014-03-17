@@ -94,7 +94,6 @@ int main(int argc, const char *argv[]) {
 
     if(verbose)
       std::cout << std::endl;
-
   }
 
   std::cout << passes << "/" << total_tests << " tests passed";
