@@ -1,8 +1,8 @@
 #ifndef INC_METTLE_RUNNER_HPP
 #define INC_METTLE_RUNNER_HPP
 
-#include <boost/program_options.hpp>
 #include <iostream>
+#include <boost/program_options.hpp>
 
 namespace mettle {
 

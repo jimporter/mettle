@@ -1,8 +1,8 @@
 # mettle
 
 `mettle` is a (work-in-progress) library for writing unit tests using modern
-C++ (read: C++11 and maybe some C++14). Its main goals are readability and
-avoidance of unnecessary macros.
+C++ (read: C++14). Its main goals are readability and avoidance of unnecessary
+macros.
 
 ## A Brief Example
 
@@ -18,7 +18,7 @@ struct basic_data {
   int foo;
 };
 
-suite<basic_data> basic("basic suite", [](suite<basic_data> &_) {
+suite<basic_data> basic("basic suite", [](auto &_) {
   _.setup([](basic_data &) {
   });
 
@@ -36,3 +36,10 @@ suite<basic_data> basic("basic suite", [](suite<basic_data> &_) {
   }
 });
 ```
+
+## Dependencies
+
+This project currently requires a C++14 compiler (for generic lambdas in the
+matchers) and Boost (for argument parsing in the test runner). It's been tested
+against clang 3.4 (get it from http://llvm.org/apt/; Ubuntu 13.10's version
+won't work!).
