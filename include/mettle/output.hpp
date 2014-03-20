@@ -41,10 +41,10 @@ public:
 };
 
 template<typename T>
-auto ensure_printable(T &&t) -> typename std::enable_if<
-  is_printable<T>::value, T &
+constexpr auto ensure_printable(T &&t) -> typename std::enable_if<
+  is_printable<T>::value, decltype(std::forward<T>(t))
 >::type {
-  return t;
+  return std::forward<T>(t);
 }
 
 template<typename T>

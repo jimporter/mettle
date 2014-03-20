@@ -89,11 +89,11 @@ private:
 
 template<typename T>
 basic_matcher<T> make_matcher(T &&matcher, const std::string &desc) {
-  return {matcher, desc};
+  return {std::forward<T>(matcher), desc};
 }
 
 template<typename T, typename Matcher>
-void expect(T &&value, Matcher &&matcher) {
+void expect(const T &value, const Matcher &matcher) {
   if (!matcher(value)) {
     std::stringstream s;
     s << "expected " << matcher.desc() << ", got " << ensure_printable(value);
@@ -102,71 +102,71 @@ void expect(T &&value, Matcher &&matcher) {
 }
 
 template<typename T>
-inline auto equal_to(T &&expected) {
+inline auto equal_to(const T &expected) {
   std::stringstream s;
   s << ensure_printable(expected);
-  return make_matcher([expected](auto &&actual) -> bool {
+  return make_matcher([expected](const auto &actual) -> bool {
     return actual == expected;
   }, s.str());
 }
 
 template<typename T>
-inline auto not_equal_to(T &&expected) {
+inline auto not_equal_to(const T &expected) {
   std::stringstream s;
   s << "not " << ensure_printable(expected);
-  return make_matcher([expected](auto &&actual) -> bool {
+  return make_matcher([expected](const auto &actual) -> bool {
     return actual != expected;
   }, s.str());
 }
 
 template<typename T>
-inline auto greater(T &&expected) {
+inline auto greater(const T &expected) {
   std::stringstream s;
   s << "> " << ensure_printable(expected);
-  return make_matcher([expected](auto &&actual) -> bool {
+  return make_matcher([expected](const auto &actual) -> bool {
     return actual > expected;
   }, s.str());
 }
 
 template<typename T>
-inline auto greater_equal(T &&expected) {
+inline auto greater_equal(const T &expected) {
   std::stringstream s;
   s << ">= " << ensure_printable(expected);
-  return make_matcher([expected](auto &&actual) -> bool {
+  return make_matcher([expected](const auto &actual) -> bool {
     return actual >= expected;
   }, s.str());
 }
 
 template<typename T>
-inline auto less(T &&expected) {
+inline auto less(const T &expected) {
   std::stringstream s;
   s << "< " << ensure_printable(expected);
-  return make_matcher([expected](auto &&actual) -> bool {
+  return make_matcher([expected](const auto &actual) -> bool {
     return actual < expected;
   }, s.str());
 }
 
 template<typename T>
-inline auto less_equal(T &&expected) {
+inline auto less_equal(const T &expected) {
   std::stringstream s;
   s << "<= " << ensure_printable(expected);
-  return make_matcher([expected](auto &&actual) -> bool {
+  return make_matcher([expected](const auto &actual) -> bool {
     return actual <= expected;
   }, s.str());
 }
 
 template<typename T>
-inline T& ensure_matcher(T &&matcher, typename std::enable_if<
+inline auto ensure_matcher(T &&matcher, typename std::enable_if<
   is_matcher<T>::value
 >::type* = 0) {
-  return matcher;
+  return std::forward<T>(matcher);
 }
 
 template<typename T>
 inline auto ensure_matcher(T &&expected, typename std::enable_if<
   !is_matcher<T>::value
 >::type* = 0) {
-  return equal_to(expected);
+  return equal_to(std::forward<T>(expected));
 }
 
 template<typename T>
@@ -176,8 +176,8 @@ struct ensure_matcher_type : public std::remove_reference<
 
 template<typename T>
 inline auto is_not(T &&thing) {
-  auto matcher = ensure_matcher(thing);
-  return make_matcher([matcher](auto &&value) -> bool {
+  auto matcher = ensure_matcher(std::forward<T>(thing));
+  return make_matcher([&matcher](const auto &value) -> bool {
     return !matcher(value);
   }, "not " + matcher.desc());
 }
@@ -191,10 +191,10 @@ public:
   reduce_impl(const std::string &desc, const reducer_type &reducer,
               bool initial, T &&...matchers)
     : desc_(desc), reducer_(reducer), initial_(initial),
-      matchers_(ensure_matcher(matchers)...) {}
+      matchers_(ensure_matcher(std::forward<T>(matchers))...) {}
 
   template<typename U>
-  bool operator ()(U &&value) const {
+  bool operator ()(const U &value) const {
     return detail::reduce_tuple(
       matchers_, [&value, this](bool a, auto &&b, bool &early_exit) {
         bool result = reducer_(a, b(value));
@@ -207,7 +207,8 @@ public:
   std::string desc() const {
     std::stringstream s;
     s << desc_ << "(";
-    detail::reduce_tuple(matchers_, [&s](bool first, auto &&matcher, bool &) {
+    detail::reduce_tuple(matchers_, [&s](bool first, const auto &matcher,
+                                         bool &) {
       if(!first)
         s << ", ";
       s << matcher.desc();
@@ -239,9 +240,9 @@ inline auto all_of(T &&...matchers) {
 
 template<typename T>
 auto has_element(T &&thing) {
-  auto matcher = ensure_matcher(thing);
+  auto matcher = ensure_matcher(std::forward<T>(thing));
   return make_matcher([matcher](auto &&value) -> bool {
-    for(auto i : value) {
+    for(auto &i : value) {
       if(matcher(i))
         return true;
     }
@@ -254,14 +255,15 @@ class array_impl : public matcher_tag {
 public:
   using tuple_type = std::tuple<typename ensure_matcher_type<T>::type...>;
 
-  array_impl(T &&...matchers) : matchers_(ensure_matcher(matchers)...) {}
+  array_impl(T &&...matchers)
+    : matchers_(ensure_matcher(std::forward<T>(matchers))...) {}
 
   template<typename U>
-  bool operator ()(U &&value) const {
+  bool operator ()(const U &value) const {
     auto i = std::begin(value), end = std::end(value);
     bool good = detail::reduce_tuple(
-      matchers_, [&i, &end](bool, auto &&b, bool &early_exit) {
-        if(i == end || !b(*i++)) {
+      matchers_, [&i, &end](bool, const auto &matcher, bool &early_exit) {
+        if(i == end || !matcher(*i++)) {
           early_exit = true;
           return false;
         }
@@ -274,7 +276,8 @@ public:
   std::string desc() const {
     std::stringstream s;
     s << "[";
-    detail::reduce_tuple(matchers_, [&s](bool first, auto &&matcher, bool &) {
+    detail::reduce_tuple(matchers_, [&s](bool first, const auto &matcher,
+                                         bool &) {
       if(!first)
         s << ", ";
       s << matcher.desc();
