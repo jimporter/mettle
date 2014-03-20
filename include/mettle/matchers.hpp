@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "output.hpp"
 #include "utils.hpp"
 
 namespace mettle {
@@ -17,7 +18,7 @@ namespace detail {
            size_t N = std::tuple_size<Tuple>::value>
   struct do_reduce {
     auto operator ()(const Tuple &tuple, const Func &reducer,
-                    Val &&value) {
+                     Val &&value) {
       constexpr auto i = std::tuple_size<Tuple>::value - N;
       bool early_exit = false;
       auto result = reducer(
@@ -34,10 +35,17 @@ namespace detail {
   template<typename Tuple, typename Func, typename Val>
   struct do_reduce<Tuple, Func, Val, 1> {
     auto operator ()(const Tuple &tuple, const Func &reducer,
-                    Val &&value) {
+                     Val &&value) {
       constexpr auto i = std::tuple_size<Tuple>::value - 1;
       bool early_exit = false;
       return reducer(std::forward<Val>(value), std::get<i>(tuple), early_exit);
+    }
+  };
+
+  template<typename Tuple, typename Func, typename Val>
+  struct do_reduce<Tuple, Func, Val, 0> {
+    auto operator ()(const Tuple &, const Func &, Val &&value) {
+      return value;
     }
   };
 
@@ -88,7 +96,7 @@ template<typename T, typename Matcher>
 void expect(T &&value, Matcher &&matcher) {
   if (!matcher(value)) {
     std::stringstream s;
-    s << std::boolalpha << "expected " << matcher.desc() << ", got " << value;
+    s << "expected " << matcher.desc() << ", got " << ensure_printable(value);
     throw expectation_error(s.str());
   }
 }
@@ -96,7 +104,7 @@ void expect(T &&value, Matcher &&matcher) {
 template<typename T>
 inline auto equal_to(T &&expected) {
   std::stringstream s;
-  s << std::boolalpha << expected;
+  s << ensure_printable(expected);
   return make_matcher([expected](auto &&actual) -> bool {
     return actual == expected;
   }, s.str());
@@ -105,7 +113,7 @@ inline auto equal_to(T &&expected) {
 template<typename T>
 inline auto not_equal_to(T &&expected) {
   std::stringstream s;
-  s << std::boolalpha << "not " << expected;
+  s << "not " << ensure_printable(expected);
   return make_matcher([expected](auto &&actual) -> bool {
     return actual != expected;
   }, s.str());
@@ -114,7 +122,7 @@ inline auto not_equal_to(T &&expected) {
 template<typename T>
 inline auto greater(T &&expected) {
   std::stringstream s;
-  s << "> " << expected;
+  s << "> " << ensure_printable(expected);
   return make_matcher([expected](auto &&actual) -> bool {
     return actual > expected;
   }, s.str());
@@ -123,7 +131,7 @@ inline auto greater(T &&expected) {
 template<typename T>
 inline auto greater_equal(T &&expected) {
   std::stringstream s;
-  s << ">= " << expected;
+  s << ">= " << ensure_printable(expected);
   return make_matcher([expected](auto &&actual) -> bool {
     return actual >= expected;
   }, s.str());
@@ -132,7 +140,7 @@ inline auto greater_equal(T &&expected) {
 template<typename T>
 inline auto less(T &&expected) {
   std::stringstream s;
-  s << "< " << expected;
+  s << "< " << ensure_printable(expected);
   return make_matcher([expected](auto &&actual) -> bool {
     return actual < expected;
   }, s.str());
@@ -141,7 +149,7 @@ inline auto less(T &&expected) {
 template<typename T>
 inline auto less_equal(T &&expected) {
   std::stringstream s;
-  s << "<= " << expected;
+  s << "<= " << ensure_printable(expected);
   return make_matcher([expected](auto &&actual) -> bool {
     return actual <= expected;
   }, s.str());
@@ -171,7 +179,7 @@ inline auto is_not(T &&thing) {
   auto matcher = ensure_matcher(thing);
   return make_matcher([matcher](auto &&value) -> bool {
     return !matcher(value);
-  }, "not(" + matcher.desc() + ")");
+  }, "not " + matcher.desc());
 }
 
 template<typename ...T>
@@ -227,6 +235,61 @@ inline auto all_of(T &&...matchers) {
   return reduce_impl<T...>(
     "all of", std::logical_and<bool>(), true, std::forward<T>(matchers)...
   );
+}
+
+template<typename T>
+auto has_element(T &&thing) {
+  auto matcher = ensure_matcher(thing);
+  return make_matcher([matcher](auto &&value) -> bool {
+    for(auto i : value) {
+      if(matcher(i))
+        return true;
+    }
+    return false;
+  }, "has " + matcher.desc());
+}
+
+template<typename ...T>
+class array_impl : public matcher_tag {
+public:
+  using tuple_type = std::tuple<typename ensure_matcher_type<T>::type...>;
+
+  array_impl(T &&...matchers) : matchers_(ensure_matcher(matchers)...) {}
+
+  template<typename U>
+  bool operator ()(U &&value) const {
+    auto i = std::begin(value), end = std::end(value);
+    bool good = detail::reduce_tuple(
+      matchers_, [&i, &end](bool, auto &&b, bool &early_exit) {
+        if(i == end || !b(*i++)) {
+          early_exit = true;
+          return false;
+        }
+        return true;
+      }, true
+    );
+    return good && i == end;
+  }
+
+  std::string desc() const {
+    std::stringstream s;
+    s << "[";
+    detail::reduce_tuple(matchers_, [&s](bool first, auto &&matcher, bool &) {
+      if(!first)
+        s << ", ";
+      s << matcher.desc();
+      return false;
+    }, true);
+    s << "]";
+    return s.str();
+  }
+private:
+  tuple_type matchers_;
+};
+
+template<typename ...T>
+inline auto array(T &&...matchers) {
+  return array_impl<T...>(std::forward<T>(matchers)...);
 }
 
 } // namespace mettle

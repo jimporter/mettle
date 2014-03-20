@@ -61,7 +61,7 @@ int main(int argc, const char *argv[]) {
   std::vector<failure> fail_info;
   size_t passes = 0, skips = 0, total_tests = 0;
 
-  for(auto suite : mettle::suites) {
+  for(auto suite : mettle::all_suites) {
     if(verbose)
       std::cout << suite->name() << std::endl;
 

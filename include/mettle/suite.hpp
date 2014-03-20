@@ -39,7 +39,8 @@ namespace detail {
 }
 
 class suite_base;
-std::vector<suite_base*> suites;
+using suites_list = std::vector<suite_base*>;
+suites_list all_suites;
 
 class suite_base {
 public:
@@ -62,10 +63,13 @@ public:
 
   using iterator = std::vector<test_info>::const_iterator;
 
-  suite_base(const std::string &name) : name_(name) {}
+  suite_base(const std::string &name, suites_list &suites = all_suites)
+    : name_(name), suites_(suites) {
+    suites_.push_back(this);
+  }
 
   virtual ~suite_base() {
-    suites.erase(std::find(suites.begin(), suites.end(), this));
+    suites_.erase(std::find(suites_.begin(), suites_.end(), this));
   }
 
   iterator begin() const {
@@ -86,6 +90,7 @@ public:
 protected:
   std::string name_;
   std::vector<test_info> tests_;
+  suites_list &suites_;
 };
 
 template<typename Exception, typename ...T>
@@ -95,10 +100,10 @@ public:
   using function_type = std::function<void(T&...)>;
 
   basic_suite(const std::string &name,
-              const std::function<void(basic_suite &)> &f) : suite_base(name) {
+              const std::function<void(basic_suite &)> &f,
+              suites_list &suites = all_suites) : suite_base(name, suites) {
     initializing_ = true;
     f(*this);
-    suites.push_back(this);
     initializing_ = false;
   }
 
