@@ -50,23 +50,6 @@ constexpr auto ensure_printable(T &&t) -> typename std::enable_if<
 }
 
 template<typename T>
-auto ensure_printable(const T &v) -> typename std::enable_if<
-  !is_printable<T>::value && is_iterable<T>::value, std::string
->::type {
-  std::stringstream s;
-  s << "[";
-  bool first = true;
-  for(auto i : v) {
-    if(!first)
-      s << ", ";
-    s << ensure_printable(i);
-    first = false;
-  }
-  s << "]";
-  return s.str();
-}
-
-template<typename T>
 auto ensure_printable(const T &t) -> typename std::enable_if<
   !is_printable<T>::value && !is_iterable<T>::value, std::string
 >::type {
@@ -85,6 +68,23 @@ inline std::string ensure_printable(std::nullptr_t) {
 inline std::string ensure_printable(bool b) {
   // Yeah yeah, we could use std::boolapha here, but there's really no point.
   return b ? "true" : "false";
+}
+
+template<typename T>
+auto ensure_printable(const T &v) -> typename std::enable_if<
+  !is_printable<T>::value && is_iterable<T>::value, std::string
+>::type {
+  std::stringstream s;
+  s << "[";
+  bool first = true;
+  for(auto i : v) {
+    if(!first)
+      s << ", ";
+    s << ensure_printable(i);
+    first = false;
+  }
+  s << "]";
+  return s.str();
 }
 
 } // namespace mettle
