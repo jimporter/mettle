@@ -26,12 +26,12 @@ suite<basic_data> basic("basic suite", [](auto &_) {
   });
 
   _.test("a test", [](basic_data &) {
-    expect(true, equals(true));
+    expect(true, equal_to(true));
   });
 
   for(int i = 0; i < 4; i++) {
     _.test("test number " + std::to_string(i), [i](basic_data &) {
-      expect(i % 2, equals(0));
+      expect(i % 2, equal_to(0));
     });
   }
 });
