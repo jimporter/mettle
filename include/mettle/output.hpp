@@ -4,6 +4,8 @@
 #include <sstream>
 #include <type_traits>
 
+namespace mettle {
+
 template<typename T>
 class is_printable {
   template<typename U> struct always_bool { typedef bool type; };
@@ -76,13 +78,15 @@ auto ensure_printable(const T &t) -> typename std::enable_if<
   }
 }
 
-std::string ensure_printable(std::nullptr_t) {
+inline std::string ensure_printable(std::nullptr_t) {
   return "nullptr";
 }
 
-std::string ensure_printable(bool b) {
+inline std::string ensure_printable(bool b) {
   // Yeah yeah, we could use std::boolapha here, but there's really no point.
   return b ? "true" : "false";
 }
+
+} // namespace mettle
 
 #endif
