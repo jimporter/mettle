@@ -3,8 +3,14 @@
 
 #include <sstream>
 #include <type_traits>
+#include <typeinfo>
 
 namespace mettle {
+
+namespace detail {
+  template<typename T>
+  std::string stringify_iterable(const T &begin, const T &end);
+}
 
 template<typename T>
 class is_printable {
@@ -44,7 +50,9 @@ public:
 
 template<typename T>
 constexpr auto ensure_printable(T &&t) -> typename std::enable_if<
-  is_printable<T>::value, decltype(std::forward<T>(t))
+  is_printable<T>::value &&
+  !std::is_array<typename std::remove_reference<T>::type>::value,
+  decltype(std::forward<T>(t))
 >::type {
   return std::forward<T>(t);
 }
@@ -70,21 +78,42 @@ inline std::string ensure_printable(bool b) {
   return b ? "true" : "false";
 }
 
+inline const char * ensure_printable(const char *s) {
+  return s;
+}
+
+template<typename T, size_t N>
+auto ensure_printable(const T (&v)[N]) -> typename std::enable_if<
+  !std::is_same<
+    typename std::remove_cv<typename std::make_signed<T>::type>::type,
+    signed char
+  >::value,
+  std::string
+>::type {
+  return detail::stringify_iterable(std::begin(v), std::end(v));
+}
+
 template<typename T>
-auto ensure_printable(const T &v) -> typename std::enable_if<
+auto ensure_printable(T &&v) -> typename std::enable_if<
   !is_printable<T>::value && is_iterable<T>::value, std::string
 >::type {
-  std::stringstream s;
-  s << "[";
-  bool first = true;
-  for(auto &i : v) {
-    if(!first)
-      s << ", ";
-    s << ensure_printable(i);
-    first = false;
+  return detail::stringify_iterable(std::begin(v), std::end(v));
+}
+
+namespace detail {
+  template<typename T>
+  std::string stringify_iterable(const T &begin, const T &end) {
+    std::stringstream s;
+    s << "[";
+    if(begin != end) {
+      auto i = begin;
+      s << ensure_printable(*i);
+      for(++i; i != end; ++i)
+        s << ", " << ensure_printable(*i);
+    }
+    s << "]";
+    return s.str();
   }
-  s << "]";
-  return s.str();
 }
 
 } // namespace mettle
