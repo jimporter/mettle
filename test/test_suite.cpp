@@ -19,4 +19,14 @@ suite<suites_list> test_suite("test suite", [](auto &_) {
     expect(suites, array(&inner));
   });
 
+  _.test("create a test suite that throws", [](suites_list &suites) {
+    try {
+      suite<int> inner("broken test suite", [](auto &){
+        throw "bad";
+      }, suites);
+    } catch(...) {}
+
+    expect(suites, array());
+  });
+
 });
