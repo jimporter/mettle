@@ -77,7 +77,7 @@ auto ensure_printable(const T &v) -> typename std::enable_if<
   std::stringstream s;
   s << "[";
   bool first = true;
-  for(auto i : v) {
+  for(auto &i : v) {
     if(!first)
       s << ", ";
     s << ensure_printable(i);

@@ -94,7 +94,7 @@ basic_matcher<T> make_matcher(T &&matcher, const std::string &desc) {
 
 template<typename T, typename Matcher>
 void expect(const T &value, const Matcher &matcher) {
-  if (!matcher(value)) {
+  if(!matcher(value)) {
     std::stringstream s;
     s << "expected " << matcher.desc() << ", got " << ensure_printable(value);
     throw expectation_error(s.str());

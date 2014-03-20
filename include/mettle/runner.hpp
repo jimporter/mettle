@@ -61,11 +61,11 @@ int main(int argc, const char *argv[]) {
   std::vector<failure> fail_info;
   size_t passes = 0, skips = 0, total_tests = 0;
 
-  for(auto suite : mettle::all_suites) {
+  for(auto &suite : mettle::all_suites) {
     if(verbose)
       std::cout << suite->name() << std::endl;
 
-    for(auto test : *suite) {
+    for(auto &test : *suite) {
       total_tests++;
 
       if(verbose)
@@ -101,7 +101,7 @@ int main(int argc, const char *argv[]) {
     std::cout << " (" << skips << " skipped)";
   std::cout << std::endl;
 
-  for(auto i : fail_info)
+  for(auto &i : fail_info)
     std::cout << "  " << i.suite << " > " << i.test << " " << color::red
               << "FAILED" << color::reset << ": " << i.message << std::endl;
 
