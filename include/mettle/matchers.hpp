@@ -101,6 +101,12 @@ void expect(const T &value, const Matcher &matcher) {
   }
 }
 
+inline auto anything() {
+  return make_matcher([](const auto &) -> bool {
+    return true;
+  }, "anything");
+}
+
 template<typename T>
 inline auto equal_to(const T &expected) {
   std::stringstream s;

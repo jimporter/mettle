@@ -27,9 +27,18 @@ suite<> output("test debug printing", [](auto &_){
     expect(stringify(std::vector<int>{1, 2, 3}), equal_to("[1, 2, 3]"));
     expect(stringify(std::list<int>{1, 2, 3}), equal_to("[1, 2, 3]"));
 
+    // No test for zero-sized arrays because those are illegal in C++ (even
+    // though many compilers accept them).
     int arr1[] = {1};
-    expect(ensure_printable(arr1), equal_to("[1]"));
+    expect(stringify(arr1), equal_to("[1]"));
     int arr2[] = {1, 2, 3};
-    expect(ensure_printable(arr2), equal_to("[1, 2, 3]"));
+    expect(stringify(arr2), equal_to("[1, 2, 3]"));
+  });
+
+  _.test("test printing custom types", []() {
+    struct some_type {};
+
+    // This will get a string from type_info, which could be anything...
+    expect(stringify(some_type{}), anything());
   });
 });
