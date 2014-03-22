@@ -62,6 +62,12 @@ suite<> matcher_tests("test matchers", [](auto &_) {
     expect(std::vector<int>{1, 2, 3}, is_not(has_element(4)));
   });
 
+  _.test("each()", []() {
+    expect(std::vector<int>{}, each( is_not(anything()) ));
+    expect(std::vector<int>{1, 2, 3}, each( greater(0)) );
+    expect(std::vector<int>{1, 2, 3}, is_not( each(less(2)) ));
+  });
+
   _.test("array()", []() {
     expect(std::vector<int>{}, array());
     expect(std::vector<int>{1, 2, 3}, array(1, 2, 3));

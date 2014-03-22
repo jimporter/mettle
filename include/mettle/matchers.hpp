@@ -256,6 +256,18 @@ auto has_element(T &&thing) {
   }, "has " + matcher.desc());
 }
 
+template<typename T>
+auto each(T &&thing) {
+  auto matcher = ensure_matcher(std::forward<T>(thing));
+  return make_matcher([matcher](auto &&value) -> bool {
+    for(auto &i : value) {
+      if(!matcher(i))
+        return false;
+    }
+    return true;
+  }, "each " + matcher.desc());
+}
+
 template<typename ...T>
 class array_impl : public matcher_tag {
 public:
