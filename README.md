@@ -6,8 +6,8 @@ macros.
 
 ## A Brief Example
 
-A picture is worth a thousand words, and code is probably worth an appreciable
-amount of words (let's say 100), so let's take a look:
+A picture is worth a thousand words, and code is probably worth a decent
+fraction of that (let's say 100 words), so let's take a look:
 
 ```c++
 #include "mettle.hpp"
