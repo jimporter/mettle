@@ -30,6 +30,29 @@ inline std::ostream & operator <<(std::ostream &o, const color &c) {
     return o;
 }
 
+template<typename ...T, typename F>
+inline auto make_suite(const std::string &name, F &&f) {
+  return make_basic_suite(name, std::forward<F>(f));
+}
+
+using suites_list = std::vector<std::shared_ptr<runnable_suite>>;
+suites_list all_suites;
+
+template<typename Exception, typename ...T>
+struct basic_suite {
+public:
+  template<typename F>
+  basic_suite(const std::string &name, F &&f,
+              suites_list &suites = all_suites) {
+    suites.push_back(
+      make_basic_suite<Exception, T...>(name, std::forward<F>(f))
+    );
+  }
+};
+
+template<typename ...T>
+using suite = basic_suite<expectation_error, T...>;
+
 } // namespace mettle
 
 int main(int argc, const char *argv[]) {

@@ -39,10 +39,6 @@ namespace detail {
   }
 }
 
-class runnable_suite;
-using suites_list = std::vector<std::shared_ptr<runnable_suite>>;
-suites_list all_suites;
-
 class runnable_suite {
 public:
   struct test_result {
@@ -170,17 +166,12 @@ private:
   std::vector<test_info> tests_;
 };
 
-template<typename Exception, typename ...T>
-struct basic_suite {
-public:
-  template<typename F>
-  basic_suite(const std::string &name, const F &f,
-              suites_list &suites = all_suites) {
-    suite_builder<Exception, T...> builder(name);
-    f(builder);
-    suites.push_back(builder.finalize());
-  }
-};
+template<typename Exception, typename ...T, typename F>
+auto make_basic_suite(const std::string &name, const F &f) {
+  suite_builder<Exception, T...> builder(name);
+  f(builder);
+  return builder.finalize();
+}
 
 } // namespace mettle
 
