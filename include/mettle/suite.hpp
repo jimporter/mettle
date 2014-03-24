@@ -26,16 +26,16 @@ namespace detail {
   using make_index_sequence = typename make_index_seq_impl<I>::type;
 
   template <typename F, typename Tuple, size_t... I>
-  void apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
+  auto apply_impl(F &&f, Tuple &&t, index_sequence<I...>) {
     return std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...);
   }
 
   template<typename F, typename Tuple>
-  void apply(F&& f, Tuple&& t) {
+  auto apply(F &&f, Tuple &&t) {
     using Indices = make_index_sequence<
       std::tuple_size<typename std::decay<Tuple>::type>::value
-      >;
-    return apply_impl(std::forward<F>(f), std::forward<Tuple>(t), Indices{});
+    >;
+    return apply_impl(std::forward<F>(f), std::forward<Tuple>(t), Indices());
   }
 }
 
