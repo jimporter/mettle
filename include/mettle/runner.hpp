@@ -32,7 +32,7 @@ inline std::ostream & operator <<(std::ostream &o, const color &c) {
 
 template<typename ...T, typename F>
 inline auto make_suite(const std::string &name, F &&f) {
-  return make_basic_suite(name, std::forward<F>(f));
+  return make_basic_suite<expectation_error, T..., F>(name, std::forward<F>(f));
 }
 
 using suites_list = std::vector<std::shared_ptr<runnable_suite>>;
