@@ -22,9 +22,9 @@ bool colors_enabled = false;
 inline std::ostream & operator <<(std::ostream &o, const color &c) {
   if(colors_enabled) {
     if(c == color::reset)
-      return o << "\033[0m";
+      return o << "\e[0m";
     else
-      return o << "\033[0;" << static_cast<size_t>(c) << "m";
+      return o << "\e[0;" << static_cast<size_t>(c) << "m";
   }
   else
     return o;
