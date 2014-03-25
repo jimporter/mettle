@@ -4,6 +4,13 @@
 C++ (read: C++14). Its main goals are readability and avoidance of unnecessary
 macros.
 
+## Features
+
+* Tests defined without using the C preprocessor
+* Nested suites
+* Test fixtures
+* Declarative, matcher-based expectations (assertions)
+
 ## A Brief Example
 
 A picture is worth a thousand words, and code is probably worth a decent

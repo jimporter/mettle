@@ -39,15 +39,15 @@ namespace detail {
   }
 }
 
-class runnable_suite {
-public:
-  struct test_result {
-    bool passed;
-    std::string message;
-  };
+struct test_result {
+  bool passed;
+  std::string message;
+};
 
+template<typename Ret, typename ...T>
+struct compiled_suite {
   struct test_info {
-    using function_type = std::function<test_result()>;
+    using function_type = std::function<Ret(T&...)>;
 
     test_info(const std::string &name, const function_type &function,
               bool skip = false)
@@ -58,14 +58,28 @@ public:
     bool skip;
   };
 
-  using iterator = std::vector<test_info>::const_iterator;
+  using iterator = typename std::vector<test_info>::const_iterator;
 
-  template<typename T, typename Func>
-  runnable_suite(const std::string &name, const T &begin, const T &end,
+  template<typename U, typename V, typename Func>
+  compiled_suite(const std::string &name, const U &tests, const V &subsuites,
                  const Func &f) : name_(name) {
-    for(auto i = begin; i != end; ++i) {
-      tests_.push_back(f(*i));
-    }
+    for(auto &test : tests)
+      tests_.push_back(f(test));
+    for(auto &ss : subsuites)
+      subsuites_.push_back(compiled_suite(ss, f));
+  }
+
+  template<typename Ret2, typename ...T2, typename Func>
+  compiled_suite(const compiled_suite<Ret2, T2...> &suite, const Func &f)
+    : name_(suite.name()) {
+    for(auto &test : suite)
+      tests_.push_back(f(test));
+    for(auto &ss : suite.subsuites())
+      subsuites_.push_back(compiled_suite(ss, f));
+  }
+
+  const std::string & name() const {
+    return name_;
   }
 
   iterator begin() const {
@@ -76,27 +90,34 @@ public:
     return tests_.end();
   }
 
-  const std::string & name() const {
-    return name_;
-  }
-
   size_t size() const {
     return tests_.size();
+  }
+
+  const std::vector<compiled_suite> & subsuites() const {
+    return subsuites_;
   }
 private:
   std::string name_;
   std::vector<test_info> tests_;
+  std::vector<compiled_suite> subsuites_;
 };
 
-template<typename Exception, typename ...T>
-class suite_builder {
-public:
-  using exception_type = Exception;
-  using function_type = std::function<void(T&...)>;
+using runnable_suite = compiled_suite<test_result>;
 
-  suite_builder(const std::string &name) : name_(name) {}
-  suite_builder(const suite_builder &) = delete;
-  suite_builder & operator =(const suite_builder &) = delete;
+template<typename Parent, typename ...T>
+class subsuite_builder;
+
+template<typename ...T>
+class suite_builder_base {
+public:
+  using raw_function_type = void(T&...);
+  using function_type = std::function<raw_function_type>;
+  using tuple_type = std::tuple<T...>;
+
+  suite_builder_base(const std::string &name) : name_(name) {}
+  suite_builder_base(const suite_builder_base &) = delete;
+  suite_builder_base & operator =(const suite_builder_base &) = delete;
 
   void setup(const function_type &f) {
     setup_ = f;
@@ -114,28 +135,86 @@ public:
     tests_.push_back({name, f, false});
   }
 
-  std::shared_ptr<runnable_suite> finalize() {
-    using namespace std::placeholders;
-    return std::make_shared<runnable_suite>(
-      name_, tests_.begin(), tests_.end(),
-      std::bind(&suite_builder::make_test, this, _1)
-    );
+  template<typename ...U, typename F>
+  void subsuite(const std::string &name, const F &f) {
+    subsuite_builder<tuple_type, U...> builder(name);
+    f(builder);
+    subsuites_.push_back(builder.finalize());
   }
-private:
+protected:
   struct test_info {
     std::string name;
-    function_type f;
+    function_type function;
     bool skip;
   };
 
-  runnable_suite::test_info make_test(const test_info &test) {
-    auto &f = test.f;
-    auto &setup = setup_;
-    auto &teardown = teardown_;
+  std::string name_;
+  function_type setup_, teardown_;
+  std::vector<test_info> tests_;
+  std::vector<compiled_suite<void, T...>> subsuites_;
+};
+
+template<typename ...T, typename ...U>
+class subsuite_builder<std::tuple<T...>, U...>
+  : public suite_builder_base<T..., U...> {
+private:
+  using compiled_suite_type = compiled_suite<void, T...>;
+  using base = suite_builder_base<T..., U...>;
+public:
+  using base::base;
+
+  compiled_suite_type finalize() {
+    return compiled_suite_type(
+      base::name_, base::tests_, base::subsuites_,
+      [this](const auto &a) { return wrap_test(a); }
+    );
+  }
+private:
+  template<typename V>
+  typename compiled_suite_type::test_info wrap_test(const V &test) {
+    auto &f = test.function;
+    auto &setup = base::setup_;
+    auto &teardown = base::teardown_;
+
+    typename compiled_suite_type::test_info::function_type test_function = [
+      f, setup, teardown
+    ](T &...args) -> void {
+      std::tuple<T&..., U...> fixtures(args..., U()...);
+      if(setup)
+        detail::apply(setup, fixtures);
+      detail::apply(f, fixtures);
+      if(teardown)
+        detail::apply(teardown, fixtures);
+    };
+
+    return { test.name, test_function, test.skip };
+  }
+};
+
+template<typename Exception, typename ...T>
+class suite_builder : public suite_builder_base<T...> {
+private:
+  using base = suite_builder_base<T...>;
+public:
+  using exception_type = Exception;
+  using base::base;
+
+  runnable_suite finalize() {
+    return runnable_suite(
+      base::name_, base::tests_, base::subsuites_,
+      [this](const auto &a) { return wrap_test(a); }
+    );
+  }
+private:
+  template<typename U>
+  runnable_suite::test_info wrap_test(const U &test) {
+    auto &f = test.function;
+    auto &setup = base::setup_;
+    auto &teardown = base::teardown_;
 
     runnable_suite::test_info::function_type test_function = [
       f, setup, teardown
-    ]() -> runnable_suite::test_result {
+    ]() -> test_result {
       bool passed = false;
       std::string message;
 
@@ -148,7 +227,7 @@ private:
           detail::apply(teardown, fixtures);
         passed = true;
       }
-      catch (const exception_type &e) {
+      catch(const exception_type &e) {
         message = e.what();
       }
       catch(...) {
@@ -160,14 +239,12 @@ private:
 
     return { test.name, test_function, test.skip };
   }
-
-  std::string name_;
-  function_type setup_, teardown_;
-  std::vector<test_info> tests_;
 };
 
 template<typename Exception, typename ...T, typename F>
-auto make_basic_suite(const std::string &name, const F &f) {
+runnable_suite make_basic_suite(
+  const std::string &name, const F &f
+) {
   suite_builder<Exception, T...> builder(name);
   f(builder);
   return builder.finalize();

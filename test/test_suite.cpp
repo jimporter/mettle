@@ -21,7 +21,7 @@ suite<suites_list> test_suite("suite creation", [](auto &_) {
 
     expect(suites.size(), equal_to<size_t>(1));
 
-    auto &inner = *suites[0];
+    auto &inner = suites[0];
     expect(inner.size(), equal_to<size_t>(2));
     expect(inner, array(
       match_test("inner test", false), match_test("skipped test", true)
@@ -36,7 +36,7 @@ suite<suites_list> test_suite("suite creation", [](auto &_) {
 
     expect(suites.size(), equal_to<size_t>(1));
 
-    auto &inner = *suites[0];
+    auto &inner = suites[0];
     expect(inner.size(), equal_to<size_t>(2));
     expect(inner, array(
       match_test("inner test", false), match_test("skipped test", true)
@@ -53,7 +53,7 @@ suite<suites_list> test_suite("suite creation", [](auto &_) {
 
     expect(suites.size(), equal_to<size_t>(1));
 
-    auto &inner = *suites[0];
+    auto &inner = suites[0];
     expect(inner.size(), equal_to<size_t>(2));
     expect(inner, array(
       match_test("inner test", false), match_test("skipped test", true)
@@ -71,7 +71,7 @@ suite<suites_list> test_suite("suite creation", [](auto &_) {
 
     expect(suites.size(), equal_to<size_t>(1));
 
-    auto &inner = *suites[0];
+    auto &inner = suites[0];
     expect(inner.size(), equal_to<size_t>(2));
     expect(inner, array(
       match_test("inner test", false), match_test("skipped test", true)
@@ -88,4 +88,39 @@ suite<suites_list> test_suite("suite creation", [](auto &_) {
     expect(suites.size(), equal_to<size_t>(0));
   });
 
+});
+
+struct basic_fixture {
+  basic_fixture() = default;
+  basic_fixture(const basic_fixture &) = delete;
+  basic_fixture & operator =(const basic_fixture &) = delete;
+
+  int data;
+};
+
+suite<basic_fixture> basic("nested suites", [](auto &_) {
+  _.template subsuite<>("subsuite", [](auto &_) {
+    _.setup([](basic_fixture &f) {
+      f.data++;
+    });
+
+    _.test("fixture was passed by reference", [](basic_fixture &f) {
+      expect(f.data, equal_to(2));
+    });
+
+    _.template subsuite<int>("sub-subsuite", [](auto &_) {
+      _.setup([](basic_fixture &f, int &) {
+        f.data++;
+      });
+
+      _.test("fixture was passed by reference", [](basic_fixture &f, int &) {
+        expect(f.data, equal_to(3));
+      });
+    });
+
+  });
+
+  _.setup([](basic_fixture &f) {
+    f.data = 1;
+  });
 });
