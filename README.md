@@ -50,3 +50,7 @@ This project currently requires a C++14 compiler (for generic lambdas in the
 matchers) and Boost (for argument parsing in the test runner). It's been tested
 against clang 3.4 (get it from http://llvm.org/apt/; Ubuntu 13.10's version
 won't work!).
+
+## License
+
+This library is licensed under the BSD 3-Clause license.
