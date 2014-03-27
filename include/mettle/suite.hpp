@@ -135,11 +135,19 @@ public:
     tests_.push_back({name, f, false});
   }
 
+  void subsuite(const compiled_suite<void, T...> &subsuite) {
+    subsuites_.push_back(subsuite);
+  }
+
+  void subsuite(compiled_suite<void, T...> &&subsuite) {
+    subsuites_.push_back(std::move(subsuite));
+  }
+
   template<typename ...U, typename F>
   void subsuite(const std::string &name, const F &f) {
     subsuite_builder<tuple_type, U...> builder(name);
     f(builder);
-    subsuites_.push_back(builder.finalize());
+    subsuite(builder.finalize());
   }
 protected:
   struct test_info {
@@ -163,7 +171,7 @@ private:
 public:
   using base::base;
 
-  compiled_suite_type finalize() {
+  compiled_suite_type finalize() const {
     return compiled_suite_type(
       base::name_, base::tests_, base::subsuites_,
       [this](const auto &a) { return wrap_test(a); }
@@ -171,7 +179,7 @@ public:
   }
 private:
   template<typename V>
-  typename compiled_suite_type::test_info wrap_test(const V &test) {
+  typename compiled_suite_type::test_info wrap_test(const V &test) const {
     auto &f = test.function;
     auto &setup = base::setup_;
     auto &teardown = base::teardown_;
@@ -199,7 +207,7 @@ public:
   using exception_type = Exception;
   using base::base;
 
-  runnable_suite finalize() {
+  runnable_suite finalize() const {
     return runnable_suite(
       base::name_, base::tests_, base::subsuites_,
       [this](const auto &a) { return wrap_test(a); }
@@ -207,7 +215,7 @@ public:
   }
 private:
   template<typename U>
-  runnable_suite::test_info wrap_test(const U &test) {
+  runnable_suite::test_info wrap_test(const U &test) const {
     auto &f = test.function;
     auto &setup = base::setup_;
     auto &teardown = base::teardown_;
@@ -242,12 +250,27 @@ private:
 };
 
 template<typename Exception, typename ...T, typename F>
-runnable_suite make_basic_suite(
-  const std::string &name, const F &f
-) {
+runnable_suite make_basic_suite(const std::string &name, const F &f) {
   suite_builder<Exception, T...> builder(name);
   f(builder);
   return builder.finalize();
+}
+
+template<typename T, typename ...U, typename F>
+auto make_subsuite(const std::string &name, const F &f) {
+  subsuite_builder<T, U...> builder(name);
+  f(builder);
+  return builder.finalize();
+}
+
+template<typename ...T, typename Parent, typename F>
+auto make_subsuite(const Parent &, const std::string &name, const F &f) {
+  return make_subsuite<typename Parent::tuple_type, T...>(name, f);
+}
+
+template<typename ...T, typename Parent, typename F>
+void subsuite(Parent &builder, const std::string &name, const F &f) {
+  builder.subsuite(make_subsuite<T...>(builder, name, f));
 }
 
 } // namespace mettle

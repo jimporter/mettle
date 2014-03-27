@@ -88,6 +88,62 @@ suite<suites_list> test_suite("suite creation", [](auto &_) {
     expect(suites.size(), equal_to<size_t>(0));
   });
 
+  auto check_subsuite_structure = [](suites_list &suites) {
+    expect(suites.size(), equal_to<size_t>(1));
+
+    auto &inner = suites[0];
+    expect(inner.subsuites().size(), equal_to<size_t>(1));
+
+    auto &sub = inner.subsuites()[0];
+    expect(sub.size(), equal_to<size_t>(2));
+    expect(sub, array(
+      match_test("subtest", false), match_test("skipped subtest", true)
+    ));
+    expect(sub.subsuites().size(), equal_to<size_t>(1));
+
+    auto &subsub = sub.subsuites()[0];
+    expect(subsub.size(), equal_to<size_t>(2));
+    expect(subsub, array(
+      match_test("sub-subtest", false), match_test("skipped sub-subtest", true)
+    ));
+    expect(subsub.subsuites().size(), equal_to<size_t>(0));
+  };
+
+  _.test("create subsuites", [&check_subsuite_structure](suites_list &suites) {
+
+    suite<>("inner test suite", [](auto &_){
+      _.template subsuite<int>("subsuite", [](auto &_) {
+        _.test("subtest", [](int &) {});
+        _.skip_test("skipped subtest", [](int &) {});
+
+        _.template subsuite<>("sub-subsuite", [](auto &_) {
+          _.test("sub-subtest", [](int &) {});
+          _.skip_test("skipped sub-subtest", [](int &) {});
+        });
+      });
+    }, suites);
+
+    check_subsuite_structure(suites);
+  });
+
+  _.test("create subsuites with helper syntax",
+         [&check_subsuite_structure](suites_list &suites) {
+
+    suite<>("inner test suite", [](auto &_){
+      subsuite<int>(_, "subsuite", [](auto &_) {
+        _.test("subtest", [](int &) {});
+        _.skip_test("skipped subtest", [](int &) {});
+
+        subsuite<>(_, "sub-subsuite", [](auto &_) {
+          _.test("sub-subtest", [](int &) {});
+          _.skip_test("skipped sub-subtest", [](int &) {});
+        });
+      });
+    }, suites);
+
+    check_subsuite_structure(suites);
+  });
+
 });
 
 struct basic_fixture {
@@ -98,7 +154,8 @@ struct basic_fixture {
   int data;
 };
 
-suite<basic_fixture> basic("nested suites", [](auto &_) {
+suite<basic_fixture> basic("suite fixtures", [](auto &_) {
+
   _.template subsuite<>("subsuite", [](auto &_) {
     _.setup([](basic_fixture &f) {
       f.data++;
@@ -120,7 +177,10 @@ suite<basic_fixture> basic("nested suites", [](auto &_) {
 
   });
 
+  // Put the setup after the subsuite is created to ensure that order doesn't
+  // matter.
   _.setup([](basic_fixture &f) {
     f.data = 1;
   });
+
 });
