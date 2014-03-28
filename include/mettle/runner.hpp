@@ -13,17 +13,6 @@ using suites_list = std::vector<runnable_suite>;
 namespace detail {
   suites_list all_suites;
 
-  struct test_results {
-    test_results() : passes(0), skips(0), total(0) {}
-
-    struct failure {
-      std::vector<std::string> suites;
-      std::string test, message;
-    };
-    std::vector<failure> failures;
-    size_t passes, skips, total;
-  };
-
   template<typename T>
   std::string join(T begin, T end, const std::string &delim) {
     if(begin == end)
@@ -35,6 +24,24 @@ namespace detail {
       s << delim << *begin;
     return s.str();
   }
+
+  struct test_results {
+    test_results() : passes(0), skips(0), total(0) {}
+
+    struct failure {
+      std::vector<std::string> suites;
+      std::string test, message;
+
+      std::string full_name() const {
+        std::stringstream s;
+        s << join(suites.begin(), suites.end(), " > ") << " > " << test;
+        return s.str();
+      }
+    };
+
+    std::vector<failure> failures;
+    size_t passes, skips, total;
+  };
 
   void run_tests_impl(test_results &results, const suites_list &suites,
                       bool verbose, std::vector<std::string> &parents) {
@@ -150,9 +157,9 @@ int main(int argc, const char *argv[]) {
   std::cout << reset() << std::endl;
 
   for(auto &i : results.failures) {
-    std::cout << "  " << join(i.suites.begin(), i.suites.end(), " > ")
-              << " > " << i.test << " " << format(sgr::bold, fg(color::red))
-              << "FAILED" << reset() << ": " << i.message << std::endl;
+    std::cout << "  " << i.full_name() << " "
+              << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
+              << ": " << i.message << std::endl;
   }
 
   return results.failures.size();
