@@ -245,7 +245,7 @@ inline auto all_of(T &&...matchers) {
 }
 
 template<typename T>
-auto has_element(T &&thing) {
+auto member(T &&thing) {
   auto matcher = ensure_matcher(std::forward<T>(thing));
   return make_matcher([matcher](auto &&value) -> bool {
     for(auto &i : value) {
@@ -253,7 +253,7 @@ auto has_element(T &&thing) {
         return true;
     }
     return false;
-  }, "has " + matcher.desc());
+  }, "member " + matcher.desc());
 }
 
 template<typename T>

@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "mettle.hpp"
 using namespace mettle;
 
@@ -79,12 +81,12 @@ suite<> matcher_tests("test matchers", [](auto &_) {
     expect(all_of(1, 2, 3).desc(), equal_to("all of(1, 2, 3)"));
   });
 
-  _.test("has_element()", []() {
-    expect(std::vector<int>{}, is_not(has_element(0)));
-    expect(std::vector<int>{1, 2, 3}, has_element(1));
-    expect(std::vector<int>{1, 2, 3}, is_not(has_element(4)));
+  _.test("member()", []() {
+    expect(std::vector<int>{}, is_not(member(0)));
+    expect(std::vector<int>{1, 2, 3}, member(1));
+    expect(std::vector<int>{1, 2, 3}, is_not(member(4)));
 
-    expect(has_element(123).desc(), equal_to("has 123"));
+    expect(member(123).desc(), equal_to("member 123"));
   });
 
   _.test("each()", []() {
