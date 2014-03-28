@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <vector>
 
 #include "mettle.hpp"
@@ -102,6 +103,33 @@ suite<> matcher_tests("test matchers", [](auto &_) {
     expect(std::vector<int>{1, 2, 3}, array(1, 2, 3));
 
     expect(array(1, 2, 3).desc(), equal_to("[1, 2, 3]"));
+  });
+
+  _.test("thrown()", []() {
+    auto thrower = []() { throw std::runtime_error("message"); };
+    expect(thrower, thrown<std::runtime_error>());
+    expect(thrower, thrown<std::exception>());
+    expect(thrower, is_not(thrown<std::logic_error>()));
+    expect(thrower, thrown());
+    expect(thrower, thrown<std::runtime_error>("message"));
+    expect(thrower, thrown<std::runtime_error>(is_not("wrong")));
+    expect(thrower, is_not(thrown<std::logic_error>("message")));
+    expect(thrower, is_not(thrown<std::logic_error>( is_not("wrong") )));
+
+    auto int_thrower = []() { throw 123; };
+    expect(int_thrower, thrown<int>());
+    expect(int_thrower, is_not(thrown<std::exception>()));
+    expect(int_thrower, thrown());
+    expect(int_thrower, thrown_raw<int>(123));
+    expect(int_thrower, is_not(thrown_raw<int>(0)));
+    expect(int_thrower, is_not(thrown<std::exception>("message")));
+    expect(int_thrower, is_not(thrown<std::exception>( is_not("wrong") )));
+
+    auto noop = []() {};
+    expect(noop, is_not(thrown<std::exception>()));
+    expect(noop, is_not(thrown()));
+    expect(noop, is_not(thrown<std::exception>("message")));
+    expect(noop, is_not(thrown<std::exception>( is_not("wrong") )));
   });
 
 });
