@@ -4,31 +4,9 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 
+#include "term.hpp"
+
 namespace mettle {
-
-enum class color {
-  reset = 0,
-  black = 30,
-  red = 31,
-  green = 32,
-  yellow = 33,
-  blue = 34,
-  magenta = 35,
-  cyan = 36,
-  white = 37
-};
-
-bool colors_enabled = false;
-inline std::ostream & operator <<(std::ostream &o, const color &c) {
-  if(colors_enabled) {
-    if(c == color::reset)
-      return o << "\e[0m";
-    else
-      return o << "\e[0;" << static_cast<size_t>(c) << "m";
-  }
-  else
-    return o;
-}
 
 template<typename ...T, typename F>
 inline auto make_suite(const std::string &name, F &&f) {
@@ -65,10 +43,14 @@ struct test_results {
 
 void run_tests(test_results &results, const suites_list &suites, bool verbose,
                size_t depth = 0) {
+  using namespace term;
   const std::string indent(depth * 2, ' ');
+
   for(auto &suite : suites) {
-    if(verbose)
-      std::cout << indent << suite.name() << std::endl;
+    if(verbose) {
+      std::cout << indent << format(sgr::bold) << suite.name()
+                << reset() << std::endl;
+    }
 
     for(auto &test : suite) {
       results.total++;
@@ -77,22 +59,26 @@ void run_tests(test_results &results, const suites_list &suites, bool verbose,
         std::cout << indent << "  " << test.name << " " << std::flush;
       if(test.skip) {
         results.skips++;
-        if(verbose)
-          std::cout << color::blue << "SKIPPED" << color::reset << std::endl;
+        if(verbose) {
+          std::cout << format(sgr::bold, fg(color::blue)) << "SKIPPED"
+                    << reset() << std::endl;
+        }
         continue;
       }
 
       auto result = test.function();
       if(result.passed) {
         results.passes++;
-        if(verbose)
-          std::cout << color::green << "PASSED" << color::reset << std::endl;
+        if(verbose) {
+          std::cout << format(sgr::bold, fg(color::green)) << "PASSED"
+                    << reset() << std::endl;
+        }
       }
       else {
         results.failures.push_back({suite.name(), test.name, result.message});
         if(verbose) {
-          std::cout << color::red << "FAILED" << color::reset << ": "
-                    << result.message << std::endl;
+          std::cout << format(sgr::bold, fg(color::red)) << "FAILED"
+                    << reset() << ": " << result.message << std::endl;
         }
       }
     }
@@ -107,7 +93,7 @@ void run_tests(test_results &results, const suites_list &suites, bool verbose,
 } // namespace mettle
 
 int main(int argc, const char *argv[]) {
-  using color = mettle::color;
+  using namespace term;
   namespace opts = boost::program_options;
 
   opts::options_description desc("Allowed options");
@@ -126,20 +112,23 @@ int main(int argc, const char *argv[]) {
     return 1;
   }
 
-  mettle::colors_enabled = args.count("color");
+  colors_enabled = args.count("color");
   bool verbose = args.count("verbose");
   mettle::test_results results;
 
   run_tests(results, mettle::all_suites, verbose);
 
-  std::cout << results.passes << "/" << results.total << " tests passed";
+  std::cout << format(sgr::bold) << results.passes << "/" << results.total
+            << " tests passed";
   if(results.skips)
     std::cout << " (" << results.skips << " skipped)";
-  std::cout << std::endl;
+  std::cout << reset() << std::endl;
 
-  for(auto &i : results.failures)
-    std::cout << "  " << i.suite << " > " << i.test << " " << color::red
-              << "FAILED" << color::reset << ": " << i.message << std::endl;
+  for(auto &i : results.failures) {
+    std::cout << "  " << i.suite << " > " << i.test << " "
+              << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
+              << ": " << i.message << std::endl;
+  }
 
   return results.failures.size();
 }
