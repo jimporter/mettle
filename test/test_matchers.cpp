@@ -130,6 +130,9 @@ suite<> matcher_tests("test matchers", [](auto &_) {
     expect(noop, is_not(thrown()));
     expect(noop, is_not(thrown<std::exception>("message")));
     expect(noop, is_not(thrown<std::exception>( is_not("wrong") )));
+
+    expect(thrown().desc(), equal_to("threw"));
+    expect(thrown<std::exception>("message").desc(), equal_to("threw message"));
   });
 
 });
