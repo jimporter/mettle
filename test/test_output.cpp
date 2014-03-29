@@ -11,8 +11,10 @@ std::string stringify(T &&t) {
   return s.str();
 }
 
+void sample_function(void) {}
+
 suite<> output("test debug printing", [](auto &_){
-  _.test("test printing primitives", [](){
+  _.test("primitives", [](){
     expect(stringify(666), equal_to("666"));
     expect(stringify(2.5), equal_to("2.5"));
     expect(stringify(true), equal_to("true"));
@@ -21,7 +23,7 @@ suite<> output("test debug printing", [](auto &_){
     expect(stringify(nullptr), equal_to("nullptr"));
   });
 
-  _.test("test printing iterables", [](){
+  _.test("iterables", [](){
     expect(stringify(std::vector<int>{}), equal_to("[]"));
     expect(stringify(std::vector<int>{1}), equal_to("[1]"));
     expect(stringify(std::vector<int>{1, 2, 3}), equal_to("[1, 2, 3]"));
@@ -35,7 +37,16 @@ suite<> output("test debug printing", [](auto &_){
     expect(stringify(arr2), equal_to("[1, 2, 3]"));
   });
 
-  _.test("test printing custom types", []() {
+  _.test("callables", []() {
+    auto not_boolean = is_not(any_of("true", "1"));
+
+    int x = 0;
+    expect(stringify([]() {}), not_boolean);
+    expect(stringify([x]() {}), not_boolean);
+    expect(stringify(sample_function), not_boolean);
+  });
+
+  _.test("custom types", []() {
     struct some_type {};
 
     // This will get a string from type_info, which could be anything...

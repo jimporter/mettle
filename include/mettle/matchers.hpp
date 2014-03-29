@@ -183,7 +183,7 @@ struct ensure_matcher_type : public std::remove_reference<
 template<typename T>
 inline auto is_not(T &&thing) {
   auto matcher = ensure_matcher(std::forward<T>(thing));
-  return make_matcher([&matcher](const auto &value) -> bool {
+  return make_matcher([matcher](const auto &value) -> bool {
     return !matcher(value);
   }, "not " + matcher.desc());
 }

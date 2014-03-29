@@ -31,6 +31,13 @@ public:
 };
 
 template<typename T>
+struct is_safely_printable : std::integral_constant<bool,
+  is_printable<T>::value &&
+  (!std::is_convertible<T, bool>::value ||
+   std::is_arithmetic<typename std::remove_reference<T>::type>::value)
+> {};
+
+template<typename T>
 class is_iterable {
   template<typename U> struct always_bool { typedef bool type; };
 
@@ -50,7 +57,7 @@ public:
 
 template<typename T>
 constexpr auto ensure_printable(T &&t) -> typename std::enable_if<
-  is_printable<T>::value &&
+  is_safely_printable<T>::value &&
   !std::is_array<typename std::remove_reference<T>::type>::value,
   decltype(std::forward<T>(t))
 >::type {
@@ -59,7 +66,7 @@ constexpr auto ensure_printable(T &&t) -> typename std::enable_if<
 
 template<typename T>
 auto ensure_printable(const T &t) -> typename std::enable_if<
-  !is_printable<T>::value && !is_iterable<T>::value, std::string
+  !is_safely_printable<T>::value && !is_iterable<T>::value, std::string
 >::type {
   try {
     return typeid(t).name();
