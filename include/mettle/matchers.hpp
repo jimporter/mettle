@@ -13,50 +13,6 @@
 
 namespace mettle {
 
-namespace detail {
-  template<typename Tuple, typename Func, typename Val,
-           size_t N = std::tuple_size<Tuple>::value>
-  struct do_reduce {
-    auto operator ()(const Tuple &tuple, const Func &reducer,
-                     Val &&value) {
-      constexpr auto i = std::tuple_size<Tuple>::value - N;
-      bool early_exit = false;
-      auto result = reducer(
-        std::forward<Val>(value), std::get<i>(tuple), early_exit
-      );
-      if(early_exit)
-        return result;
-      return do_reduce<Tuple, Func, Val, N-1>()(
-        tuple, reducer, std::forward<Val>(result)
-      );
-    }
-  };
-
-  template<typename Tuple, typename Func, typename Val>
-  struct do_reduce<Tuple, Func, Val, 1> {
-    auto operator ()(const Tuple &tuple, const Func &reducer,
-                     Val &&value) {
-      constexpr auto i = std::tuple_size<Tuple>::value - 1;
-      bool early_exit = false;
-      return reducer(std::forward<Val>(value), std::get<i>(tuple), early_exit);
-    }
-  };
-
-  template<typename Tuple, typename Func, typename Val>
-  struct do_reduce<Tuple, Func, Val, 0> {
-    auto operator ()(const Tuple &, const Func &, Val &&value) {
-      return value;
-    }
-  };
-
-  template<typename Tuple, typename Func, typename Val>
-  auto reduce_tuple(const Tuple &tuple, const Func &reducer, Val &&initial) {
-    return do_reduce<Tuple, Func, Val>()(
-      tuple, reducer, std::forward<Val>(initial)
-    );
-  }
-}
-
 // TODO: There's probably a better way to ensure something is a matcher, but
 // this'll do for now.
 struct matcher_tag {};

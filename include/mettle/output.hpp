@@ -8,8 +8,53 @@
 namespace mettle {
 
 namespace detail {
+  template<typename Tuple, typename Func, typename Val,
+           size_t N = std::tuple_size<Tuple>::value>
+  struct do_reduce {
+    auto operator ()(const Tuple &tuple, const Func &reducer,
+                     Val &&value) {
+      constexpr auto i = std::tuple_size<Tuple>::value - N;
+      bool early_exit = false;
+      auto result = reducer(
+        std::forward<Val>(value), std::get<i>(tuple), early_exit
+      );
+      if(early_exit)
+        return result;
+      return do_reduce<Tuple, Func, Val, N-1>()(
+        tuple, reducer, std::forward<Val>(result)
+      );
+    }
+  };
+
+  template<typename Tuple, typename Func, typename Val>
+  struct do_reduce<Tuple, Func, Val, 1> {
+    auto operator ()(const Tuple &tuple, const Func &reducer,
+                     Val &&value) {
+      constexpr auto i = std::tuple_size<Tuple>::value - 1;
+      bool early_exit = false;
+      return reducer(std::forward<Val>(value), std::get<i>(tuple), early_exit);
+    }
+  };
+
+  template<typename Tuple, typename Func, typename Val>
+  struct do_reduce<Tuple, Func, Val, 0> {
+    auto operator ()(const Tuple &, const Func &, Val &&value) {
+      return value;
+    }
+  };
+
+  template<typename Tuple, typename Func, typename Val>
+  auto reduce_tuple(const Tuple &tuple, const Func &reducer, Val &&initial) {
+    return do_reduce<Tuple, Func, Val>()(
+      tuple, reducer, std::forward<Val>(initial)
+    );
+  }
+
   template<typename T>
   std::string stringify_iterable(const T &begin, const T &end);
+
+  template<typename T>
+  std::string stringify_tuple(const T &tuple);
 }
 
 template<typename T>
@@ -107,6 +152,16 @@ auto ensure_printable(T &&v) -> typename std::enable_if<
   return detail::stringify_iterable(std::begin(v), std::end(v));
 }
 
+template<typename T, typename U>
+std::string ensure_printable(const std::pair<T, U> &pair) {
+  return detail::stringify_tuple(pair);
+}
+
+template<typename ...T>
+std::string ensure_printable(const std::tuple<T...> &tuple) {
+  return detail::stringify_tuple(tuple);
+}
+
 namespace detail {
   template<typename T>
   std::string stringify_iterable(const T &begin, const T &end) {
@@ -118,6 +173,20 @@ namespace detail {
       for(++i; i != end; ++i)
         s << ", " << ensure_printable(*i);
     }
+    s << "]";
+    return s.str();
+  }
+
+  template<typename T>
+  std::string stringify_tuple(const T &tuple) {
+    std::stringstream s;
+    s << "[";
+    reduce_tuple(tuple, [&s](bool first, const auto &x, bool &) {
+      if(!first)
+        s << ", ";
+      s << ensure_printable(x);
+      return false;
+    }, true);
     s << "]";
     return s.str();
   }
