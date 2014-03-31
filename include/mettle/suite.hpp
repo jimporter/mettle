@@ -238,8 +238,11 @@ private:
       catch(const exception_type &e) {
         message = e.what();
       }
+      catch(const std::exception &e) {
+        message = std::string("Uncaught exception: ") + e.what();
+      }
       catch(...) {
-        message = "unknown error";
+        message = "Unknown exception";
       }
 
       return { passed, message };
