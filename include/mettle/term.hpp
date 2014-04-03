@@ -34,10 +34,17 @@ enum class sgr {
 class format {
   friend std::ostream & operator <<(std::ostream &, const format &);
 public:
+  template<typename First>
+  format(First &&first) {
+    std::stringstream s;
+    s << "\033[" << static_cast<size_t>(std::forward<First>(first)) << "m";
+    string_ = s.str();
+  }
+
   template<typename First, typename ...Rest>
   format(First &&first, Rest &&...rest) {
     std::stringstream s;
-    s << "\e[" << static_cast<size_t>(std::forward<First>(first));
+    s << "\033[" << static_cast<size_t>(std::forward<First>(first));
 
     size_t args[] = {static_cast<size_t>(std::forward<Rest>(rest))...};
     for(auto &i : args)
