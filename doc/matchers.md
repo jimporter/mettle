@@ -130,4 +130,4 @@ A matcher that returns `true` if an exception of *any* type `Type` is thrown.
 ##### `thrown_raw<Type>(matcher)`
 
 A matcher that returns `true` if an exception of type `Type` (or a subclass of
-`Type`) is thrown and whose value matches `what_matcher`.
+`Type`) is thrown and whose value matches `matcher`.
