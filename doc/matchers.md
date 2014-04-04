@@ -98,8 +98,8 @@ composed matcher.
 
 ##### `array(matchers...)`
 
-A matcher that returns `true` when the *i*th item in a collection matches the
-*i*th composed matcher, *and* the number of items in the collection is equal to
+A matcher that returns `true` when the *ith* item in a collection matches the
+*ith* composed matcher, *and* the number of items in the collection is equal to
 the number of composed matchers.
 
 #### Exception Matchers
