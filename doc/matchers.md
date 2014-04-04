@@ -116,12 +116,12 @@ expect([]() { throw std::runtime_error("uh oh"); },
 ##### `thrown<Type>(what_matcher)`
 
 A matcher that returns `true` if an exception of type `Type` (or a subclass of
-`Type` is thrown and whose `what()` member function matches `what_matcher`.
+`Type`) is thrown and whose `what()` member function matches `what_matcher`.
 
 ##### `thrown<Type>()`
 
 A matcher that returns `true` if an exception of type `Type` (or a subclass of
-`Type` is thrown; equivalent to: `thrown<Type>(anything())`.
+`Type`) is thrown; equivalent to: `thrown<Type>(anything())`.
 
 ##### `thrown()`
 
@@ -130,4 +130,4 @@ A matcher that returns `true` if an exception of *any* type `Type` is thrown.
 ##### `thrown_raw<Type>(matcher)`
 
 A matcher that returns `true` if an exception of type `Type` (or a subclass of
-`Type` is thrown and whose value matches `what_matcher`.
+`Type`) is thrown and whose value matches `what_matcher`.
