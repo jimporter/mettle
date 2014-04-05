@@ -191,7 +191,7 @@ suite<suites_list> failures("test failure states", [](auto &_) {
     bool teardown_called = false;
     suite<>("inner test suite", [&teardown_called](auto &_){
       _.teardown([&teardown_called]() {
-          teardown_called = true;
+        teardown_called = true;
       });
 
       _.test("inner test", []() {
@@ -214,7 +214,7 @@ suite<suites_list> failures("test failure states", [](auto &_) {
       });
 
       _.teardown([&teardown_called]() {
-          teardown_called = true;
+        teardown_called = true;
       });
 
       _.test("inner test", []() {});
