@@ -37,6 +37,24 @@ namespace detail {
     >;
     return apply_impl(std::forward<F>(f), std::forward<Tuple>(t), Indices());
   }
+
+  template<typename F, typename Tuple>
+  void run_test(F &&setup, F &&teardown, F&&test, Tuple &fixtures) {
+    if(setup)
+      detail::apply(std::forward<F>(setup), fixtures);
+
+    try {
+      detail::apply(std::forward<F>(test), fixtures);
+    }
+    catch(...) {
+      if(teardown)
+        detail::apply(std::forward<F>(teardown), fixtures);
+      throw;
+    }
+
+    if(teardown)
+      detail::apply(std::forward<F>(teardown), fixtures);
+  }
 }
 
 struct test_result {
@@ -180,19 +198,15 @@ public:
 private:
   template<typename V>
   typename compiled_suite_type::test_info wrap_test(const V &test) const {
-    auto &f = test.function;
     auto &setup = base::setup_;
     auto &teardown = base::teardown_;
+    auto &f = test.function;
 
     typename compiled_suite_type::test_info::function_type test_function = [
-      f, setup, teardown
+      setup, teardown, f
     ](T &...args) -> void {
       std::tuple<T&..., U...> fixtures(args..., U()...);
-      if(setup)
-        detail::apply(setup, fixtures);
-      detail::apply(f, fixtures);
-      if(teardown)
-        detail::apply(teardown, fixtures);
+      detail::run_test(setup, teardown, f, fixtures);
     };
 
     return { test.name, test_function, test.skip };
@@ -216,23 +230,19 @@ public:
 private:
   template<typename U>
   runnable_suite::test_info wrap_test(const U &test) const {
-    auto &f = test.function;
     auto &setup = base::setup_;
     auto &teardown = base::teardown_;
+    auto &f = test.function;
 
     runnable_suite::test_info::function_type test_function = [
-      f, setup, teardown
+      setup, teardown, f
     ]() -> test_result {
       bool passed = false;
       std::string message;
 
       try {
         std::tuple<T...> fixtures;
-        if(setup)
-          detail::apply(setup, fixtures);
-        detail::apply(f, fixtures);
-        if(teardown)
-          detail::apply(teardown, fixtures);
+        detail::run_test(setup, teardown, f, fixtures);
         passed = true;
       }
       catch(const exception_type &e) {

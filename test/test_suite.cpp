@@ -184,3 +184,47 @@ suite<basic_fixture> basic("suite fixtures", [](auto &_) {
   });
 
 });
+
+suite<suites_list> failures("test failure states", [](auto &_) {
+
+  _.test("teardown called when test fails", [](suites_list &suites) {
+    bool teardown_called = false;
+    suite<>("inner test suite", [&teardown_called](auto &_){
+      _.teardown([&teardown_called]() {
+          teardown_called = true;
+      });
+
+      _.test("inner test", []() {
+        expect(false, equal_to(true));
+      });
+    }, suites);
+
+    auto &inner = suites[0];
+    for(auto &test : inner)
+      test.function();
+
+    expect(teardown_called, equal_to(true));
+  });
+
+  _.test("teardown not called when setup fails", [](suites_list &suites) {
+    bool teardown_called = false;
+    suite<>("inner test suite", [&teardown_called](auto &_){
+      _.setup([]() {
+        expect(false, equal_to(true));
+      });
+
+      _.teardown([&teardown_called]() {
+          teardown_called = true;
+      });
+
+      _.test("inner test", []() {});
+    }, suites);
+
+    auto &inner = suites[0];
+    for(auto &test : inner)
+      test.function();
+
+    expect(teardown_called, equal_to(false));
+  });
+
+});
