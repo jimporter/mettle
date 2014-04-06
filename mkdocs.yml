@@ -1,0 +1,9 @@
+site_name: mettle
+repo_url: https://github.com/jimporter/mettle/
+docs_dir: doc
+theme: yeti
+pages:
+- [index.md, Home]
+- [writing-tests.md, User Guide, Writing Tests]
+- [matchers.md, User Guide, Expectations and Matchers]
+- [license.md, License]

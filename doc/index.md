@@ -1,14 +1,28 @@
 # mettle
+---
 
 **mettle** is a library for writing unit tests using modern C++ (read: C++14).
 Its main goals are readability and avoidance of unnecessary macros.
 
 ## Features
+---
 
-* Tests defined without using the C preprocessor
-* Nested suites
-* Test fixtures
-* Declarative, matcher-based expectations (assertions)
+#### No preprocessor abuse
+
+Tests are defined using ordinary C++ without the use of the C preprocessor,
+resulting in clearer code and greater flexibility.
+
+#### Nested suites
+
+Test suites can be nested arbitrarily deep. Group your tests however you like,
+and let the suites set up and tear down your fixtures for you.
+
+#### Declarative, matcher-based expectations
+
+Expectations (assertions) are created using composable matchers, allowing you to
+test complex things using a minimal set of core functions.
+
+---
 
 ## A Brief Example
 
@@ -49,7 +63,3 @@ This project currently requires a C++14 compiler (for generic lambdas in the
 matchers) and Boost (for argument parsing in the test runner). It's been tested
 against clang 3.4 (get it from http://llvm.org/apt/; Ubuntu 13.10's version
 won't work!).
-
-## License
-
-This library is licensed under the BSD 3-Clause license.
