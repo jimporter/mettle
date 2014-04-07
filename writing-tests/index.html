@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+
+        <title>Writing Tests - mettle</title>
+
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link href="../css/prettify-1.0.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">mettle</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="..">Home</a>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li class="active">
+                            <a href="./">Writing Tests</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../matchers/">Expectations and Matchers</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../license/">License</a>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li >
+                    <a rel="next" href="..">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../matchers/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://github.com/jimporter/mettle/">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#writing-tests">Writing Tests</a></li>
+        
+            <li><a href="#your-first-test">Your First Test</a></li>
+        
+            <li><a href="#setup-and-teardown">Setup and Teardown</a></li>
+        
+            <li><a href="#fixtures">Fixtures</a></li>
+        
+            <li><a href="#subsuites">Subsuites</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="writing-tests">Writing Tests</h1>
+<hr />
+<h2 id="your-first-test">Your First Test</h2>
+<p>So, you want to write some unit tests? Let's get started by taking a look at a
+minimal test file. We'll discuss each part in detail below:</p>
+<pre class="prettyprint well"><code class="c++">#include &lt;mettle.hpp&gt;
+
+using namespace mettle;
+
+suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
+  _.test(&quot;my first test&quot;, []() {
+    expect(true, equal_to(true));
+  });
+});
+</code></pre>
+
+<h3 id="building-the-test">Building the Test</h3>
+<p>Before we start looking at how our tests are defined, let's build and run the
+test to make sure everything's set up correctly.</p>
+<p>Building the test is straightforward. Since mettle provides its own test runner
+with a <code>main()</code> function, the above source code is all you need for a
+fully-operational test. Just compile the test like so. Note that we compile in
+C++1y (aka C++14) mode, since mettle relies on some C++14 features to make test
+writing simpler:</p>
+<pre class="prettyprint well"><code class="sh">clang++ -std=c++1y -Imettle/include -lboost_program_options -o test_first test_first.cpp
+</code></pre>
+
+<p>Once it's built, just run the binary and check your test results. If you like
+pretty colors (I do!), you can pass <code>--color --verbose</code> to the executable.</p>
+<h3 id="dissecting-the-test-file">Dissecting the Test File</h3>
+<p>First up, the obvious: we <code>#include &lt;mettle.hpp&gt;</code>, which imports all the code we
+need to build and run simple tests: test suites, matchers, and a test runner.
+With that out of the way, we can start defining our tests.</p>
+<p>Suites are created as global variables with the type <code>mettle::suite&lt;&gt;</code>, and take
+a string name and a callback. You can optionally add some template type
+parameters to specify <a href="#fixtures">test fixtures</a>. The callback lets us define
+our tests for the suite. It takes a reference to a
+<code>mettle::suite_builder&lt;mettle::expectation_failure&gt;</code> but we can just say
+<code>auto &amp;</code> and use a generic lambda instead.</p>
+<p>With the suite defined, now we just need to write our tests and add them to the
+suite via the test builder. Like suites, tests have both a string name and a
+callback function, but this time the callback is the code to run when the test
+executes.</p>
+<p>Inside our test function, we need to write some test code:</p>
+<pre class="prettyprint well"><code class="c++">expect(true, equal_to(true));
+</code></pre>
+
+<p>This is an <em>expectation</em>. We'll discuss them in more detail
+<a href="../matchers/">later</a>, but in short, they define the things we actually want to
+<em>test</em> in our tests. This expectation makes sure that <code>true</code> is equal to <code>true</code>.
+If it's not, the test will alert us to the fact so we can fix it (hopefully
+before the universe finishes crashing down around us).</p>
+<h3 id="skipped-tests">Skipped Tests</h3>
+<p>Some days, you just can't get a test to pass. While I can only assume this is
+your fault, and that you should therefore feel bad until you fix it, you may
+choose to skip the test for the time being:</p>
+<pre class="prettyprint well"><code class="c++">_.skip_test(&quot;my broken test&quot;, []() {
+  /* ... */
+});
+</code></pre>
+
+<p>This will prevent the test from running and keep your test suite passing (with a
+note that there are some skipped tests). But please, for everyone's sake, fix
+your test! Thanks in advance.</p>
+<h2 id="setup-and-teardown">Setup and Teardown</h2>
+<p>Sometimes, you'll have a bunch of tests that all have the same setup and
+teardown code. Test fixtures let you do this (mostly) automatically. If a test
+suite has a <code>setup</code> or <code>teardown</code> function set, they'll run before (or after)
+each test in the suite:</p>
+<pre class="prettyprint well"><code class="c++">suite&lt;&gt; with_setup(&quot;my suite&quot;, [](auto &amp;_) {
+  _.setup([]() {
+    /* ... */
+  });
+
+  _.teardown([]() {
+    /* ... */
+  });
+
+  _.test(&quot;my test&quot;, []() {
+    /* ... */
+  });
+});
+</code></pre>
+
+<h2 id="fixtures">Fixtures</h2>
+<p>Setup and teardown functions are of limited use without fixtures. Fixtures allow
+you to safely share data between tests. A fixture's lifetime is as follows:</p>
+<ol>
+<li>Construct the fixture.</li>
+<li>Pass the fixture by reference to the setup function (if defined).</li>
+<li>Pass the fixture by reference to the test function.</li>
+<li>Pass the fixture by reference to the teardown function (if defined).</li>
+<li>Destruct the fixture.</li>
+</ol>
+<p>Declaring a fixture is simple. Just pass the type of your fixture in the
+template parameters of your <code>mettle::suite</code> object:</p>
+<pre class="prettyprint well"><code class="c++">struct my_fixture {
+  int i;
+};
+
+suite&lt;my_fixture&gt; with_fixture(&quot;suite with a fixture&quot;, [](auto &amp;_) {
+  _.setup([](my_fixture &amp;f) {
+    f.i = 1;
+  });
+
+  _.test(&quot;test my fixture&quot;, [](my_fixture &amp;f) {
+    expect(f.i, equal_to(1));
+  });
+});
+</code></pre>
+
+<p>Astute readers will notice that a test fixture could easily be used to replace
+the <code>setup</code> and <code>teardown</code> functions by using RAII. However, both options are
+supported, since it's often simpler to write a setup/teardown code than to write
+a less-flexible helper class. For instance, your fixture might be a database
+object from your production code that you want to add some test records to for
+testing. Rather than wrapping the database in a helper, you can just add the
+test records in <code>setup</code>.</p>
+<h2 id="subsuites">Subsuites</h2>
+<p>When testing something particularly complex, you might find it useful to group
+test suites together. You can do this by creating a subsuite inside a parent
+suite:</p>
+<pre class="prettyprint well"><code class="c++">suite&lt;&gt; with_subsuites(&quot;suite with subsuites&quot;, [](auto &amp;_) {
+
+  _.template subsuite&lt;&gt;(&quot;subsuite&quot;, [](auto &amp;_) {
+    _.test(&quot;my subtest&quot;, []() {
+      /* ... */
+    });
+  });
+
+});
+</code></pre>
+
+<p>You've probably noticed that we had to type <code>template subsuite&lt;&gt;</code> when declaring
+our subsuite. This is because, as you may recall, our suite's callback uses a
+generic lambda, and so <code>_</code> is a <em>dependent type</em>. Template member functions of a
+dependent type must be disambiguated with the <code>template</code> keyword. We could
+either redefine our lambda to no longer be generic, or just use the
+<code>mettle::subsuite</code> helper:</p>
+<pre class="prettyprint well"><code class="c++">suite&lt;&gt; with_subsuites(&quot;suite with subsuites&quot;, [](auto &amp;_) {
+  subsuite&lt;&gt;(_, &quot;subsuite&quot;, [](auto &amp;_) {
+    /* ... */
+  });
+});
+</code></pre>
+
+<h3 id="nested-setup-and-teardown">Nested Setup and Teardown</h3>
+<p>As you might imagine, a test in a subsuite uses not only the subsuite's setup
+and teardown functions, but inherits the parent suite's as well (and so on up
+the tree). When executing a test in a subsuite, the test runner will walk down
+the suite hierarchy, calling each setup function in turn before running the
+test. After finishing the test, it will walk back up the tree calling each
+teardown function.</p>
+<p>For a two-level hierarchy, this is what would happen for each test in the
+subsuite:</p>
+<ol>
+<li>Call the parent suite's setup function (if defined).</li>
+<li>Call the subsuite's setup function (if defined).</li>
+<li>Run the test function</li>
+<li>Call the subsuite's teardown function (if defined).</li>
+<li>Call the parent suite's teardown function (if defined).</li>
+</ol>
+<h3 id="nested-fixtures">Nested Fixtures</h3>
+<p>Like the nested setup and teardown functions, test fixtures are also
+inherited in subsuites. This allows a parent suite to handle common fixtures for
+a bunch of subsuites, reducing code duplication:</p>
+<pre class="prettyprint well"><code class="c++">suite&lt;int&gt; nested_fixtures(&quot;suite with subsuites&quot;, [](auto &amp;_) {
+  _.setup([](int &amp;i) {
+    i = 1;
+  });
+
+  _.test(&quot;my parent test&quot;, [](int &amp;i) {
+    expect(i, equal_to(1));
+  });
+
+  subsuite&lt;std::string&gt;(_, &quot;subsuite&quot;, [](auto &amp;_) {
+    _.setup([](int &amp;i, std::string &amp;s) {
+      i++;
+      s = &quot;foo&quot;;
+    });
+
+    _.test(&quot;my subtest&quot;, [](int &amp;i, std::string &amp;s) {
+      expect(i, equal_to(2));
+      expect(s, equal_to(&quot;foo&quot;));
+    });
+  });
+});
+</code></pre>
+
+<p>As you can see above, subsuites inherit their parents' fixtures, much like they
+inherit their parents' setup and teardown functions.</p>
+</div>
+        </div>
+
+        
+
+        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/prettify-1.0.min.js"></script>
+        <script src="../js/base.js"></script>
+    </body>
+</html>

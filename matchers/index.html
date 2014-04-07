@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+
+        <title>Expectations and Matchers - mettle</title>
+
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link href="../css/prettify-1.0.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">mettle</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="..">Home</a>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../writing-tests/">Writing Tests</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="./">Expectations and Matchers</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../license/">License</a>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li >
+                    <a rel="next" href="../writing-tests/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../license/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://github.com/jimporter/mettle/">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#expectations-and-matchers">Expectations and Matchers</a></li>
+        
+            <li><a href="#expectations">Expectations</a></li>
+        
+            <li><a href="#matchers">Matchers</a></li>
+        
+            <li><a href="#built-in-matchers">Built-in Matchers</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="expectations-and-matchers">Expectations and Matchers</h1>
+<hr />
+<h2 id="expectations">Expectations</h2>
+<p>Expectations are a way of checking that the state of your code matches your
+expectation, similar to an <code>assert</code>. If the expectation is met, then everything
+proceeds as normal. Otherwise, it throws an exception and aborts the current
+test. Expectations are very simple to write:</p>
+<pre class="prettyprint well"><code class="c++">expect(the_beast, equal_to(666));
+</code></pre>
+
+<h2 id="matchers">Matchers</h2>
+<p>Above, you may have noticed the second argument to the expectation:
+<code>equal_to(666)</code>. This is the expectation's <em>matcher</em>. Matchers are composable
+functions that let you declaratively define what you expect a value to be. This
+allows you to build complex expections from a relatively small set of simple
+matchers, and frees you from having to manually describe every expectation. The
+matchers do that for you!</p>
+<h2 id="built-in-matchers">Built-in Matchers</h2>
+<p>Mettle comes with a set of general-purpose matchers that should cover the most
+common cases. We'll look at each of them below.</p>
+<h3 id="basic-matchers">Basic Matchers</h3>
+<h4 id="anything">anything()</h4>
+<p>A matcher that always returns <code>true</code>. This is useful primarily as a placeholder,
+e.g. when you can't know for sure what an expected value is going to be, but you
+still want to test it.</p>
+<h4 id="is_notmatcher">is_not(<em>matcher</em>)</h4>
+<p>A matcher that negates another matcher.</p>
+<h3 id="boolean-matchers">Boolean Matchers</h3>
+<h4 id="equal_tovalue">equal_to(<em>value</em>)</h4>
+<p>A matcher that returns <code>true</code> when the expected value is equal to <code>value</code>
+according to the <code>==</code> operator.</p>
+<p><code>equal_to</code> is also the <em>implicit matcher</em>. Any time a matcher takes another
+matcher as an argument, you can pass in a value, and it will be implicitly
+converted to <code>equal_to(value)</code>. (Note that this doesn't work for the root
+matcher; you need to explicitly say <code>equal_to(value)</code> in that case.</p>
+<h4 id="not_equal_tovalue">not_equal_to(<em>value</em>)</h4>
+<p>A matcher that returns <code>true</code> when the expected value is not equal to <code>value</code>
+according to the <code>!=</code> operator.</p>
+<h4 id="greatervalue">greater(<em>value</em>)</h4>
+<p>A matcher that returns <code>true</code> when the expected value is greater than <code>value</code>
+according to the <code>&gt;</code> operator.</p>
+<h4 id="greater_equalvalue">greater_equal(<em>value</em>)</h4>
+<p>A matcher that returns <code>true</code> when the expected value is greater than or equal
+to <code>value</code> according to the <code>&gt;=</code> operator.</p>
+<h4 id="lessvalue">less(<em>value</em>)</h4>
+<p>A matcher that returns <code>true</code> when the expected value is less than <code>value</code>
+according to the <code>&lt;</code> operator.</p>
+<h4 id="less_equalvalue">less_equal(<em>value</em>)</h4>
+<p>A matcher that returns <code>true</code> when the expected value is less than or equal to
+<code>value</code> according to the <code>&lt;=</code> operator.</p>
+<h3 id="combinatoric-matchers">Combinatoric Matchers</h3>
+<h4 id="any_ofmatchers">any_of(<em>matchers...</em>)</h4>
+<p>A matcher that returns <code>true</code> when <em>any of</em> its composed matchers are true.</p>
+<h4 id="all_ofmatchers">all_of(<em>matchers...</em>)</h4>
+<p>A matcher that returns <code>true</code> when <em>all of</em> its composed matchers are true.</p>
+<h3 id="collection-matchers">Collection Matchers</h3>
+<h4 id="membermatcher">member(<em>matcher</em>)</h4>
+<p>A matcher that returns <code>true</code> when an item in a collection matches the composed
+matcher.</p>
+<h4 id="eachmatcher">each(<em>matcher</em>)</h4>
+<p>A matcher that returns <code>true</code> when <em>every</em> item in a collection matches the
+composed matcher.</p>
+<h4 id="arraymatchers">array(<em>matchers...</em>)</h4>
+<p>A matcher that returns <code>true</code> when the <em>ith</em> item in a collection matches the
+<em>ith</em> composed matcher, <em>and</em> the number of items in the collection is equal to
+the number of composed matchers.</p>
+<h3 id="exception-matchers">Exception Matchers</h3>
+<p>Exception matchers work a bit differently from other matchers. Since we can't
+catch an exception after the fact, we have to pass a function to our
+expectation instead:</p>
+<pre class="prettyprint well"><code class="c++">expect([]() { throw std::runtime_error(&quot;uh oh&quot;); },
+       thrown&lt;std::runtime_error&gt;(&quot;uh oh&quot;));
+</code></pre>
+
+<h4 id="throwntypewhat_matcher">thrown&lt;<em>Type</em>&gt;(<em>what_matcher</em>)</h4>
+<p>A matcher that returns <code>true</code> if an exception of type <code>Type</code> (or a subclass of
+<code>Type</code>) is thrown and whose <code>what()</code> member function matches <code>what_matcher</code>.</p>
+<h4 id="throwntype">thrown&lt;<em>Type</em>&gt;()</h4>
+<p>A matcher that returns <code>true</code> if an exception of type <code>Type</code> (or a subclass of
+<code>Type</code>) is thrown; equivalent to: <code>thrown&lt;Type&gt;(anything())</code>.</p>
+<h4 id="thrown">thrown()</h4>
+<p>A matcher that returns <code>true</code> if an exception of <em>any</em> type <code>Type</code> is thrown.</p>
+<h4 id="thrown_rawtypematcher">thrown_raw&lt;<em>Type</em>&gt;(<em>matcher</em>)</h4>
+<p>A matcher that returns <code>true</code> if an exception of type <code>Type</code> (or a subclass of
+<code>Type</code>) is thrown and whose value matches <code>matcher</code>.</p>
+</div>
+        </div>
+
+        
+
+        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/prettify-1.0.min.js"></script>
+        <script src="../js/base.js"></script>
+    </body>
+</html>
