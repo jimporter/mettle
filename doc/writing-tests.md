@@ -90,7 +90,7 @@ suite has a `setup` or `teardown` function set, they'll run before (or after)
 each test in the suite:
 
 ```c++
-suite<> basic("my suite", [](auto &_) {
+suite<> with_setup("my suite", [](auto &_) {
   _.setup([]() {
     /* ... */
   });
@@ -124,7 +124,7 @@ struct my_fixture {
   int i;
 };
 
-suite<my_fixture> basic("suite with a fixture", [](auto &_) {
+suite<my_fixture> with_fixture("suite with a fixture", [](auto &_) {
   _.setup([](my_fixture &f) {
     f.i = 1;
   });
@@ -145,4 +145,84 @@ test records in `setup`.
 
 ## Subsuites
 
-**TODO**
+When testing something particularly complex, you might find it useful to group
+test suites together. You can do this by creating a subsuite inside a parent
+suite:
+
+```c++
+suite<> with_subsuites("suite with subsuites", [](auto &_) {
+
+  _.template subsuite<>("subsuite", [](auto &_) {
+    _.test("my subtest", []() {
+      /* ... */
+    });
+  });
+
+});
+```
+
+You've probably noticed that we had to type `template subsuite<>` when declaring
+our subsuite. This is because, as you may recall, our suite's callback uses a
+generic lambda, and so `_` is a *dependent type*. Template member functions of a
+dependent type must be disambiguated with the `template` keyword. We could
+either redefine our lambda to no longer be generic, or just use the
+`mettle::subsuite` helper:
+
+```c++
+suite<> with_subsuites("suite with subsuites", [](auto &_) {
+  subsuite<>(_, "subsuite", [](auto &_) {
+    /* ... */
+  });
+});
+```
+
+### Nested Setup and Teardown
+
+As you might imagine, a test in a subsuite uses not only the subsuite's setup
+and teardown functions, but inherits the parent suite's as well (and so on up
+the tree). When executing a test in a subsuite, the test runner will walk down
+the suite hierarchy, calling each setup function in turn before running the
+test. After finishing the test, it will walk back up the tree calling each
+teardown function.
+
+For a two-level hierarchy, this is what would happen for each test in the
+subsuite:
+
+1. Call the parent suite's setup function (if defined).
+2. Call the subsuite's setup function (if defined).
+3. Run the test function
+4. Call the subsuite's teardown function (if defined).
+5. Call the parent suite's teardown function (if defined).
+
+### Nested Fixtures
+
+Like the nested setup and teardown functions, test fixtures are also
+inherited in subsuites. This allows a parent suite to handle common fixtures for
+a bunch of subsuites, reducing code duplication:
+
+```c++
+suite<int> nested_fixtures("suite with subsuites", [](auto &_) {
+  _.setup([](int &i) {
+    i = 1;
+  });
+
+  _.test("my parent test", [](int &i) {
+    expect(i, equal_to(1));
+  });
+
+  subsuite<std::string>(_, "subsuite", [](auto &_) {
+    _.setup([](int &i, std::string &s) {
+      i++;
+      s = "foo";
+    });
+
+    _.test("my subtest", [](int &i, std::string &s) {
+      expect(i, equal_to(2));
+      expect(s, equal_to("foo"));
+    });
+  });
+});
+```
+
+As you can see above, subsuites inherit their parents' fixtures, much like they
+inherit their parents' setup and teardown functions.
