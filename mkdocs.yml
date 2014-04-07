@@ -1,7 +1,9 @@
 site_name: mettle
-repo_url: https://github.com/jimporter/mettle/
 docs_dir: doc
 theme: yeti
+
+repo_url: https://github.com/jimporter/mettle/
+
 pages:
 - [index.md, Home]
 - [writing-tests.md, User Guide, Writing Tests]

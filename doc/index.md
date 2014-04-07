@@ -30,7 +30,7 @@ A picture is worth a thousand words, and code is probably worth a decent
 fraction of that (let's say 100 words), so let's take a look:
 
 ```c++
-#include "mettle.hpp"
+#include <mettle.hpp>
 
 using namespace mettle;
 
@@ -61,5 +61,5 @@ suite<basic_data> basic("basic suite", [](auto &_) {
 
 This project currently requires a C++14 compiler (for generic lambdas in the
 matchers) and Boost (for argument parsing in the test runner). It's been tested
-against clang 3.4 (get it from http://llvm.org/apt/; Ubuntu 13.10's version
-won't work!).
+against clang 3.4 (get it from [http://llvm.org/apt/](http://llvm.org/apt/));
+Ubuntu 13.10's version won't work!).

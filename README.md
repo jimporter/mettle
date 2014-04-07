@@ -16,7 +16,7 @@ A picture is worth a thousand words, and code is probably worth a decent
 fraction of that (let's say 100 words), so let's take a look:
 
 ```c++
-#include "mettle.hpp"
+#include <mettle.hpp>
 
 using namespace mettle;
 
