@@ -3,6 +3,10 @@
 **mettle** is a library for writing unit tests using modern C++ (read: C++14).
 Its main goals are readability and avoidance of unnecessary macros.
 
+## Documentation
+
+Documentation for mettle is available at http://jimporter.github.io/mettle
+
 ## Features
 
 * Tests defined without using the C preprocessor
