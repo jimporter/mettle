@@ -82,21 +82,66 @@ This will prevent the test from running and keep your test suite passing (with a
 note that there are some skipped tests). But please, for everyone's sake, fix
 your test! Thanks in advance.
 
+## Setup and Teardown
+
+Sometimes, you'll have a bunch of tests that all have the same setup and
+teardown code. Test fixtures let you do this (mostly) automatically. If a test
+suite has a `setup` or `teardown` function set, they'll run before (or after)
+each test in the suite:
+
+```c++
+suite<> basic("my suite", [](auto &_) {
+  _.setup([]() {
+    /* ... */
+  });
+
+  _.teardown([]() {
+    /* ... */
+  });
+
+  _.test("my test", []() {
+    /* ... */
+  });
+});
+```
+
 ## Fixtures
+
+Setup and teardown functions are of limited use without fixtures. Fixtures allow
+you to safely share data between tests. A fixture's lifetime is as follows:
+
+1. Construct the fixture.
+2. Pass the fixture by reference to the setup function (if defined).
+3. Pass the fixture by reference to the test function.
+4. Pass the fixture by reference to the teardown function (if defined).
+5. Destruct the fixture.
+
+Declaring a fixture is simple. Just pass the type of your fixture in the
+template parameters of your `mettle::suite` object:
 
 ```c++
 struct my_fixture {
   int i;
 };
 
-suite<my_fixture> basic("my first suite", [](auto &_) {
-  _.test("my first test", [](my_fixture &fixture) {
-    expect(true, equal_to(true));
+suite<my_fixture> basic("suite with a fixture", [](auto &_) {
+  _.setup([](my_fixture &f) {
+    f.i = 1;
+  });
+
+  _.test("test my fixture", [](my_fixture &f) {
+    expect(f.i, equal_to(1));
   });
 });
 ```
 
-**TODO**
+Astute readers will notice that a test fixture could easily be used to replace
+the `setup` and `teardown` functions by using RAII. However, both options are
+supported, since it's often simpler to write a setup/teardown code than to write
+a less-flexible helper class. For instance, your fixture might be a database
+object from your production code that you want to add some test records to for
+testing. Rather than wrapping the database in a helper, you can just add the
+test records in `setup`.
 
 ## Subsuites
 
