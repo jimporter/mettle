@@ -2,6 +2,7 @@
 #define INC_METTLE_MATCHERS_ARITHMETIC_HPP
 
 #include <algorithm>
+#include <cmath>
 #include <cstdlib>
 #include <limits>
 
