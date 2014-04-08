@@ -9,6 +9,14 @@ struct some_type {
   some_type & operator =(const some_type &) = delete;
 };
 
+template<typename T>
+T about_one() {
+  T value = 0;
+  for(int i = 0; i < 10; i++)
+    value += 0.1L;
+  return value;
+}
+
 suite<> matcher_tests("test matchers", [](auto &_) {
 
   _.test("anything()", []() {
@@ -56,6 +64,38 @@ suite<> matcher_tests("test matchers", [](auto &_) {
     expect(123, less_equal(1000));
 
     expect(less_equal(123).desc(), equal_to("<= 123"));
+  });
+
+  _.test("near_to()", []() {
+    expect(about_one<float>(), near_to(1.0f));
+    expect(about_one<double>(), near_to(1.0));
+    expect(about_one<long double>(), near_to(1.0L));
+
+    expect(about_one<float>(), near_to(1.0f, 1e-6f));
+    expect(about_one<double>(), near_to(1.0, 1e-6));
+    expect(about_one<long double>(), near_to(1.0L, 1e-6L));
+
+    expect(std::numeric_limits<float>::quiet_NaN(), is_not(near_to(0.0f)));
+    expect(std::numeric_limits<double>::quiet_NaN(), is_not(near_to(0.0)));
+    expect(std::numeric_limits<long double>::quiet_NaN(),
+           is_not(near_to(0.0L)));
+
+    expect(near_to(1.23f).desc(), equal_to("~= 1.23"));
+  });
+
+  _.test("near_to_abs()", []() {
+    expect(1.01f, near_to(1.0f, 0.01f));
+    expect(1.01, near_to(1.0, 0.01));
+    expect(1.01L, near_to(1.0L, 0.01L));
+
+    expect(std::numeric_limits<float>::quiet_NaN(),
+           is_not(near_to_abs(0.0f, 0.01f)));
+    expect(std::numeric_limits<double>::quiet_NaN(),
+           is_not(near_to(0.0, 0.01)));
+    expect(std::numeric_limits<long double>::quiet_NaN(),
+           is_not(near_to(0.0L, 0.01L)));
+
+    expect(near_to_abs(1.23f, 0.0f).desc(), equal_to("~= 1.23"));
   });
 
   _.test("is_not()", []() {

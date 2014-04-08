@@ -75,6 +75,28 @@ according to the `<` operator.
 A matcher that returns `true` when the expected value is less than or equal to
 `value` according to the `<=` operator.
 
+### Arithmetic Matchers
+
+#### near_to(*value*[, *epsilon*])
+
+A matcher that returns `true` when the expected value is approximately equal to
+`value`, specifically when:
+
+```c++
+auto mag = std::max<T>(std::abs(expected), std::abs(actual));
+std::abs(actual - expected) <= mag * epsilon;
+```
+
+If `epsilon` is not specified, it defaults to
+`std::numeric_limits<T>::epsilon() * 10`. Note well: as with most functions that
+check if two floating point numbers are approximately equal, this matcher will
+likely fail if one of the values is zero. In that case, use `near_to_abs`.
+
+#### near_to_abs(*value*, *tolerance*)
+
+A matcher that returns `true` when the expected value is approximately equal to
+`value`, specifically when `std::abs(actual - expected) <= tolerance`.
+
 ### Combinatoric Matchers
 
 #### any_of(*matchers...*)
