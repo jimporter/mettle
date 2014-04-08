@@ -175,6 +175,21 @@ according to the <code>&lt;</code> operator.</p>
 <h4 id="less_equalvalue">less_equal(<em>value</em>)</h4>
 <p>A matcher that returns <code>true</code> when the expected value is less than or equal to
 <code>value</code> according to the <code>&lt;=</code> operator.</p>
+<h3 id="arithmetic-matchers">Arithmetic Matchers</h3>
+<h4 id="near_tovalue-epsilon">near_to(<em>value</em>[, <em>epsilon</em>])</h4>
+<p>A matcher that returns <code>true</code> when the expected value is approximately equal to
+<code>value</code>, specifically when:</p>
+<pre class="prettyprint well"><code class="c++">auto mag = std::max&lt;T&gt;(std::abs(expected), std::abs(actual));
+std::abs(actual - expected) &lt;= mag * epsilon;
+</code></pre>
+
+<p>If <code>epsilon</code> is not specified, it defaults to
+<code>std::numeric_limits&lt;T&gt;::epsilon() * 10</code>. Note well: as with most functions that
+check if two floating point numbers are approximately equal, this matcher will
+likely fail if one of the values is zero. In that case, use <code>near_to_abs</code>.</p>
+<h4 id="near_to_absvalue-tolerance">near_to_abs(<em>value</em>, <em>tolerance</em>)</h4>
+<p>A matcher that returns <code>true</code> when the expected value is approximately equal to
+<code>value</code>, specifically when <code>std::abs(actual - expected) &lt;= tolerance</code>.</p>
 <h3 id="combinatoric-matchers">Combinatoric Matchers</h3>
 <h4 id="any_ofmatchers">any_of(<em>matchers...</em>)</h4>
 <p>A matcher that returns <code>true</code> when <em>any of</em> its composed matchers are true.</p>
