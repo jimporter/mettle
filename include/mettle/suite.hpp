@@ -11,28 +11,14 @@
 namespace mettle {
 
 namespace detail {
-  template<size_t ...>
-  struct index_sequence {};
-
-  template<size_t N, size_t ...S>
-  struct make_index_seq_impl : make_index_seq_impl<N-1, N-1, S...> { };
-
-  template<size_t ...S>
-  struct make_index_seq_impl<0, S...> {
-    typedef index_sequence<S...> type;
-  };
-
-  template<size_t I>
-  using make_index_sequence = typename make_index_seq_impl<I>::type;
-
   template <typename F, typename Tuple, size_t... I>
-  auto apply_impl(F &&f, Tuple &&t, index_sequence<I...>) {
+  auto apply_impl(F &&f, Tuple &&t, std::index_sequence<I...>) {
     return std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...);
   }
 
   template<typename F, typename Tuple>
   auto apply(F &&f, Tuple &&t) {
-    using Indices = make_index_sequence<
+    using Indices = std::make_index_sequence<
       std::tuple_size<typename std::decay<Tuple>::type>::value
     >;
     return apply_impl(std::forward<F>(f), std::forward<Tuple>(t), Indices());
