@@ -184,12 +184,8 @@ public:
 private:
   template<typename V>
   typename compiled_suite_type::test_info wrap_test(const V &test) const {
-    auto &setup = base::setup_;
-    auto &teardown = base::teardown_;
-    auto &f = test.function;
-
     typename compiled_suite_type::test_info::function_type test_function = [
-      setup, teardown, f
+      setup = base::setup_, teardown = base::teardown_, f = test.function
     ](T &...args) -> void {
       std::tuple<T&..., U...> fixtures(args..., U()...);
       detail::run_test(setup, teardown, f, fixtures);
@@ -216,12 +212,8 @@ public:
 private:
   template<typename U>
   runnable_suite::test_info wrap_test(const U &test) const {
-    auto &setup = base::setup_;
-    auto &teardown = base::teardown_;
-    auto &f = test.function;
-
     runnable_suite::test_info::function_type test_function = [
-      setup, teardown, f
+      setup = base::setup_, teardown = base::teardown_, f = test.function
     ]() -> test_result {
       bool passed = false;
       std::string message;
