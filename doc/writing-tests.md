@@ -1,7 +1,7 @@
 # Writing Tests
 ---
 
-## Your First Test
+## Your first test
 
 So, you want to write some unit tests? Let's get started by taking a look at a
 minimal test file. We'll discuss each part in detail below:
@@ -18,7 +18,7 @@ suite<> first("my first suite", [](auto &_) {
 });
 ```
 
-### Building the Test
+### Building the test
 
 Before we start looking at how our tests are defined, let's build and run the
 test to make sure everything's set up correctly.
@@ -36,7 +36,7 @@ clang++ -std=c++1y -Imettle/include -lboost_program_options -o test_first test_f
 Once it's built, just run the binary and check your test results. If you like
 pretty colors (I do!), you can pass `--color --verbose` to the executable.
 
-### Dissecting the Test File
+### Dissecting the test file
 
 First up, the obvious: we `#include <mettle.hpp>`, which imports all the code we
 need to build and run simple tests: test suites, matchers, and a test runner.
@@ -66,7 +66,7 @@ This is an *expectation*. We'll discuss them in more detail
 If it's not, the test will alert us to the fact so we can fix it (hopefully
 before the universe finishes crashing down around us).
 
-### Skipped Tests
+### Skipped tests
 
 Some days, you just can't get a test to pass. While I can only assume this is
 your fault, and that you should therefore feel bad until you fix it, you may
@@ -82,7 +82,7 @@ This will prevent the test from running and keep your test suite passing (with a
 note that there are some skipped tests). But please, for everyone's sake, fix
 your test! Thanks in advance.
 
-## Setup and Teardown
+## Setup and teardown
 
 Sometimes, you'll have a bunch of tests that all have the same setup and
 teardown code. Test fixtures let you do this (mostly) automatically. If a test
@@ -176,7 +176,7 @@ suite<> with_subsuites("suite with subsuites", [](auto &_) {
 });
 ```
 
-### Nested Setup and Teardown
+### Nested setup and teardown
 
 As you might imagine, a test in a subsuite uses not only the subsuite's setup
 and teardown functions, but inherits the parent suite's as well (and so on up
@@ -194,7 +194,7 @@ subsuite:
 4. Call the subsuite's teardown function (if defined).
 5. Call the parent suite's teardown function (if defined).
 
-### Nested Fixtures
+### Nested fixtures
 
 Like the nested setup and teardown functions, test fixtures are also
 inherited in subsuites. This allows a parent suite to handle common fixtures for

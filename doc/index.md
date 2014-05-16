@@ -24,7 +24,7 @@ test complex things using a minimal set of core functions.
 
 ---
 
-## A Brief Example
+## A brief example
 
 A picture is worth a thousand words, and code is probably worth a decent
 fraction of that (let's say 100 words), so let's take a look:

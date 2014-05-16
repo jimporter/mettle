@@ -21,12 +21,12 @@ allows you to build complex expections from a relatively small set of simple
 matchers, and frees you from having to manually describe every expectation. The
 matchers do that for you!
 
-## Built-in Matchers
+## Built-in matchers
 
 Mettle comes with a set of general-purpose matchers that should cover the most
 common cases. We'll look at each of them below.
 
-### Basic Matchers
+### Basic matchers
 
 #### anything()
 
@@ -38,7 +38,7 @@ still want to test it.
 
 A matcher that negates another matcher.
 
-### Boolean Matchers
+### Boolean matchers
 
 #### equal_to(*value*)
 
@@ -75,7 +75,7 @@ according to the `<` operator.
 A matcher that returns `true` when the expected value is less than or equal to
 `value` according to the `<=` operator.
 
-### Arithmetic Matchers
+### Arithmetic matchers
 
 #### near_to(*value*[, *epsilon*])
 
@@ -97,7 +97,7 @@ likely fail if one of the values is zero. In that case, use `near_to_abs`.
 A matcher that returns `true` when the expected value is approximately equal to
 `value`, specifically when `std::abs(actual - expected) <= tolerance`.
 
-### Combinatoric Matchers
+### Combinatoric matchers
 
 #### any_of(*matchers...*)
 
@@ -107,7 +107,7 @@ A matcher that returns `true` when *any of* its composed matchers are true.
 
 A matcher that returns `true` when *all of* its composed matchers are true.
 
-### Collection Matchers
+### Collection matchers
 
 #### member(*matcher*)
 
@@ -125,7 +125,7 @@ A matcher that returns `true` when the *ith* item in a collection matches the
 *ith* composed matcher, *and* the number of items in the collection is equal to
 the number of composed matchers.
 
-### Exception Matchers
+### Exception matchers
 
 Exception matchers work a bit differently from other matchers. Since we can't
 catch an exception after the fact, we have to pass a function to our
