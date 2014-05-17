@@ -125,7 +125,13 @@ suite<> matcher_tests("test matchers", [](auto &_) {
   _.test("member()", []() {
     expect(std::vector<int>{}, is_not(member(0)));
     expect(std::vector<int>{1, 2, 3}, member(1));
+    expect(std::vector<int>{1, 2, 3}, member(3));
     expect(std::vector<int>{1, 2, 3}, is_not(member(4)));
+
+    int arr[] = {1, 2, 3};
+    expect(arr, member(1));
+    expect(arr, member(3));
+    expect(arr, is_not(member(4)));
 
     expect(member(123).desc(), equal_to("member 123"));
   });
@@ -135,12 +141,25 @@ suite<> matcher_tests("test matchers", [](auto &_) {
     expect(std::vector<int>{1, 2, 3}, each( greater(0)) );
     expect(std::vector<int>{1, 2, 3}, is_not( each(less(2)) ));
 
+    int arr[] = {1, 2, 3};
+    expect(arr, each( greater(0)) );
+    expect(arr, is_not( each(less(2)) ));
+
     expect(each(123).desc(), equal_to("each 123"));
   });
 
   _.test("array()", []() {
     expect(std::vector<int>{}, array());
     expect(std::vector<int>{1, 2, 3}, array(1, 2, 3));
+    expect(std::vector<int>{1, 2, 3}, is_not(array(3, 2, 1)));
+    expect(std::vector<int>{1, 2, 3}, is_not(array(1, 2)));
+    expect(std::vector<int>{1, 2, 3}, is_not(array(1, 2, 3, 4)));
+
+    int arr[] = {1, 2, 3};
+    expect(arr, array(1, 2, 3));
+    expect(arr, is_not(array(3, 2, 1)));
+    expect(arr, is_not(array(1, 2)));
+    expect(arr, is_not(array(1, 2, 3, 4)));
 
     expect(array(1, 2, 3).desc(), equal_to("[1, 2, 3]"));
   });
