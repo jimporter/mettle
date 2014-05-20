@@ -2,7 +2,7 @@
 #define INC_METTLE_MATCHERS_HPP
 
 #include "matchers/core.hpp"
-#include "matchers/boolean.hpp"
+#include "matchers/relational.hpp"
 #include "matchers/arithmetic.hpp"
 #include "matchers/combinatoric.hpp"
 #include "matchers/array.hpp"

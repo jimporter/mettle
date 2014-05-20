@@ -38,7 +38,7 @@ still want to test it.
 
 A matcher that negates another matcher.
 
-### Boolean matchers
+### Relational matchers
 
 #### equal_to(*value*)
 
