@@ -114,9 +114,9 @@
     
         <li class="main active"><a href="#writing-tests">Writing Tests</a></li>
         
-            <li><a href="#your-first-test">Your First Test</a></li>
+            <li><a href="#your-first-test">Your first test</a></li>
         
-            <li><a href="#setup-and-teardown">Setup and Teardown</a></li>
+            <li><a href="#setup-and-teardown">Setup and teardown</a></li>
         
             <li><a href="#fixtures">Fixtures</a></li>
         
@@ -129,7 +129,7 @@
 
 <h1 id="writing-tests">Writing Tests</h1>
 <hr />
-<h2 id="your-first-test">Your First Test</h2>
+<h2 id="your-first-test">Your first test</h2>
 <p>So, you want to write some unit tests? Let's get started by taking a look at a
 minimal test file. We'll discuss each part in detail below:</p>
 <pre class="prettyprint well"><code class="c++">#include &lt;mettle.hpp&gt;
@@ -143,7 +143,7 @@ suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
 });
 </code></pre>
 
-<h3 id="building-the-test">Building the Test</h3>
+<h3 id="building-the-test">Building the test</h3>
 <p>Before we start looking at how our tests are defined, let's build and run the
 test to make sure everything's set up correctly.</p>
 <p>Building the test is straightforward. Since mettle provides its own test runner
@@ -156,7 +156,7 @@ writing simpler:</p>
 
 <p>Once it's built, just run the binary and check your test results. If you like
 pretty colors (I do!), you can pass <code>--color --verbose</code> to the executable.</p>
-<h3 id="dissecting-the-test-file">Dissecting the Test File</h3>
+<h3 id="dissecting-the-test-file">Dissecting the test file</h3>
 <p>First up, the obvious: we <code>#include &lt;mettle.hpp&gt;</code>, which imports all the code we
 need to build and run simple tests: test suites, matchers, and a test runner.
 With that out of the way, we can start defining our tests.</p>
@@ -179,7 +179,7 @@ executes.</p>
 <em>test</em> in our tests. This expectation makes sure that <code>true</code> is equal to <code>true</code>.
 If it's not, the test will alert us to the fact so we can fix it (hopefully
 before the universe finishes crashing down around us).</p>
-<h3 id="skipped-tests">Skipped Tests</h3>
+<h3 id="skipped-tests">Skipped tests</h3>
 <p>Some days, you just can't get a test to pass. While I can only assume this is
 your fault, and that you should therefore feel bad until you fix it, you may
 choose to skip the test for the time being:</p>
@@ -191,7 +191,7 @@ choose to skip the test for the time being:</p>
 <p>This will prevent the test from running and keep your test suite passing (with a
 note that there are some skipped tests). But please, for everyone's sake, fix
 your test! Thanks in advance.</p>
-<h2 id="setup-and-teardown">Setup and Teardown</h2>
+<h2 id="setup-and-teardown">Setup and teardown</h2>
 <p>Sometimes, you'll have a bunch of tests that all have the same setup and
 teardown code. Test fixtures let you do this (mostly) automatically. If a test
 suite has a <code>setup</code> or <code>teardown</code> function set, they'll run before (or after)
@@ -273,7 +273,7 @@ either redefine our lambda to no longer be generic, or just use the
 });
 </code></pre>
 
-<h3 id="nested-setup-and-teardown">Nested Setup and Teardown</h3>
+<h3 id="nested-setup-and-teardown">Nested setup and teardown</h3>
 <p>As you might imagine, a test in a subsuite uses not only the subsuite's setup
 and teardown functions, but inherits the parent suite's as well (and so on up
 the tree). When executing a test in a subsuite, the test runner will walk down
@@ -289,7 +289,7 @@ subsuite:</p>
 <li>Call the subsuite's teardown function (if defined).</li>
 <li>Call the parent suite's teardown function (if defined).</li>
 </ol>
-<h3 id="nested-fixtures">Nested Fixtures</h3>
+<h3 id="nested-fixtures">Nested fixtures</h3>
 <p>Like the nested setup and teardown functions, test fixtures are also
 inherited in subsuites. This allows a parent suite to handle common fixtures for
 a bunch of subsuites, reducing code duplication:</p>

@@ -118,7 +118,9 @@
         
             <li><a href="#matchers">Matchers</a></li>
         
-            <li><a href="#built-in-matchers">Built-in Matchers</a></li>
+            <li><a href="#built-in-matchers">Built-in matchers</a></li>
+        
+            <li><a href="#writing-your-own-matchers">Writing your own matchers</a></li>
         
     
     </ul>
@@ -142,17 +144,17 @@ functions that let you declaratively define what you expect a value to be. This
 allows you to build complex expections from a relatively small set of simple
 matchers, and frees you from having to manually describe every expectation. The
 matchers do that for you!</p>
-<h2 id="built-in-matchers">Built-in Matchers</h2>
+<h2 id="built-in-matchers">Built-in matchers</h2>
 <p>Mettle comes with a set of general-purpose matchers that should cover the most
 common cases. We'll look at each of them below.</p>
-<h3 id="basic-matchers">Basic Matchers</h3>
+<h3 id="basic-matchers">Basic matchers</h3>
 <h4 id="anything">anything()</h4>
 <p>A matcher that always returns <code>true</code>. This is useful primarily as a placeholder,
 e.g. when you can't know for sure what an expected value is going to be, but you
 still want to test it.</p>
 <h4 id="is_notmatcher">is_not(<em>matcher</em>)</h4>
 <p>A matcher that negates another matcher.</p>
-<h3 id="boolean-matchers">Boolean Matchers</h3>
+<h3 id="boolean-matchers">Boolean matchers</h3>
 <h4 id="equal_tovalue">equal_to(<em>value</em>)</h4>
 <p>A matcher that returns <code>true</code> when the expected value is equal to <code>value</code>
 according to the <code>==</code> operator.</p>
@@ -175,7 +177,7 @@ according to the <code>&lt;</code> operator.</p>
 <h4 id="less_equalvalue">less_equal(<em>value</em>)</h4>
 <p>A matcher that returns <code>true</code> when the expected value is less than or equal to
 <code>value</code> according to the <code>&lt;=</code> operator.</p>
-<h3 id="arithmetic-matchers">Arithmetic Matchers</h3>
+<h3 id="arithmetic-matchers">Arithmetic matchers</h3>
 <h4 id="near_tovalue-epsilon">near_to(<em>value</em>[, <em>epsilon</em>])</h4>
 <p>A matcher that returns <code>true</code> when the expected value is approximately equal to
 <code>value</code>, specifically when:</p>
@@ -190,12 +192,12 @@ likely fail if one of the values is zero. In that case, use <code>near_to_abs</c
 <h4 id="near_to_absvalue-tolerance">near_to_abs(<em>value</em>, <em>tolerance</em>)</h4>
 <p>A matcher that returns <code>true</code> when the expected value is approximately equal to
 <code>value</code>, specifically when <code>std::abs(actual - expected) &lt;= tolerance</code>.</p>
-<h3 id="combinatoric-matchers">Combinatoric Matchers</h3>
+<h3 id="combinatoric-matchers">Combinatoric matchers</h3>
 <h4 id="any_ofmatchers">any_of(<em>matchers...</em>)</h4>
 <p>A matcher that returns <code>true</code> when <em>any of</em> its composed matchers are true.</p>
 <h4 id="all_ofmatchers">all_of(<em>matchers...</em>)</h4>
 <p>A matcher that returns <code>true</code> when <em>all of</em> its composed matchers are true.</p>
-<h3 id="collection-matchers">Collection Matchers</h3>
+<h3 id="collection-matchers">Collection matchers</h3>
 <h4 id="membermatcher">member(<em>matcher</em>)</h4>
 <p>A matcher that returns <code>true</code> when an item in a collection matches the composed
 matcher.</p>
@@ -206,7 +208,7 @@ composed matcher.</p>
 <p>A matcher that returns <code>true</code> when the <em>ith</em> item in a collection matches the
 <em>ith</em> composed matcher, <em>and</em> the number of items in the collection is equal to
 the number of composed matchers.</p>
-<h3 id="exception-matchers">Exception Matchers</h3>
+<h3 id="exception-matchers">Exception matchers</h3>
 <p>Exception matchers work a bit differently from other matchers. Since we can't
 catch an exception after the fact, we have to pass a function to our
 expectation instead:</p>
@@ -225,6 +227,73 @@ expectation instead:</p>
 <h4 id="thrown_rawtypematcher">thrown_raw&lt;<em>Type</em>&gt;(<em>matcher</em>)</h4>
 <p>A matcher that returns <code>true</code> if an exception of type <code>Type</code> (or a subclass of
 <code>Type</code>) is thrown and whose value matches <code>matcher</code>.</p>
+<h2 id="writing-your-own-matchers">Writing your own matchers</h2>
+<p>mettle is designed to make it easy to write your own matchers to complement the
+built-in suite of matchers. This makes it easier to test the state of objects
+with complex properties. Once created, user-defined matchers can be composed as
+normal with built-in matchers as you'd expect.</p>
+<h3 id="helper-functions">Helper functions</h3>
+<h4 id="make_matcherfunction-desc">make_matcher(<em>function</em>, <em>desc</em>)</h4>
+<p>The easiest way to create your own matcher is with the <code>make_matcher</code> function.
+This takes two paramters: first, a function object that accepts a value of any
+type, and returns a <code>bool</code> (with <code>true</code> naturally meaning a successful match);
+and second, a string describing the matcher.</p>
+<p><code>make_matcher</code> returns a <code>basic_matcher&lt;T&gt;</code>, where <code>T</code> is the type of the
+function, but it's easier to just deduce the return type. For instance, here's a
+simple matcher that returns <code>true</code> when the actual value is 4:</p>
+<pre class="prettyprint well"><code class="c++">auto match_four() {
+  return make_matcher([](const auto &amp;value) -&gt; bool {
+    return value == 4;
+  }, &quot;== 4&quot;);
+}
+</code></pre>
+
+<h4 id="ensure_matcherthing">ensure_matcher(<em>thing</em>)</h4>
+<p>Sometimes, a matcher should be able to accept other matchers as an argument.
+However, we also typically want to be able to pass in arbitrary objects as a
+shorthand to implicitly call the <code>equal_to</code> matcher. In this case, we'd use
+<code>ensure_matcher</code>.</p>
+<p><code>ensure_matcher</code> wraps an object with the <code>equal_to</code> matcher, or returns the
+passed-in matcher if the object is already a matcher. As an example, let's
+create a matcher that returns <code>true</code> if exactly one of its arguments is <code>true</code>:</p>
+<pre class="prettyprint well"><code class="c++">template&lt;typename T&gt;
+auto either(T &amp;&amp;a, T &amp;&amp;b) {
+  auto a_matcher = ensure_matcher(std::forward&lt;T&gt;(a));
+  auto b_matcher = ensure_matcher(std::forward&lt;T&gt;(b));
+
+  return make_matcher([a_matcher, b_matcher](const auto &amp;value) -&gt; bool {
+    return a_matcher(value) ^ b_matcher(value);
+  }, a_matcher.desc() + &quot; xor &quot; + b_matcher.desc());
+}
+</code></pre>
+
+<h3 id="starting-from-scratch">Starting from scratch</h3>
+<p>For particularly complex matchers, <code>make_matcher</code> may not provide much value. In
+these cases, you can instead build your own matcher from scratch. First, and
+most importantly, all matchers must inherit from <code>matcher_tag</code>. This removes any
+ambiguity between actual matchers and types that just have a similar interface.</p>
+<p>As the previous section hints at, a matcher must also have a const overloaded
+<code>operator ()</code> that takes a value of any type and returns a <code>bool</code>, and a const
+<code>desc</code> function that returns a string description of the matcher.</p>
+<p>A matcher made from scratch isn't much more complex than one made using the
+helper functions above; most of the complexity will come from the behaviors you
+define. Here's a simple example that <em>never</em> returns <code>true</code>:</p>
+<pre class="prettyprint well"><code class="c++">struct nothing : matcher_tag {
+  template&lt;typename T&gt;
+  bool operator ()(const U &amp;value) const {
+    return false;
+  }
+
+  std::string desc() const {
+    return &quot;nothing&quot;;
+  }
+};
+</code></pre>
+
+<h3 id="further-examples">Further examples</h3>
+<p>Naturally, many more examples of matchers can be found in mettle's own <a href="https://github.com/jimporter/tree/master/include/mettle/matchers">source
+code</a>. Feel
+free to consult these to get some ideas for how to implement your own matchers!</p>
 </div>
         </div>
 
