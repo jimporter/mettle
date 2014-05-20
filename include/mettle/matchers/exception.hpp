@@ -24,9 +24,11 @@ auto thrown_raw(T &&thing) {
 template<typename Exception, typename T>
 auto thrown(T &&thing) {
   auto matcher = ensure_matcher(std::forward<T>(thing));
-  return thrown_raw<Exception>(make_matcher([matcher](auto &&value) -> bool {
-    return matcher(std::string(value.what()));
-  }, matcher.desc()));
+  return thrown_raw<Exception>(
+    make_matcher([matcher](const auto &value) -> bool {
+      return matcher(std::string(value.what()));
+    }, matcher.desc())
+  );
 }
 
 template<typename Exception>
