@@ -208,6 +208,10 @@ composed matcher.</p>
 <p>A matcher that returns <code>true</code> when the <em>ith</em> item in a collection matches the
 <em>ith</em> composed matcher, <em>and</em> the number of items in the collection is equal to
 the number of composed matchers.</p>
+<h4 id="sortedcomparator">sorted([<em>comparator</em>])</h4>
+<p>A matcher that returns <code>true</code> when the collection is sorted according to the
+binary predicate <code>comparator</code> (or the less-than operator if <code>comparator</code> isn't
+supplied).</p>
 <h3 id="exception-matchers">Exception matchers</h3>
 <p>Exception matchers work a bit differently from other matchers. Since we can't
 catch an exception after the fact, we have to pass a function to our
