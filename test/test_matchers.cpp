@@ -164,6 +164,24 @@ suite<> matcher_tests("test matchers", [](auto &_) {
     expect(array(1, 2, 3).desc(), equal_to("[1, 2, 3]"));
   });
 
+  _.test("sorted()", []() {
+    expect(std::vector<int>{}, sorted());
+    expect(std::vector<int>{1, 2, 3}, sorted());
+    expect(std::vector<int>{1, 2, 3}, sorted(std::less<int>()));
+    expect(std::vector<int>{3, 2, 1}, sorted(std::greater<int>()));
+    expect(std::vector<int>{2, 1, 3}, is_not( sorted()) );
+    expect(std::vector<int>{2, 1, 3}, is_not( sorted(std::less<int>()) ));
+    expect(std::vector<int>{2, 1, 3}, is_not( sorted(std::greater<int>()) ));
+
+    int arr[] = {1, 2, 3};
+    expect(arr, sorted());
+    expect(arr, sorted(std::less<int>()));
+    expect(arr, is_not( sorted(std::greater<int>()) ));
+
+    expect(sorted().desc(), equal_to("sorted"));
+    expect(sorted(std::less<int>()).desc(), equal_to("sorted"));
+  });
+
   _.test("thrown()", []() {
     auto thrower = []() { throw std::runtime_error("message"); };
     expect(thrower, thrown<std::runtime_error>());

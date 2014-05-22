@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_MATCHERS_ARRAY_HPP
 #define INC_METTLE_MATCHERS_ARRAY_HPP
 
+#include <algorithm>
 #include <tuple>
 
 #include "core.hpp"
@@ -45,10 +46,11 @@ namespace detail {
       auto i = std::begin(value), end = std::end(value);
       bool good = detail::reduce_tuple(
         matchers_, [&i, &end](bool, const auto &matcher, bool &early_exit) {
-          if(i == end || !matcher(*i++)) {
+          if(i == end || !matcher(*i)) {
             early_exit = true;
             return false;
           }
+          ++i;
           return true;
         }, true
       );
@@ -76,6 +78,19 @@ namespace detail {
 template<typename ...T>
 inline auto array(T &&...matchers) {
   return detail::array_impl<T...>(std::forward<T>(matchers)...);
+}
+
+auto sorted() {
+  return make_matcher([](const auto &value) {
+    return std::is_sorted(std::begin(value), std::end(value));
+  }, "sorted");
+}
+
+template<typename T>
+auto sorted(const T &comparator) {
+  return make_matcher([comparator](const auto &value) {
+    return std::is_sorted(std::begin(value), std::end(value), comparator);
+  }, "sorted");
 }
 
 } // namespace mettle

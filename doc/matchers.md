@@ -125,6 +125,12 @@ A matcher that returns `true` when the *ith* item in a collection matches the
 *ith* composed matcher, *and* the number of items in the collection is equal to
 the number of composed matchers.
 
+#### sorted([*comparator*])
+
+A matcher that returns `true` when the collection is sorted according to the
+binary predicate `comparator` (or the less-than operator if `comparator` isn't
+supplied).
+
 ### Exception matchers
 
 Exception matchers work a bit differently from other matchers. Since we can't
