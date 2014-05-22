@@ -5,7 +5,7 @@
 #include "matchers/relational.hpp"
 #include "matchers/arithmetic.hpp"
 #include "matchers/combinatoric.hpp"
-#include "matchers/array.hpp"
+#include "matchers/collection.hpp"
 #include "matchers/exception.hpp"
 
 #endif
