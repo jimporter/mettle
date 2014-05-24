@@ -1,0 +1,8 @@
+/* Make the inline code blocks look like the paragraph-level ones. */
+p > code {
+  color: #333;
+  background-color: #FAFAFA;
+  padding: 1px 3px;
+  border: 1px solid #E8E8E8;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05) inset;
+}

@@ -1,6 +1,8 @@
 site_name: mettle
 docs_dir: doc
 theme: yeti
+extra_css:
+- css/extra.css
 
 repo_url: https://github.com/jimporter/mettle/
 
