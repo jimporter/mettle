@@ -146,32 +146,31 @@ test complex things using a minimal set of core functions.</p>
 <p>A picture is worth a thousand words, and code is probably worth a decent
 fraction of that (let's say 100 words), so let's take a look:</p>
 <pre class="prettyprint well"><code class="c++">#include &lt;mettle.hpp&gt;
-
 using namespace mettle;
 
-struct basic_data {
-  int foo;
-};
-
-suite&lt;basic_data&gt; basic(&quot;basic suite&quot;, [](auto &amp;_) {
-  _.setup([](basic_data &amp;) {
-  });
-
-  _.teardown([](basic_data &amp;) {
-  });
-
-  _.test(&quot;a test&quot;, [](basic_data &amp;) {
+suite&lt;&gt; basic(&quot;a basic suite&quot;, [](auto &amp;_) {
+  _.test(&quot;a test&quot;, []() {
     expect(true, equal_to(true));
   });
 
+  _.test(&quot;another test&quot;, []() {
+    expect(3, any_of(1, 2, 4));
+  });
+
+  _.skip_test(&quot;a skipped test&quot;, []() {
+    expect(true, is_not(true));
+  });
+
   for(int i = 0; i &lt; 4; i++) {
-    _.test(&quot;test number &quot; + std::to_string(i), [i](basic_data &amp;) {
-      expect(i % 2, equal_to(0));
+    _.test(&quot;test number &quot; + std::to_string(i), [i]() {
+      expect(i % 2, less(2));
     });
   }
 });
 </code></pre>
 
+<p>For further examples, please see the
+<a href="https://github.com/jimporter/tree/master/examples"><code>examples/</code></a> subdirectory.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>This project currently requires a C++14 compiler (for generic lambdas in the
 matchers) and Boost (for argument parsing in the test runner). It's been tested

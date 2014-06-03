@@ -1,8 +1,17 @@
 /* Make the inline code blocks look like the paragraph-level ones. */
-p > code {
+*:not(.prettyprint) > code {
   color: #333;
   background-color: #FAFAFA;
   padding: 1px 3px;
   border: 1px solid #E8E8E8;
   box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05) inset;
+}
+
+a > code {
+  color: #008CBA !important;
+}
+
+a > code:hover,
+a > code:focus {
+  color: #00526E !important;
 }
