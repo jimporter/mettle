@@ -31,31 +31,31 @@ fraction of that (let's say 100 words), so let's take a look:
 
 ```c++
 #include <mettle.hpp>
-
 using namespace mettle;
 
-struct basic_data {
-  int foo;
-};
-
-suite<basic_data> basic("basic suite", [](auto &_) {
-  _.setup([](basic_data &) {
-  });
-
-  _.teardown([](basic_data &) {
-  });
-
-  _.test("a test", [](basic_data &) {
+suite<> basic("a basic suite", [](auto &_) {
+  _.test("a test", []() {
     expect(true, equal_to(true));
   });
 
+  _.test("another test", []() {
+    expect(3, any_of(1, 2, 4));
+  });
+
+  _.skip_test("a skipped test", []() {
+    expect(true, is_not(true));
+  });
+
   for(int i = 0; i < 4; i++) {
-    _.test("test number " + std::to_string(i), [i](basic_data &) {
-      expect(i % 2, equal_to(0));
+    _.test("test number " + std::to_string(i), [i]() {
+      expect(i % 2, less(2));
     });
   }
 });
 ```
+
+For further examples, please see the
+[`examples/`](https://github.com/jimporter/tree/master/examples) subdirectory.
 
 ## Dependencies
 

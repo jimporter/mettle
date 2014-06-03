@@ -9,10 +9,20 @@ Documentation for mettle is available at http://jimporter.github.io/mettle
 
 ## Features
 
-* Tests defined without using the C preprocessor
-* Nested suites
-* Test fixtures
-* Declarative, matcher-based expectations (assertions)
+#### No preprocessor abuse
+
+Tests are defined using ordinary C++ without the use of the C preprocessor,
+resulting in clearer code and greater flexibility.
+
+#### Nested suites
+
+Test suites can be nested arbitrarily deep. Group your tests however you like,
+and let the suites set up and tear down your fixtures for you.
+
+#### Declarative, matcher-based expectations
+
+Expectations (assertions) are created using composable matchers, allowing you to
+test complex things using a minimal set of core functions.
 
 ## A Brief Example
 
@@ -21,27 +31,24 @@ fraction of that (let's say 100 words), so let's take a look:
 
 ```c++
 #include <mettle.hpp>
-
 using namespace mettle;
 
-struct basic_data {
-  int foo;
-};
-
-suite<basic_data> basic("basic suite", [](auto &_) {
-  _.setup([](basic_data &) {
-  });
-
-  _.teardown([](basic_data &) {
-  });
-
-  _.test("a test", [](basic_data &) {
+suite<> basic("a basic suite", [](auto &_) {
+  _.test("a test", []() {
     expect(true, equal_to(true));
   });
 
+  _.test("another test", []() {
+    expect(3, any_of(1, 2, 4));
+  });
+
+  _.skip_test("a skipped test", []() {
+    expect(true, is_not(true));
+  });
+
   for(int i = 0; i < 4; i++) {
-    _.test("test number " + std::to_string(i), [i](basic_data &) {
-      expect(i % 2, equal_to(0));
+    _.test("test number " + std::to_string(i), [i]() {
+      expect(i % 2, less(2));
     });
   }
 });
