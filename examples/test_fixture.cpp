@@ -1,7 +1,7 @@
-#include <string>
-#include "mettle.hpp"
-
+#include <mettle.hpp>
 using namespace mettle;
+
+#include <string>
 
 struct my_fixture {
   int value;

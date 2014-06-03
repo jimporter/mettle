@@ -1,5 +1,4 @@
-#include "mettle.hpp"
-
+#include <mettle.hpp>
 using namespace mettle;
 
 suite<> basic("a basic suite", [](auto &_) {

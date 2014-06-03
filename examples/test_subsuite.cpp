@@ -1,5 +1,4 @@
-#include "mettle.hpp"
-
+#include <mettle.hpp>
 using namespace mettle;
 
 suite<> sub("suite with subsuites", [](auto &_) {

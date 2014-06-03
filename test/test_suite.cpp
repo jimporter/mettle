@@ -1,4 +1,4 @@
-#include "mettle.hpp"
+#include <mettle.hpp>
 using namespace mettle;
 
 inline auto match_test(const std::string &name, bool skip) {

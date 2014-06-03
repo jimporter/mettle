@@ -1,8 +1,8 @@
+#include <mettle.hpp>
+using namespace mettle;
+
 #include <stdexcept>
 #include <vector>
-
-#include "mettle.hpp"
-using namespace mettle;
 
 struct some_type {
   some_type(const some_type &) = delete;
