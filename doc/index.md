@@ -55,7 +55,8 @@ suite<> basic("a basic suite", [](auto &_) {
 ```
 
 For further examples, please see the
-[`examples/`](https://github.com/jimporter/tree/master/examples) subdirectory.
+[`examples/`](https://github.com/jimporter/mettle/tree/master/examples)
+subdirectory.
 
 ## Dependencies
 
