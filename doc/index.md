@@ -58,6 +58,11 @@ For further examples, please see the
 [`examples/`](https://github.com/jimporter/mettle/tree/master/examples)
 subdirectory.
 
+## Installation
+
+Since mettle is (currently) a header-only library, installation is simple: just
+copy all the files in the `include/` directory to wherever you'd like.
+
 ## Dependencies
 
 This project currently requires a C++14 compiler (for generic lambdas in the
