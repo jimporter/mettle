@@ -151,16 +151,13 @@ fraction of that (let's say 100 words), so let's take a look:</p>
 using namespace mettle;
 
 suite&lt;&gt; basic(&quot;a basic suite&quot;, [](auto &amp;_) {
+
   _.test(&quot;a test&quot;, []() {
     expect(true, equal_to(true));
   });
 
-  _.test(&quot;another test&quot;, []() {
-    expect(3, any_of(1, 2, 4));
-  });
-
   _.skip_test(&quot;a skipped test&quot;, []() {
-    expect(true, is_not(true));
+    expect(3, any_of(1, 2, 4));
   });
 
   for(int i = 0; i &lt; 4; i++) {
@@ -168,6 +165,7 @@ suite&lt;&gt; basic(&quot;a basic suite&quot;, [](auto &amp;_) {
       expect(i % 2, less(2));
     });
   }
+
 });
 </code></pre>
 
