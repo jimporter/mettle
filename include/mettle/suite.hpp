@@ -49,7 +49,8 @@ struct test_result {
 };
 
 template<typename Ret, typename ...T>
-struct compiled_suite {
+class compiled_suite {
+public:
   struct test_info {
     using function_type = std::function<Ret(T&...)>;
 
