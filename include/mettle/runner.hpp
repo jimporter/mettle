@@ -4,15 +4,11 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 
-#include "term.hpp"
+#include "suite.hpp"
 
 namespace mettle {
 
-using suites_list = std::vector<runnable_suite>;
-
 namespace detail {
-  suites_list all_suites;
-
   template<typename T>
   std::string join(T begin, T end, const std::string &delim) {
     if(begin == end)
@@ -24,145 +20,100 @@ namespace detail {
       s << delim << *begin;
     return s.str();
   }
+}
 
-  struct test_results {
-    test_results() : passes(0), skips(0), total(0) {}
+struct test_results {
+  test_results() : passes(0), skips(0), total(0) {}
 
-    struct failure {
-      std::vector<std::string> suites;
-      std::string test, message;
+  struct failure {
+    std::vector<std::string> suites;
+    std::string test, message;
 
-      std::string full_name() const {
-        std::stringstream s;
-        s << join(suites.begin(), suites.end(), " > ") << " > " << test;
-        return s.str();
-      }
-    };
-
-    std::vector<failure> failures;
-    size_t passes, skips, total;
+    std::string full_name() const {
+      std::stringstream s;
+      s << detail::join(suites.begin(), suites.end(), " > ") << " > " << test;
+      return s.str();
+    }
   };
 
-  void run_tests_impl(test_results &results, const suites_list &suites,
-                      bool verbose, std::vector<std::string> &parents) {
-    using namespace term;
-    const std::string indent(parents.size() * 2, ' ');
+  std::vector<failure> failures;
+  size_t passes, skips, total;
+};
 
+class test_logger {
+public:
+  virtual ~test_logger() {}
+
+  virtual void start_suite(const std::vector<std::string> &suites) = 0;
+  virtual void end_suite(const std::vector<std::string> &suites) = 0;
+
+  virtual void start_test(const std::vector<std::string> &suites,
+                          const std::string &test) = 0;
+  virtual void passed_test(const std::vector<std::string> &suites,
+                           const std::string &test) = 0;
+  virtual void skipped_test(const std::vector<std::string> &suites,
+                            const std::string &test) = 0;
+  virtual void failed_test(const std::vector<std::string> &suites,
+                           const std::string &test,
+                           const std::string &message) = 0;
+
+  virtual void summarize(const test_results &results) = 0;
+};
+
+namespace detail {
+  template<typename T>
+  void run_tests_impl(
+    test_results &results, const T &suites, test_logger &logger,
+    std::vector<std::string> &parents
+  ) {
     for(auto &suite : suites) {
       parents.push_back(suite.name());
 
-      if(verbose) {
-        std::cout << indent << format(sgr::bold) << suite.name()
-                  << reset() << std::endl;
-      }
+      logger.start_suite(parents);
 
       for(auto &test : suite) {
         results.total++;
 
-        if(verbose)
-          std::cout << indent << "  " << test.name << " " << std::flush;
+        logger.start_test(parents, test.name);
         if(test.skip) {
           results.skips++;
-          if(verbose) {
-            std::cout << format(sgr::bold, fg(color::blue)) << "SKIPPED"
-                      << reset() << std::endl;
-          }
+          logger.skipped_test(parents, test.name);
           continue;
         }
 
         auto result = test.function();
         if(result.passed) {
           results.passes++;
-          if(verbose) {
-            std::cout << format(sgr::bold, fg(color::green)) << "PASSED"
-                      << reset() << std::endl;
-          }
+          logger.passed_test(parents, test.name);
         }
         else {
           results.failures.push_back({parents, test.name, result.message});
-          if(verbose) {
-            std::cout << format(sgr::bold, fg(color::red)) << "FAILED"
-                      << reset() << ": " << result.message << std::endl;
-          }
+          logger.failed_test(parents, test.name, result.message);
         }
       }
 
-      if(verbose)
-        std::cout << std::endl;
+      logger.end_suite(parents);
 
-      run_tests_impl(results, suite.subsuites(), verbose, parents);
+      run_tests_impl(results, suite.subsuites(), logger, parents);
       parents.pop_back();
     }
   }
-
-  void run_tests(test_results &results, bool verbose) {
-    std::vector<std::string> parents;
-    run_tests_impl(results, all_suites, verbose, parents);
-  }
 }
 
-template<typename ...T, typename F>
-inline auto make_suite(const std::string &name, F &&f) {
-  return make_basic_suite<expectation_error, T..., F>(name, std::forward<F>(f));
-}
-
-template<typename Exception, typename ...T>
-struct basic_suite {
-public:
-  template<typename F>
-  basic_suite(const std::string &name, F &&f,
-              suites_list &suites = detail::all_suites) {
-    suites.push_back(
-      make_basic_suite<Exception, T...>(name, std::forward<F>(f))
-    );
-  }
-};
-
-template<typename ...T>
-using suite = basic_suite<expectation_error, T...>;
-
-} // namespace mettle
-
-int main(int argc, const char *argv[]) {
-  using namespace term;
-  using namespace mettle::detail;
-  namespace opts = boost::program_options;
-
-  opts::options_description desc("Allowed options");
-  desc.add_options()
-    ("help,h", "show help")
-    ("verbose", "show verbose output")
-    ("color", "show colored output")
-  ;
-
-  opts::variables_map args;
-  opts::store(opts::parse_command_line(argc, argv, desc), args);
-  opts::notify(args);
-
-  if(args.count("help")) {
-    std::cout << desc << std::endl;
-    return 1;
-  }
-
-  colors_enabled = args.count("color");
-  bool verbose = args.count("verbose");
-
+template<typename T>
+inline size_t run_tests(const T &suites, test_logger &logger) {
   test_results results;
-  run_tests(results, verbose);
-
-  std::cout << format(sgr::bold) << results.passes << "/" << results.total
-            << " tests passed";
-  if(results.skips)
-    std::cout << " (" << results.skips << " skipped)";
-  std::cout << reset() << std::endl;
-
-  for(auto &i : results.failures) {
-    std::cout << "  " << i.full_name() << " "
-              << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
-              << ": " << i.message << std::endl;
-  }
-
+  std::vector<std::string> parents;
+  detail::run_tests_impl(results, suites, logger, parents);
+  logger.summarize(results);
   return results.failures.size();
 }
+
+template<typename T>
+inline size_t run_tests(const T &suites, test_logger &&logger) {
+  return run_tests(suites, logger);
+}
+
+} // namespace mettle
 
 #endif

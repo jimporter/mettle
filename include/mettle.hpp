@@ -3,6 +3,6 @@
 
 #include "mettle/suite.hpp"
 #include "mettle/matchers.hpp"
-#include "mettle/runner.hpp"
+#include "mettle/driver.hpp"
 
 #endif
