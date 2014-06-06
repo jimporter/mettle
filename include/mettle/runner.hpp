@@ -8,35 +8,48 @@
 
 namespace mettle {
 
-namespace detail {
-  template<typename T>
-  std::string join(T begin, T end, const std::string &delim) {
-    if(begin == end)
-      return "";
+struct test_name {
+  std::vector<std::string> suites;
+  std::string test;
+  size_t id;
 
+  std::string full_name() const {
     std::stringstream s;
-    s << *begin;
-    for(++begin; begin != end; ++begin)
-      s << delim << *begin;
+    for(auto &i : suites)
+      s << i << " > ";
+    s << test;
     return s.str();
   }
+};
+
+inline bool operator ==(const test_name &lhs, const test_name &rhs) {
+  return lhs.id == rhs.id;
+}
+inline bool operator !=(const test_name &lhs, const test_name &rhs) {
+  return lhs.id != rhs.id;
+}
+inline bool operator <(const test_name &lhs, const test_name &rhs) {
+  return lhs.id < rhs.id;
+}
+inline bool operator <=(const test_name &lhs, const test_name &rhs) {
+  return lhs.id <= rhs.id;
+}
+inline bool operator >(const test_name &lhs, const test_name &rhs) {
+  return lhs.id > rhs.id;
+}
+inline bool operator >=(const test_name &lhs, const test_name &rhs) {
+  return lhs.id >= rhs.id;
 }
 
 struct test_results {
   test_results() : passes(0), skips(0), total(0) {}
 
   struct failure {
-    std::vector<std::string> suites;
-    std::string test, message;
-
-    std::string full_name() const {
-      std::stringstream s;
-      s << detail::join(suites.begin(), suites.end(), " > ") << " > " << test;
-      return s.str();
-    }
+    test_name test;
+    std::string message;
   };
 
-  std::vector<failure> failures;
+  std::vector<const failure> failures;
   size_t passes, skips, total;
 };
 
@@ -47,14 +60,10 @@ public:
   virtual void start_suite(const std::vector<std::string> &suites) = 0;
   virtual void end_suite(const std::vector<std::string> &suites) = 0;
 
-  virtual void start_test(const std::vector<std::string> &suites,
-                          const std::string &test) = 0;
-  virtual void passed_test(const std::vector<std::string> &suites,
-                           const std::string &test) = 0;
-  virtual void skipped_test(const std::vector<std::string> &suites,
-                            const std::string &test) = 0;
-  virtual void failed_test(const std::vector<std::string> &suites,
-                           const std::string &test,
+  virtual void start_test(const test_name &test) = 0;
+  virtual void passed_test(const test_name &test) = 0;
+  virtual void skipped_test(const test_name &test) = 0;
+  virtual void failed_test(const test_name &test,
                            const std::string &message) = 0;
 
   virtual void summarize(const test_results &results) = 0;
@@ -72,23 +81,24 @@ namespace detail {
       logger.start_suite(parents);
 
       for(auto &test : suite) {
+        const test_name name = {parents, test.name, test.id};
         results.total++;
 
-        logger.start_test(parents, test.name);
+        logger.start_test(name);
         if(test.skip) {
           results.skips++;
-          logger.skipped_test(parents, test.name);
+          logger.skipped_test(name);
           continue;
         }
 
         auto result = test.function();
         if(result.passed) {
           results.passes++;
-          logger.passed_test(parents, test.name);
+          logger.passed_test(name);
         }
         else {
-          results.failures.push_back({parents, test.name, result.message});
-          logger.failed_test(parents, test.name, result.message);
+          results.failures.push_back({name, result.message});
+          logger.failed_test(name, result.message);
         }
       }
 

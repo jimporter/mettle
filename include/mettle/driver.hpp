@@ -32,16 +32,14 @@ namespace detail {
         std::cout << std::endl;
     }
 
-    void start_test(const std::vector<std::string> &suites,
-                    const std::string &test) {
+    void start_test(const test_name &test) {
       if(verbose_) {
-        const std::string indent(suites.size() * 2, ' ');
-        std::cout << indent << test << " " << std::flush;
+        const std::string indent(test.suites.size() * 2, ' ');
+        std::cout << indent << test.test << " " << std::flush;
       }
     }
 
-    void passed_test(const std::vector<std::string> &,
-                     const std::string &) {
+    void passed_test(const test_name &) {
       using namespace term;
       if(verbose_) {
         std::cout << format(sgr::bold, fg(color::green)) << "PASSED" << reset()
@@ -49,8 +47,7 @@ namespace detail {
       }
     }
 
-    void skipped_test(const std::vector<std::string> &,
-                      const std::string &) {
+    void skipped_test(const test_name &) {
       using namespace term;
       if(verbose_) {
         std::cout << format(sgr::bold, fg(color::blue)) << "SKIPPED" << reset()
@@ -58,8 +55,7 @@ namespace detail {
       }
     }
 
-    void failed_test(const std::vector<std::string> &,
-                     const std::string &, const std::string &message) {
+    void failed_test(const test_name &, const std::string &message) {
       using namespace term;
       if(verbose_) {
         std::cout << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
@@ -76,7 +72,7 @@ namespace detail {
       std::cout << reset() << std::endl;
 
       for(auto &i : results.failures) {
-        std::cout << "  " << i.full_name() << " "
+        std::cout << "  " << i.test.full_name() << " "
                   << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
                   << ": " << i.message << std::endl;
       }

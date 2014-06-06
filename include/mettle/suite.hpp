@@ -41,6 +41,20 @@ namespace detail {
     if(teardown)
       detail::apply(std::forward<F>(teardown), fixtures);
   }
+
+  template<typename T>
+  class id_generator {
+  public:
+    static inline T generate() {
+      // XXX: This could stand to be thread-safe.
+      return id_++;
+    }
+  private:
+    static T id_;
+  };
+
+  template<typename T>
+  T id_generator<T>::id_ = 0;
 }
 
 struct test_result {
@@ -56,11 +70,13 @@ public:
 
     test_info(const std::string &name, const function_type &function,
               bool skip = false)
-      : name(name), function(function), skip(skip) {}
+      : name(name), function(function), skip(skip),
+        id(detail::id_generator<size_t>::generate()) {}
 
     std::string name;
     function_type function;
     bool skip;
+    size_t id;
   };
 
   using iterator = typename std::vector<test_info>::const_iterator;
