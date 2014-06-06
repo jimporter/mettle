@@ -102,12 +102,12 @@ public:
 };
 
 template<typename T>
-constexpr auto ensure_printable(T &&t) -> typename std::enable_if<
+constexpr auto ensure_printable(const T &t) -> typename std::enable_if<
   is_safely_printable<T>::value &&
   !std::is_array<typename std::remove_reference<T>::type>::value,
-  decltype(std::forward<T>(t))
+  T
 >::type {
-  return std::forward<T>(t);
+  return t;
 }
 
 template<typename T>
@@ -131,19 +131,12 @@ inline std::string ensure_printable(bool b) {
   return b ? "true" : "false";
 }
 
-template<typename T, typename Traits, typename Allocator>
-inline std::string ensure_printable(
-  const std::basic_string<T, Traits, Allocator> &s
-) {
-  std::stringstream ss;
-  ss << std::quoted(s);
-  return ss.str();
+inline auto ensure_printable(const std::string &s) {
+  return std::quoted(s);
 }
 
-inline std::string ensure_printable(const char *s) {
-  std::stringstream ss;
-  ss << std::quoted(s);
-  return ss.str();
+inline auto ensure_printable(const char *s) {
+  return std::quoted(s);
 }
 
 template<typename T, size_t N>
@@ -158,7 +151,7 @@ auto ensure_printable(const T (&v)[N]) -> typename std::enable_if<
 }
 
 template<typename T>
-auto ensure_printable(T &&v) -> typename std::enable_if<
+auto ensure_printable(const T &v) -> typename std::enable_if<
   !is_printable<T>::value && is_iterable<T>::value, std::string
 >::type {
   return detail::stringify_iterable(std::begin(v), std::end(v));

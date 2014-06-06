@@ -19,8 +19,9 @@ suite<> output("test debug printing", [](auto &_){
     expect(stringify(2.5), equal_to("2.5"));
     expect(stringify(true), equal_to("true"));
     expect(stringify(false), equal_to("false"));
-    expect(stringify("text"), equal_to("\"text\""));
     expect(stringify(nullptr), equal_to("nullptr"));
+    expect(stringify("text"), equal_to("\"text\""));
+    expect(stringify(std::string("text")), equal_to("\"text\""));
   });
 
   _.test("iterables", []() {
