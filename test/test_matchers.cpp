@@ -43,6 +43,8 @@ suite<> matcher_tests("test matchers", [](auto &_) {
     _.test("equal_to()", []() {
       expect(true, equal_to(true));
       expect(123, equal_to(123));
+      expect("foo", equal_to(std::string("foo")));
+      expect(std::string("foo"), equal_to("foo"));
 
       expect(equal_to(123).desc(), equal_to("123"));
     });
@@ -223,7 +225,7 @@ suite<> matcher_tests("test matchers", [](auto &_) {
 
       expect(thrown().desc(), equal_to("threw"));
       expect(thrown<std::exception>("message").desc(),
-             equal_to("threw message"));
+             equal_to("threw \"message\""));
     });
   });
 

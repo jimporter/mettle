@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_OUTPUT_HPP
 #define INC_METTLE_OUTPUT_HPP
 
+#include <iomanip>
 #include <sstream>
 #include <type_traits>
 #include <typeinfo>
@@ -130,8 +131,19 @@ inline std::string ensure_printable(bool b) {
   return b ? "true" : "false";
 }
 
-inline const char * ensure_printable(const char *s) {
-  return s;
+template<typename T, typename Traits, typename Allocator>
+inline std::string ensure_printable(
+  const std::basic_string<T, Traits, Allocator> &s
+) {
+  std::stringstream ss;
+  ss << std::quoted(s);
+  return ss.str();
+}
+
+inline std::string ensure_printable(const char *s) {
+  std::stringstream ss;
+  ss << std::quoted(s);
+  return ss.str();
 }
 
 template<typename T, size_t N>
