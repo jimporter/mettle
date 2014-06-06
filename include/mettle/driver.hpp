@@ -1,6 +1,8 @@
 #ifndef INC_METTLE_DRIVER_HPP
 #define INC_METTLE_DRIVER_HPP
 
+#include <cmath>
+#include <iomanip>
 #include <iostream>
 #include <boost/program_options.hpp>
 
@@ -80,6 +82,95 @@ namespace detail {
   private:
     bool verbose_;
   };
+
+  class multi_run_logger : public test_logger {
+  public:
+    multi_run_logger(bool verbose)
+      : verbose_(verbose), skips_(0), total_(0), runs_(0) {}
+
+    void start_suite(const std::vector<std::string> &) {}
+    void end_suite(const std::vector<std::string> &) {}
+
+    void start_test(const test_name &) {}
+    void passed_test(const test_name &) {
+      using namespace term;
+      if(verbose_) {
+        std::cout << format(sgr::bold, fg(color::green)) << "."
+                  << reset() << std::flush;
+      }
+    }
+
+    void skipped_test(const test_name &) {
+      using namespace term;
+      if(verbose_) {
+        std::cout << format(sgr::bold, fg(color::blue)) << "_"
+                  << reset() << std::flush;
+      }
+    }
+
+    void failed_test(const test_name &, const std::string &) {
+      using namespace term;
+      if(verbose_) {
+        std::cout << format(sgr::bold, fg(color::red)) << "!"
+                  << reset() << std::flush;
+      }
+    }
+
+    void summarize(const test_results &results) {
+      if(verbose_)
+        std::cout << std::endl;
+
+      runs_++;
+      skips_ = results.skips;
+      total_ = results.total;
+      for(auto &i : results.failures)
+        failures_[i.test].push_back({runs_, i.message});
+    }
+
+    void summarize_all() {
+      using namespace term;
+      size_t passes = total_ - skips_ - failures_.size();
+
+      if(verbose_)
+        std::cout << std::endl;
+
+      std::cout << format(sgr::bold) << passes << "/" << total_
+                << " tests passed";
+      if(skips_)
+        std::cout << " (" << skips_ << " skipped)";
+      std::cout << reset() << std::endl;
+
+      for(auto &i : failures_) {
+        format fail_count_fmt(
+          sgr::bold, fg(i.second.size() == runs_ ? color::red : color::yellow)
+        );
+        std::cout << "  " << i.first.full_name() << " "
+                  << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
+                  << " " << fail_count_fmt << "[" << i.second.size() << "/"
+                  << runs_ << "]" << reset() << ":" << std::endl;
+
+        for(auto &j : i.second) {
+          int width = std::ceil(std::log10(runs_));
+          std::cout << "    " << j.message << " "
+                    << format(sgr::bold, fg(color::yellow)) << "["
+                    << std::setw(width) << j.run << "]" << reset() << std::endl;
+        }
+      }
+    }
+
+    size_t failures() const {
+      return failures_.size();
+    }
+  private:
+    struct failure_info {
+      size_t run;
+      std::string message;
+    };
+
+    bool verbose_;
+    size_t skips_, total_, runs_;
+    std::map<test_name, std::vector<failure_info>> failures_;
+  };
 }
 
 template<typename ...T, typename F>
@@ -113,6 +204,7 @@ int main(int argc, const char *argv[]) {
     ("help,h", "show help")
     ("verbose", "show verbose output")
     ("color", "show colored output")
+    ("runs", opts::value<size_t>(), "number of test runs")
   ;
 
   opts::variables_map args;
@@ -127,7 +219,22 @@ int main(int argc, const char *argv[]) {
   term::colors_enabled = args.count("color");
   bool verbose = args.count("verbose");
 
-  return run_tests(all_suites, single_run_logger(verbose));
+  if(args.count("runs")) {
+    size_t runs = args["runs"].as<size_t>();
+    if(runs == 0) {
+      std::cout << "no test runs, exiting" << std::endl;
+      return 1;
+    }
+    multi_run_logger logger(verbose);
+    for(size_t i = 0; i < runs; i++)
+      run_tests(all_suites, logger);
+    logger.summarize_all();
+
+    return logger.failures();
+  }
+  else {
+    return run_tests(all_suites, single_run_logger(verbose));
+  }
 }
 
 #endif
