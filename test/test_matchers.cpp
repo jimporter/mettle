@@ -45,6 +45,7 @@ suite<> matcher_tests("test matchers", [](auto &_) {
       expect(123, equal_to(123));
       expect("foo", equal_to(std::string("foo")));
       expect(std::string("foo"), equal_to("foo"));
+      expect(std::string("foo"), equal_to(std::string("foo")));
 
       expect(equal_to(123).desc(), equal_to("123"));
     });
