@@ -61,6 +61,10 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                     
+                        <li >
+                            <a href="../running-tests/">Running Tests</a>
+                        </li>
+                    
                         <li class="active">
                             <a href="./">Writing Tests</a>
                         </li>
@@ -85,7 +89,7 @@
             <ul class="nav navbar-nav navbar-right">
                 
                 <li >
-                    <a rel="next" href="..">
+                    <a rel="next" href="../running-tests/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
@@ -131,10 +135,10 @@
 <h1 id="writing-tests">Writing Tests</h1>
 <hr />
 <h2 id="your-first-test">Your first test</h2>
-<p>So, you want to write some unit tests? Let's get started by taking a look at a
-minimal test file. We'll discuss each part in detail below:</p>
+<p>So, you want to write some unit tests? Let's get started by taking a look at the
+test file we used when <a href="../running-tests/">running tests</a>. We'll discuss each
+part in detail below:</p>
 <pre class="prettyprint well"><code class="c++">#include &lt;mettle.hpp&gt;
-
 using namespace mettle;
 
 suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
@@ -144,19 +148,6 @@ suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
 });
 </code></pre>
 
-<h3 id="building-the-test">Building the test</h3>
-<p>Before we start looking at how our tests are defined, let's build and run the
-test to make sure everything's set up correctly.</p>
-<p>Building the test is straightforward. Since mettle provides its own test runner
-with a <code>main()</code> function, the above source code is all you need for a
-fully-operational test. Just compile the test like so. Note that we compile in
-C++1y (aka C++14) mode, since mettle relies on some C++14 features to make test
-writing simpler:</p>
-<pre class="prettyprint well"><code class="sh">clang++ -std=c++1y -Imettle/include -lboost_program_options -o test_first test_first.cpp
-</code></pre>
-
-<p>Once it's built, just run the binary and check your test results. If you like
-pretty colors (I do!), you can pass <code>--color --verbose</code> to the executable.</p>
 <h3 id="dissecting-the-test-file">Dissecting the test file</h3>
 <p>First up, the obvious: we <code>#include &lt;mettle.hpp&gt;</code>, which imports all the code we
 need to build and run simple tests: test suites, matchers, and a test runner.

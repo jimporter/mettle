@@ -9,7 +9,7 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
 
-        <title>License - mettle</title>
+        <title>Running Tests - mettle</title>
 
         <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
@@ -57,12 +57,12 @@
             
             
             
-                <li class="dropdown">
+                <li class="dropdown active">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                     
-                        <li >
-                            <a href="../running-tests/">Running Tests</a>
+                        <li class="active">
+                            <a href="./">Running Tests</a>
                         </li>
                     
                         <li >
@@ -78,8 +78,8 @@
             
             
             
-                <li class="active">
-                    <a href="./">License</a>
+                <li >
+                    <a href="../license/">License</a>
                 </li>
             
             
@@ -89,12 +89,12 @@
             <ul class="nav navbar-nav navbar-right">
                 
                 <li >
-                    <a rel="next" href="../matchers/">
+                    <a rel="next" href="..">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
-                <li class="disabled">
-                    <a rel="prev" >
+                <li >
+                    <a rel="prev" href="../writing-tests/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -117,45 +117,67 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="main active"><a href="#license">License</a></li>
+        <li class="main active"><a href="#running-tests">Running Tests</a></li>
+        
+            <li><a href="#a-sample-test">A sample test</a></li>
+        
+            <li><a href="#building-the-test">Building the test</a></li>
+        
+            <li><a href="#command-line-options">Command-line options</a></li>
         
     
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-<h1 id="license">License</h1>
+<h1 id="running-tests">Running Tests</h1>
 <hr />
-<p>Copyright (c) 2014, Jim Porter
-All rights reserved.</p>
-<p>Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:</p>
-<ol>
-<li>
-<p>Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.</p>
-</li>
-<li>
-<p>Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.</p>
-</li>
-<li>
-<p>Neither the name of the copyright holder nor the names of its contributors
-may be used to endorse or promote products derived from this software without
-specific prior written permission.</p>
-</li>
-</ol>
-<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+<p>Before we start looking at how to write tests, let's build and run an existing
+one to make sure everything's set up correctly.</p>
+<h2 id="a-sample-test">A sample test</h2>
+<p>First up, here's a minimalist test suite so that we have something to run. We'll
+cover the syntax of this test later when we learn about <a href="../writing-tests/">writing
+tests</a>.</p>
+<pre class="prettyprint well"><code class="c++">#include &lt;mettle.hpp&gt;
+using namespace mettle;
+
+suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
+  _.test(&quot;my first test&quot;, []() {
+    expect(true, equal_to(true));
+  });
+});
+</code></pre>
+
+<h2 id="building-the-test">Building the test</h2>
+<p>Building a test is straightforward. Since mettle provides its own test runner
+with a <code>main()</code> function, the above source code is all you need for a
+fully-operational test. Just compile the test like so. Note that we compile in
+C++1y (aka C++14) mode, since mettle relies on some C++14 features to make test
+writing simpler:</p>
+<pre class="prettyprint well"><code class="sh">clang++ -std=c++1y -Imettle/include -lboost_program_options -o test_first test_first.cpp
+</code></pre>
+
+<p>Once it's built, just run the binary and check the test results.</p>
+<h2 id="command-line-options">Command-line options</h2>
+<h4 id="-verbose-n1">--verbose <em>N=1</em></h4>
+<p>Show output of tests as they're being run. If <code>--verbose</code> isn't passed, the
+verbosity is set to 0; if no value for <em>N</em> is specified, then the verbosity is
+set to 1.</p>
+<h5 id="verbosity-0">Verbosity 0</h5>
+<p>Don't show any output during the test run; only a summary after the fact will
+be shown.</p>
+<h5 id="verbosity-1">Verbosity 1</h5>
+<p>A single character for each test will be shown. <code>.</code> means a passed test, <code>!</code> a
+failed test, and <code>_</code> a skipped test.</p>
+<h5 id="verbosity-2">Verbosity 2</h5>
+<p>Show the full name of tests and suites as they're being run.</p>
+<h4 id="-color">--color</h4>
+<p>Print test results in color. This is good if your terminal supports colors,
+since it makes the resluts much easier to read!</p>
+<h4 id="-runs-n">--runs <em>N</em></h4>
+<p>Run the tests a total of <em>N</em> times. This is useful for catching intermittent
+failures. At the end, the summary will show the output of each failure for every
+test.</p>
 </div>
         </div>
 
