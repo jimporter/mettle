@@ -16,34 +16,54 @@ using suites_list = std::vector<runnable_suite>;
 namespace detail {
   suites_list all_suites;
 
-  class single_run_logger : public test_logger {
+  class verbose_logger {
   public:
-    single_run_logger(bool verbose) : verbose_(verbose) {}
+    verbose_logger(unsigned int verbosity)
+      : verbosity_(verbosity), first_(true), base_indent_(0) {}
+
+    void start_run() {
+      first_ = true;
+      if(verbosity_ == 1)
+        std::cout << std::string(base_indent_, ' ');
+    }
+
+    void end_run() {
+      if(verbosity_ == 1)
+        std::cout << std::endl;
+    }
 
     void start_suite(const std::vector<std::string> &suites) {
       using namespace term;
-      if(verbose_) {
-        const std::string indent((suites.size() - 1) * 2, ' ');
+      if(verbosity_ >= 2) {
+        if(!first_)
+          std::cout << std::endl;
+        first_ = false;
+
+        const std::string indent((suites.size() - 1) * 2 + base_indent_, ' ');
         std::cout << indent << format(sgr::bold) << suites.back()
                   << reset() << std::endl;
       }
     }
 
-    void end_suite(const std::vector<std::string> &) {
-      if(verbose_)
-        std::cout << std::endl;
-    }
+    void end_suite(const std::vector<std::string> &) {}
 
     void start_test(const test_name &test) {
-      if(verbose_) {
-        const std::string indent(test.suites.size() * 2, ' ');
+      if(verbosity_ >= 2) {
+        const std::string indent(test.suites.size() * 2 + base_indent_, ' ');
         std::cout << indent << test.test << " " << std::flush;
       }
     }
 
     void passed_test(const test_name &) {
       using namespace term;
-      if(verbose_) {
+      if(verbosity_ == 0) {
+        return;
+      }
+      else if(verbosity_ == 1) {
+        std::cout << format(sgr::bold, fg(color::green)) << "."
+                  << reset() << std::flush;
+      }
+      else {
         std::cout << format(sgr::bold, fg(color::green)) << "PASSED" << reset()
                   << std::endl;
       }
@@ -51,7 +71,14 @@ namespace detail {
 
     void skipped_test(const test_name &) {
       using namespace term;
-      if(verbose_) {
+      if(verbosity_ == 0) {
+        return;
+      }
+      else if(verbosity_ == 1) {
+        std::cout << format(sgr::bold, fg(color::blue)) << "_"
+                  << reset() << std::flush;
+      }
+      else {
         std::cout << format(sgr::bold, fg(color::blue)) << "SKIPPED" << reset()
                   << std::endl;
       }
@@ -59,79 +86,165 @@ namespace detail {
 
     void failed_test(const test_name &, const std::string &message) {
       using namespace term;
-      if(verbose_) {
+      if(verbosity_ == 0) {
+        return;
+      }
+      else if(verbosity_ == 1) {
+        std::cout << format(sgr::bold, fg(color::red)) << "!"
+                  << reset() << std::flush;
+      }
+      else {
         std::cout << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
                   << ": " << message << std::endl;
       }
     }
 
-    void summarize(const test_results &results) {
+    unsigned int verbosity() const {
+      return verbosity_;
+    }
+
+    void indent(size_t n) {
+      base_indent_ = n;
+    }
+  private:
+    unsigned int verbosity_;
+    bool first_;
+    size_t base_indent_;
+  };
+
+  class single_run_logger : public test_logger {
+  public:
+    single_run_logger(verbose_logger vlog)
+      : vlog_(vlog), total_(0), passes_(0), skips_(0) {}
+
+    void start_run() {
+      vlog_.start_run();
+    }
+
+    void end_run() {
+      vlog_.end_run();
+    }
+
+    void start_suite(const std::vector<std::string> &suites) {
+      vlog_.start_suite(suites);
+    }
+
+    void end_suite(const std::vector<std::string> &suites) {
+      vlog_.end_suite(suites);
+    }
+
+    void start_test(const test_name &test) {
+      total_++;
+      vlog_.start_test(test);
+    }
+
+    void passed_test(const test_name &test) {
+      passes_++;
+      vlog_.passed_test(test);
+    }
+
+    void skipped_test(const test_name &test) {
+      skips_++;
+      vlog_.skipped_test(test);
+    }
+
+    void failed_test(const test_name &test, const std::string &message) {
+      failures_.push_back({test, message});
+      vlog_.failed_test(test, message);
+    }
+
+    void summarize() {
       using namespace term;
-      std::cout << format(sgr::bold) << results.passes << "/" << results.total
+
+      if(vlog_.verbosity())
+        std::cout << std::endl;
+
+      std::cout << format(sgr::bold) << passes_ << "/" << total_
                 << " tests passed";
-      if(results.skips)
-        std::cout << " (" << results.skips << " skipped)";
+      if(skips_)
+        std::cout << " (" << skips_ << " skipped)";
       std::cout << reset() << std::endl;
 
-      for(auto &i : results.failures) {
+      for(auto &i : failures_) {
         std::cout << "  " << i.test.full_name() << " "
                   << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
                   << ": " << i.message << std::endl;
       }
     }
+
+    size_t failures() const {
+      return failures_.size();
+    }
   private:
-    bool verbose_;
+    struct failure {
+      test_name test;
+      std::string message;
+    };
+
+    verbose_logger vlog_;
+    size_t total_, passes_, skips_;
+    std::vector<const failure> failures_;
   };
 
   class multi_run_logger : public test_logger {
   public:
-    multi_run_logger(bool verbose)
-      : verbose_(verbose), skips_(0), total_(0), runs_(0) {}
-
-    void start_suite(const std::vector<std::string> &) {}
-    void end_suite(const std::vector<std::string> &) {}
-
-    void start_test(const test_name &) {}
-    void passed_test(const test_name &) {
-      using namespace term;
-      if(verbose_) {
-        std::cout << format(sgr::bold, fg(color::green)) << "."
-                  << reset() << std::flush;
-      }
+    multi_run_logger(verbose_logger vlog)
+      : vlog_(vlog), total_(0), skips_(0), runs_(0) {
+      if(vlog_.verbosity() == 2)
+        vlog_.indent(2);
     }
 
-    void skipped_test(const test_name &) {
+    void start_run() {
       using namespace term;
-      if(verbose_) {
-        std::cout << format(sgr::bold, fg(color::blue)) << "_"
-                  << reset() << std::flush;
-      }
-    }
-
-    void failed_test(const test_name &, const std::string &) {
-      using namespace term;
-      if(verbose_) {
-        std::cout << format(sgr::bold, fg(color::red)) << "!"
-                  << reset() << std::flush;
-      }
-    }
-
-    void summarize(const test_results &results) {
-      if(verbose_)
-        std::cout << std::endl;
-
       runs_++;
-      skips_ = results.skips;
-      total_ = results.total;
-      for(auto &i : results.failures)
-        failures_[i.test].push_back({runs_, i.message});
+      total_ = skips_ = 0;
+
+      if(vlog_.verbosity() == 2) {
+        if(runs_ > 1)
+          std::cout << std::endl;
+        std::cout << format(sgr::bold) << "Test run" << reset() << " "
+                  << format(sgr::bold, fg(color::yellow)) << "[#" << runs_
+                  << "]" << reset() << std::endl << std::endl;
+      }
+      vlog_.start_run();
     }
 
-    void summarize_all() {
+    void end_run() {
+      vlog_.end_run();
+    }
+
+    void start_suite(const std::vector<std::string> &suites) {
+      vlog_.start_suite(suites);
+    }
+
+    void end_suite(const std::vector<std::string> &suites) {
+      vlog_.end_suite(suites);
+    }
+
+    void start_test(const test_name &test) {
+      total_++;
+      vlog_.start_test(test);
+    }
+
+    void passed_test(const test_name &test) {
+      vlog_.passed_test(test);
+    }
+
+    void skipped_test(const test_name &test) {
+      skips_++;
+      vlog_.skipped_test(test);
+    }
+
+    void failed_test(const test_name &test, const std::string &message) {
+      failures_[test].push_back({runs_, message});
+      vlog_.failed_test(test, message);
+    }
+
+    void summarize() {
       using namespace term;
       size_t passes = total_ - skips_ - failures_.size();
 
-      if(verbose_)
+      if(vlog_.verbosity())
         std::cout << std::endl;
 
       std::cout << format(sgr::bold) << passes << "/" << total_
@@ -163,14 +276,14 @@ namespace detail {
       return failures_.size();
     }
   private:
-    struct failure_info {
+    struct failure {
       size_t run;
       std::string message;
     };
 
-    bool verbose_;
-    size_t skips_, total_, runs_;
-    std::map<test_name, std::vector<failure_info>> failures_;
+    verbose_logger vlog_;
+    size_t total_, skips_, runs_;
+    std::map<test_name, std::vector<const failure>> failures_;
   };
 }
 
@@ -203,7 +316,8 @@ int main(int argc, const char *argv[]) {
   opts::options_description desc("Allowed options");
   desc.add_options()
     ("help,h", "show help")
-    ("verbose", "show verbose output")
+    ("verbose", opts::value<unsigned int>()->implicit_value(1),
+     "show verbose output")
     ("color", "show colored output")
     ("runs", opts::value<size_t>(), "number of test runs")
   ;
@@ -218,7 +332,9 @@ int main(int argc, const char *argv[]) {
   }
 
   term::colors_enabled = args.count("color");
-  bool verbose = args.count("verbose");
+  verbose_logger vlog(
+    args.count("verbose") ? args["verbose"].as<unsigned int>() : 0
+  );
 
   if(args.count("runs")) {
     size_t runs = args["runs"].as<size_t>();
@@ -226,15 +342,20 @@ int main(int argc, const char *argv[]) {
       std::cout << "no test runs, exiting" << std::endl;
       return 1;
     }
-    multi_run_logger logger(verbose);
+
+    multi_run_logger logger(vlog);
     for(size_t i = 0; i < runs; i++)
       run_tests(all_suites, logger);
-    logger.summarize_all();
+    logger.summarize();
 
     return logger.failures();
   }
   else {
-    return run_tests(all_suites, single_run_logger(verbose));
+    single_run_logger logger(vlog);
+    run_tests(all_suites, logger);
+    logger.summarize();
+
+    return logger.failures();
   }
 }
 

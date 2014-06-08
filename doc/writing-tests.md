@@ -3,12 +3,12 @@
 
 ## Your first test
 
-So, you want to write some unit tests? Let's get started by taking a look at a
-minimal test file. We'll discuss each part in detail below:
+So, you want to write some unit tests? Let's get started by taking a look at the
+test file we used when [running tests](running-tests.md). We'll discuss each
+part in detail below:
 
 ```c++
 #include <mettle.hpp>
-
 using namespace mettle;
 
 suite<> first("my first suite", [](auto &_) {
@@ -17,24 +17,6 @@ suite<> first("my first suite", [](auto &_) {
   });
 });
 ```
-
-### Building the test
-
-Before we start looking at how our tests are defined, let's build and run the
-test to make sure everything's set up correctly.
-
-Building the test is straightforward. Since mettle provides its own test runner
-with a `main()` function, the above source code is all you need for a
-fully-operational test. Just compile the test like so. Note that we compile in
-C++1y (aka C++14) mode, since mettle relies on some C++14 features to make test
-writing simpler:
-
-```sh
-clang++ -std=c++1y -Imettle/include -lboost_program_options -o test_first test_first.cpp
-```
-
-Once it's built, just run the binary and check your test results. If you like
-pretty colors (I do!), you can pass `--color --verbose` to the executable.
 
 ### Dissecting the test file
 

@@ -41,21 +41,12 @@ inline bool operator >=(const test_name &lhs, const test_name &rhs) {
   return lhs.id >= rhs.id;
 }
 
-struct test_results {
-  test_results() : passes(0), skips(0), total(0) {}
-
-  struct failure {
-    test_name test;
-    std::string message;
-  };
-
-  std::vector<const failure> failures;
-  size_t passes, skips, total;
-};
-
 class test_logger {
 public:
   virtual ~test_logger() {}
+
+  virtual void start_run() = 0;
+  virtual void end_run() = 0;
 
   virtual void start_suite(const std::vector<std::string> &suites) = 0;
   virtual void end_suite(const std::vector<std::string> &suites) = 0;
@@ -65,16 +56,12 @@ public:
   virtual void skipped_test(const test_name &test) = 0;
   virtual void failed_test(const test_name &test,
                            const std::string &message) = 0;
-
-  virtual void summarize(const test_results &results) = 0;
 };
 
 namespace detail {
   template<typename T>
-  void run_tests_impl(
-    test_results &results, const T &suites, test_logger &logger,
-    std::vector<std::string> &parents
-  ) {
+  void run_tests_impl(const T &suites, test_logger &logger,
+                      std::vector<std::string> &parents) {
     for(auto &suite : suites) {
       parents.push_back(suite.name());
 
@@ -82,46 +69,39 @@ namespace detail {
 
       for(auto &test : suite) {
         const test_name name = {parents, test.name, test.id};
-        results.total++;
-
         logger.start_test(name);
+
         if(test.skip) {
-          results.skips++;
           logger.skipped_test(name);
           continue;
         }
 
         auto result = test.function();
-        if(result.passed) {
-          results.passes++;
+        if(result.passed)
           logger.passed_test(name);
-        }
-        else {
-          results.failures.push_back({name, result.message});
+        else
           logger.failed_test(name, result.message);
-        }
       }
 
       logger.end_suite(parents);
 
-      run_tests_impl(results, suite.subsuites(), logger, parents);
+      run_tests_impl(suite.subsuites(), logger, parents);
       parents.pop_back();
     }
   }
 }
 
 template<typename T>
-inline size_t run_tests(const T &suites, test_logger &logger) {
-  test_results results;
+inline void run_tests(const T &suites, test_logger &logger) {
   std::vector<std::string> parents;
-  detail::run_tests_impl(results, suites, logger, parents);
-  logger.summarize(results);
-  return results.failures.size();
+  logger.start_run();
+  detail::run_tests_impl(suites, logger, parents);
+  logger.end_run();
 }
 
 template<typename T>
-inline size_t run_tests(const T &suites, test_logger &&logger) {
-  return run_tests(suites, logger);
+inline void run_tests(const T &suites, test_logger &&logger) {
+  run_tests(suites, logger);
 }
 
 } // namespace mettle
