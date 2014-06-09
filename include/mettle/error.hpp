@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_UTILS_HPP
-#define INC_METTLE_UTILS_HPP
+#ifndef INC_METTLE_ERROR_HPP
+#define INC_METTLE_ERROR_HPP
 
 #include <stdexcept>
 

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "../output.hpp"
-#include "../utils.hpp"
+#include "../error.hpp"
 
 namespace mettle {
 

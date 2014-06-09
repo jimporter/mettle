@@ -6,6 +6,7 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 
+#include "glue.hpp"
 #include "term.hpp"
 #include "runner.hpp"
 
@@ -285,11 +286,6 @@ namespace detail {
     size_t total_, skips_, runs_;
     std::map<test_name, std::vector<const failure>> failures_;
   };
-}
-
-template<typename ...T, typename F>
-inline auto make_suite(const std::string &name, F &&f) {
-  return make_basic_suite<expectation_error, T..., F>(name, std::forward<F>(f));
 }
 
 template<typename Exception, typename ...T>
