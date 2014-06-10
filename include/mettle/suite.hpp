@@ -2,6 +2,7 @@
 #define INC_METTLE_SUITE_HPP
 
 #include <algorithm>
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <string>
@@ -46,15 +47,14 @@ namespace detail {
   class id_generator {
   public:
     static inline T generate() {
-      // XXX: This could stand to be thread-safe.
       return id_++;
     }
   private:
-    static T id_;
+    static std::atomic<T> id_;
   };
 
   template<typename T>
-  T id_generator<T>::id_ = 0;
+  std::atomic<T> id_generator<T>::id_(0);
 }
 
 struct test_result {
