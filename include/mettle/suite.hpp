@@ -272,12 +272,12 @@ auto make_subsuite(const std::string &name, const F &f) {
 }
 
 template<typename ...T, typename Parent, typename F>
-auto make_subsuite(const Parent &, const std::string &name, const F &f) {
+inline auto make_subsuite(const Parent &, const std::string &name, const F &f) {
   return make_subsuite<typename Parent::tuple_type, T...>(name, f);
 }
 
 template<typename ...T, typename Parent, typename F>
-void subsuite(Parent &builder, const std::string &name, const F &f) {
+inline void subsuite(Parent &builder, const std::string &name, const F &f) {
   builder.subsuite(make_subsuite<T...>(builder, name, f));
 }
 
