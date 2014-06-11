@@ -208,3 +208,41 @@ suite<int> nested_fixtures("suite with subsuites", [](auto &_) {
 
 As you can see above, subsuites inherit their parents' fixtures, much like they
 inherit their parents' setup and teardown functions.
+
+## Parameterizing tests
+
+While suites are a good way to group your tests together, sometimes you want to
+run the *same* tests on several different types of objects. In this case, all
+you need to do is specify *multiple* fixtures when defining a test suite. The
+example below creates two test suites, one with a fixture of `int` and one with
+a fixture of `float`:
+
+```c++
+suite<int, float> param_test("parameterized suite", [](auto &_) {
+  _.test("my test", [](auto &fixture) {
+    /* ... */
+  });
+});
+```
+
+This works just the same for subsuites as well:
+
+```c++
+suite<> param_sub_test("parameterized subsuites", [](auto &_) {
+  subsuite<int, float>(_, "parameterized suite 1", [](auto &_) {
+    /* ... */
+  });
+
+  _.template subsuite<int, float>(_, "parameterized suite 2", [](auto &_) {
+    /* ... */
+  });
+});
+```
+
+One subtle difference you may have noticed is that now, our test definitions
+use a generic lambda: `[](auto &fixture) { /* ... */ }`. As you might imagine,
+this allows the test function to accept a fixture of either an `int` or a
+`float` and to do the usual thing when a template is instantiated. Of course,
+you don't *always* need to use `auto` here; if all of your fixtures inherit from
+a common base type, you can use an ordinary lambda that takes a reference to the
+base type.

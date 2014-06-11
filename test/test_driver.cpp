@@ -27,6 +27,21 @@ suite<suites_list> test_driver("driver suite declaration", [](auto &_) {
     expect(inner.size(), equal_to<size_t>(2));
   });
 
+  _.test("create a test suite with parameterized fixtures",
+         [](suites_list &suites) {
+    suite<int, float>("inner test suite", [](auto &_){
+      _.test("inner test", [](auto &) {});
+      _.skip_test("skipped test", [](auto &) {});
+    }, suites);
+
+    expect(suites.size(), equal_to<size_t>(2));
+
+    auto &int_suite = suites[0];
+    expect(int_suite.size(), equal_to<size_t>(2));
+    auto &float_suite = suites[1];
+    expect(float_suite.size(), equal_to<size_t>(2));
+  });
+
   _.test("create a test suite that throws", [](suites_list &suites) {
     try {
       suite<>("broken test suite", [](auto &){

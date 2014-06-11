@@ -29,16 +29,5 @@ suite<my_fixture> fix("fixture suite", [](auto &_) {
     });
   });
 
-  subsuite<float, float>(_, "another subsuite", [](auto &_) {
-    _.setup([](my_fixture &f, float &x, float &y) {
-      x = 1;
-      y = 2;
-    });
-
-    _.test("a subtest", [](my_fixture &f, float &x, float &y) {
-      expect(y - x, equal_to(1));
-    });
-  });
-
 });
 

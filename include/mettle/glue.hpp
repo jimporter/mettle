@@ -6,10 +6,20 @@
 
 namespace mettle {
 
-template<typename ...T, typename F>
+template<typename ...Fixture, typename F>
 inline runnable_suite make_suite(const std::string &name, F &&f) {
-  return make_basic_suite<expectation_error, T...>(name, std::forward<F>(f));
+  return make_basic_suite<expectation_error, Fixture...>(
+    name, std::forward<F>(f)
+  );
 }
+
+template<typename ...Fixture, typename F>
+inline auto make_suites(const std::string &name, F &&f) {
+  return make_basic_suites<expectation_error, Fixture...>(
+    name, std::forward<F>(f)
+  );
+}
+
 
 } // namespace mettle
 

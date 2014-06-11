@@ -288,15 +288,13 @@ namespace detail {
   };
 }
 
-template<typename Exception, typename ...T>
+template<typename Exception, typename ...Fixture>
 struct basic_suite {
-public:
   template<typename F>
-  basic_suite(const std::string &name, F &&f,
+  basic_suite(const std::string &name, const F &f,
               suites_list &suites = detail::all_suites) {
-    suites.push_back(
-      make_basic_suite<Exception, T...>(name, std::forward<F>(f))
-    );
+    for (auto &i : make_basic_suites<Exception, Fixture...>(name, f))
+      suites.push_back(std::move(i));
   }
 };
 
