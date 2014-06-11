@@ -127,6 +127,8 @@
         
             <li><a href="#subsuites">Subsuites</a></li>
         
+            <li><a href="#parameterizing-tests">Parameterizing tests</a></li>
+        
     
     </ul>
 </div></div>
@@ -310,6 +312,38 @@ a bunch of subsuites, reducing code duplication:</p>
 
 <p>As you can see above, subsuites inherit their parents' fixtures, much like they
 inherit their parents' setup and teardown functions.</p>
+<h2 id="parameterizing-tests">Parameterizing tests</h2>
+<p>While suites are a good way to group your tests together, sometimes you want to
+run the <em>same</em> tests on several different types of objects. In this case, all
+you need to do is specify <em>multiple</em> fixtures when defining a test suite. The
+example below creates two test suites, one with a fixture of <code>int</code> and one with
+a fixture of <code>float</code>:</p>
+<pre class="prettyprint well"><code class="c++">suite&lt;int, float&gt; param_test(&quot;parameterized suite&quot;, [](auto &amp;_) {
+  _.test(&quot;my test&quot;, [](auto &amp;fixture) {
+    /* ... */
+  });
+});
+</code></pre>
+
+<p>This works just the same for subsuites as well:</p>
+<pre class="prettyprint well"><code class="c++">suite&lt;&gt; param_sub_test(&quot;parameterized subsuites&quot;, [](auto &amp;_) {
+  subsuite&lt;int, float&gt;(_, &quot;parameterized suite 1&quot;, [](auto &amp;_) {
+    /* ... */
+  });
+
+  _.template subsuite&lt;int, float&gt;(_, &quot;parameterized suite 2&quot;, [](auto &amp;_) {
+    /* ... */
+  });
+});
+</code></pre>
+
+<p>One subtle difference you may have noticed is that now, our test definitions
+use a generic lambda: <code>[](auto &amp;fixture) { /* ... */ }</code>. As you might imagine,
+this allows the test function to accept a fixture of either an <code>int</code> or a
+<code>float</code> and to do the usual thing when a template is instantiated. Of course,
+you don't <em>always</em> need to use <code>auto</code> here; if all of your fixtures inherit from
+a common base type, you can use an ordinary lambda that takes a reference to the
+base type.</p>
 </div>
         </div>
 
