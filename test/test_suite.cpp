@@ -96,16 +96,6 @@ suite<> test_suite("suite creation", [](auto &_) {
     ));
   });
 
-  _.test("create a test suite that throws", []() {
-    auto make_bad_suite = []() {
-      auto s = make_suite<>("broken test suite", [](auto &){
-        throw std::runtime_error("bad");
-      });
-    };
-
-    expect(make_bad_suite, thrown<std::runtime_error>("bad"));
-  });
-
   _.test("create a test suite with fixture and setup/teardown", []() {
     auto s = make_suite<int>("inner test suite", [](auto &_){
       _.setup([](int &) {});
@@ -119,6 +109,16 @@ suite<> test_suite("suite creation", [](auto &_) {
     expect(s, array(
       match_test("inner test", false), match_test("skipped test", true)
     ));
+  });
+
+  _.test("create a test suite that throws", []() {
+    auto make_bad_suite = []() {
+      auto s = make_suite<>("broken test suite", [](auto &){
+        throw std::runtime_error("bad");
+      });
+    };
+
+    expect(make_bad_suite, thrown<std::runtime_error>("bad"));
   });
 
   auto check_subsuite_structure = [](const runnable_suite &suite) {
