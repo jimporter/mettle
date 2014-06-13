@@ -107,8 +107,17 @@ suite<> test_suite("suite creation", [](auto &_) {
     });
 
     expect(suites.size(), equal_to<size_t>(2));
-    for(auto &s : suites)
-      check_suite(s);
+
+    std::string names[] = {
+      "inner test suite (int)", "inner test suite (float)"
+    };
+    for(size_t i = 0; i < 2; i++) {
+      expect(suites[i].name(), equal_to( names[i] ));
+      expect(suites[i].size(), equal_to<size_t>(2));
+      expect(suites[i], array(
+        match_test("inner test", false), match_test("skipped test", true)
+      ));
+    }
   });
 
   _.test("create a test suite via make_suites", [&check_suite]() {
@@ -201,7 +210,27 @@ suite<> test_suite("suite creation", [](auto &_) {
 
     });
 
-    _.test("create a parameterized subsuite", []() {
+    auto check_param_subsuites = [](const runnable_suite &suite) {
+      expect(suite.name(), equal_to("inner test suite"));
+      expect(suite.size(), equal_to<size_t>(0));
+      expect(suite, array());
+      expect(suite.subsuites().size(), equal_to<size_t>(2));
+
+      std::string names[] = {
+        "subsuite (int)", "subsuite (float)"
+      };
+      for(size_t i = 0; i < 2; i++) {
+        auto &sub = suite.subsuites()[i];
+        expect(sub.name(), equal_to( names[i] ));
+        expect(sub.size(), equal_to<size_t>(2));
+        expect(sub, array(
+          match_test("subtest", false), match_test("skipped subtest", true)
+        ));
+        expect(sub.subsuites().size(), equal_to<size_t>(0));
+      }
+    };
+
+    _.test("create a parameterized subsuite", [&check_param_subsuites]() {
       auto s = make_suite<>("inner test suite", [](auto &_) {
         _.template subsuite<int, float>("subsuite", [](auto &_) {
           _.test("subtest", [](auto &) {});
@@ -209,10 +238,11 @@ suite<> test_suite("suite creation", [](auto &_) {
         });
       });
 
-      expect(s.subsuites().size(), equal_to<size_t>(2));
+      check_param_subsuites(s);
     });
 
-    _.test("create a parameterized subsuite with helper syntax", []() {
+    _.test("create a parameterized subsuite with helper syntax",
+           [&check_param_subsuites]() {
       auto s = make_suite<>("inner test suite", [](auto &_) {
         subsuite<int, float>(_, "subsuite", [](auto &_) {
           _.test("subtest", [](auto &) {});
@@ -220,14 +250,14 @@ suite<> test_suite("suite creation", [](auto &_) {
         });
       });
 
-      expect(s.subsuites().size(), equal_to<size_t>(2));
+      check_param_subsuites(s);
     });
 
   });
 
 });
 
-suite<> test_failures("test running", [](auto &_) {
+suite<> test_running("test running", [](auto &_) {
 
   _.test("passing test called", []() {
     run_counter<> test;

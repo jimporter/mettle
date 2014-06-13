@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "type_name.hpp"
+
 namespace mettle {
 
 namespace detail {
@@ -56,6 +58,11 @@ namespace detail {
 
   template<typename T>
   std::atomic<T> id_generator<T>::id_(0);
+
+  template<typename T>
+  std::string annotate_type(const std::string &s) {
+    return s + " (" + type_name<T>() + ")";
+  }
 }
 
 struct test_result {
@@ -140,14 +147,25 @@ make_subsuites(const std::string &name, const F &f) {
   return {{ make_subsuite<Parent>(name, f) }};
 }
 
-template<typename Parent, typename First, typename ...Rest, typename F>
+template<typename Parent, typename Fixture, typename F>
+std::array<typename subsuite_builder<Parent>::compiled_suite_type, 1>
+make_subsuites(const std::string &name, const F &f) {
+  return {{ make_subsuite<Parent, Fixture>(name, f) }};
+}
+
+template<typename Parent, typename First, typename Second, typename ...Rest,
+         typename F>
 std::array<
   typename subsuite_builder<Parent, First>::compiled_suite_type,
-  sizeof...(Rest) + 1
+  sizeof...(Rest) + 2
 >
 make_subsuites(const std::string &name, const F &f) {
-  return {{ make_subsuite<Parent, First>(name, f),
-            make_subsuite<Parent, Rest>(name, f)... }};
+  using detail::annotate_type;
+  return {{
+    make_subsuite<Parent, First>(annotate_type<First>(name), f),
+    make_subsuite<Parent, Second>(annotate_type<Second>(name), f),
+    make_subsuite<Parent, Rest>(annotate_type<Rest>(name), f)...
+  }};
 }
 
 template<typename ...T>
@@ -303,11 +321,22 @@ make_basic_suites(const std::string &name, const F &f) {
   return {{ make_basic_suite<Exception>(name, f) }};
 }
 
-template<typename Exception, typename First, typename ...Rest, typename F>
-std::array<runnable_suite, sizeof...(Rest) + 1>
+template<typename Exception, typename Fixture, typename F>
+std::array<runnable_suite, 1>
 make_basic_suites(const std::string &name, const F &f) {
-  return {{ make_basic_suite<Exception, First>(name, f),
-            make_basic_suite<Exception, Rest>(name, f)... }};
+  return {{ make_basic_suite<Exception, Fixture>(name, f) }};
+}
+
+template<typename Exception, typename First, typename Second, typename ...Rest,
+         typename F>
+std::array<runnable_suite, sizeof...(Rest) + 2>
+make_basic_suites(const std::string &name, const F &f) {
+  using detail::annotate_type;
+  return {{
+    make_basic_suite<Exception, First>(annotate_type<First>(name), f),
+    make_basic_suite<Exception, Second>(annotate_type<Second>(name), f),
+    make_basic_suite<Exception, Rest>(annotate_type<Rest>(name), f)...
+  }};
 }
 
 template<typename Parent, typename ...Fixture, typename F>
