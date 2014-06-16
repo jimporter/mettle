@@ -34,10 +34,10 @@ $(TESTS) $(EXAMPLES): %: %.o
 clean: clean-tests clean-examples
 
 clean-tests:
-	rm -f $(TESTS) $(TESTS:=.o) $(TESTS:=.d)
+	rm -f $(TESTS) test/*.o test/*.d
 
 clean-examples:
-	rm -f $(EXAMPLES) $(EXAMPLES:=.o) $(EXAMPLES:=.d)
+	rm -f $(EXAMPLES) examples/*.o examples/*.d
 
 gitignore:
 	@for file in $(TESTS) $(EXAMPLES) ; do \
