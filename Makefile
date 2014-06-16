@@ -1,13 +1,18 @@
 CXXFLAGS := -std=c++1y -stdlib=libc++ -Wall -Wextra -pedantic -Werror
 
+TESTS := $(patsubst %.cpp,%,$(wildcard test/*.cpp))
+EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
+
 .PHONY: clean test
 
-test:
-	clang++ $(CXXFLAGS) -Iinclude test/test_all.cpp -lboost_program_options -lsupc++ -o test/test_all
+test: clean test/test_all
 	test/test_all --verbose 2 --color
 
-examples/% : examples/%.cpp
+test/%: test/%.cpp
+	clang++ $(CXXFLAGS) -Iinclude $< -lboost_program_options -lsupc++ -o $@
+
+examples/%: examples/%.cpp
 	clang++ $(CXXFLAGS) -Iinclude $< -lboost_program_options -lsupc++ -o $@
 
 clean:
-	rm test/test_all
+	rm -f $(EXAMPLES) $(TESTS)
