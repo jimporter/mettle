@@ -40,6 +40,5 @@ clean-examples:
 	rm -f $(EXAMPLES) examples/*.o examples/*.d
 
 gitignore:
-	@for file in $(TESTS) $(EXAMPLES) ; do \
-	  grep -xq "$$file" .gitignore || echo $$file >> .gitignore ; \
-	done
+	@echo $(TESTS) | sed -e 's/ /\n/g' > test/.gitignore
+	@echo $(EXAMPLES) | sed -e 's/ /\n/g' > examples/.gitignore

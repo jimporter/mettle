@@ -1,12 +1,3 @@
 site
 *.o
 *.d
-test/test_all
-test/test_driver
-test/test_matchers
-test/test_output
-test/test_suite
-examples/test_basic
-examples/test_fixture
-examples/test_parameterize
-examples/test_subsuite

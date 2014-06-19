@@ -1,0 +1,4 @@
+examples/test_basic
+examples/test_fixture
+examples/test_parameterize
+examples/test_subsuite
