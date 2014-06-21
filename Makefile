@@ -5,17 +5,10 @@ LDFLAGS := -lboost_program_options -lsupc++
 TESTS := $(patsubst %.cpp,%,$(wildcard test/*.cpp))
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
 
-.PHONY: clean clean-tests clean-examples test examples
-
 # Include all the existing dependency files for automatic #include dependency
 # handling.
 -include $(TESTS:=.d)
 -include $(EXAMPLES:=.d)
-
-test: test/test_all
-	test/test_all --verbose 2 --color
-
-examples: $(EXAMPLES)
 
 # Build .o files and the corresponding .d (dependency) files. For more info, see
 # <http://scottmcpeak.com/autodepend/autodepend.html>.
@@ -31,14 +24,24 @@ examples: $(EXAMPLES)
 $(TESTS) $(EXAMPLES): %: %.o
 	$(CXX) $(CXXFLAGS) $< $(LDFLAGS) -o $@
 
+examples: $(EXAMPLES)
+
+.PHONY: test
+test: test/test_all
+	test/test_all --verbose 2 --color
+
+.PHONY: clean
 clean: clean-tests clean-examples
 
+.PHONY: clean-tests
 clean-tests:
 	rm -f $(TESTS) test/*.o test/*.d
 
+.PHONY: clean-examples
 clean-examples:
 	rm -f $(EXAMPLES) examples/*.o examples/*.d
 
+.PHONY: gitignore
 gitignore:
 	@echo $(TESTS) | sed -e 's/ /\n/g' > test/.gitignore
 	@echo $(EXAMPLES) | sed -e 's/ /\n/g' > examples/.gitignore
