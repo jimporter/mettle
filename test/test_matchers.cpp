@@ -117,21 +117,21 @@ suite<> matcher_tests("test matchers", [](auto &_) {
   });
 
   subsuite<>(_, "combinatoric", [](auto &_) {
-    _.test("any_of()", []() {
-      expect(123, any_of(equal_to(1), equal_to(2), equal_to(123)));
-      expect(123, any_of(1, 2, 123));
-      expect(123, is_not(any_of(1, 2, 3)));
-      expect(123, is_not(any_of()));
+    _.test("any()", []() {
+      expect(123, any(equal_to(1), equal_to(2), equal_to(123)));
+      expect(123, any(1, 2, 123));
+      expect(123, is_not(any(1, 2, 3)));
+      expect(123, is_not(any()));
 
-      expect(any_of(1, 2, 3).desc(), equal_to("any of(1, 2, 3)"));
+      expect(any(1, 2, 3).desc(), equal_to("any of(1, 2, 3)"));
     });
 
-    _.test("all_of()", []() {
-      expect(123, all_of(123));
-      expect(123, all_of(not_equal_to(1), not_equal_to(2), greater(3)));
-      expect(123, all_of());
+    _.test("all()", []() {
+      expect(123, all(123));
+      expect(123, all(not_equal_to(1), not_equal_to(2), greater(3)));
+      expect(123, all());
 
-      expect(all_of(1, 2, 3).desc(), equal_to("all of(1, 2, 3)"));
+      expect(all(1, 2, 3).desc(), equal_to("all of(1, 2, 3)"));
     });
   });
 

@@ -52,15 +52,19 @@ namespace detail {
   };
 }
 
+// We'd call these any_of and all_of like the std:: functions, but doing so
+// would introduce an ambiguity where the std:: versions could be preferred via
+// ADL if we pass in three arguments.
+
 template<typename ...T>
-inline auto any_of(T &&...matchers) {
+inline auto any(T &&...matchers) {
   return detail::reduce_impl<T...>(
     "any of", std::logical_or<bool>(), false, std::forward<T>(matchers)...
   );
 }
 
 template<typename ...T>
-inline auto all_of(T &&...matchers) {
+inline auto all(T &&...matchers) {
   return detail::reduce_impl<T...>(
     "all of", std::logical_and<bool>(), true, std::forward<T>(matchers)...
   );

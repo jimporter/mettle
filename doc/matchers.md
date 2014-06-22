@@ -99,11 +99,11 @@ A matcher that returns `true` when the expected value is approximately equal to
 
 ### Combinatoric matchers
 
-#### any_of(*matchers...*)
+#### any(*matchers...*)
 
 A matcher that returns `true` when *any of* its composed matchers are true.
 
-#### all_of(*matchers...*)
+#### all(*matchers...*)
 
 A matcher that returns `true` when *all of* its composed matchers are true.
 

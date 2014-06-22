@@ -40,7 +40,7 @@ suite<> basic("a basic suite", [](auto &_) {
   });
 
   _.skip_test("a skipped test", []() {
-    expect(3, any_of(1, 2, 4));
+    expect(3, any(1, 2, 4));
   });
 
   for(int i = 0; i < 4; i++) {

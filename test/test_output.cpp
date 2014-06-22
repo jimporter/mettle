@@ -101,7 +101,7 @@ suite<> output("debug output", [](auto &_){
     });
 
     _.test("callables", []() {
-      auto not_boolean = is_not(any_of("true", "1"));
+      auto not_boolean = is_not(any("true", "1"));
 
       int x = 0;
       expect(stringify([]() {}), not_boolean);
