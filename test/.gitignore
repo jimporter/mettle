@@ -1,5 +1,5 @@
-test/test_all
-test/test_driver
-test/test_matchers
-test/test_output
-test/test_suite
+test_all
+test_driver
+test_matchers
+test_output
+test_suite

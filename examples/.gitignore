@@ -1,4 +1,4 @@
-examples/test_basic
-examples/test_fixture
-examples/test_parameterize
-examples/test_subsuite
+test_basic
+test_fixture
+test_parameterize
+test_subsuite

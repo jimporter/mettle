@@ -43,5 +43,6 @@ clean-examples:
 
 .PHONY: gitignore
 gitignore:
-	@echo $(TESTS) | sed -e 's/ /\n/g' > test/.gitignore
-	@echo $(EXAMPLES) | sed -e 's/ /\n/g' > examples/.gitignore
+	@echo $(TESTS) | sed -e 's|test/||g' -e 's/ /\n/g' > test/.gitignore
+	@echo $(EXAMPLES) | sed -e 's|examples/||g' -e 's/ /\n/g' > \
+	  examples/.gitignore
