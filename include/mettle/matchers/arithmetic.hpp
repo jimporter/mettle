@@ -11,16 +11,16 @@
 namespace mettle {
 
 template<typename T>
-auto near_to(const T &expected, const T &epsilon) {
-  std::stringstream s;
-  s << "~= " << ensure_printable(expected);
-
-  return make_matcher([expected, epsilon](const auto &actual) -> bool {
-    // If one of expected or actual is NaN, mag is undefined, but that's ok
-    // because we'll always return false in that case, just like we should.
-    auto mag = std::max<T>(std::abs(expected), std::abs(actual));
-    return std::abs(actual - expected) <= mag * epsilon;
-  }, s.str());
+auto near_to(T &&expected, const T &epsilon) {
+  return make_matcher(
+    std::forward<T>(expected),
+    [epsilon](const auto &actual, const auto &expected) -> bool {
+      // If one of expected or actual is NaN, mag is undefined, but that's ok
+      // because we'll always return false in that case, just like we should.
+      auto mag = std::max<T>(std::abs(expected), std::abs(actual));
+      return std::abs(actual - expected) <= mag * epsilon;
+    }, "~= "
+  );
 }
 
 template<typename T>
@@ -33,13 +33,13 @@ inline auto near_to(T &&expected) -> typename std::enable_if<
 }
 
 template<typename T>
-auto near_to_abs(const T &expected, const T &tolerance) {
-  std::stringstream s;
-  s << "~= " << ensure_printable(expected);
-
-  return make_matcher([expected, tolerance](const auto &actual) -> bool {
-    return std::abs(actual - expected) <= tolerance;
-  }, s.str());
+auto near_to_abs(T &&expected, const T &tolerance) {
+  return make_matcher(
+    std::forward<T>(expected),
+    [tolerance](const auto &actual, const auto &expected) -> bool {
+      return std::abs(actual - expected) <= tolerance;
+    }, "~= "
+  );
 }
 
 } // namespace mettle

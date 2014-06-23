@@ -10,26 +10,30 @@ namespace mettle {
 
 template<typename T>
 auto member(T &&thing) {
-  auto matcher = ensure_matcher(std::forward<T>(thing));
-  return make_matcher([matcher](const auto &value) -> bool {
-    for(auto &i : value) {
-      if(matcher(i))
-        return true;
-    }
-    return false;
-  }, "member " + matcher.desc());
+  return make_matcher(
+    ensure_matcher(std::forward<T>(thing)),
+    [](const auto &value, auto &&matcher) -> bool {
+      for(auto &i : value) {
+        if(matcher(i))
+          return true;
+      }
+      return false;
+    }, "member "
+  );
 }
 
 template<typename T>
 auto each(T &&thing) {
-  auto matcher = ensure_matcher(std::forward<T>(thing));
-  return make_matcher([matcher](const auto &value) -> bool {
-    for(auto &i : value) {
-      if(!matcher(i))
-        return false;
-    }
-    return true;
-  }, "each " + matcher.desc());
+  return make_matcher(
+    ensure_matcher(std::forward<T>(thing)),
+    [](const auto &value, auto &&matcher) -> bool {
+      for(auto &i : value) {
+        if(!matcher(i))
+          return false;
+      }
+      return true;
+    }, "each "
+  );
 }
 
 namespace detail {
