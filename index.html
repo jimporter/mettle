@@ -161,7 +161,7 @@ suite&lt;&gt; basic(&quot;a basic suite&quot;, [](auto &amp;_) {
   });
 
   _.skip_test(&quot;a skipped test&quot;, []() {
-    expect(3, any_of(1, 2, 4));
+    expect(3, any(1, 2, 4));
   });
 
   for(int i = 0; i &lt; 4; i++) {

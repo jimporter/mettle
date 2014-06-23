@@ -198,9 +198,9 @@ likely fail if one of the values is zero. In that case, use <code>near_to_abs</c
 <p>A matcher that returns <code>true</code> when the expected value is approximately equal to
 <code>value</code>, specifically when <code>std::abs(actual - expected) &lt;= tolerance</code>.</p>
 <h3 id="combinatoric-matchers">Combinatoric matchers</h3>
-<h4 id="any_ofmatchers">any_of(<em>matchers...</em>)</h4>
+<h4 id="anymatchers">any(<em>matchers...</em>)</h4>
 <p>A matcher that returns <code>true</code> when <em>any of</em> its composed matchers are true.</p>
-<h4 id="all_ofmatchers">all_of(<em>matchers...</em>)</h4>
+<h4 id="allmatchers">all(<em>matchers...</em>)</h4>
 <p>A matcher that returns <code>true</code> when <em>all of</em> its composed matchers are true.</p>
 <h3 id="collection-matchers">Collection matchers</h3>
 <h4 id="membermatcher">member(<em>matcher</em>)</h4>
@@ -244,16 +244,39 @@ normal with built-in matchers as you'd expect.</p>
 <h3 id="helper-functions">Helper functions</h3>
 <h4 id="make_matcherfunction-desc">make_matcher(<em>function</em>, <em>desc</em>)</h4>
 <p>The easiest way to create your own matcher is with the <code>make_matcher</code> function.
-This takes two paramters: first, a function object that accepts a value of any
+This takes two parameters: first, a function object that accepts a value of any
 type, and returns a <code>bool</code> (with <code>true</code> naturally meaning a successful match);
 and second, a string describing the matcher.</p>
-<p><code>make_matcher</code> returns a <code>basic_matcher&lt;T&gt;</code>, where <code>T</code> is the type of the
+<p><code>make_matcher</code> returns a <code>basic_matcher&lt;void, F&gt;</code>, where <code>F</code> is the type of the
 function, but it's easier to just deduce the return type. For instance, here's a
 simple matcher that returns <code>true</code> when the actual value is 4:</p>
 <pre class="prettyprint well"><code class="c++">auto match_four() {
   return make_matcher([](const auto &amp;value) -&gt; bool {
     return value == 4;
   }, &quot;== 4&quot;);
+}
+</code></pre>
+
+<h4 id="make_matchercapture-function-prefix">make_matcher(<em>capture</em>, <em>function</em>, <em>prefix</em>)</h4>
+<p>You can also <em>capture</em> a value to use with your matcher; while you certainly
+<em>can</em> capture the value via a lambda, passing the variable directly to
+<code>make_matcher</code> allows it to be printed automatically when <code>desc()</code> is called. In
+this overload, <code>function</code> works as above, except that it takes a second argument
+for the captured object. The final argument, <code>prefix</code>, is a string that will be
+prepended to the printed form of <code>capture</code>.</p>
+<p>This overload of <code>make_matcher</code> returns a <code>basic_matcher&lt;T, F&gt;</code>, where <code>T</code> is
+the type of the capture and <code>F</code> is the type of the function. Again, it's easier
+to just deduce the return type. Here's an example of a matcher that returns
+<code>true</code> when two numbers are off by one:</p>
+<pre class="prettyprint well"><code class="c++">template&lt;typename T&gt;
+auto off_by_one(T &amp;&amp;expected) {
+  return make_matcher(
+    expected,
+    [](const auto &amp;actual, const auto &amp;expected) -&gt; bool {
+      auto x = std::minmax&lt;T&gt;(actual, expected);
+      return x.second - x.first == 1;
+    }, &quot;off by 1 from &quot;
+  );
 }
 </code></pre>
 
