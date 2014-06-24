@@ -199,7 +199,8 @@ suite<> matcher_tests("test matchers", [](auto &_) {
       expect(arr, is_not( sorted(std::greater<int>()) ));
 
       expect(sorted().desc(), equal_to("sorted"));
-      expect(sorted(std::less<int>()).desc(), equal_to("sorted"));
+      expect(sorted(std::less<int>()).desc(),
+             equal_to("sorted by " + type_name<std::less<int>>()));
     });
   });
 
@@ -213,7 +214,7 @@ suite<> matcher_tests("test matchers", [](auto &_) {
       expect(int_thrower, thrown());
       expect(noop, is_not(thrown()));
 
-      expect(thrown().desc(), equal_to("threw"));
+      expect(thrown().desc(), equal_to("threw exception"));
     });
 
     _.test("thrown<T>()", [thrower, int_thrower, noop]() {
@@ -226,7 +227,8 @@ suite<> matcher_tests("test matchers", [](auto &_) {
 
       expect(noop, is_not(thrown<std::exception>()));
 
-      expect(thrown<std::exception>().desc(), equal_to("threw anything"));
+      expect(thrown<std::exception>().desc(),
+             equal_to("threw<" + type_name<std::exception>() + "> anything"));
     });
 
     _.test("thrown<T>(what)", [thrower, int_thrower, noop]() {
@@ -239,7 +241,8 @@ suite<> matcher_tests("test matchers", [](auto &_) {
       expect(noop, is_not(thrown<std::exception>( anything() )));
 
       expect(thrown<std::exception>("message").desc(),
-             equal_to("threw \"message\""));
+             equal_to("threw<" + type_name<std::exception>() +
+                      "> what: \"message\""));
     });
 
     _.test("thrown_raw<T>()", [thrower, int_thrower, noop]() {
@@ -251,7 +254,8 @@ suite<> matcher_tests("test matchers", [](auto &_) {
 
       expect(noop, is_not(thrown_raw<int>( anything() )));
 
-      expect(thrown_raw<int>(123).desc(), equal_to("threw 123"));
+      expect(thrown_raw<int>(123).desc(),
+             equal_to("threw<" + type_name<int>() + "> 123"));
     });
   });
 

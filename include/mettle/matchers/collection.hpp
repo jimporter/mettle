@@ -94,7 +94,7 @@ template<typename T>
 auto sorted(const T &comparator) {
   return make_matcher([comparator](const auto &value) {
     return std::is_sorted(std::begin(value), std::end(value), comparator);
-  }, "sorted");
+  }, "sorted by " + type_name<T>());
 }
 
 } // namespace mettle

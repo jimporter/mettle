@@ -19,7 +19,7 @@ auto thrown_raw(T &&thing) {
       catch(...) {}
 
       return false;
-    }, "threw "
+    }, "threw<" + type_name<Exception>() + "> "
   );
 }
 
@@ -30,7 +30,7 @@ auto thrown(T &&thing) {
       ensure_matcher(std::forward<T>(thing)),
       [](const auto &value, auto &&matcher) -> bool {
         return matcher(std::string(value.what()));
-      }, ""
+      }, "what: "
     )
   );
 }
@@ -49,7 +49,7 @@ inline auto thrown() {
     catch(...) {
       return true;
     }
-  }, "threw");
+  }, "threw exception");
 }
 
 } // namespace mettle
