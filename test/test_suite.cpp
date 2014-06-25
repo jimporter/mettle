@@ -210,6 +210,23 @@ suite<> test_suite("suite creation", [](auto &_) {
 
     });
 
+    _.test("create subsuites with make_subsuite", [&check_subsuites]() {
+
+      auto s = make_suite<>("inner test suite", [](auto &_){
+        _.subsuite(make_subsuite<int>(_, "subsuite", [](auto &_) {
+          _.test("subtest", [](int &) {});
+          _.skip_test("skipped subtest", [](int &) {});
+
+          _.subsuite(make_subsuite<>(_, "sub-subsuite", [](auto &_) {
+            _.test("sub-subtest", [](int &) {});
+            _.skip_test("skipped sub-subtest", [](int &) {});
+          }));
+        }));
+      });
+      check_subsuites(s);
+
+    });
+
     auto check_param_subsuites = [](const runnable_suite &suite) {
       expect(suite.name(), equal_to("inner test suite"));
       expect(suite.size(), equal_to<size_t>(0));
@@ -248,6 +265,18 @@ suite<> test_suite("suite creation", [](auto &_) {
           _.test("subtest", [](auto &) {});
           _.skip_test("skipped subtest", [](auto &) {});
         });
+      });
+
+      check_param_subsuites(s);
+    });
+
+    _.test("create a parameterized subsuite with make_subsuites",
+           [&check_param_subsuites]() {
+      auto s = make_suite<>("inner test suite", [](auto &_) {
+        _.subsuite(make_subsuites<int, float>(_, "subsuite", [](auto &_) {
+          _.test("subtest", [](auto &) {});
+          _.skip_test("skipped subtest", [](auto &) {});
+        }));
       });
 
       check_param_subsuites(s);
