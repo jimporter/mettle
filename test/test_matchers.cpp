@@ -139,6 +139,17 @@ suite<> matcher_tests("test matchers", [](auto &_) {
 
       expect(all(1, 2, 3).desc(), equal_to("all of(1, 2, 3)"));
     });
+
+    _.test("none()", []() {
+      expect(123, none(1));
+      expect(123, none(equal_to(1), equal_to(2), less(3)));
+      expect(123, none());
+
+      auto m = equal_to(1);
+      expect(123, none(m));
+
+      expect(none(1, 2, 3).desc(), equal_to("none of(1, 2, 3)"));
+    });
   });
 
   subsuite<>(_, "collection", [](auto &_) {

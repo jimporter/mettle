@@ -52,9 +52,9 @@ namespace detail {
   };
 }
 
-// We'd call these any_of and all_of like the std:: functions, but doing so
-// would introduce an ambiguity where the std:: versions could be preferred via
-// ADL if we pass in three arguments.
+// We'd call these any_of, all_of, and none_of like the std:: functions, but
+// doing so would introduce an ambiguity where the std:: versions could be
+// preferred via ADL if we pass in three arguments.
 
 template<typename ...T>
 inline auto any(T &&...matchers) {
@@ -67,6 +67,14 @@ template<typename ...T>
 inline auto all(T &&...matchers) {
   return detail::reduce_impl<T...>(
     "all of", std::logical_and<bool>(), true, std::forward<T>(matchers)...
+  );
+}
+
+template<typename ...T>
+inline auto none(T &&...matchers) {
+  return detail::reduce_impl<T...>(
+    "none of", [](bool a, bool b) { return a && !b; }, true,
+    std::forward<T>(matchers)...
   );
 }
 

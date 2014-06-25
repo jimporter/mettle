@@ -107,6 +107,10 @@ A matcher that returns `true` when *any of* its composed matchers are true.
 
 A matcher that returns `true` when *all of* its composed matchers are true.
 
+#### none(*matchers...*)
+
+A matcher that returns `true` when *none of* its composed matchers are true.
+
 ### Collection matchers
 
 #### member(*matcher*)
