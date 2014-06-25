@@ -92,20 +92,15 @@ public:
   template<typename U, typename V, typename Func>
   compiled_suite(const std::string &name, const U &tests, const V &subsuites,
                  const Func &f) : name_(name) {
-    for(auto &test : tests)
+    for(const auto &test : tests)
       tests_.push_back(f(test));
-    for(auto &ss : subsuites)
+    for(const auto &ss : subsuites)
       subsuites_.push_back(compiled_suite(ss, f));
   }
 
   template<typename Ret2, typename ...T2, typename Func>
   compiled_suite(const compiled_suite<Ret2, T2...> &suite, const Func &f)
-    : name_(suite.name()) {
-    for(auto &test : suite)
-      tests_.push_back(f(test));
-    for(auto &ss : suite.subsuites())
-      subsuites_.push_back(compiled_suite(ss, f));
-  }
+    : compiled_suite(suite.name(), suite, suite.subsuites(), f) {}
 
   const std::string & name() const {
     return name_;
@@ -205,13 +200,13 @@ public:
 
   template<typename U>
   void subsuite(const U &subsuites) {
-    for(auto &i : subsuites)
+    for(const auto &i : subsuites)
       subsuites_.push_back(i);
   }
 
   template<typename U>
   void subsuite(U &&subsuites) {
-    for(auto &i : subsuites)
+    for(const auto &i : subsuites)
       subsuites_.push_back(std::move(i));
   }
 

@@ -47,7 +47,7 @@ public:
     s << "\033[" << static_cast<size_t>(std::forward<First>(first));
 
     size_t args[] = {static_cast<size_t>(std::forward<Rest>(rest))...};
-    for(auto &i : args)
+    for(const auto &i : args)
       s << ";" << i;
     s << "m";
     string_ = s.str();

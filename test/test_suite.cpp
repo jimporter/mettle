@@ -265,7 +265,7 @@ suite<> test_running("test running", [](auto &_) {
       _.test("inner test", test);
     });
 
-    for(auto &t : s) {
+    for(const auto &t : s) {
       auto result = t.function();
       expect(result.passed, equal_to(true));
     }
@@ -281,7 +281,7 @@ suite<> test_running("test running", [](auto &_) {
       _.test("inner test", test);
     });
 
-    for(auto &t : s) {
+    for(const auto &t : s) {
       auto result = t.function();
       expect(result.passed, equal_to(false));
     }
@@ -297,7 +297,7 @@ suite<> test_running("test running", [](auto &_) {
       _.test("inner test", test);
     });
 
-    for(auto &t : s) {
+    for(const auto &t : s) {
       auto result = t.function();
       expect(result.passed, equal_to(true));
     }
@@ -318,7 +318,7 @@ suite<> test_running("test running", [](auto &_) {
       _.test("inner test", test);
     });
 
-    for(auto &t : s) {
+    for(const auto &t : s) {
       auto result = t.function();
       expect(result.passed, equal_to(false));
     }
@@ -339,7 +339,7 @@ suite<> test_running("test running", [](auto &_) {
       _.test("inner test", test);
     });
 
-    for(auto &t : s) {
+    for(const auto &t : s) {
       auto result = t.function();
       expect(result.passed, equal_to(false));
     }
@@ -360,7 +360,7 @@ suite<> test_running("test running", [](auto &_) {
       _.test("inner test", test);
     });
 
-    for(auto &t : s) {
+    for(const auto &t : s) {
       auto result = t.function();
       expect(result.passed, equal_to(false));
     }

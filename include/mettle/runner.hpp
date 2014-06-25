@@ -15,7 +15,7 @@ struct test_name {
 
   std::string full_name() const {
     std::stringstream s;
-    for(auto &i : suites)
+    for(const auto &i : suites)
       s << i << " > ";
     s << test;
     return s.str();
@@ -62,12 +62,12 @@ namespace detail {
   template<typename T>
   void run_tests_impl(const T &suites, test_logger &logger,
                       std::vector<std::string> &parents) {
-    for(auto &suite : suites) {
+    for(const auto &suite : suites) {
       parents.push_back(suite.name());
 
       logger.start_suite(parents);
 
-      for(auto &test : suite) {
+      for(const auto &test : suite) {
         const test_name name = {parents, test.name, test.id};
         logger.start_test(name);
 

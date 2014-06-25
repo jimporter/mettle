@@ -166,7 +166,7 @@ namespace detail {
         std::cout << " (" << skips_ << " skipped)";
       std::cout << reset() << std::endl;
 
-      for(auto &i : failures_) {
+      for(const auto &i : failures_) {
         std::cout << "  " << i.test.full_name() << " "
                   << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
                   << ": " << i.message << std::endl;
@@ -255,7 +255,7 @@ namespace detail {
       std::cout << reset() << std::endl;
 
       int run_width = std::ceil(std::log10(runs_));
-      for(auto &i : failures_) {
+      for(const auto &i : failures_) {
         format fail_count_fmt(
           sgr::bold, fg(i.second.size() == runs_ ? color::red : color::yellow)
         );
@@ -264,7 +264,7 @@ namespace detail {
                   << " " << fail_count_fmt << "[" << i.second.size() << "/"
                   << runs_ << "]" << reset() << ":" << std::endl;
 
-        for(auto &j : i.second) {
+        for(const auto &j : i.second) {
           std::cout << "    " << j.message << " "
                     << format(sgr::bold, fg(color::yellow)) << "["
                     << std::setw(run_width) << j.run << "]" << reset()

@@ -13,7 +13,7 @@ auto member(T &&thing) {
   return make_matcher(
     ensure_matcher(std::forward<T>(thing)),
     [](const auto &value, auto &&matcher) -> bool {
-      for(auto &i : value) {
+      for(const auto &i : value) {
         if(matcher(i))
           return true;
       }
@@ -27,7 +27,7 @@ auto each(T &&thing) {
   return make_matcher(
     ensure_matcher(std::forward<T>(thing)),
     [](const auto &value, auto &&matcher) -> bool {
-      for(auto &i : value) {
+      for(const auto &i : value) {
         if(!matcher(i))
           return false;
       }
