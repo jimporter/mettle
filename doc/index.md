@@ -22,6 +22,11 @@ and let the suites set up and tear down your fixtures for you.
 Expectations (assertions) are created using composable matchers, allowing you to
 test complex things using a minimal set of core functions.
 
+#### Don't repeat yourself
+
+Tests can be parameterized by value and by type, allowing you to reuse the same
+tests with different preconditions.
+
 ---
 
 ## A brief example
