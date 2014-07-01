@@ -19,30 +19,30 @@ namespace detail {
 
   class verbose_logger {
   public:
-    verbose_logger(unsigned int verbosity)
-      : verbosity_(verbosity), first_(true), base_indent_(0) {}
+    verbose_logger(std::ostream &out, unsigned int verbosity)
+      : out(out), verbosity_(verbosity), first_(true), base_indent_(0) {}
 
     void start_run() {
       first_ = true;
       if(verbosity_ == 1)
-        std::cout << std::string(base_indent_, ' ');
+        out << std::string(base_indent_, ' ');
     }
 
     void end_run() {
       if(verbosity_ == 1)
-        std::cout << std::endl;
+        out << std::endl;
     }
 
     void start_suite(const std::vector<std::string> &suites) {
       using namespace term;
       if(verbosity_ >= 2) {
         if(!first_)
-          std::cout << std::endl;
+          out << std::endl;
         first_ = false;
 
         const std::string indent((suites.size() - 1) * 2 + base_indent_, ' ');
-        std::cout << indent << format(sgr::bold) << suites.back()
-                  << reset() << std::endl;
+        out << indent << format(sgr::bold) << suites.back() << reset()
+            << std::endl;
       }
     }
 
@@ -51,7 +51,7 @@ namespace detail {
     void start_test(const test_name &test) {
       if(verbosity_ >= 2) {
         const std::string indent(test.suites.size() * 2 + base_indent_, ' ');
-        std::cout << indent << test.test << " " << std::flush;
+        out << indent << test.test << " " << std::flush;
       }
     }
 
@@ -61,12 +61,12 @@ namespace detail {
         return;
       }
       else if(verbosity_ == 1) {
-        std::cout << format(sgr::bold, fg(color::green)) << "."
-                  << reset() << std::flush;
+        out << format(sgr::bold, fg(color::green)) << "." << reset()
+            << std::flush;
       }
       else {
-        std::cout << format(sgr::bold, fg(color::green)) << "PASSED" << reset()
-                  << std::endl;
+        out << format(sgr::bold, fg(color::green)) << "PASSED" << reset()
+            << std::endl;
       }
     }
 
@@ -76,12 +76,12 @@ namespace detail {
         return;
       }
       else if(verbosity_ == 1) {
-        std::cout << format(sgr::bold, fg(color::blue)) << "_"
-                  << reset() << std::flush;
+        out << format(sgr::bold, fg(color::blue)) << "_" << reset()
+            << std::flush;
       }
       else {
-        std::cout << format(sgr::bold, fg(color::blue)) << "SKIPPED" << reset()
-                  << std::endl;
+        out << format(sgr::bold, fg(color::blue)) << "SKIPPED" << reset()
+            << std::endl;
       }
     }
 
@@ -91,12 +91,12 @@ namespace detail {
         return;
       }
       else if(verbosity_ == 1) {
-        std::cout << format(sgr::bold, fg(color::red)) << "!"
-                  << reset() << std::flush;
+        out << format(sgr::bold, fg(color::red)) << "!" << reset()
+            << std::flush;
       }
       else {
-        std::cout << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
-                  << ": " << message << std::endl;
+        out << format(sgr::bold, fg(color::red)) << "FAILED" << reset() << ": "
+            << message << std::endl;
       }
     }
 
@@ -107,6 +107,8 @@ namespace detail {
     void indent(size_t n) {
       base_indent_ = n;
     }
+
+    std::ostream &out;
   private:
     unsigned int verbosity_;
     bool first_;
@@ -158,16 +160,16 @@ namespace detail {
       using namespace term;
 
       if(vlog_.verbosity())
-        std::cout << std::endl;
+        vlog_.out << std::endl;
 
-      std::cout << format(sgr::bold) << passes_ << "/" << total_
+      vlog_.out << format(sgr::bold) << passes_ << "/" << total_
                 << " tests passed";
       if(skips_)
-        std::cout << " (" << skips_ << " skipped)";
-      std::cout << reset() << std::endl;
+        vlog_.out << " (" << skips_ << " skipped)";
+      vlog_.out << reset() << std::endl;
 
       for(const auto &i : failures_) {
-        std::cout << "  " << i.test.full_name() << " "
+        vlog_.out << "  " << i.test.full_name() << " "
                   << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
                   << ": " << i.message << std::endl;
       }
@@ -202,8 +204,8 @@ namespace detail {
 
       if(vlog_.verbosity() == 2) {
         if(runs_ > 1)
-          std::cout << std::endl;
-        std::cout << format(sgr::bold) << "Test run" << reset() << " "
+          vlog_.out << std::endl;
+        vlog_.out << format(sgr::bold) << "Test run" << reset() << " "
                   << format(sgr::bold, fg(color::yellow)) << "[#" << runs_
                   << "]" << reset() << std::endl << std::endl;
       }
@@ -246,26 +248,26 @@ namespace detail {
       size_t passes = total_ - skips_ - failures_.size();
 
       if(vlog_.verbosity())
-        std::cout << std::endl;
+        vlog_.out << std::endl;
 
-      std::cout << format(sgr::bold) << passes << "/" << total_
+      vlog_.out << format(sgr::bold) << passes << "/" << total_
                 << " tests passed";
       if(skips_)
-        std::cout << " (" << skips_ << " skipped)";
-      std::cout << reset() << std::endl;
+        vlog_.out << " (" << skips_ << " skipped)";
+      vlog_.out << reset() << std::endl;
 
       int run_width = std::ceil(std::log10(runs_));
       for(const auto &i : failures_) {
         format fail_count_fmt(
           sgr::bold, fg(i.second.size() == runs_ ? color::red : color::yellow)
         );
-        std::cout << "  " << i.first.full_name() << " "
+        vlog_.out << "  " << i.first.full_name() << " "
                   << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
                   << " " << fail_count_fmt << "[" << i.second.size() << "/"
                   << runs_ << "]" << reset() << ":" << std::endl;
 
         for(const auto &j : i.second) {
-          std::cout << "    " << j.message << " "
+          vlog_.out << "    " << j.message << " "
                     << format(sgr::bold, fg(color::yellow)) << "["
                     << std::setw(run_width) << j.run << "]" << reset()
                     << std::endl;
@@ -326,9 +328,9 @@ int main(int argc, const char *argv[]) {
   }
 
   term::colors_enabled = args.count("color");
-  verbose_logger vlog(
-    args.count("verbose") ? args["verbose"].as<unsigned int>() : 0
-  );
+  unsigned int verbosity = args.count("verbose") ?
+    args["verbose"].as<unsigned int>() : 0;
+  verbose_logger vlog(std::cout, verbosity);
 
   if(args.count("runs")) {
     size_t runs = args["runs"].as<size_t>();
