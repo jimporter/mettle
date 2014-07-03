@@ -178,6 +178,10 @@ since it makes the resluts much easier to read!</p>
 <p>Run the tests a total of <em>N</em> times. This is useful for catching intermittent
 failures. At the end, the summary will show the output of each failure for every
 test.</p>
+<h4 id="-no-fork">--no-fork</h4>
+<p>By default, mettle forks its process to run each test, in order to detect
+crashes during the execution of a test. To disable this, you can pass
+<code>--no-fork</code>, and all the tests will run in the same process.</p>
 </div>
         </div>
 
