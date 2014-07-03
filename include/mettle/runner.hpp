@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_RUNNER_HPP
 #define INC_METTLE_RUNNER_HPP
 
+#include <fcntl.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -63,7 +64,7 @@ public:
 namespace detail {
   inline test_result run_test(const std::function<test_result(void)> &test) {
     int pipefd[2];
-    if(pipe(pipefd) < 0)
+    if(pipe2(pipefd, O_CLOEXEC) < 0)
       throw std::system_error(errno, std::generic_category());
 
     pid_t pid;
