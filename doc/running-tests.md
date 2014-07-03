@@ -67,3 +67,9 @@ since it makes the resluts much easier to read!
 Run the tests a total of *N* times. This is useful for catching intermittent
 failures. At the end, the summary will show the output of each failure for every
 test.
+
+#### --no-fork
+
+By default, mettle forks its process to run each test, in order to detect
+crashes during the execution of a test. To disable this, you can pass
+`--no-fork`, and all the tests will run in the same process.

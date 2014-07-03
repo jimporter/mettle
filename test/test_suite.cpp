@@ -286,7 +286,7 @@ suite<> test_suite("suite creation", [](auto &_) {
 
 });
 
-suite<> test_running("test running", [](auto &_) {
+suite<> test_calling("test calling", [](auto &_) {
 
   _.test("passing test called", []() {
     run_counter<> test;

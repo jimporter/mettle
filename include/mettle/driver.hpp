@@ -316,6 +316,7 @@ int main(int argc, const char *argv[]) {
      "show verbose output")
     ("color", "show colored output")
     ("runs", opts::value<size_t>(), "number of test runs")
+    ("no-fork", "don't fork for each test")
   ;
 
   opts::variables_map args;
@@ -327,9 +328,11 @@ int main(int argc, const char *argv[]) {
     return 1;
   }
 
-  term::colors_enabled = args.count("color");
   unsigned int verbosity = args.count("verbose") ?
     args["verbose"].as<unsigned int>() : 0;
+  term::colors_enabled = args.count("color");
+  bool fork_tests = !args.count("no-fork");
+
   verbose_logger vlog(std::cout, verbosity);
 
   if(args.count("runs")) {
@@ -341,14 +344,14 @@ int main(int argc, const char *argv[]) {
 
     multi_run_logger logger(vlog);
     for(size_t i = 0; i < runs; i++)
-      run_tests(all_suites, logger);
+      run_tests(all_suites, logger, fork_tests);
     logger.summarize();
 
     return logger.failures();
   }
   else {
     single_run_logger logger(vlog);
-    run_tests(all_suites, logger);
+    run_tests(all_suites, logger, fork_tests);
     logger.summarize();
 
     return logger.failures();

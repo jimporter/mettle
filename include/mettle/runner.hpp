@@ -1,8 +1,10 @@
 #ifndef INC_METTLE_RUNNER_HPP
 #define INC_METTLE_RUNNER_HPP
 
+#include <sys/wait.h>
+#include <unistd.h>
+
 #include <iostream>
-#include <boost/program_options.hpp>
 
 #include "suite.hpp"
 
@@ -59,8 +61,55 @@ public:
 };
 
 namespace detail {
+  inline test_result run_test(const std::function<test_result(void)> &test) {
+    int pipefd[2];
+    if(pipe(pipefd) < 0)
+      throw std::system_error(errno, std::generic_category());
+
+    pid_t pid;
+    if((pid = fork()) < 0)
+      throw std::system_error(errno, std::generic_category());
+
+    if(pid == 0) {
+      close(pipefd[0]);
+      auto result = test();
+      if(write(pipefd[1], result.message.c_str(), result.message.length()) < 0)
+        exit(1); // XXX: Pass the errno somehow?
+      close(pipefd[1]);
+      exit(result.passed ? 0 : 1);
+    }
+    else {
+      close(pipefd[1]);
+
+      std::stringstream message;
+      ssize_t size;
+      char buf[BUFSIZ];
+      while((size = read(pipefd[0], buf, sizeof(buf))) > 0)
+        message.write(buf, size);
+      close(pipefd[0]);
+
+      if(size < 0) { // read() failed!
+        char err[256] = "";
+        strerror_r(errno, err, sizeof(err));
+        return { false, err };
+      }
+
+      int status;
+      if(waitpid(pid, &status, 0) < 0) {
+        char err[256] = "";
+        strerror_r(errno, err, sizeof(err));
+        return { false, err };
+      }
+
+      if(WIFSIGNALED(status))
+        return { false, strsignal(WTERMSIG(status)) };
+
+      return { WIFEXITED(status) && WEXITSTATUS(status) == 0, message.str() };
+    }
+  }
+
   template<typename T>
-  void run_tests_impl(const T &suites, test_logger &logger,
+  void run_tests_impl(const T &suites, test_logger &logger, bool fork_tests,
                       std::vector<std::string> &parents) {
     for(const auto &suite : suites) {
       parents.push_back(suite.name());
@@ -76,7 +125,7 @@ namespace detail {
           continue;
         }
 
-        auto result = test.function();
+        auto result = fork_tests ? run_test(test.function) : test.function();
         if(result.passed)
           logger.passed_test(name);
         else
@@ -85,23 +134,25 @@ namespace detail {
 
       logger.end_suite(parents);
 
-      run_tests_impl(suite.subsuites(), logger, parents);
+      run_tests_impl(suite.subsuites(), logger, fork_tests, parents);
       parents.pop_back();
     }
   }
 }
 
 template<typename T>
-inline void run_tests(const T &suites, test_logger &logger) {
+inline void run_tests(const T &suites, test_logger &logger,
+                      bool fork_tests = true) {
   std::vector<std::string> parents;
   logger.start_run();
-  detail::run_tests_impl(suites, logger, parents);
+  detail::run_tests_impl(suites, logger, fork_tests, parents);
   logger.end_run();
 }
 
 template<typename T>
-inline void run_tests(const T &suites, test_logger &&logger) {
-  run_tests(suites, logger);
+inline void run_tests(const T &suites, test_logger &&logger,
+                      bool fork_tests = true) {
+  run_tests(suites, logger, fork_tests);
 }
 
 } // namespace mettle
