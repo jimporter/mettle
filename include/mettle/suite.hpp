@@ -29,7 +29,7 @@ namespace detail {
   }
 
   template<typename F, typename Tuple>
-  void run_test(F &&setup, F &&teardown, F&&test, Tuple &fixtures) {
+  void do_test(F &&setup, F &&teardown, F&&test, Tuple &fixtures) {
     if(setup)
       detail::apply(std::forward<F>(setup), fixtures);
 
@@ -250,7 +250,7 @@ private:
       setup = base::setup_, teardown = base::teardown_, f = test.function
     ](T &...args) -> void {
       std::tuple<T&..., U...> fixtures(args..., U()...);
-      detail::run_test(setup, teardown, f, fixtures);
+      detail::do_test(setup, teardown, f, fixtures);
     };
 
     return { test.name, test_function, test.skip };
@@ -283,7 +283,7 @@ private:
 
       try {
         std::tuple<T...> fixtures;
-        detail::run_test(setup, teardown, f, fixtures);
+        detail::do_test(setup, teardown, f, fixtures);
         passed = true;
       }
       catch(const exception_type &e) {
