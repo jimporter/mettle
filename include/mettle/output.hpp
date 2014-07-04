@@ -77,10 +77,24 @@ public:
 };
 
 template<typename T>
-struct is_safely_printable : std::integral_constant<bool,
-  is_printable<T>::value &&
-  (!std::is_convertible<T, bool>::value ||
-   std::is_arithmetic<typename std::remove_reference<T>::type>::value)
+struct is_boolish : std::integral_constant<bool,
+  std::is_same<typename std::remove_cv<T>::type, bool>::value ||
+  (std::is_convertible<T, bool>::value && !std::is_arithmetic<T>::value &&
+   !std::is_enum<T>::value)
+> {};
+
+template<typename T>
+struct is_boolish<T&> : is_boolish<T> {};
+
+template<typename T>
+struct is_boolish<T&&> : is_boolish<T> {};
+
+template<typename T>
+struct is_char : std::integral_constant<bool,
+  std::is_same<
+    typename std::make_signed<typename std::remove_cv<T>::type>::type,
+    signed char
+  >::value
 > {};
 
 template<typename T>
@@ -101,18 +115,74 @@ public:
   static const bool value = check_<T>(0);
 };
 
+template<typename T, size_t N>
+class is_iterable<T[N]> : public std::true_type {};
+
+// The ensure_printable overloads below are rather complicated, to say the
+// least; we need to be extra-careful to ensure that things which are
+// convertible to bool don't erroneously get printed out *as* bools. As such, if
+// a type is "bool-ish" (convertible to bool, but not a non-bool arithmetic
+// type), we delegate to ensure_printable_boolish. Here's the basic structure:
+//
+// ensure_printable:
+//   if is_printable
+//     if is_boolish -> ensure_printable_boolish
+//     else -> pass-through
+//   else
+//     if is_iterable -> iterable
+//     else -> fallback
+//
+// ensure_printable_boolish:
+//   if is_bool -> bool
+//   if is_pointer
+//     if if_function -> function pointer
+//     else -> pointer
+//   if !is_scalar -> fallback
+//
+// We also have an overload for array types, which is selected if it's *not* an
+// array of char (arrays of char ultimately get selected by a const char *
+// overload). Finally, we have a few non-generic overloads for nullptrs,
+// std::strings, and std::pairs/std::tuples.
+
+// Non-generic overloads
+
+inline std::string ensure_printable(std::nullptr_t) {
+  return "nullptr";
+}
+
+inline auto ensure_printable(const std::string &s) {
+  return std::quoted(s);
+}
+
+// Helper for bool-ish types
+
 template<typename T>
-constexpr auto ensure_printable(const T &t) -> typename std::enable_if<
-  is_safely_printable<T>::value &&
-  !std::is_array<typename std::remove_reference<T>::type>::value,
-  T
+inline auto ensure_printable_boolish(T b) -> typename std::enable_if<
+  std::is_same<typename std::remove_cv<T>::type, bool>::value, std::string
+>::type {
+  return b ? "true" : "false";
+}
+
+template<typename T>
+constexpr inline auto ensure_printable_boolish(const T *t) ->
+typename std::enable_if<
+  !std::is_function<T>::value, const T *
 >::type {
   return t;
 }
 
+template<typename Ret, typename ...Args>
+inline auto ensure_printable_boolish(Ret (*)(Args...)) {
+  return type_name<Ret(Args...)>();
+}
+
+inline auto ensure_printable_boolish(const char *s) {
+  return std::quoted(s);
+}
+
 template<typename T>
-auto ensure_printable(const T &t) -> typename std::enable_if<
-  !is_safely_printable<T>::value && !is_iterable<T>::value, std::string
+auto ensure_printable_boolish(const T &t) -> typename std::enable_if<
+  !std::is_scalar<typename std::remove_reference<T>::type>::value, std::string
 >::type {
   try {
     return typeid(t).name();
@@ -122,33 +192,41 @@ auto ensure_printable(const T &t) -> typename std::enable_if<
   }
 }
 
-inline std::string ensure_printable(std::nullptr_t) {
-  return "nullptr";
+// Pass-through
+
+template<typename T>
+constexpr auto ensure_printable(const T &t) -> typename std::enable_if<
+  is_printable<T>::value && !is_boolish<T>::value, T
+>::type {
+  return t;
 }
 
-inline std::string ensure_printable(bool b) {
-  // Yeah yeah, we could use std::boolapha here, but there's really no point.
-  return b ? "true" : "false";
+// Bool-ish types
+
+template<typename T>
+constexpr inline auto ensure_printable(const T &t) -> typename std::enable_if<
+  is_printable<T>::value && is_boolish<T>::value,
+  decltype(ensure_printable_boolish(t))
+>::type {
+  return ensure_printable_boolish(t);
 }
 
-inline auto ensure_printable(const std::string &s) {
-  return std::quoted(s);
-}
+// Fallback
 
-inline auto ensure_printable(const char *s) {
-  return std::quoted(s);
-}
-
-template<typename T, size_t N>
-auto ensure_printable(const T (&v)[N]) -> typename std::enable_if<
-  !std::is_same<
-    typename std::remove_cv<typename std::make_signed<T>::type>::type,
-    signed char
-  >::value,
+template<typename T>
+auto ensure_printable(const T &t) -> typename std::enable_if<
+  !is_printable<T>::value && !is_iterable<T>::value,
   std::string
 >::type {
-  return detail::stringify_iterable(std::begin(v), std::end(v));
+  try {
+    return typeid(t).name();
+  }
+  catch(...) {
+    return "...";
+  }
 }
+
+// Iterables
 
 template<typename T>
 auto ensure_printable(const T &v) -> typename std::enable_if<
@@ -156,6 +234,15 @@ auto ensure_printable(const T &v) -> typename std::enable_if<
 >::type {
   return detail::stringify_iterable(std::begin(v), std::end(v));
 }
+
+template<typename T, size_t N>
+auto ensure_printable(const T (&v)[N]) -> typename std::enable_if<
+  !is_char<T>::value, std::string
+>::type {
+  return detail::stringify_iterable(std::begin(v), std::end(v));
+}
+
+// Pairs/Tuples
 
 template<typename T, typename U>
 std::string ensure_printable(const std::pair<T, U> &pair) {
