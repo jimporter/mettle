@@ -161,6 +161,7 @@ suite<> output("debug output", [](auto &_){
     // string literals...
     subsuite<>(_, "strings", [](auto &_) {
       _.test("char", []() {
+        expect('x', stringified("'x'"));
         expect("text", stringified("\"text\""));
         expect(std::string("text"), stringified("\"text\""));
 
@@ -174,6 +175,8 @@ suite<> output("debug output", [](auto &_){
       });
 
       _.test("signed char", []() {
+        expect(static_cast<signed char>('x'), stringified("'x'"));
+
         signed char s[] = "text";
         expect(s, stringified("\"text\""));
         expect(static_cast<signed char*>(s), stringified("\"text\""));
@@ -184,6 +187,8 @@ suite<> output("debug output", [](auto &_){
       });
 
       _.test("unsigned char", []() {
+        expect(static_cast<unsigned char>('x'), stringified("'x'"));
+
         unsigned char s[] = "text";
         expect(s, stringified("\"text\""));
         expect(static_cast<unsigned char*>(s), stringified("\"text\""));
@@ -194,6 +199,7 @@ suite<> output("debug output", [](auto &_){
       });
 
       _.test("wchar_t", []() {
+        expect(L'x', stringified("'x'"));
         expect(L"text", stringified("\"text\""));
         expect(std::wstring(L"text"), stringified("\"text\""));
 
@@ -207,6 +213,7 @@ suite<> output("debug output", [](auto &_){
       });
 
       _.test("char16_t", []() {
+        expect(u'x', stringified("'x'"));
         expect(u"text", stringified("\"text\""));
         expect(std::u16string(u"text"), stringified("\"text\""));
 
@@ -220,6 +227,7 @@ suite<> output("debug output", [](auto &_){
       });
 
       _.test("char32_t", []() {
+        expect(U'x', stringified("'x'"));
         expect(U"text", stringified("\"text\""));
         expect(std::u32string(U"text"), stringified("\"text\""));
 

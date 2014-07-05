@@ -58,6 +58,12 @@ namespace detail {
 
   template<typename T>
   std::string stringify_tuple(const T &tuple);
+
+  inline std::string quoted_temp(const std::string &s, char delim) {
+    std::stringstream ss;
+    ss << std::quoted(s, delim);
+    return ss.str();
+  }
 }
 
 template<typename T>
@@ -176,6 +182,33 @@ inline auto ensure_printable(const std::u16string &s) {
 inline auto ensure_printable(const std::u32string &s) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
   return std::quoted(conv.to_bytes(s));
+}
+
+inline auto ensure_printable(char c) {
+  return detail::quoted_temp(std::string(1, c), '\'');
+}
+
+inline auto ensure_printable(unsigned char c) {
+  return detail::quoted_temp(std::string(1, c), '\'');
+}
+
+inline auto ensure_printable(signed char c) {
+  return detail::quoted_temp(std::string(1, c), '\'');
+}
+
+inline auto ensure_printable(wchar_t c) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
+  return detail::quoted_temp(conv.to_bytes(std::wstring(1, c)), '\'');
+}
+
+inline auto ensure_printable(char16_t c) {
+  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
+  return detail::quoted_temp(conv.to_bytes(std::u16string(1, c)), '\'');
+}
+
+inline auto ensure_printable(char32_t c) {
+  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+  return detail::quoted_temp(conv.to_bytes(std::u32string(1, c)), '\'');
 }
 
 // Helper for bool-ish types
