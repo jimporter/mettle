@@ -48,21 +48,6 @@ suite<> test_runner("test runner", [](auto &_) {
       }
     });
 
-    _.test("segfaulting test", []() {
-      auto s = make_suite<>("inner", [](auto &_){
-        _.test("test", []() {
-          int *x = nullptr;
-          *x = 0;
-        });
-      });
-
-      for(const auto &t : s) {
-        auto result = detail::run_test(t.function);
-        expect(result.passed, equal_to(false));
-        expect(result.message, equal_to(strsignal(SIGSEGV)));
-      }
-    });
-
     _.test("aborting test", []() {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
@@ -74,6 +59,20 @@ suite<> test_runner("test runner", [](auto &_) {
         auto result = detail::run_test(t.function);
         expect(result.passed, equal_to(false));
         expect(result.message, equal_to(strsignal(SIGABRT)));
+      }
+    });
+
+    _.test("segfaulting test", []() {
+      auto s = make_suite<>("inner", [](auto &_){
+        _.test("test", []() {
+          raise(SIGSEGV);
+        });
+      });
+
+      for(const auto &t : s) {
+        auto result = detail::run_test(t.function);
+        expect(result.passed, equal_to(false));
+        expect(result.message, equal_to(strsignal(SIGSEGV)));
       }
     });
   });
