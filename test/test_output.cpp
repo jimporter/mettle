@@ -73,20 +73,6 @@ suite<> output("debug output", [](auto &_){
       expect(some_type{}, stringified(none("true", "1")));
     });
 
-    _.test("strings", []() {
-      expect("text", stringified("\"text\""));
-      expect(std::string("text"), stringified("\"text\""));
-
-      char s[] = "text";
-      const char cs[] = "text";
-      expect(s, stringified("\"text\""));
-      expect(cs, stringified("\"text\""));
-
-      char *ps = s;
-      expect(ps, stringified("\"text\""));
-      expect(const_cast<const char*>(ps), stringified("\"text\""));
-    });
-
     _.test("iterables", []() {
       expect(std::vector<int>{}, stringified("[]"));
       expect(std::vector<int>{1}, stringified("[1]"));
@@ -169,6 +155,82 @@ suite<> output("debug output", [](auto &_){
       // This will get a string from type_info, which could be anything...
       expect(some_type{}, anything());
       expect(another_type{}, stringified(none("true", "1")));
+    });
+
+    // Lots of code duplication here, but sadly, it's not easy to make generic
+    // string literals...
+    subsuite<>(_, "strings", [](auto &_) {
+      _.test("char", []() {
+        expect("text", stringified("\"text\""));
+        expect(std::string("text"), stringified("\"text\""));
+
+        char s[] = "text";
+        expect(s, stringified("\"text\""));
+        expect(static_cast<char*>(s), stringified("\"text\""));
+
+        const char cs[] = "text";
+        expect(cs, stringified("\"text\""));
+        expect(static_cast<const char*>(cs), stringified("\"text\""));
+      });
+
+      _.test("signed char", []() {
+        signed char s[] = "text";
+        expect(s, stringified("\"text\""));
+        expect(static_cast<signed char*>(s), stringified("\"text\""));
+
+        const signed char cs[] = "text";
+        expect(cs, stringified("\"text\""));
+        expect(static_cast<const signed char*>(cs), stringified("\"text\""));
+      });
+
+      _.test("unsigned char", []() {
+        unsigned char s[] = "text";
+        expect(s, stringified("\"text\""));
+        expect(static_cast<unsigned char*>(s), stringified("\"text\""));
+
+        const unsigned char cs[] = "text";
+        expect(cs, stringified("\"text\""));
+        expect(static_cast<const unsigned char*>(cs), stringified("\"text\""));
+      });
+
+      _.test("wchar_t", []() {
+        expect(L"text", stringified("\"text\""));
+        expect(std::wstring(L"text"), stringified("\"text\""));
+
+        wchar_t s[] = L"text";
+        expect(s, stringified("\"text\""));
+        expect(static_cast<wchar_t*>(s), stringified("\"text\""));
+
+        const wchar_t cs[] = L"text";
+        expect(cs, stringified("\"text\""));
+        expect(static_cast<const wchar_t*>(cs), stringified("\"text\""));
+      });
+
+      _.test("char16_t", []() {
+        expect(u"text", stringified("\"text\""));
+        expect(std::u16string(u"text"), stringified("\"text\""));
+
+        char16_t s[] = u"text";
+        expect(s, stringified("\"text\""));
+        expect(static_cast<char16_t*>(s), stringified("\"text\""));
+
+        const char16_t cs[] = u"text";
+        expect(cs, stringified("\"text\""));
+        expect(static_cast<const char16_t*>(cs), stringified("\"text\""));
+      });
+
+      _.test("char32_t", []() {
+        expect(U"text", stringified("\"text\""));
+        expect(std::u32string(U"text"), stringified("\"text\""));
+
+        char32_t s[] = U"text";
+        expect(s, stringified("\"text\""));
+        expect(static_cast<char32_t*>(s), stringified("\"text\""));
+
+        const char32_t cs[] = U"text";
+        expect(cs, stringified("\"text\""));
+        expect(static_cast<const char32_t*>(cs), stringified("\"text\""));
+      });
     });
   });
 

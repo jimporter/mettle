@@ -1,6 +1,8 @@
 #ifndef INC_METTLE_OUTPUT_HPP
 #define INC_METTLE_OUTPUT_HPP
 
+#include <locale>
+#include <codecvt>
 #include <iomanip>
 #include <sstream>
 #include <type_traits>
@@ -90,12 +92,18 @@ template<typename T>
 struct is_boolish<T&&> : is_boolish<T> {};
 
 template<typename T>
-struct is_char : std::integral_constant<bool,
-  std::is_same<
-    typename std::make_signed<typename std::remove_cv<T>::type>::type,
-    signed char
-  >::value
-> {};
+struct is_any_char_helper : std::false_type {};
+
+template<> struct is_any_char_helper<char> : std::true_type {};
+template<> struct is_any_char_helper<signed char> : std::true_type {};
+template<> struct is_any_char_helper<unsigned char> : std::true_type {};
+
+template<> struct is_any_char_helper<wchar_t> : std::true_type {};
+template<> struct is_any_char_helper<char16_t> : std::true_type {};
+template<> struct is_any_char_helper<char32_t> : std::true_type {};
+
+template<typename T>
+struct is_any_char : is_any_char_helper<typename std::remove_cv<T>::type> {};
 
 template<typename T>
 class is_iterable {
@@ -135,7 +143,8 @@ class is_iterable<T[N]> : public std::true_type {};
 // ensure_printable_boolish:
 //   if is_bool -> bool
 //   if is_pointer
-//     if if_function -> function pointer
+//     if is_any_char -> c string
+//     else if is_function -> function pointer
 //     else -> pointer
 //   if !is_scalar -> fallback
 //
@@ -152,6 +161,21 @@ inline std::string ensure_printable(std::nullptr_t) {
 
 inline auto ensure_printable(const std::string &s) {
   return std::quoted(s);
+}
+
+inline auto ensure_printable(const std::wstring &s) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
+  return std::quoted(conv.to_bytes(s));
+}
+
+inline auto ensure_printable(const std::u16string &s) {
+  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
+  return std::quoted(conv.to_bytes(s));
+}
+
+inline auto ensure_printable(const std::u32string &s) {
+  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+  return std::quoted(conv.to_bytes(s));
 }
 
 // Helper for bool-ish types
@@ -176,8 +200,33 @@ inline auto ensure_printable_boolish(Ret (*)(Args...)) {
   return type_name<Ret(Args...)>();
 }
 
+// XXX: These don't work for volatile strings.
+
 inline auto ensure_printable_boolish(const char *s) {
   return std::quoted(s);
+}
+
+inline auto ensure_printable_boolish(const unsigned char *s) {
+  return std::quoted(reinterpret_cast<const char*>(s));
+}
+
+inline auto ensure_printable_boolish(const signed char *s) {
+  return std::quoted(reinterpret_cast<const char*>(s));
+}
+
+inline auto ensure_printable_boolish(const wchar_t *s) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
+  return std::quoted(conv.to_bytes(s));
+}
+
+inline auto ensure_printable_boolish(const char16_t *s) {
+  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
+  return std::quoted(conv.to_bytes(s));
+}
+
+inline auto ensure_printable_boolish(const char32_t *s) {
+  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+  return std::quoted(conv.to_bytes(s));
 }
 
 template<typename T>
@@ -237,7 +286,7 @@ auto ensure_printable(const T &v) -> typename std::enable_if<
 
 template<typename T, size_t N>
 auto ensure_printable(const T (&v)[N]) -> typename std::enable_if<
-  !is_char<T>::value, std::string
+  !is_any_char<T>::value, std::string
 >::type {
   return detail::stringify_iterable(std::begin(v), std::end(v));
 }
