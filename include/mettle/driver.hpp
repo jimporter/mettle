@@ -4,6 +4,8 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <map>
+
 #include <boost/program_options.hpp>
 
 #include "glue.hpp"
