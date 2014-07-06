@@ -59,11 +59,10 @@ namespace detail {
   template<typename T>
   std::string stringify_tuple(const T &tuple);
 
-  inline std::string quoted_temp(
-    const std::string &s, char delim = '"', char escape = '\\'
-  ) {
+  template<typename T>
+  inline std::string quoted(T &&s, char delim = '"', char escape = '\\') {
     std::stringstream ss;
-    ss << std::quoted(s, delim, escape);
+    ss << std::quoted(std::forward<T>(s), delim, escape);
     return ss.str();
   }
 }
@@ -167,50 +166,50 @@ inline std::string ensure_printable(std::nullptr_t) {
   return "nullptr";
 }
 
-inline auto ensure_printable(const std::string &s) {
-  return std::quoted(s);
+inline std::string ensure_printable(const std::string &s) {
+  return detail::quoted(s);
 }
 
-inline auto ensure_printable(const std::wstring &s) {
+inline std::string ensure_printable(const std::wstring &s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
-  return detail::quoted_temp(conv.to_bytes(s));
+  return detail::quoted(conv.to_bytes(s));
 }
 
-inline auto ensure_printable(const std::u16string &s) {
+inline std::string ensure_printable(const std::u16string &s) {
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
-  return detail::quoted_temp(conv.to_bytes(s));
+  return detail::quoted(conv.to_bytes(s));
 }
 
-inline auto ensure_printable(const std::u32string &s) {
+inline std::string ensure_printable(const std::u32string &s) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-  return detail::quoted_temp(conv.to_bytes(s));
+  return detail::quoted(conv.to_bytes(s));
 }
 
-inline auto ensure_printable(char c) {
-  return detail::quoted_temp(std::string(1, c), '\'');
+inline std::string ensure_printable(char c) {
+  return detail::quoted(std::string(1, c), '\'');
 }
 
-inline auto ensure_printable(unsigned char c) {
-  return detail::quoted_temp(std::string(1, c), '\'');
+inline std::string ensure_printable(unsigned char c) {
+  return detail::quoted(std::string(1, c), '\'');
 }
 
-inline auto ensure_printable(signed char c) {
-  return detail::quoted_temp(std::string(1, c), '\'');
+inline std::string ensure_printable(signed char c) {
+  return detail::quoted(std::string(1, c), '\'');
 }
 
-inline auto ensure_printable(wchar_t c) {
+inline std::string ensure_printable(wchar_t c) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
-  return detail::quoted_temp(conv.to_bytes(std::wstring(1, c)), '\'');
+  return detail::quoted(conv.to_bytes(std::wstring(1, c)), '\'');
 }
 
-inline auto ensure_printable(char16_t c) {
+inline std::string ensure_printable(char16_t c) {
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
-  return detail::quoted_temp(conv.to_bytes(std::u16string(1, c)), '\'');
+  return detail::quoted(conv.to_bytes(std::u16string(1, c)), '\'');
 }
 
-inline auto ensure_printable(char32_t c) {
+inline std::string ensure_printable(char32_t c) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-  return detail::quoted_temp(conv.to_bytes(std::u32string(1, c)), '\'');
+  return detail::quoted(conv.to_bytes(std::u32string(1, c)), '\'');
 }
 
 // Helper for bool-ish types
@@ -237,31 +236,31 @@ inline auto ensure_printable_boolish(Ret (*)(Args...)) {
 
 // XXX: These don't work for volatile strings.
 
-inline auto ensure_printable_boolish(const char *s) {
-  return std::quoted(s);
+inline std::string ensure_printable_boolish(const char *s) {
+  return detail::quoted(s);
 }
 
-inline auto ensure_printable_boolish(const unsigned char *s) {
-  return std::quoted(reinterpret_cast<const char*>(s));
+inline std::string ensure_printable_boolish(const unsigned char *s) {
+  return detail::quoted(reinterpret_cast<const char*>(s));
 }
 
-inline auto ensure_printable_boolish(const signed char *s) {
-  return std::quoted(reinterpret_cast<const char*>(s));
+inline std::string ensure_printable_boolish(const signed char *s) {
+  return detail::quoted(reinterpret_cast<const char*>(s));
 }
 
-inline auto ensure_printable_boolish(const wchar_t *s) {
+inline std::string ensure_printable_boolish(const wchar_t *s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
-  return detail::quoted_temp(conv.to_bytes(s));
+  return detail::quoted(conv.to_bytes(s));
 }
 
-inline auto ensure_printable_boolish(const char16_t *s) {
+inline std::string ensure_printable_boolish(const char16_t *s) {
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
-  return detail::quoted_temp(conv.to_bytes(s));
+  return detail::quoted(conv.to_bytes(s));
 }
 
-inline auto ensure_printable_boolish(const char32_t *s) {
+inline std::string ensure_printable_boolish(const char32_t *s) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-  return detail::quoted_temp(conv.to_bytes(s));
+  return detail::quoted(conv.to_bytes(s));
 }
 
 template<typename T>
