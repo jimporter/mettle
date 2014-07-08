@@ -134,8 +134,9 @@
 
 <h1 id="mettle">mettle</h1>
 <hr />
-<p><strong>mettle</strong> is a library for writing unit tests using C++14. Its main goals are
-readability and avoidance of unnecessary macros.</p>
+<p><strong>mettle</strong> is a unit testing framework for C++14. It aims to maximize
+readability and clarity, allowing you to focus on writing tests instead of
+wrestling with the API.</p>
 <h2 id="features">Features</h2>
 <hr />
 <h4 id="no-preprocessor-abuse">No preprocessor abuse</h4>
@@ -152,8 +153,8 @@ test complex things using a minimal set of core functions.</p>
 tests with different preconditions.</p>
 <hr />
 <h2 id="a-brief-example">A brief example</h2>
-<p>A picture is worth a thousand words, and code is probably worth a decent
-fraction of that (let's say 100 words), so let's take a look:</p>
+<p>A picture is worth a thousand words, and code's almost as good (I'm sure it's
+worth at least 100 words), so let's take a look at a test file:</p>
 <pre class="prettyprint well"><code class="c++">#include &lt;mettle.hpp&gt;
 using namespace mettle;
 
