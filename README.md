@@ -1,7 +1,8 @@
 # mettle
 
-**mettle** is a library for writing unit tests using C++14. Its main goals are
-readability and avoidance of unnecessary macros.
+**mettle** is a unit testing framework for C++14. It aims to maximize
+readability and clarity, allowing you to focus on writing tests instead of
+wrestling with the API.
 
 ## Documentation
 
@@ -31,8 +32,8 @@ tests with different preconditions.
 
 ## A Brief Example
 
-A picture is worth a thousand words, and code is probably worth a decent
-fraction of that (let's say 100 words), so let's take a look:
+A picture is worth a thousand words, and code's almost as good (I'm sure it's
+worth at least 100 words), so let's take a look at a test file:
 
 ```c++
 #include <mettle.hpp>
