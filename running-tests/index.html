@@ -159,7 +159,7 @@ writing simpler:</p>
 
 <p>Once it's built, just run the binary and check the test results.</p>
 <h2 id="command-line-options">Command-line options</h2>
-<h4 id="-verbose-n1">--verbose <em>N=1</em></h4>
+<h4 id="-verbose-n1-v">--verbose <em>N=1</em> (-v)</h4>
 <p>Show output of tests as they're being run. If <code>--verbose</code> isn't passed, the
 verbosity is set to 0; if no value for <em>N</em> is specified, then the verbosity is
 set to 1.</p>
@@ -171,7 +171,7 @@ be shown.</p>
 failed test, and <code>_</code> a skipped test.</p>
 <h5 id="verbosity-2">Verbosity 2</h5>
 <p>Show the full name of tests and suites as they're being run.</p>
-<h4 id="-color">--color</h4>
+<h4 id="-color-c">--color (-c)</h4>
 <p>Print test results in color. This is good if your terminal supports colors,
 since it makes the resluts much easier to read!</p>
 <h4 id="-runs-n">--runs <em>N</em></h4>
@@ -182,6 +182,11 @@ test.</p>
 <p>By default, mettle forks its process to run each test, in order to detect
 crashes during the execution of a test. To disable this, you can pass
 <code>--no-fork</code>, and all the tests will run in the same process.</p>
+<h4 id="-show-terminal">--show-terminal</h4>
+<p>Show the terminal output (stdout and stderr) of each test after it finishes. To
+enable this, <code>--verbosity</code> must be at least 2, and <code>--no-fork</code> can't be
+specified (if <code>--no-fork</code> is specified, the terminal output will just appear
+in-line with the tests).</p>
 </div>
         </div>
 
