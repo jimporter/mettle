@@ -37,7 +37,7 @@ Once it's built, just run the binary and check the test results.
 
 ## Command-line options
 
-#### --verbose *N=1*
+#### --verbose *N=1* (-v)
 
 Show output of tests as they're being run. If `--verbose` isn't passed, the
 verbosity is set to 0; if no value for *N* is specified, then the verbosity is
@@ -57,7 +57,7 @@ failed test, and `_` a skipped test.
 
 Show the full name of tests and suites as they're being run.
 
-#### --color
+#### --color (-c)
 
 Print test results in color. This is good if your terminal supports colors,
 since it makes the resluts much easier to read!
