@@ -73,3 +73,10 @@ test.
 By default, mettle forks its process to run each test, in order to detect
 crashes during the execution of a test. To disable this, you can pass
 `--no-fork`, and all the tests will run in the same process.
+
+#### --show-terminal
+
+Show the terminal output (stdout and stderr) of each test after it finishes. To
+enable this, `--verbosity` must be at least 2, and `--no-fork` can't be
+specified (if `--no-fork` is specified, the terminal output will just appear
+in-line with the tests).

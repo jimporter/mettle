@@ -9,8 +9,8 @@
 #include <boost/program_options.hpp>
 
 #include "glue.hpp"
-#include "term.hpp"
 #include "runner.hpp"
+#include "term.hpp"
 
 namespace mettle {
 
@@ -21,8 +21,10 @@ namespace detail {
 
   class verbose_logger {
   public:
-    verbose_logger(std::ostream &out, unsigned int verbosity)
-      : out(out), verbosity_(verbosity), first_(true), base_indent_(0) {}
+    verbose_logger(std::ostream &out, unsigned int verbosity,
+                   bool show_terminal)
+      : out(out), verbosity_(verbosity), show_terminal_(show_terminal),
+        first_(true), base_indent_(0) {}
 
     void start_run() {
       first_ = true;
@@ -57,7 +59,7 @@ namespace detail {
       }
     }
 
-    void passed_test(const test_name &) {
+    void passed_test(const test_name &test, test_output_log &log) {
       using namespace term;
       if(verbosity_ == 0) {
         return;
@@ -69,6 +71,24 @@ namespace detail {
       else {
         out << format(sgr::bold, fg(color::green)) << "PASSED" << reset()
             << std::endl;
+        log_output(test.suites.size(), log);
+      }
+    }
+
+    void failed_test(const test_name &test, const std::string &message,
+                     test_output_log &log) {
+      using namespace term;
+      if(verbosity_ == 0) {
+        return;
+      }
+      else if(verbosity_ == 1) {
+        out << format(sgr::bold, fg(color::red)) << "!" << reset()
+            << std::flush;
+      }
+      else {
+        out << format(sgr::bold, fg(color::red)) << "FAILED" << reset() << ": "
+            << message << std::endl;
+        log_output(test.suites.size(), log);
       }
     }
 
@@ -87,21 +107,6 @@ namespace detail {
       }
     }
 
-    void failed_test(const test_name &, const std::string &message) {
-      using namespace term;
-      if(verbosity_ == 0) {
-        return;
-      }
-      else if(verbosity_ == 1) {
-        out << format(sgr::bold, fg(color::red)) << "!" << reset()
-            << std::flush;
-      }
-      else {
-        out << format(sgr::bold, fg(color::red)) << "FAILED" << reset() << ": "
-            << message << std::endl;
-      }
-    }
-
     unsigned int verbosity() const {
       return verbosity_;
     }
@@ -112,7 +117,25 @@ namespace detail {
 
     std::ostream &out;
   private:
+    void log_output(size_t depth, test_output_log &log) {
+      if(!show_terminal_)
+        return;
+
+      using namespace term;
+      const std::string indent((depth + 1) * 2 + base_indent_, ' ');
+
+      if(log.stdout.peek() != EOF) {
+        out << indent << format(fg(color::yellow)) << "stdout" << reset() << ":"
+            << std::endl << log.stdout.rdbuf() << std::endl;
+      }
+      if(log.stderr.peek() != EOF) {
+        out << indent << format(fg(color::yellow)) << "stderr" << reset() << ":"
+            << std::endl << log.stderr.rdbuf() << std::endl;
+      }
+    }
+
     unsigned int verbosity_;
+    bool show_terminal_;
     bool first_;
     size_t base_indent_;
   };
@@ -143,19 +166,20 @@ namespace detail {
       vlog_.start_test(test);
     }
 
-    void passed_test(const test_name &test) {
+    void passed_test(const test_name &test, test_output_log &log) {
       passes_++;
-      vlog_.passed_test(test);
+      vlog_.passed_test(test, log);
+    }
+
+    void failed_test(const test_name &test, const std::string &message,
+                     test_output_log &log) {
+      failures_.push_back({test, message});
+      vlog_.failed_test(test, message, log);
     }
 
     void skipped_test(const test_name &test) {
       skips_++;
       vlog_.skipped_test(test);
-    }
-
-    void failed_test(const test_name &test, const std::string &message) {
-      failures_.push_back({test, message});
-      vlog_.failed_test(test, message);
     }
 
     void summarize() {
@@ -231,18 +255,19 @@ namespace detail {
       vlog_.start_test(test);
     }
 
-    void passed_test(const test_name &test) {
-      vlog_.passed_test(test);
+    void passed_test(const test_name &test, test_output_log &log) {
+      vlog_.passed_test(test, log);
+    }
+
+    void failed_test(const test_name &test, const std::string &message,
+                     test_output_log &log) {
+      failures_[test].push_back({runs_, message});
+      vlog_.failed_test(test, message, log);
     }
 
     void skipped_test(const test_name &test) {
       skips_++;
       vlog_.skipped_test(test);
-    }
-
-    void failed_test(const test_name &test, const std::string &message) {
-      failures_[test].push_back({runs_, message});
-      vlog_.failed_test(test, message);
     }
 
     void summarize() {
@@ -314,11 +339,12 @@ int main(int argc, const char *argv[]) {
   opts::options_description desc("Allowed options");
   desc.add_options()
     ("help,h", "show help")
-    ("verbose", opts::value<unsigned int>()->implicit_value(1),
+    ("verbose,v", opts::value<unsigned int>()->implicit_value(1),
      "show verbose output")
-    ("color", "show colored output")
+    ("color,c", "show colored output")
     ("runs", opts::value<size_t>(), "number of test runs")
     ("no-fork", "don't fork for each test")
+    ("show-terminal", "show terminal output for each test")
   ;
 
   opts::variables_map args;
@@ -334,8 +360,18 @@ int main(int argc, const char *argv[]) {
     args["verbose"].as<unsigned int>() : 0;
   term::colors_enabled = args.count("color");
   bool fork_tests = !args.count("no-fork");
+  bool show_terminal = args.count("show-terminal");
 
-  verbose_logger vlog(std::cout, verbosity);
+  if(show_terminal && verbosity < 2) {
+    std::cerr << "--show-terminal requires verbosity >=2" << std::endl;
+    return 1;
+  }
+  if(show_terminal && !fork_tests) {
+    std::cerr << "--show-terminal requires forking tests" << std::endl;
+    return 1;
+  }
+
+  verbose_logger vlog(std::cout, verbosity, show_terminal);
 
   if(args.count("runs")) {
     size_t runs = args["runs"].as<size_t>();
