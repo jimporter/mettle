@@ -50,8 +50,13 @@ int main(int argc, const char *argv[]) {
   ;
 
   opts::variables_map args;
-  opts::store(opts::parse_command_line(argc, argv, desc), args);
-  opts::notify(args);
+  try {
+    opts::store(opts::parse_command_line(argc, argv, desc), args);
+    opts::notify(args);
+  } catch(const std::exception &e) {
+    std::cerr << e.what() << std::endl;
+    return 1;
+  }
 
   if(args.count("help")) {
     std::cout << desc << std::endl;
