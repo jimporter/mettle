@@ -7,8 +7,9 @@
 #include <boost/program_options.hpp>
 
 #include "glue.hpp"
-#include "logger.hpp"
 #include "runner.hpp"
+#include "log/multi_run.hpp"
+#include "log/single_run.hpp"
 
 namespace mettle {
 
@@ -72,7 +73,7 @@ int main(int argc, const char *argv[]) {
     return 1;
   }
 
-  verbose_logger vlog(std::cout, verbosity, show_terminal);
+  log::verbose vlog(std::cout, verbosity, show_terminal);
 
   if(args.count("runs")) {
     size_t runs = args["runs"].as<size_t>();
@@ -81,7 +82,7 @@ int main(int argc, const char *argv[]) {
       return 1;
     }
 
-    multi_run_logger logger(vlog);
+    log::multi_run logger(vlog);
     for(size_t i = 0; i < runs; i++)
       run_tests(detail::all_suites, logger, fork_tests);
     logger.summarize();
@@ -89,7 +90,7 @@ int main(int argc, const char *argv[]) {
     return logger.failures();
   }
   else {
-    single_run_logger logger(vlog);
+    log::single_run logger(vlog);
     run_tests(detail::all_suites, logger, fork_tests);
     logger.summarize();
 

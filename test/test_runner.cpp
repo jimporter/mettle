@@ -1,7 +1,7 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-struct my_test_logger : test_logger {
+struct my_test_logger : log::test_logger {
   my_test_logger()
     : tests_run(0), tests_passed(0), tests_failed(0), tests_skipped(0) {}
 
@@ -11,17 +11,17 @@ struct my_test_logger : test_logger {
   virtual void start_suite(const std::vector<std::string> &) {}
   virtual void end_suite(const std::vector<std::string> &) {}
 
-  virtual void start_test(const test_name &) {
+  virtual void start_test(const log::test_name &) {
     tests_run++;
   }
-  virtual void passed_test(const test_name &, test_output_log &) {
+  virtual void passed_test(const log::test_name &, log::test_output &) {
     tests_passed++;
   }
-  virtual void failed_test(const test_name &, const std::string &,
-                           test_output_log &) {
+  virtual void failed_test(const log::test_name &, const std::string &,
+                           log::test_output &) {
     tests_failed++;
   }
-  virtual void skipped_test(const test_name &) {
+  virtual void skipped_test(const log::test_name &) {
     tests_skipped++;
   }
 
@@ -30,20 +30,20 @@ struct my_test_logger : test_logger {
 
 suite<> test_runner("test runner", [](auto &_) {
 
-  subsuite<test_output_log>(_, "run_test()", [](auto &_) {
-    _.test("passing test", [](test_output_log &log) {
+  subsuite<log::test_output>(_, "run_test()", [](auto &_) {
+    _.test("passing test", [](log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {});
       });
 
       for(const auto &t : s) {
-        auto result = detail::run_test(t.function, log);
+        auto result = detail::run_test(t.function, output);
         expect(result.passed, equal_to(true));
         expect(result.message, equal_to(""));
       }
     });
 
-    _.test("failing test", [](test_output_log &log) {
+    _.test("failing test", [](log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
           expect(true, equal_to(false));
@@ -51,12 +51,12 @@ suite<> test_runner("test runner", [](auto &_) {
       });
 
       for(const auto &t : s) {
-        auto result = detail::run_test(t.function, log);
+        auto result = detail::run_test(t.function, output);
         expect(result.passed, equal_to(false));
       }
     });
 
-    _.test("aborting test", [](test_output_log &log) {
+    _.test("aborting test", [](log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
           abort();
@@ -64,13 +64,13 @@ suite<> test_runner("test runner", [](auto &_) {
       });
 
       for(const auto &t : s) {
-        auto result = detail::run_test(t.function, log);
+        auto result = detail::run_test(t.function, output);
         expect(result.passed, equal_to(false));
         expect(result.message, equal_to(strsignal(SIGABRT)));
       }
     });
 
-    _.test("segfaulting test", [](test_output_log &log) {
+    _.test("segfaulting test", [](log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
           raise(SIGSEGV);
@@ -78,13 +78,13 @@ suite<> test_runner("test runner", [](auto &_) {
       });
 
       for(const auto &t : s) {
-        auto result = detail::run_test(t.function, log);
+        auto result = detail::run_test(t.function, output);
         expect(result.passed, equal_to(false));
         expect(result.message, equal_to(strsignal(SIGSEGV)));
       }
     });
 
-    _.test("test with stdout", [](test_output_log &log) {
+    _.test("test with stdout", [](log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
           std::cout << "stdout";
@@ -92,12 +92,12 @@ suite<> test_runner("test runner", [](auto &_) {
       });
 
       for(const auto &t : s) {
-        auto result = detail::run_test(t.function, log);
-        expect(log.stdout.str(), equal_to("stdout"));
+        auto result = detail::run_test(t.function, output);
+        expect(output.stdout.str(), equal_to("stdout"));
       }
     });
 
-    _.test("test with stdout/stderr", [](test_output_log &log) {
+    _.test("test with stdout/stderr", [](log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
           std::cout << "stdout";
@@ -106,9 +106,9 @@ suite<> test_runner("test runner", [](auto &_) {
       });
 
       for(const auto &t : s) {
-        auto result = detail::run_test(t.function, log);
-        expect(log.stdout.str(), equal_to("stdout"));
-        expect(log.stderr.str(), equal_to("stderr"));
+        auto result = detail::run_test(t.function, output);
+        expect(output.stdout.str(), equal_to("stdout"));
+        expect(output.stderr.str(), equal_to("stderr"));
       }
     });
   });
@@ -121,12 +121,12 @@ suite<> test_runner("test runner", [](auto &_) {
         _.test("test 3", []() {});
       });
 
-      my_test_logger log;
-      run_tests(s, log);
-      expect(log.tests_run, equal_to(3));
-      expect(log.tests_passed, equal_to(3));
-      expect(log.tests_skipped, equal_to(0));
-      expect(log.tests_failed, equal_to(0));
+      my_test_logger logger;
+      run_tests(s, logger);
+      expect(logger.tests_run, equal_to(3));
+      expect(logger.tests_passed, equal_to(3));
+      expect(logger.tests_skipped, equal_to(0));
+      expect(logger.tests_failed, equal_to(0));
     });
 
     _.test("suite with failing tests", []() {
@@ -138,13 +138,13 @@ suite<> test_runner("test runner", [](auto &_) {
         _.test("test 3", []() {});
       });
 
-      my_test_logger log;
-      run_tests(s, log);
+      my_test_logger logger;
+      run_tests(s, logger);
 
-      expect(log.tests_run, equal_to(3));
-      expect(log.tests_passed, equal_to(2));
-      expect(log.tests_skipped, equal_to(0));
-      expect(log.tests_failed, equal_to(1));
+      expect(logger.tests_run, equal_to(3));
+      expect(logger.tests_passed, equal_to(2));
+      expect(logger.tests_skipped, equal_to(0));
+      expect(logger.tests_failed, equal_to(1));
     });
 
 
@@ -155,13 +155,13 @@ suite<> test_runner("test runner", [](auto &_) {
         _.test("test 3", []() {});
       });
 
-      my_test_logger log;
-      run_tests(s, log);
+      my_test_logger logger;
+      run_tests(s, logger);
 
-      expect(log.tests_run, equal_to(3));
-      expect(log.tests_passed, equal_to(2));
-      expect(log.tests_skipped, equal_to(1));
-      expect(log.tests_failed, equal_to(0));
+      expect(logger.tests_run, equal_to(3));
+      expect(logger.tests_passed, equal_to(2));
+      expect(logger.tests_skipped, equal_to(1));
+      expect(logger.tests_failed, equal_to(0));
     });
 
     _.test("crashing tests don't crash framework", []() {
@@ -173,13 +173,13 @@ suite<> test_runner("test runner", [](auto &_) {
         _.test("test 3", []() {});
       });
 
-      my_test_logger log;
-      run_tests(s, log);
+      my_test_logger logger;
+      run_tests(s, logger);
 
-      expect(log.tests_run, equal_to(3));
-      expect(log.tests_passed, equal_to(2));
-      expect(log.tests_skipped, equal_to(0));
-      expect(log.tests_failed, equal_to(1));
+      expect(logger.tests_run, equal_to(3));
+      expect(logger.tests_passed, equal_to(2));
+      expect(logger.tests_skipped, equal_to(0));
+      expect(logger.tests_failed, equal_to(1));
     });
   });
 });

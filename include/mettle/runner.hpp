@@ -6,65 +6,10 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <iostream>
-
 #include "suite.hpp"
+#include "log/core.hpp"
 
 namespace mettle {
-
-struct test_name {
-  std::vector<std::string> suites;
-  std::string test;
-  size_t id;
-
-  std::string full_name() const {
-    std::stringstream s;
-    for(const auto &i : suites)
-      s << i << " > ";
-    s << test;
-    return s.str();
-  }
-};
-
-inline bool operator ==(const test_name &lhs, const test_name &rhs) {
-  return lhs.id == rhs.id;
-}
-inline bool operator !=(const test_name &lhs, const test_name &rhs) {
-  return lhs.id != rhs.id;
-}
-inline bool operator <(const test_name &lhs, const test_name &rhs) {
-  return lhs.id < rhs.id;
-}
-inline bool operator <=(const test_name &lhs, const test_name &rhs) {
-  return lhs.id <= rhs.id;
-}
-inline bool operator >(const test_name &lhs, const test_name &rhs) {
-  return lhs.id > rhs.id;
-}
-inline bool operator >=(const test_name &lhs, const test_name &rhs) {
-  return lhs.id >= rhs.id;
-}
-
-struct test_output_log {
-  std::stringstream stdout, stderr;
-};
-
-class test_logger {
-public:
-  virtual ~test_logger() {}
-
-  virtual void start_run() = 0;
-  virtual void end_run() = 0;
-
-  virtual void start_suite(const std::vector<std::string> &suites) = 0;
-  virtual void end_suite(const std::vector<std::string> &suites) = 0;
-
-  virtual void start_test(const test_name &test) = 0;
-  virtual void passed_test(const test_name &test, test_output_log &log) = 0;
-  virtual void failed_test(const test_name &test, const std::string &message,
-                           test_output_log &log) = 0;
-  virtual void skipped_test(const test_name &test) = 0;
-};
 
 namespace detail {
   struct scoped_pipe {
@@ -100,7 +45,7 @@ namespace detail {
   };
 
   inline test_result run_test(const std::function<test_result(void)> &test,
-                              test_output_log &output) {
+                              log::test_output &output) {
     scoped_pipe stdout_pipe, stderr_pipe, log_pipe;
     if(stdout_pipe.open() < 0 ||
        stderr_pipe.open() < 0 ||
@@ -189,15 +134,15 @@ namespace detail {
   }
 
   template<typename T>
-  void run_tests_impl(const T &suites, test_logger &logger, bool fork_tests,
-                      std::vector<std::string> &parents) {
+  void run_tests_impl(const T &suites, log::test_logger &logger,
+                      bool fork_tests, std::vector<std::string> &parents) {
     for(const auto &suite : suites) {
       parents.push_back(suite.name());
 
       logger.start_suite(parents);
 
       for(const auto &test : suite) {
-        const test_name name = {parents, test.name, test.id};
+        const log::test_name name = {parents, test.name, test.id};
         logger.start_test(name);
 
         if(test.skip) {
@@ -205,7 +150,7 @@ namespace detail {
           continue;
         }
 
-        test_output_log output;
+        log::test_output output;
         auto result = fork_tests ?
           run_test(test.function, output) : test.function();
         if(result.passed)
@@ -223,7 +168,7 @@ namespace detail {
 }
 
 template<typename T>
-inline void run_tests(const T &suites, test_logger &logger,
+inline void run_tests(const T &suites, log::test_logger &logger,
                       bool fork_tests = true) {
   std::vector<std::string> parents;
   logger.start_run();
@@ -232,7 +177,7 @@ inline void run_tests(const T &suites, test_logger &logger,
 }
 
 template<typename T>
-inline void run_tests(const T &suites, test_logger &&logger,
+inline void run_tests(const T &suites, log::test_logger &&logger,
                       bool fork_tests = true) {
   run_tests(suites, logger, fork_tests);
 }
