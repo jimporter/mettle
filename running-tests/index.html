@@ -125,6 +125,8 @@
         
             <li><a href="#command-line-options">Command-line options</a></li>
         
+            <li><a href="#using-the-mettle-executable">Using the mettle executable</a></li>
+        
     
     </ul>
 </div></div>
@@ -184,9 +186,18 @@ crashes during the execution of a test. To disable this, you can pass
 <code>--no-fork</code>, and all the tests will run in the same process.</p>
 <h4 id="-show-terminal">--show-terminal</h4>
 <p>Show the terminal output (stdout and stderr) of each test after it finishes. To
-enable this, <code>--verbosity</code> must be at least 2, and <code>--no-fork</code> can't be
+enable this, <code>--verbose</code> must be at least 2, and <code>--no-fork</code> can't be
 specified (if <code>--no-fork</code> is specified, the terminal output will just appear
 in-line with the tests).</p>
+<h2 id="using-the-mettle-executable">Using the <em>mettle</em> executable</h2>
+<p>For testing larger projects, it's generally recommended to divide your test
+suites into multiple <code>.cpp</code> files and compile them into separate binaries. This
+allows you to improve build times and to better isolate tests from each other.</p>
+<p>When doing so, you can use the <code>mettle</code> executable to run all of your individual
+binaries at once. The interface is much like that of the individual binaries,
+and all of the command-line options above (except for <code>--no-fork</code>) work with
+the <code>mettle</code> executable as well. To specify which of the test binaries to run,
+just pass their filenames to <code>mettle</code>.</p>
 </div>
         </div>
 

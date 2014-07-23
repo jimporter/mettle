@@ -181,8 +181,11 @@ suite&lt;&gt; basic(&quot;a basic suite&quot;, [](auto &amp;_) {
 <a href="https://github.com/jimporter/mettle/tree/master/examples"><code>examples/</code></a>
 subdirectory.</p>
 <h2 id="installation">Installation</h2>
-<p>Since mettle is (currently) a header-only library, installation is simple: just
-copy all the files in the <code>include/</code> directory to wherever you'd like.</p>
+<p>mettle has two parts: a (currently) a header-only library and an executable
+called <code>mettle</code>. Installation of the library is simple: just copy all the files
+in the <code>include/</code> directory to wherever you'd like. To build the <code>mettle</code>
+executable, just run <code>make</code> to create the file in the root directoy. (This is,
+of course, suboptimal, but expect improvements to the process soon!)</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>This project currently requires a C++14 compiler (for generic lambdas in the
 matchers) and Boost (for argument parsing in the test runner). It's been tested
