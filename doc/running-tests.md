@@ -77,6 +77,18 @@ crashes during the execution of a test. To disable this, you can pass
 #### --show-terminal
 
 Show the terminal output (stdout and stderr) of each test after it finishes. To
-enable this, `--verbosity` must be at least 2, and `--no-fork` can't be
+enable this, `--verbose` must be at least 2, and `--no-fork` can't be
 specified (if `--no-fork` is specified, the terminal output will just appear
 in-line with the tests).
+
+## Using the *mettle* executable
+
+For testing larger projects, it's generally recommended to divide your test
+suites into multiple `.cpp` files and compile them into separate binaries. This
+allows you to improve build times and to better isolate tests from each other.
+
+When doing so, you can use the `mettle` executable to run all of your individual
+binaries at once. The interface is much like that of the individual binaries,
+and all of the command-line options above (except for `--no-fork`) work with
+the `mettle` executable as well. To specify which of the test binaries to run,
+just pass their filenames to `mettle`.

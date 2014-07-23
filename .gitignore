@@ -1,3 +1,4 @@
-site
+/mettle
+/site
 *.o
 *.d

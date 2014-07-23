@@ -4,46 +4,14 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <sys/wait.h>
-#include <unistd.h>
 
+#include "scoped_pipe.hpp"
 #include "suite.hpp"
 #include "log/core.hpp"
 
 namespace mettle {
 
 namespace detail {
-  struct scoped_pipe {
-    scoped_pipe() : read_fd(-1), write_fd(-1) {}
-
-    int open(int flags = 0) {
-      return pipe2(&read_fd, flags);
-    }
-
-    ~scoped_pipe() {
-      close_read();
-      close_write();
-    }
-
-    int close_read() {
-      return do_close(read_fd);
-    }
-
-    int close_write() {
-      return do_close(write_fd);
-    }
-
-    int read_fd, write_fd;
-  private:
-    int do_close(int &fd) {
-      if(fd == -1)
-        return 0;
-      int err = ::close(fd);
-      if(err == 0)
-        fd = -1;
-      return err;
-    }
-  };
-
   inline test_result run_test(const std::function<test_result(void)> &test,
                               log::test_output &output) {
     scoped_pipe stdout_pipe, stderr_pipe, log_pipe;

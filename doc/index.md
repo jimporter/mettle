@@ -64,8 +64,11 @@ subdirectory.
 
 ## Installation
 
-Since mettle is (currently) a header-only library, installation is simple: just
-copy all the files in the `include/` directory to wherever you'd like.
+mettle has two parts: a (currently) a header-only library and an executable
+called `mettle`. Installation of the library is simple: just copy all the files
+in the `include/` directory to wherever you'd like. To build the `mettle`
+executable, just run `make` to create the file in the root directoy. (This is,
+of course, suboptimal, but expect improvements to the process soon!)
 
 ## Dependencies
 

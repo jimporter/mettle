@@ -1,5 +1,6 @@
-test_all
+test_child
 test_driver
 test_matchers
 test_output
+test_runner
 test_suite

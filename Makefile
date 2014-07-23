@@ -9,6 +9,11 @@ EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
 # handling.
 -include $(TESTS:=.d)
 -include $(EXAMPLES:=.d)
+-include src/mettle.d
+
+all: mettle
+
+test/test_child: LDFLAGS += -lboost_iostreams
 
 # Build .o files and the corresponding .d (dependency) files. For more info, see
 # <http://scottmcpeak.com/autodepend/autodepend.html>.
@@ -26,12 +31,18 @@ $(TESTS) $(EXAMPLES): %: %.o
 
 examples: $(EXAMPLES)
 
+tests: $(TESTS)
+
+mettle: LDFLAGS += -lboost_iostreams
+mettle: src/mettle.o
+	$(CXX) $(CXXFLAGS) $< $(LDFLAGS) -o $@
+
 .PHONY: test
-test: test/test_all
-	test/test_all --verbose 2 --color
+test: tests mettle
+	./mettle --verbose 2 --color $(TESTS)
 
 .PHONY: clean
-clean: clean-tests clean-examples
+clean: clean-tests clean-examples clean-mettle
 
 .PHONY: clean-tests
 clean-tests:
@@ -40,6 +51,10 @@ clean-tests:
 .PHONY: clean-examples
 clean-examples:
 	rm -f $(EXAMPLES) examples/*.o examples/*.d
+
+.PHONY: clean-mettle
+clean-mettle:
+	rm -f mettle src/*.o src/*.d
 
 .PHONY: gitignore
 gitignore:

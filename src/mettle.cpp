@@ -1,39 +1,10 @@
-#ifndef INC_METTLE_DRIVER_HPP
-#define INC_METTLE_DRIVER_HPP
-
 #include <iostream>
-#include <vector>
 
 #include <boost/program_options.hpp>
 
-#include "glue.hpp"
-#include "runner.hpp"
-#include "log/multi_run.hpp"
-#include "log/single_run.hpp"
-#include "log/child.hpp"
-
-namespace mettle {
-
-using suites_list = std::vector<runnable_suite>;
-
-namespace detail {
-  suites_list all_suites;
-}
-
-template<typename Exception, typename ...Fixture>
-struct basic_suite {
-  template<typename F>
-  basic_suite(const std::string &name, const F &f,
-              suites_list &suites = detail::all_suites) {
-    for (auto &i : make_basic_suites<Exception, Fixture...>(name, f))
-      suites.push_back(std::move(i));
-  }
-};
-
-template<typename ...T>
-using suite = basic_suite<expectation_error, T...>;
-
-} // namespace mettle
+#include <mettle/file_runner.hpp>
+#include <mettle/log/multi_run.hpp>
+#include <mettle/log/single_run.hpp>
 
 int main(int argc, const char *argv[]) {
   using namespace mettle;
@@ -42,18 +13,21 @@ int main(int argc, const char *argv[]) {
   opts::options_description desc("Allowed options");
   desc.add_options()
     ("help,h", "show help")
-    ("verbose,v", opts::value<unsigned int>()->implicit_value(1),
+    ("verbose", opts::value<unsigned int>()->implicit_value(1),
      "show verbose output")
-    ("color,c", "show colored output")
+    ("color", "show colored output")
     ("runs", opts::value<size_t>(), "number of test runs")
-    ("no-fork", "don't fork for each test")
     ("show-terminal", "show terminal output for each test")
-    ("child", "run this file as a child process")
+    ("file", opts::value< std::vector<std::string> >(), "input file")
   ;
+
+  opts::positional_options_description pos;
+  pos.add("file", -1);
 
   opts::variables_map args;
   try {
-    opts::store(opts::parse_command_line(argc, argv, desc), args);
+    opts::store(opts::command_line_parser(argc, argv)
+                .options(desc).positional(pos).run(), args);
     opts::notify(args);
   } catch(const std::exception &e) {
     std::cerr << e.what() << std::endl;
@@ -68,24 +42,19 @@ int main(int argc, const char *argv[]) {
   unsigned int verbosity = args.count("verbose") ?
     args["verbose"].as<unsigned int>() : 0;
   term::colors_enabled = args.count("color");
-  bool fork_tests = !args.count("no-fork");
   bool show_terminal = args.count("show-terminal");
 
   if(show_terminal && verbosity < 2) {
     std::cerr << "--show-terminal requires verbosity >=2" << std::endl;
     return 1;
   }
-  if(show_terminal && !fork_tests) {
-    std::cerr << "--show-terminal requires forking tests" << std::endl;
+
+  if(!args.count("file")) {
+    std::cerr << "no inputs specified" << std::endl;
     return 1;
   }
 
-  if(args.count("child")) {
-    log::child logger(std::cout);
-    run_tests(detail::all_suites, logger, fork_tests);
-    return 0;
-  }
-
+  auto files = args["file"].as< std::vector<std::string> >();
   log::verbose vlog(std::cout, verbosity, show_terminal);
 
   if(args.count("runs")) {
@@ -97,18 +66,16 @@ int main(int argc, const char *argv[]) {
 
     log::multi_run logger(vlog);
     for(size_t i = 0; i < runs; i++)
-      run_tests(detail::all_suites, logger, fork_tests);
+      run_test_files(files, logger);
     logger.summarize();
 
     return logger.failures();
   }
   else {
     log::single_run logger(vlog);
-    run_tests(detail::all_suites, logger, fork_tests);
+    run_test_files(files, logger);
     logger.summarize();
 
     return logger.failures();
   }
 }
-
-#endif
