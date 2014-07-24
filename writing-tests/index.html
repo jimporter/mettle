@@ -121,6 +121,8 @@
         
             <li><a href="#your-first-test">Your first test</a></li>
         
+            <li><a href="#skipping-tests">Skipping tests</a></li>
+        
             <li><a href="#setup-and-teardown">Setup and teardown</a></li>
         
             <li><a href="#fixtures">Fixtures</a></li>
@@ -173,7 +175,7 @@ executes.</p>
 <em>test</em> in our tests. This expectation makes sure that <code>true</code> is equal to <code>true</code>.
 If it's not, the test will alert us to the fact so we can fix it (hopefully
 before the universe finishes crashing down around us).</p>
-<h3 id="skipped-tests">Skipped tests</h3>
+<h2 id="skipping-tests">Skipping tests</h2>
 <p>Some days, you just can't get a test to pass. While I can only assume this is
 your fault, and that you should therefore feel bad until you fix it, you may
 choose to skip the test for the time being:</p>
@@ -185,6 +187,16 @@ choose to skip the test for the time being:</p>
 <p>This will prevent the test from running and keep your test suite passing (with a
 note that there are some skipped tests). But please, for everyone's sake, fix
 your test! Thanks in advance.</p>
+<h3 id="skipping-suites">Skipping suites</h3>
+<p>Even worse, sometimes a whole suite has problems, and needs to be skipped
+(heaven forfend!). Like skipped tests, you can just add <code>skip_</code> to the beginning
+of the suite declaration like so:</p>
+<pre class="prettyprint well"><code class="c++">skip_suite&lt;&gt; broken_suite(&quot;my broken suite&quot;, [](auto &amp;_) {
+  /* ... */
+});
+</code></pre>
+
+<p>The same rule applies to subsuites as well, which we'll cover below.</p>
 <h2 id="setup-and-teardown">Setup and teardown</h2>
 <p>Sometimes, you'll have a bunch of tests that all have the same setup and
 teardown code. Test fixtures let you do this (mostly) automatically. If a test
