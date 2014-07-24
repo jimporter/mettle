@@ -20,6 +20,19 @@ inline auto make_suites(const std::string &name, F &&f) {
   );
 }
 
+template<typename ...Fixture, typename F>
+inline runnable_suite make_skip_suite(const std::string &name, F &&f) {
+  return make_skip_basic_suite<expectation_error, Fixture...>(
+    name, std::forward<F>(f)
+  );
+}
+
+template<typename ...Fixture, typename F>
+inline auto make_skip_suites(const std::string &name, F &&f) {
+  return make_skip_basic_suites<expectation_error, Fixture...>(
+    name, std::forward<F>(f)
+  );
+}
 
 } // namespace mettle
 

@@ -1,4 +1,5 @@
 test_basic
 test_fixture
 test_parameterize
+test_skip
 test_subsuite

@@ -129,38 +129,68 @@ private:
 
 using runnable_suite = compiled_suite<test_result>;
 
-template<typename Parent, typename ...T>
+template<typename Parent, typename ...Fixture>
 class subsuite_builder;
 
-template<typename T, typename ...U, typename F>
-typename subsuite_builder<T, U...>::compiled_suite_type
-make_subsuite(const std::string &name, const F &f);
+namespace detail {
 
-template<typename Parent, typename F>
-std::array<typename subsuite_builder<Parent>::compiled_suite_type, 1>
-make_subsuites(const std::string &name, const F &f) {
-  return {{ make_subsuite<Parent>(name, f) }};
+  template<typename Parent, typename ...Fixture, typename F>
+  typename subsuite_builder<Parent, Fixture...>::compiled_suite_type
+  make_skippable_subsuite(const std::string &name, const F &f, bool skip);
+
+  template<typename Parent, typename F>
+  std::array<typename subsuite_builder<Parent>::compiled_suite_type, 1>
+  make_skippable_subsuites(const std::string &name, const F &f, bool skip) {
+    return {{ make_skippable_subsuite<Parent>(name, f, skip) }};
+  }
+
+  template<typename Parent, typename Fixture, typename F>
+  std::array<typename subsuite_builder<Parent>::compiled_suite_type, 1>
+  make_skippable_subsuites(const std::string &name, const F &f, bool skip) {
+    return {{ make_skippable_subsuite<Parent, Fixture>(name, f, skip) }};
+  }
+
+  template<typename Parent, typename First, typename Second, typename ...Rest,
+           typename F>
+  std::array<
+    typename subsuite_builder<Parent, First>::compiled_suite_type,
+    sizeof...(Rest) + 2
+  >
+  make_skippable_subsuites(const std::string &name, const F &f, bool skip) {
+    using detail::annotate_type;
+    return {{
+      make_skippable_subsuite<Parent, First>(
+        annotate_type<First>(name), f, skip
+      ),
+      make_skippable_subsuite<Parent, Second>(
+        annotate_type<Second>(name), f, skip
+      ),
+      make_skippable_subsuite<Parent, Rest>(
+        annotate_type<Rest>(name), f, skip
+      )...
+    }};
+  }
+
 }
 
-template<typename Parent, typename Fixture, typename F>
-std::array<typename subsuite_builder<Parent>::compiled_suite_type, 1>
-make_subsuites(const std::string &name, const F &f) {
-  return {{ make_subsuite<Parent, Fixture>(name, f) }};
+template<typename Parent, typename ...Fixture, typename F>
+inline auto make_subsuite(const std::string &name, const F &f) {
+  return detail::make_skippable_subsuite<Parent, Fixture...>(name, f, false);
 }
 
-template<typename Parent, typename First, typename Second, typename ...Rest,
-         typename F>
-std::array<
-  typename subsuite_builder<Parent, First>::compiled_suite_type,
-  sizeof...(Rest) + 2
->
-make_subsuites(const std::string &name, const F &f) {
-  using detail::annotate_type;
-  return {{
-    make_subsuite<Parent, First>(annotate_type<First>(name), f),
-    make_subsuite<Parent, Second>(annotate_type<Second>(name), f),
-    make_subsuite<Parent, Rest>(annotate_type<Rest>(name), f)...
-  }};
+template<typename Parent, typename ...Fixture, typename F>
+inline auto make_subsuites(const std::string &name, const F &f) {
+  return detail::make_skippable_subsuites<Parent, Fixture...>(name, f, false);
+}
+
+template<typename Parent, typename ...Fixture, typename F>
+inline auto make_skip_subsuite(const std::string &name, const F &f) {
+  return detail::make_skippable_subsuite<Parent, Fixture...>(name, f, true);
+}
+
+template<typename Parent, typename ...Fixture, typename F>
+inline auto make_skip_subsuites(const std::string &name, const F &f) {
+  return detail::make_skippable_subsuites<Parent, Fixture...>(name, f, true);
 }
 
 template<typename ...T>
@@ -170,7 +200,8 @@ public:
   using function_type = std::function<raw_function_type>;
   using tuple_type = std::tuple<T...>;
 
-  suite_builder_base(const std::string &name) : name_(name) {}
+  suite_builder_base(const std::string &name, bool skip_all)
+    : name_(name), skip_all_(skip_all) {}
   suite_builder_base(const suite_builder_base &) = delete;
   suite_builder_base & operator =(const suite_builder_base &) = delete;
 
@@ -187,7 +218,7 @@ public:
   }
 
   void test(const std::string &name, const function_type &f) {
-    tests_.push_back({name, f, false});
+    tests_.push_back({name, f, false || skip_all_});
   }
 
   void subsuite(const compiled_suite<void, T...> &subsuite) {
@@ -214,6 +245,11 @@ public:
   void subsuite(const std::string &name, const F &f) {
     subsuite(make_subsuites<tuple_type, Fixture...>(name, f));
   }
+
+  template<typename ...Fixture, typename F>
+  void skip_subsuite(const std::string &name, const F &f) {
+    subsuite(make_skip_subsuites<tuple_type, Fixture...>(name, f));
+  }
 protected:
   struct test_info {
     std::string name;
@@ -222,6 +258,7 @@ protected:
   };
 
   std::string name_;
+  bool skip_all_;
   function_type setup_, teardown_;
   std::vector<test_info> tests_;
   std::vector<compiled_suite<void, T...>> subsuites_;
@@ -253,7 +290,7 @@ private:
       detail::do_test(setup, teardown, f, fixtures);
     };
 
-    return { test.name, test_function, test.skip };
+    return { test.name, test_function, test.skip || base::skip_all_ };
   }
 };
 
@@ -299,47 +336,92 @@ private:
       return { passed, message };
     };
 
-    return { test.name, test_function, test.skip };
+    return { test.name, test_function, test.skip || base::skip_all_ };
   }
 };
 
+namespace detail {
+
+  template<typename Exception, typename ...Fixture, typename F>
+  runnable_suite
+  make_skippable_basic_suite(const std::string &name, const F &f, bool skip) {
+    suite_builder<Exception, Fixture...> builder(name, skip);
+    f(builder);
+    return builder.finalize();
+  }
+
+  template<typename Exception, typename F>
+  std::array<runnable_suite, 1>
+  make_skippable_basic_suites(const std::string &name, const F &f, bool skip) {
+    return {{ make_skippable_basic_suite<Exception>(name, f, skip) }};
+  }
+
+  template<typename Exception, typename Fixture, typename F>
+  std::array<runnable_suite, 1>
+  make_skippable_basic_suites(const std::string &name, const F &f, bool skip) {
+    return {{ make_skippable_basic_suite<Exception, Fixture>(name, f, skip) }};
+  }
+
+  template<typename Exception, typename First, typename Second,
+           typename ...Rest, typename F>
+  std::array<runnable_suite, sizeof...(Rest) + 2>
+  make_skippable_basic_suites(const std::string &name, const F &f, bool skip) {
+    using detail::annotate_type;
+    return {{
+      make_skippable_basic_suite<Exception, First>(
+        annotate_type<First>(name), f, skip
+      ),
+      make_skippable_basic_suite<Exception, Second>(
+        annotate_type<Second>(name), f, skip
+      ),
+      make_skippable_basic_suite<Exception, Rest>(
+        annotate_type<Rest>(name), f, skip
+      )...
+    }};
+  }
+
+}
+
 template<typename Exception, typename ...Fixture, typename F>
-runnable_suite make_basic_suite(const std::string &name, const F &f) {
-  suite_builder<Exception, Fixture...> builder(name);
-  f(builder);
-  return builder.finalize();
+inline auto
+make_basic_suite(const std::string &name, const F &f) {
+  return detail::make_skippable_basic_suite<Exception, Fixture...>(
+    name, f, false
+  );
 }
 
-template<typename Exception, typename F>
-std::array<runnable_suite, 1>
+template<typename Exception, typename ...Fixture, typename F>
+inline auto
 make_basic_suites(const std::string &name, const F &f) {
-  return {{ make_basic_suite<Exception>(name, f) }};
+  return detail::make_skippable_basic_suites<Exception, Fixture...>(
+    name, f, false
+  );
 }
 
-template<typename Exception, typename Fixture, typename F>
-std::array<runnable_suite, 1>
-make_basic_suites(const std::string &name, const F &f) {
-  return {{ make_basic_suite<Exception, Fixture>(name, f) }};
+template<typename Exception, typename ...Fixture, typename F>
+inline auto
+make_skip_basic_suite(const std::string &name, const F &f) {
+  return detail::make_skippable_basic_suite<Exception, Fixture...>(
+    name, f, true
+  );
 }
 
-template<typename Exception, typename First, typename Second, typename ...Rest,
-         typename F>
-std::array<runnable_suite, sizeof...(Rest) + 2>
-make_basic_suites(const std::string &name, const F &f) {
-  using detail::annotate_type;
-  return {{
-    make_basic_suite<Exception, First>(annotate_type<First>(name), f),
-    make_basic_suite<Exception, Second>(annotate_type<Second>(name), f),
-    make_basic_suite<Exception, Rest>(annotate_type<Rest>(name), f)...
-  }};
+template<typename Exception, typename ...Fixture, typename F>
+inline auto
+make_skip_basic_suites(const std::string &name, const F &f) {
+  return detail::make_skippable_basic_suites<Exception, Fixture...>(
+    name, f, true
+  );
 }
 
-template<typename Parent, typename ...Fixture, typename F>
-typename subsuite_builder<Parent, Fixture...>::compiled_suite_type
-make_subsuite(const std::string &name, const F &f) {
-  subsuite_builder<Parent, Fixture...> builder(name);
-  f(builder);
-  return builder.finalize();
+namespace detail {
+  template<typename Parent, typename ...Fixture, typename F>
+  typename subsuite_builder<Parent, Fixture...>::compiled_suite_type
+  make_skippable_subsuite(const std::string &name, const F &f, bool skip) {
+    subsuite_builder<Parent, Fixture...> builder(name, skip);
+    f(builder);
+    return builder.finalize();
+  }
 }
 
 template<typename ...Fixture, typename Parent, typename F>
@@ -348,15 +430,32 @@ inline auto make_subsuite(const Parent &, const std::string &name, const F &f) {
 }
 
 template<typename ...Fixture, typename Parent, typename F>
-inline auto make_subsuites(
-  const Parent &, const std::string &name, const F &f
-) {
+inline auto
+make_subsuites(const Parent &, const std::string &name, const F &f) {
   return make_subsuites<typename Parent::tuple_type, Fixture...>(name, f);
 }
 
 template<typename ...Fixture, typename Parent, typename F>
 inline void subsuite(Parent &builder, const std::string &name, const F &f) {
   builder.template subsuite<Fixture...>(name, f);
+}
+
+template<typename ...Fixture, typename Parent, typename F>
+inline auto
+make_skip_subsuite(const Parent &, const std::string &name, const F &f) {
+  return make_skip_subsuite<typename Parent::tuple_type, Fixture...>(name, f);
+}
+
+template<typename ...Fixture, typename Parent, typename F>
+inline auto
+make_skip_subsuites(const Parent &, const std::string &name, const F &f) {
+  return make_skip_subsuites<typename Parent::tuple_type, Fixture...>(name, f);
+}
+
+template<typename ...Fixture, typename Parent, typename F>
+inline void
+skip_subsuite(Parent &builder, const std::string &name, const F &f) {
+  builder.template skip_subsuite<Fixture...>(name, f);
 }
 
 } // namespace mettle

@@ -177,7 +177,6 @@ suite<> test_suite("suite creation", [](auto &_) {
     };
 
     _.test("create subsuites", [&check_subsuites]() {
-
       auto s = make_suite<>("inner test suite", [](auto &_){
         _.template subsuite<int>("subsuite", [](auto &_) {
           _.test("subtest", [](int &) {});
@@ -189,12 +188,11 @@ suite<> test_suite("suite creation", [](auto &_) {
           });
         });
       });
-      check_subsuites(s);
 
+      check_subsuites(s);
     });
 
     _.test("create subsuites with helper syntax", [&check_subsuites]() {
-
       auto s = make_suite<>("inner test suite", [](auto &_){
         subsuite<int>(_, "subsuite", [](auto &_) {
           _.test("subtest", [](int &) {});
@@ -206,12 +204,11 @@ suite<> test_suite("suite creation", [](auto &_) {
           });
         });
       });
-      check_subsuites(s);
 
+      check_subsuites(s);
     });
 
     _.test("create subsuites with make_subsuite", [&check_subsuites]() {
-
       auto s = make_suite<>("inner test suite", [](auto &_){
         _.subsuite(make_subsuite<int>(_, "subsuite", [](auto &_) {
           _.test("subtest", [](int &) {});
@@ -223,8 +220,8 @@ suite<> test_suite("suite creation", [](auto &_) {
           }));
         }));
       });
-      check_subsuites(s);
 
+      check_subsuites(s);
     });
 
     auto check_param_subsuites = [](const runnable_suite &suite) {
@@ -280,6 +277,118 @@ suite<> test_suite("suite creation", [](auto &_) {
       });
 
       check_param_subsuites(s);
+    });
+
+  });
+
+  subsuite<>(_, "skipped suites", [](auto &_) {
+
+    auto check_suite = [](const runnable_suite &s) {
+      expect(s, array(
+        match_test("inner test", true), match_test("skipped test", true)
+      ));
+    };
+
+    _.test("create a skipped test suite", [&check_suite]() {
+      auto s = make_skip_suite<>("inner test suite", [](auto &_){
+        _.test("inner test", []() {});
+        _.skip_test("skipped test", []() {});
+      });
+
+      check_suite(s);
+    });
+
+    _.test("create a skipped test suite with fixture", [&check_suite]() {
+      auto s = make_skip_suite<int>("inner test suite", [](auto &_){
+        _.test("inner test", [](int &) {});
+        _.skip_test("skipped test", [](int &) {});
+      });
+
+      check_suite(s);
+    });
+
+    _.test("create a skipped parameterized test suite", [&check_suite]() {
+      auto suites = make_skip_suites<int, float>("inner test suite",
+                                                 [](auto &_){
+        _.test("inner test", [](auto &) {});
+        _.skip_test("skipped test", [](auto &) {});
+      });
+
+      for(size_t i = 0; i < 2; i++)
+        check_suite(suites[i]);
+    });
+
+    auto check_subsuites = [](const runnable_suite &suite) {
+      expect(suite, array(
+        match_test("inner test", false), match_test("skipped test", true)
+      ));
+
+      auto &sub = suite.subsuites()[0];
+      expect(sub, array(
+        match_test("subtest", true), match_test("skipped subtest", true)
+      ));
+
+      auto &subsub = sub.subsuites()[0];
+      expect(subsub, array(
+        match_test("sub-subtest", true), match_test("skipped sub-subtest", true)
+      ));
+    };
+
+    _.test("create skipped subsuites", [&check_subsuites]() {
+      auto s = make_suite<>("inner test suite", [](auto &_){
+        _.test("inner test", []() {});
+        _.skip_test("skipped test", []() {});
+
+        _.template skip_subsuite<int>("subsuite", [](auto &_) {
+          _.test("subtest", [](int &) {});
+          _.skip_test("skipped subtest", [](int &) {});
+
+          _.template subsuite<>("sub-subsuite", [](auto &_) {
+            _.test("sub-subtest", [](int &) {});
+            _.skip_test("skipped sub-subtest", [](int &) {});
+          });
+        });
+      });
+
+      check_subsuites(s);
+    });
+
+    _.test("create skipped subsuites with helper syntax", [&check_subsuites]() {
+      auto s = make_suite<>("inner test suite", [](auto &_){
+        _.test("inner test", []() {});
+        _.skip_test("skipped test", []() {});
+
+        skip_subsuite<int>(_, "subsuite", [](auto &_) {
+          _.test("subtest", [](int &) {});
+          _.skip_test("skipped subtest", [](int &) {});
+
+          subsuite<>(_, "sub-subsuite", [](auto &_) {
+            _.test("sub-subtest", [](int &) {});
+            _.skip_test("skipped sub-subtest", [](int &) {});
+          });
+        });
+      });
+
+      check_subsuites(s);
+    });
+
+    _.test("create skipped subsuites with make_subsuite", [&check_subsuites]() {
+      auto s = make_suite<>("inner test suite", [](auto &_){
+        _.test("inner test", []() {});
+        _.skip_test("skipped test", []() {});
+
+        _.subsuite(make_skip_subsuite<int>(_, "subsuite", [](auto &_) {
+          _.test("subtest", [](int &) {});
+          _.skip_test("skipped subtest", [](int &) {});
+
+          _.subsuite(make_subsuite<>(_, "sub-subsuite", [](auto &_) {
+            _.test("sub-subtest", [](int &) {});
+            _.skip_test("skipped sub-subtest", [](int &) {});
+          }));
+        }));
+      });
+
+      check_subsuites(s);
     });
 
   });

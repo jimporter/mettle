@@ -25,13 +25,26 @@ struct basic_suite {
   template<typename F>
   basic_suite(const std::string &name, const F &f,
               suites_list &suites = detail::all_suites) {
-    for (auto &i : make_basic_suites<Exception, Fixture...>(name, f))
+    for(auto &&i : make_basic_suites<Exception, Fixture...>(name, f))
+      suites.push_back(std::move(i));
+  }
+};
+
+template<typename Exception, typename ...Fixture>
+struct skip_basic_suite {
+  template<typename F>
+  skip_basic_suite(const std::string &name, const F &f,
+                   suites_list &suites = detail::all_suites) {
+    for(auto &&i : make_skip_basic_suites<Exception, Fixture...>(name, f))
       suites.push_back(std::move(i));
   }
 };
 
 template<typename ...T>
 using suite = basic_suite<expectation_error, T...>;
+
+template<typename ...T>
+using skip_suite = skip_basic_suite<expectation_error, T...>;
 
 } // namespace mettle
 

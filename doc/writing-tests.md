@@ -48,7 +48,7 @@ This is an *expectation*. We'll discuss them in more detail
 If it's not, the test will alert us to the fact so we can fix it (hopefully
 before the universe finishes crashing down around us).
 
-### Skipped tests
+## Skipping tests
 
 Some days, you just can't get a test to pass. While I can only assume this is
 your fault, and that you should therefore feel bad until you fix it, you may
@@ -63,6 +63,20 @@ _.skip_test("my broken test", []() {
 This will prevent the test from running and keep your test suite passing (with a
 note that there are some skipped tests). But please, for everyone's sake, fix
 your test! Thanks in advance.
+
+### Skipping suites
+
+Even worse, sometimes a whole suite has problems, and needs to be skipped
+(heaven forfend!). Like skipped tests, you can just add `skip_` to the beginning
+of the suite declaration like so:
+
+```c++
+skip_suite<> broken_suite("my broken suite", [](auto &_) {
+  /* ... */
+});
+```
+
+The same rule applies to subsuites as well, which we'll cover below.
 
 ## Setup and teardown
 
