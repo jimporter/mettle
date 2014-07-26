@@ -60,7 +60,7 @@ Show the full name of tests and suites as they're being run.
 #### --color (-c)
 
 Print test results in color. This is good if your terminal supports colors,
-since it makes the resluts much easier to read!
+since it makes the results much easier to read!
 
 #### --runs *N*
 
