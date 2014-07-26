@@ -8,25 +8,25 @@ wrestling with the API.
 ## Features
 ---
 
-#### No preprocessor abuse
+#### Declarative, matcher-based expectations
 
-Tests are defined using ordinary C++ without the use of the C preprocessor,
-resulting in clearer code and greater flexibility.
+Expectations (assertions) are created using composable matchers, allowing you to
+test complex things using a minimal set of core functions.
 
 #### Nested suites
 
 Test suites can be nested arbitrarily deep. Group your tests however you like,
 and let the suites set up and tear down your fixtures for you.
 
-#### Declarative, matcher-based expectations
-
-Expectations (assertions) are created using composable matchers, allowing you to
-test complex things using a minimal set of core functions.
-
 #### Don't repeat yourself
 
 Tests can be parameterized by value and by type, allowing you to reuse the same
 tests with different preconditions.
+
+#### No preprocessor abuse
+
+Tests are defined using ordinary C++ without the use of the C preprocessor,
+resulting in clearer code and greater flexibility.
 
 ---
 
