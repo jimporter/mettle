@@ -63,6 +63,22 @@ namespace detail {
   std::string annotate_type(const std::string &s) {
     return s + " (" + type_name<T>() + ")";
   }
+
+  template<typename ...>
+  struct first;
+
+  template<typename First, typename ...Rest>
+  struct first<First, Rest...> {
+    using type = First;
+  };
+
+  template<>
+  struct first<> {
+    using type = void;
+  };
+
+  template<typename ...T>
+  using first_t = typename first<T...>::type;
 }
 
 struct test_result {
@@ -271,6 +287,7 @@ private:
   static_assert(sizeof...(U) < 2, "only specify one fixture at a time!");
   using base = suite_builder_base<T..., U...>;
 public:
+  using fixture_type = detail::first_t<U...>;
   using compiled_suite_type = compiled_suite<void, T...>;
   using base::base;
 
@@ -300,6 +317,7 @@ private:
   static_assert(sizeof...(T) < 2, "only specify one fixture at a time!");
   using base = suite_builder_base<T...>;
 public:
+  using fixture_type = detail::first_t<T...>;
   using exception_type = Exception;
   using base::base;
 
@@ -457,6 +475,14 @@ inline void
 skip_subsuite(Parent &builder, const std::string &name, const F &f) {
   builder.template skip_subsuite<Fixture...>(name, f);
 }
+
+template<typename T>
+struct fixture_type {
+  using type = typename std::remove_reference_t<T>::fixture_type;
+};
+
+template<typename T>
+using fixture_type_t = typename fixture_type<T>::type;
 
 } // namespace mettle
 

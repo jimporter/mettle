@@ -102,6 +102,8 @@ suite<> test_suite("suite creation", [](auto &_) {
 
   _.test("create a parameterized test suite", [&check_suite]() {
     auto suites = make_suites<int, float>("inner test suite", [](auto &_) {
+      using Fixture = fixture_type_t<decltype(_)>;
+
       _.test("inner test", [](auto &) {});
       _.skip_test("skipped test", [](auto &) {});
     });
@@ -247,6 +249,8 @@ suite<> test_suite("suite creation", [](auto &_) {
     _.test("create a parameterized subsuite", [&check_param_subsuites]() {
       auto s = make_suite<>("inner test suite", [](auto &_) {
         _.template subsuite<int, float>("subsuite", [](auto &_) {
+          using Fixture = fixture_type_t<decltype(_)>;
+
           _.test("subtest", [](auto &) {});
           _.skip_test("skipped subtest", [](auto &) {});
         });
@@ -259,6 +263,8 @@ suite<> test_suite("suite creation", [](auto &_) {
            [&check_param_subsuites]() {
       auto s = make_suite<>("inner test suite", [](auto &_) {
         subsuite<int, float>(_, "subsuite", [](auto &_) {
+          using Fixture = fixture_type_t<decltype(_)>;
+
           _.test("subtest", [](auto &) {});
           _.skip_test("skipped subtest", [](auto &) {});
         });
@@ -271,6 +277,8 @@ suite<> test_suite("suite creation", [](auto &_) {
            [&check_param_subsuites]() {
       auto s = make_suite<>("inner test suite", [](auto &_) {
         _.subsuite(make_subsuites<int, float>(_, "subsuite", [](auto &_) {
+          using Fixture = fixture_type_t<decltype(_)>;
+
           _.test("subtest", [](auto &) {});
           _.skip_test("skipped subtest", [](auto &) {});
         }));
@@ -310,6 +318,8 @@ suite<> test_suite("suite creation", [](auto &_) {
     _.test("create a skipped parameterized test suite", [&check_suite]() {
       auto suites = make_skip_suites<int, float>("inner test suite",
                                                  [](auto &_){
+        using Fixture = fixture_type_t<decltype(_)>;
+
         _.test("inner test", [](auto &) {});
         _.skip_test("skipped test", [](auto &) {});
       });

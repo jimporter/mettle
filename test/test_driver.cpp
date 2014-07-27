@@ -30,6 +30,8 @@ suite<suites_list> test_driver("driver suite declaration", [](auto &_) {
   _.test("create a test suite with parameterized fixtures",
          [](suites_list &suites) {
     suite<int, float>("inner test suite", [](auto &_){
+      using Fixture = fixture_type_t<decltype(_)>;
+
       _.test("inner test", [](auto &) {});
       _.skip_test("skipped test", [](auto &) {});
     }, suites);
@@ -69,6 +71,8 @@ suite<suites_list> test_driver("driver suite declaration", [](auto &_) {
   _.test("create a skipped test suite with parameterized fixtures",
          [](suites_list &suites) {
     skip_suite<int, float>("inner test suite", [](auto &_){
+       using Fixture = fixture_type_t<decltype(_)>;
+
       _.test("inner test", [](auto &) {});
       _.skip_test("skipped test", [](auto &) {});
     }, suites);
