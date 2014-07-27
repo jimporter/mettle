@@ -356,6 +356,19 @@ this allows the test function to accept a fixture of either an <code>int</code> 
 you don't <em>always</em> need to use <code>auto</code> here; if all of your fixtures inherit from
 a common base type, you can use an ordinary lambda that takes a reference to the
 base type.</p>
+<h3 id="getting-the-parameterized-type">Getting the parameterized type</h3>
+<p>In some cases, you may want to know the parameterized type, e.g. if you'd like
+to create your own instances of the object. You can retrieve this via the
+<code>fixture_type</code> trait (or the <code>fixture_type_t</code> alias) like so:</p>
+<pre class="prettyprint well"><code class="c++">suite&lt;int, float&gt; param_type_test(&quot;parameterized suite&quot;, [](auto &amp;_) {
+  using Fixture = fixture_type_t&lt;decltype(_)&gt;;
+
+  _.test(&quot;my test&quot;, [](auto &amp;) {
+    /* use Fixture here */
+  });
+});
+</code></pre>
+
 </div>
         </div>
 
