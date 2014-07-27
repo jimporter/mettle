@@ -58,7 +58,7 @@ int main(int argc, const char *argv[]) {
     ("verbose,v", opts::value<unsigned int>()->implicit_value(1),
      "show verbose output")
     ("color,c", "show colored output")
-    ("runs", opts::value<size_t>(), "number of test runs")
+    ("runs,n", opts::value<size_t>(), "number of test runs")
     ("no-fork", "don't fork for each test")
     ("show-terminal", "show terminal output for each test")
     ("child", "run this file as a child process")

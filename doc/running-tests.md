@@ -62,7 +62,7 @@ Show the full name of tests and suites as they're being run.
 Print test results in color. This is good if your terminal supports colors,
 since it makes the results much easier to read!
 
-#### --runs *N*
+#### --runs *N* (-n)
 
 Run the tests a total of *N* times. This is useful for catching intermittent
 failures. At the end, the summary will show the output of each failure for every

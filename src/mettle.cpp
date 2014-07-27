@@ -13,10 +13,10 @@ int main(int argc, const char *argv[]) {
   opts::options_description desc("Allowed options");
   desc.add_options()
     ("help,h", "show help")
-    ("verbose", opts::value<unsigned int>()->implicit_value(1),
+    ("verbose,v", opts::value<unsigned int>()->implicit_value(1),
      "show verbose output")
-    ("color", "show colored output")
-    ("runs", opts::value<size_t>(), "number of test runs")
+    ("color,c", "show colored output")
+    ("runs,n", opts::value<size_t>(), "number of test runs")
     ("show-terminal", "show terminal output for each test")
     ("file", opts::value< std::vector<std::string> >(), "input file")
   ;
