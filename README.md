@@ -61,9 +61,10 @@ suite<> basic("a basic suite", [](auto &_) {
 ## Dependencies
 
 This project currently requires a C++14 compiler (for generic lambdas in the
-matchers) and Boost (for argument parsing in the test runner). It's been tested
-against clang 3.4 (get it from http://llvm.org/apt/; Ubuntu 13.10's version
-won't work!).
+matchers), [Boost](http://www.boost.org/) (for program_options and iostreams),
+and [bencode.hpp](https://github.com/jimporter/bencode.hpp). It's been tested
+against clang 3.4 (get it from [http://llvm.org/apt/](http://llvm.org/apt/));
+Ubuntu 13.10's version won't work!).
 
 ## License
 

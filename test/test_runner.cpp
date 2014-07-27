@@ -14,11 +14,11 @@ struct my_test_logger : log::test_logger {
   virtual void start_test(const log::test_name &) {
     tests_run++;
   }
-  virtual void passed_test(const log::test_name &, log::test_output &) {
+  virtual void passed_test(const log::test_name &, const log::test_output &) {
     tests_passed++;
   }
   virtual void failed_test(const log::test_name &, const std::string &,
-                           log::test_output &) {
+                           const log::test_output &) {
     tests_failed++;
   }
   virtual void skipped_test(const log::test_name &) {
@@ -93,7 +93,7 @@ suite<> test_runner("test runner", [](auto &_) {
 
       for(const auto &t : s) {
         auto result = detail::run_test(t.function, output);
-        expect(output.stdout.str(), equal_to("stdout"));
+        expect(output.stdout, equal_to("stdout"));
       }
     });
 
@@ -107,8 +107,8 @@ suite<> test_runner("test runner", [](auto &_) {
 
       for(const auto &t : s) {
         auto result = detail::run_test(t.function, output);
-        expect(output.stdout.str(), equal_to("stdout"));
-        expect(output.stderr.str(), equal_to("stderr"));
+        expect(output.stdout, equal_to("stdout"));
+        expect(output.stderr, equal_to("stderr"));
       }
     });
   });

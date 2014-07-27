@@ -61,14 +61,14 @@ namespace detail {
       int rv;
       pollfd fds[2] = { {stdout_pipe.read_fd, POLLIN, 0},
                         {stderr_pipe.read_fd, POLLIN, 0} };
+      std::string *dests[] = {&output.stdout, &output.stderr};
       int open_fds = 2;
       while(open_fds && (rv = poll(fds, 2, -1)) > 0) {
         for(size_t i = 0; i < 2; i++) {
-          auto &stream = i == 0 ? output.stdout : output.stderr;
           if(fds[i].revents & POLLIN) {
             if((size = read(fds[i].fd, buf, sizeof(buf))) < 0)
               goto parent_fail;
-            stream.write(buf, size);
+            dests[i]->append(buf, size);
           }
           if(fds[i].revents & POLLHUP) {
             fds[i].fd = -fds[i].fd;
@@ -80,9 +80,9 @@ namespace detail {
         goto parent_fail;
 
       // Read from our logging pipe (which sends the message from the test run).
-      std::stringstream message;
+      std::string message;
       while((size = read(log_pipe.read_fd, buf, sizeof(buf))) > 0)
-        message.write(buf, size);
+        message.append(buf, size);
       if(size < 0) // read() failed!
         goto parent_fail;
 
@@ -93,7 +93,7 @@ namespace detail {
       if(WIFSIGNALED(status))
         return { false, strsignal(WTERMSIG(status)) };
 
-      return { WIFEXITED(status) && WEXITSTATUS(status) == 0, message.str() };
+      return { WIFEXITED(status) && WEXITSTATUS(status) == 0, message };
     }
   parent_fail:
     char errbuf[256];

@@ -62,6 +62,14 @@ For further examples, please see the
 [`examples/`](https://github.com/jimporter/mettle/tree/master/examples)
 subdirectory.
 
+## Dependencies
+
+This project currently requires a C++14 compiler (for generic lambdas in the
+matchers), [Boost](http://www.boost.org/) (for program_options and iostreams),
+and [bencode.hpp](https://github.com/jimporter/bencode.hpp). It's been tested
+against clang 3.4 (get it from [http://llvm.org/apt/](http://llvm.org/apt/));
+Ubuntu 13.10's version won't work!).
+
 ## Installation
 
 mettle has two parts: a (currently) a header-only library and an executable
@@ -70,9 +78,3 @@ in the `include/` directory to wherever you'd like. To build the `mettle`
 executable, just run `make` to create the file in the root directoy. (This is,
 of course, suboptimal, but expect improvements to the process soon!)
 
-## Dependencies
-
-This project currently requires a C++14 compiler (for generic lambdas in the
-matchers) and Boost (for argument parsing in the test runner). It's been tested
-against clang 3.4 (get it from [http://llvm.org/apt/](http://llvm.org/apt/));
-Ubuntu 13.10's version won't work!).

@@ -36,13 +36,13 @@ namespace log {
       vlog_.start_test(test);
     }
 
-    void passed_test(const test_name &test, test_output &output) {
+    void passed_test(const test_name &test, const test_output &output) {
       passes_++;
       vlog_.passed_test(test, output);
     }
 
     void failed_test(const test_name &test, const std::string &message,
-                     test_output &output) {
+                     const test_output &output) {
       failures_.push_back({test, message});
       vlog_.failed_test(test, message, output);
     }

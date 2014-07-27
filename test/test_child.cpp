@@ -24,20 +24,18 @@ struct recording_logger : log::test_logger {
     test = actual_test;
   }
   void passed_test(const log::test_name &actual_test,
-                   log::test_output &actual_output) {
+                   const log::test_output &actual_output) {
     called = "passed_test";
     test = actual_test;
-    stdout = actual_output.stdout.str();
-    stderr = actual_output.stderr.str();
+    output = actual_output;
   }
   void failed_test(const log::test_name &actual_test,
                    const std::string &actual_message,
-                   log::test_output &actual_output) {
+                   const log::test_output &actual_output) {
     called = "failed_test";
     test = actual_test;
     message = actual_message;
-    stdout = actual_output.stdout.str();
-    stderr = actual_output.stderr.str();
+    output = actual_output;
   }
   void skipped_test(const log::test_name &actual_test) {
     called = "skipped_test";
@@ -47,7 +45,8 @@ struct recording_logger : log::test_logger {
   std::string called;
   std::vector<std::string> suites;
   log::test_name test;
-  std::string message, stdout, stderr;
+  std::string message;
+  log::test_output output;
 };
 
 struct fixture {
@@ -105,25 +104,21 @@ suite<fixture> test_child("test child logger", [](auto &_) {
 
   _.test("passed_test()", [](fixture &f) {
     log::test_name test = {{"suite", "subsuite"}, "test", 1};
-    log::test_output output;
-    output.stdout << "stdout";
-    output.stderr << "stderr";
+    log::test_output output = {"stdout", "stderr"};
 
     f.child.passed_test(test, output);
     detail::pipe_to_logger(f.parent, f.stream);
 
     expect(f.parent.called, equal_to("passed_test"));
     expect(f.parent.test, equal_to(test));
-    expect(f.parent.stdout, equal_to( output.stdout.str() ));
-    expect(f.parent.stderr, equal_to( output.stderr.str() ));
+    expect(f.parent.output.stdout, equal_to(output.stdout));
+    expect(f.parent.output.stderr, equal_to(output.stderr));
   });
 
   _.test("failed_test()", [](fixture &f) {
     log::test_name test = {{"suite", "subsuite"}, "test", 1};
     std::string message = "failure";
-    log::test_output output;
-    output.stdout << "stdout";
-    output.stderr << "stderr";
+    log::test_output output = {"stdout", "stderr"};
 
     f.child.failed_test(test, message, output);
     detail::pipe_to_logger(f.parent, f.stream);
@@ -131,8 +126,8 @@ suite<fixture> test_child("test child logger", [](auto &_) {
     expect(f.parent.called, equal_to("failed_test"));
     expect(f.parent.test, equal_to(test));
     expect(f.parent.message, equal_to(message));
-    expect(f.parent.stdout, equal_to( output.stdout.str() ));
-    expect(f.parent.stderr, equal_to( output.stderr.str() ));
+    expect(f.parent.output.stdout, equal_to(output.stdout));
+    expect(f.parent.output.stderr, equal_to(output.stderr));
   });
 
   _.test("skipped_test()", [](fixture &f) {

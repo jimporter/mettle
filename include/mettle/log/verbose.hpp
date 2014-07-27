@@ -49,7 +49,7 @@ namespace log {
       }
     }
 
-    void passed_test(const test_name &test, test_output &output) {
+    void passed_test(const test_name &test, const test_output &output) {
       using namespace term;
       if(verbosity_ == 0) {
         return;
@@ -66,7 +66,7 @@ namespace log {
     }
 
     void failed_test(const test_name &test, const std::string &message,
-                     test_output &output) {
+                     const test_output &output) {
       using namespace term;
       if(verbosity_ == 0) {
         return;
@@ -107,20 +107,20 @@ namespace log {
 
     std::ostream &out;
   private:
-    void log_output(size_t depth, test_output &output) {
+    void log_output(size_t depth, const test_output &output) {
       if(!show_terminal_)
         return;
 
       using namespace term;
       const std::string indent((depth + 1) * 2 + base_indent_, ' ');
 
-      if(output.stdout.peek() != EOF) {
+      if(!output.stdout.empty()) {
         out << indent << format(fg(color::yellow)) << "stdout" << reset() << ":"
-            << std::endl << output.stdout.rdbuf() << std::endl;
+            << std::endl << output.stdout << std::endl;
       }
-      if(output.stderr.peek() != EOF) {
+      if(!output.stderr.empty()) {
         out << indent << format(fg(color::yellow)) << "stderr" << reset() << ":"
-            << std::endl << output.stderr.rdbuf() << std::endl;
+            << std::endl << output.stderr << std::endl;
       }
     }
 
