@@ -14,79 +14,13 @@
 
 #include "scoped_pipe.hpp"
 #include "log/core.hpp"
+#include "log/pipe.hpp"
 
 namespace mettle {
 
 namespace detail {
 
-  // XXX: Put this stuff in a class somewhere?
-  inline std::vector<std::string>
-  read_suites(BENCODE_ANY_NS::any &suites) {
-    using namespace BENCODE_ANY_NS;
-    std::vector<std::string> result;
-    for(auto &&i : any_cast<bencode::list &>(suites))
-      result.push_back(std::move( any_cast<bencode::string &>(i) ));
-    return result;
-  }
-
-  inline log::test_name read_test_name(BENCODE_ANY_NS::any &test) {
-    using namespace BENCODE_ANY_NS;
-    auto &data = any_cast<bencode::dict &>(test);
-    return log::test_name{
-      read_suites(data.at("suites")),
-      std::move(any_cast<bencode::string &>( data.at("test")  )),
-      static_cast<size_t>(any_cast<bencode::integer>( data.at("id") )),
-    };
-  }
-
-  inline log::test_output read_test_output(BENCODE_ANY_NS::any &output) {
-    using namespace BENCODE_ANY_NS;
-    auto &data = any_cast<bencode::dict &>(output);
-    return log::test_output{
-      std::move(any_cast<bencode::string &>( data.at("stdout") )),
-      std::move(any_cast<bencode::string &>( data.at("stderr") ))
-    };
-  }
-
-  inline std::string read_test_message(BENCODE_ANY_NS::any &message) {
-    using namespace BENCODE_ANY_NS;
-    return std::move(any_cast<bencode::string &>(message));
-  }
-
-  inline void pipe_to_logger(log::test_logger &logger, std::istream &s) {
-    using namespace BENCODE_ANY_NS;
-
-    auto tmp = bencode::decode(s);
-    if(tmp.empty())
-      return;
-
-    auto &data = any_cast<bencode::dict &>(tmp);
-    auto &event = any_cast<bencode::string &>(data.at("event"));
-
-    if(event == "start_suite") {
-      logger.start_suite(read_suites(data.at("suites")));
-    }
-    else if(event == "end_suite") {
-      logger.end_suite(read_suites(data.at("suites")));
-    }
-    else if(event == "start_test") {
-      logger.start_test(read_test_name(data.at("test")));
-    }
-    else if(event == "passed_test") {
-      logger.passed_test(read_test_name(data.at("test")),
-                         read_test_output(data.at("output")));
-    }
-    else if(event == "failed_test") {
-      logger.failed_test(read_test_name(data.at("test")),
-                         read_test_message(data.at("message")),
-                         read_test_output(data.at("output")));
-    }
-    else if(event == "skipped_test") {
-      logger.skipped_test(read_test_name(data.at("test")));
-    }
-  }
-
-  inline void run_test_file(const std::string &file, log::test_logger &logger) {
+  inline void run_test_file(const std::string &file, log::pipe &logger) {
     scoped_pipe stdout_pipe;
     stdout_pipe.open();
 
@@ -115,7 +49,7 @@ namespace detail {
       );
 
       while(!fds.eof())
-        pipe_to_logger(logger, fds);
+        logger(fds);
 
       if(waitpid(pid, nullptr, 0) < 0)
         goto parent_fail;
@@ -128,10 +62,11 @@ namespace detail {
 }
 
 inline void run_test_files(const std::vector<std::string> &files,
-                    log::test_logger &logger) {
+                           log::test_logger &logger) {
   logger.start_run();
+  log::pipe pipe(logger);
   for(const auto &file : files)
-    detail::run_test_file(file, logger);
+    detail::run_test_file(file, pipe);
   logger.end_run();
 }
 
