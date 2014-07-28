@@ -113,14 +113,14 @@ int main(int argc, const char *argv[]) {
       run_tests(detail::all_suites, logger, fork_tests);
     logger.summarize();
 
-    return logger.failures();
+    return !logger.good();
   }
   else {
     log::single_run logger(vlog);
     run_tests(detail::all_suites, logger, fork_tests);
     logger.summarize();
 
-    return logger.failures();
+    return !logger.good();
   }
 }
 

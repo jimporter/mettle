@@ -43,10 +43,10 @@ namespace detail {
         if(write(log_pipe.write_fd, result.message.c_str(),
                  result.message.length()) < 0)
           goto child_fail;
-        exit(result.passed ? 0 : 1);
+        exit(!result.passed);
       }
     child_fail:
-      exit(1); // XXX: Pass the errno somehow?
+      exit(128);
     }
     else {
       if(stdout_pipe.close_write() < 0 ||

@@ -71,8 +71,8 @@ namespace log {
       }
     }
 
-    size_t failures() const {
-      return failures_.size();
+    bool good() const {
+      return failures_.empty();
     }
   private:
     struct failure {

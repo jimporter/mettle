@@ -69,13 +69,13 @@ int main(int argc, const char *argv[]) {
       run_test_files(files, logger);
     logger.summarize();
 
-    return logger.failures();
+    return !logger.good();
   }
   else {
     log::single_run logger(vlog);
     run_test_files(files, logger);
     logger.summarize();
 
-    return logger.failures();
+    return !logger.good();
   }
 }

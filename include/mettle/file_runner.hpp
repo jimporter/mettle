@@ -37,7 +37,7 @@ namespace detail {
 
       execl(file.c_str(), file.c_str(), "--child", nullptr);
     child_fail:
-      exit(1);
+      exit(128);
     }
     else {
       if(stdout_pipe.close_write() < 0)
@@ -57,7 +57,7 @@ namespace detail {
     }
 
   parent_fail:
-    exit(1); // TODO: what should we do here?
+    exit(128); // TODO: what should we do here?
   }
 }
 
