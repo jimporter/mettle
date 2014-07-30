@@ -38,8 +38,6 @@ namespace detail {
           continue;
         }
 
-        using namespace std::literals::chrono_literals;
-
         log::test_output output;
         auto result = runner(test.function, output);
         if(result.passed)
