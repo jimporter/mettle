@@ -48,7 +48,7 @@ namespace detail {
         execl(file.c_str(), file.c_str(), "--child", nullptr);
       }
     child_fail:
-      exit(128);
+      _exit(128);
     }
     else {
       if(stdout_pipe.close_write() < 0)

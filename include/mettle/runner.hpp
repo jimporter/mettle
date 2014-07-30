@@ -72,6 +72,8 @@ public:
        log_pipe.open(O_CLOEXEC) < 0)
       goto parent_fail;
 
+    fflush(nullptr);
+
     pid_t pid;
     if((pid = fork()) < 0)
       goto parent_fail;
@@ -98,10 +100,12 @@ public:
         if(write(log_pipe.write_fd, result.message.c_str(),
                  result.message.length()) < 0)
           goto child_fail;
-        exit(!result.passed);
+
+        fflush(nullptr);
+        _exit(!result.passed);
       }
     child_fail:
-      exit(128);
+      _exit(128);
     }
     else {
       if(stdout_pipe.close_write() < 0 ||
@@ -175,7 +179,7 @@ private:
       goto fail;
     if(watcher_pid == 0) {
       std::this_thread::sleep_for(timeout);
-      exit(2);
+      _exit(2);
     }
 
     pid_t test_pid;
@@ -196,12 +200,12 @@ private:
       else if(WIFSIGNALED(status))
         raise(WTERMSIG(status));
       else // WIFSTOPPED
-        exit(128); // XXX: not sure what to do here
+        _exit(128); // XXX: not sure what to do here
     }
 
     return;
   fail:
-    exit(128);
+    _exit(128);
   }
 
   timeout_t timeout_;
