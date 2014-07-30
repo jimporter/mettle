@@ -5,15 +5,69 @@
 #include <poll.h>
 #include <sys/wait.h>
 
+#include <chrono>
+#include <thread>
+
+#include "optional.hpp"
 #include "scoped_pipe.hpp"
 #include "suite.hpp"
 #include "log/core.hpp"
 
 namespace mettle {
 
+using test_runner = std::function<
+  test_result(const test_function &, log::test_output &)
+>;
+
 namespace detail {
-  inline test_result run_test(const std::function<test_result(void)> &test,
-                              log::test_output &output) {
+  template<typename T>
+  void run_tests_impl(const T &suites, log::test_logger &logger,
+                      const test_runner &runner,
+                      std::vector<std::string> &parents) {
+    for(const auto &suite : suites) {
+      parents.push_back(suite.name());
+
+      logger.start_suite(parents);
+
+      for(const auto &test : suite) {
+        const log::test_name name = {parents, test.name, test.id};
+        logger.start_test(name);
+
+        if(test.skip) {
+          logger.skipped_test(name);
+          continue;
+        }
+
+        using namespace std::literals::chrono_literals;
+
+        log::test_output output;
+        auto result = runner(test.function, output);
+        if(result.passed)
+          logger.passed_test(name, output);
+        else
+          logger.failed_test(name, result.message, output);
+      }
+
+      logger.end_suite(parents);
+
+      run_tests_impl(suite.subsuites(), logger, runner, parents);
+      parents.pop_back();
+    }
+  }
+}
+
+class forked_test_runner {
+private:
+  using timeout_t = METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds>;
+public:
+  forked_test_runner(timeout_t timeout = timeout_t()) : timeout_(timeout) {}
+
+  template<class Rep, class Period>
+  forked_test_runner(std::chrono::duration<Rep, Period> timeout)
+    : timeout_(timeout) {}
+
+  test_result
+  operator ()(const test_function &test, log::test_output &output) const {
     scoped_pipe stdout_pipe, stderr_pipe, log_pipe;
     if(stdout_pipe.open() < 0 ||
        stderr_pipe.open() < 0 ||
@@ -25,6 +79,9 @@ namespace detail {
       goto parent_fail;
 
     if(pid == 0) {
+      if(timeout_)
+        fork_watcher(*timeout_);
+
       if(stdout_pipe.close_read() < 0 ||
          stderr_pipe.close_read() < 0 ||
          log_pipe.close_read() < 0)
@@ -90,64 +147,86 @@ namespace detail {
       if(waitpid(pid, &status, 0) < 0)
         goto parent_fail;
 
-      if(WIFSIGNALED(status))
+      if(WIFEXITED(status)) {
+        int exit_code = WEXITSTATUS(status);
+        if(exit_code == 2) {
+          std::stringstream ss;
+          ss << "Timed out after " << timeout_->count() << " ms";
+          return { false, ss.str() };
+        }
+        else {
+          return { exit_code == 0, message };
+        }
+      }
+      else if(WIFSIGNALED(status)) {
         return { false, strsignal(WTERMSIG(status)) };
-
-      return { WIFEXITED(status) && WEXITSTATUS(status) == 0, message };
+      }
+      else { // WIFSTOPPED
+        return { false, "Stopped" };
+      }
     }
   parent_fail:
     char errbuf[256];
     strerror_r(errno, errbuf, sizeof(errbuf));
     return { false, errbuf };
   }
-
-  template<typename T>
-  void run_tests_impl(const T &suites, log::test_logger &logger,
-                      bool fork_tests, std::vector<std::string> &parents) {
-    for(const auto &suite : suites) {
-      parents.push_back(suite.name());
-
-      logger.start_suite(parents);
-
-      for(const auto &test : suite) {
-        const log::test_name name = {parents, test.name, test.id};
-        logger.start_test(name);
-
-        if(test.skip) {
-          logger.skipped_test(name);
-          continue;
-        }
-
-        log::test_output output;
-        auto result = fork_tests ?
-          run_test(test.function, output) : test.function();
-        if(result.passed)
-          logger.passed_test(name, output);
-        else
-          logger.failed_test(name, result.message, output);
-      }
-
-      logger.end_suite(parents);
-
-      run_tests_impl(suite.subsuites(), logger, fork_tests, parents);
-      parents.pop_back();
+private:
+  void fork_watcher(std::chrono::milliseconds timeout) const {
+    pid_t watcher_pid;
+    if((watcher_pid = fork()) < 0)
+      goto fail;
+    if(watcher_pid == 0) {
+      std::this_thread::sleep_for(timeout);
+      exit(2);
     }
+
+    pid_t test_pid;
+    if((test_pid = fork()) < 0) {
+      kill(watcher_pid, SIGKILL);
+      goto fail;
+    }
+    if(test_pid != 0) {
+      // Wait for the first child process (the watcher or the test) to finish,
+      // and kill the other one.
+      int status;
+      pid_t exited_pid = wait(&status);
+      kill(exited_pid == test_pid ? watcher_pid : test_pid, SIGKILL);
+      wait(nullptr);
+
+      if(WIFEXITED(status))
+        exit(WEXITSTATUS(status));
+      else if(WIFSIGNALED(status))
+        raise(WTERMSIG(status));
+      else // WIFSTOPPED
+        exit(128); // XXX: not sure what to do here
+    }
+
+    return;
+  fail:
+    exit(128);
   }
+
+  timeout_t timeout_;
+};
+
+inline test_result
+inline_test_runner(const test_function &test, log::test_output &) {
+  return test();
 }
 
 template<typename T>
 inline void run_tests(const T &suites, log::test_logger &logger,
-                      bool fork_tests = true) {
+                      const test_runner &runner) {
   std::vector<std::string> parents;
   logger.start_run();
-  detail::run_tests_impl(suites, logger, fork_tests, parents);
+  detail::run_tests_impl(suites, logger, runner, parents);
   logger.end_run();
 }
 
 template<typename T>
 inline void run_tests(const T &suites, log::test_logger &&logger,
-                      bool fork_tests = true) {
-  run_tests(suites, logger, fork_tests);
+                      const test_runner &runner) {
+  run_tests(suites, logger, runner);
 }
 
 } // namespace mettle

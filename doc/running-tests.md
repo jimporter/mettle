@@ -68,6 +68,11 @@ Run the tests a total of *N* times. This is useful for catching intermittent
 failures. At the end, the summary will show the output of each failure for every
 test.
 
+#### --timeout *N* (-t)
+
+Time out and fail any tests that take longer than *N* milliseconds to execute.
+`--no-fork` can't be specified while using this option.
+
 #### --no-fork
 
 By default, mettle forks its process to run each test, in order to detect

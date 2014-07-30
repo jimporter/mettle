@@ -17,6 +17,7 @@ int main(int argc, const char *argv[]) {
      "show verbose output")
     ("color,c", "show colored output")
     ("runs,n", opts::value<size_t>(), "number of test runs")
+    ("timeout,t", opts::value<size_t>(), "timeout in ms")
     ("show-terminal", "show terminal output for each test")
     ("file", opts::value< std::vector<std::string> >(), "input file")
   ;
@@ -57,6 +58,10 @@ int main(int argc, const char *argv[]) {
   auto files = args["file"].as< std::vector<std::string> >();
   log::verbose vlog(std::cout, verbosity, show_terminal);
 
+  METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout;
+  if(args.count("timeout"))
+    timeout.emplace(args["timeout"].as<size_t>());
+
   if(args.count("runs")) {
     size_t runs = args["runs"].as<size_t>();
     if(runs == 0) {
@@ -66,14 +71,14 @@ int main(int argc, const char *argv[]) {
 
     log::multi_run logger(vlog);
     for(size_t i = 0; i < runs; i++)
-      run_test_files(files, logger);
+      run_test_files(files, logger, timeout);
     logger.summarize();
 
     return !logger.good();
   }
   else {
     log::single_run logger(vlog);
-    run_test_files(files, logger);
+    run_test_files(files, logger, timeout);
     logger.summarize();
 
     return !logger.good();

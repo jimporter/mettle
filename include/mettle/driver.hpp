@@ -59,6 +59,7 @@ int main(int argc, const char *argv[]) {
      "show verbose output")
     ("color,c", "show colored output")
     ("runs,n", opts::value<size_t>(), "number of test runs")
+    ("timeout,t", opts::value<size_t>(), "timeout in ms")
     ("no-fork", "don't fork for each test")
     ("show-terminal", "show terminal output for each test")
     ("child", "run this file as a child process")
@@ -92,10 +93,25 @@ int main(int argc, const char *argv[]) {
     std::cerr << "--show-terminal requires forking tests" << std::endl;
     return 1;
   }
+  if(args.count("timeout") && !fork_tests) {
+    std::cerr << "--timeout requires forking tests" << std::endl;
+    return 1;
+  }
+
+  test_runner runner;
+  if(fork_tests) {
+    METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout;
+    if(args.count("timeout"))
+      timeout.emplace(args["timeout"].as<size_t>());
+    runner = forked_test_runner(timeout);
+  }
+  else {
+    runner = inline_test_runner;
+  }
 
   if(args.count("child")) {
     log::child logger(std::cout);
-    run_tests(detail::all_suites, logger, fork_tests);
+    run_tests(detail::all_suites, logger, runner);
     return 0;
   }
 
@@ -110,14 +126,14 @@ int main(int argc, const char *argv[]) {
 
     log::multi_run logger(vlog);
     for(size_t i = 0; i < runs; i++)
-      run_tests(detail::all_suites, logger, fork_tests);
+      run_tests(detail::all_suites, logger, runner);
     logger.summarize();
 
     return !logger.good();
   }
   else {
     log::single_run logger(vlog);
-    run_tests(detail::all_suites, logger, fork_tests);
+    run_tests(detail::all_suites, logger, runner);
     logger.summarize();
 
     return !logger.good();

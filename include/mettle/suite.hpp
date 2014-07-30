@@ -144,6 +144,7 @@ private:
 };
 
 using runnable_suite = compiled_suite<test_result>;
+using test_function = std::function<test_result(void)>;
 
 template<typename Parent, typename ...Fixture>
 class subsuite_builder;
