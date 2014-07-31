@@ -1,19 +1,18 @@
 CXX := clang++
 CXXFLAGS := -std=c++1y -stdlib=libc++ -Wall -Wextra -pedantic -Werror
-LDFLAGS := -lboost_program_options -lsupc++
+LDFLAGS := -lsupc++
 
 TESTS := $(patsubst %.cpp,%,$(wildcard test/*.cpp))
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
+SOURCES := $(wildcard src/*.cpp src/libmettle/*.cpp)
 
 # Include all the existing dependency files for automatic #include dependency
 # handling.
 -include $(TESTS:=.d)
 -include $(EXAMPLES:=.d)
--include src/mettle.d
+-include $(SOURCES:.cpp=.d)
 
-all: mettle
-
-test/test_child: LDFLAGS += -lboost_iostreams
+all: mettle libmettle.so
 
 # Build .o files and the corresponding .d (dependency) files. For more info, see
 # <http://scottmcpeak.com/autodepend/autodepend.html>.
@@ -26,35 +25,40 @@ test/test_child: LDFLAGS += -lboost_iostreams
 	  sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
 	@rm -f $(TEMP)
 
-$(TESTS) $(EXAMPLES): %: %.o
-	$(CXX) $(CXXFLAGS) $< $(LDFLAGS) -o $@
+$(TESTS) $(EXAMPLES): %: %.o libmettle.so
+	$(CXX) $(CXXFLAGS) $< -L. -lmettle $(LDFLAGS) -o $@
 
 examples: $(EXAMPLES)
 
 tests: $(TESTS)
 
-mettle: LDFLAGS += -lboost_iostreams
+mettle: LDFLAGS += -lboost_program_options -lboost_iostreams
 mettle: src/mettle.o
 	$(CXX) $(CXXFLAGS) $< $(LDFLAGS) -o $@
+
+libmettle.so: CXXFLAGS += -fPIC
+libmettle.so: LDFLAGS += -lboost_program_options
+libmettle.so: src/libmettle/driver.o
+	$(CXX) -shared $(CXXFLAGS) $< $(LDFLAGS) -o $@
 
 .PHONY: test
 test: tests mettle
 	./mettle --verbose 2 --color $(TESTS)
 
 .PHONY: clean
-clean: clean-tests clean-examples clean-mettle
+clean: clean-tests clean-examples clean-src
 
 .PHONY: clean-tests
 clean-tests:
-	rm -f $(TESTS) test/*.o test/*.d
+	rm -f $(TESTS) test/*.[od]
 
 .PHONY: clean-examples
 clean-examples:
-	rm -f $(EXAMPLES) examples/*.o examples/*.d
+	rm -f $(EXAMPLES) examples/*.[od]
 
-.PHONY: clean-mettle
-clean-mettle:
-	rm -f mettle src/*.o src/*.d
+.PHONY: clean-src
+clean-src:
+	rm -f mettle libmettle.so src/*.[od] src/libmettle/*.[od]
 
 .PHONY: gitignore
 gitignore:

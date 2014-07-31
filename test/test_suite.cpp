@@ -1,6 +1,7 @@
 #include <mettle.hpp>
 using namespace mettle;
 
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 

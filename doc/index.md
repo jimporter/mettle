@@ -72,9 +72,8 @@ Ubuntu 13.10's version won't work!).
 
 ## Installation
 
-mettle has two parts: a (currently) a header-only library and an executable
-called `mettle`. Installation of the library is simple: just copy all the files
-in the `include/` directory to wherever you'd like. To build the `mettle`
-executable, just run `make` to create the file in the root directoy. (This is,
-of course, suboptimal, but expect improvements to the process soon!)
-
+mettle has two parts: a library and an executable called `mettle`. To build the
+`mettle` executable and `libmettle.so`, just run `make` to create the files in
+the root directory. Installation of the library headers is simple: just copy all
+the files in the `include/` directory to wherever you'd like. (This is, of
+course, suboptimal, but expect improvements to the process soon!)

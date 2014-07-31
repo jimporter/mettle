@@ -30,7 +30,7 @@ C++1y (aka C++14) mode, since mettle relies on some C++14 features to make test
 writing simpler:
 
 ```sh
-clang++ -std=c++1y -Imettle/include -lboost_program_options -o test_first test_first.cpp
+clang++ -std=c++1y -lmettle -o test_first test_first.cpp
 ```
 
 Once it's built, just run the binary and check the test results.
