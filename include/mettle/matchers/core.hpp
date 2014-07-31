@@ -6,9 +6,9 @@
 #include <type_traits>
 #include <utility>
 
-#include "../output.hpp"
-#include "../error.hpp"
-#include "../any_capture.hpp"
+#include "output.hpp"
+#include "error.hpp"
+#include "any_capture.hpp"
 
 namespace mettle {
 
