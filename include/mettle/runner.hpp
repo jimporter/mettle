@@ -10,7 +10,7 @@
 
 #include "optional.hpp"
 #include "scoped_pipe.hpp"
-#include "suite.hpp"
+#include "compiled_suite.hpp"
 #include "log/core.hpp"
 
 namespace mettle {
