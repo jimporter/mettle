@@ -1,27 +1,18 @@
-#ifndef INC_METTLE_FILE_RUNNER_HPP
-#define INC_METTLE_FILE_RUNNER_HPP
+#include "file_runner.hpp"
 
-#include <fcntl.h>
 #include <sys/wait.h>
 
-#include <iomanip>
-#include <istream>
 #include <chrono>
 
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
 
-#include <bencode.hpp>
-
-#include "optional.hpp"
-#include "scoped_pipe.hpp"
-#include "log/core.hpp"
-#include "log/pipe.hpp"
+#include <mettle/scoped_pipe.hpp>
+#include <mettle/log/pipe.hpp>
 
 namespace mettle {
 
 namespace detail {
-
   inline void run_test_file(
     const std::string &file, log::pipe &logger,
     METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout
@@ -72,10 +63,9 @@ namespace detail {
   }
 }
 
-inline void run_test_files(
+void run_test_files(
   const std::vector<std::string> &files, log::test_logger &logger,
-  METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout =
-  METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds>()
+  METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout
 ) {
   logger.start_run();
   log::pipe pipe(logger);
@@ -84,15 +74,4 @@ inline void run_test_files(
   logger.end_run();
 }
 
-template<class Rep, class Period>
-inline void run_test_files(
-  const std::vector<std::string> &files, log::test_logger &logger,
-  std::chrono::duration<Rep, Period> timeout
-) {
-  METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> opt(timeout);
-  run_test_files(files, logger, opt);
-}
-
 } // namespace mettle
-
-#endif

@@ -19,27 +19,32 @@ all: mettle libmettle.so
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -Iinclude -c $< -o $@
 	$(eval TEMP := $(shell mktemp))
-	$(CXX) $(CXXFLAGS) -MM -Iinclude $< > $(TEMP)
+	@$(CXX) $(CXXFLAGS) -MM -Iinclude $< > $(TEMP)
 	@sed -e 's|.*:|$*.o:|' < $(TEMP) > $*.d
 	@sed -e 's/.*://' -e 's/\\$$//' < $(TEMP) | fmt -1 | \
 	  sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
 	@rm -f $(TEMP)
 
+TEST_LDFLAGS := $(LDFLAGS)
+test/test_child: TEST_LDFLAGS += -lboost_iostreams
+test/test_child: src/file_runner.o
+
 $(TESTS) $(EXAMPLES): %: %.o libmettle.so
-	$(CXX) $(CXXFLAGS) $< -L. -lmettle $(LDFLAGS) -o $@
+	$(CXX) $(CXXFLAGS) $(filter %.o,$^) -L. -lmettle $(TEST_LDFLAGS) -o $@
 
 examples: $(EXAMPLES)
 
 tests: $(TESTS)
 
-mettle: LDFLAGS += -lboost_program_options -lboost_iostreams
-mettle: src/mettle.o
-	$(CXX) $(CXXFLAGS) $< $(LDFLAGS) -o $@
+SRC_LDFLAGS := $(LDFLAGS)
+mettle: SRC_LDFLAGS += -lboost_program_options -lboost_iostreams
+mettle: src/mettle.o src/file_runner.o
+	$(CXX) $(CXXFLAGS) $^ $(SRC_LDFLAGS) -o $@
 
 libmettle.so: CXXFLAGS += -fPIC
-libmettle.so: LDFLAGS += -lboost_program_options
+libmettle.so: SRC_LDFLAGS += -lboost_program_options
 libmettle.so: src/libmettle/driver.o
-	$(CXX) -shared $(CXXFLAGS) $< $(LDFLAGS) -o $@
+	$(CXX) -shared $(CXXFLAGS) $< $(SRC_LDFLAGS) -o $@
 
 .PHONY: test
 test: tests mettle

@@ -2,7 +2,7 @@
 
 #include <boost/program_options.hpp>
 
-#include <mettle/file_runner.hpp>
+#include "file_runner.hpp"
 #include <mettle/log/multi_run.hpp>
 #include <mettle/log/single_run.hpp>
 
