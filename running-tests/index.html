@@ -156,7 +156,7 @@ with a <code>main()</code> function, the above source code is all you need for a
 fully-operational test. Just compile the test like so. Note that we compile in
 C++1y (aka C++14) mode, since mettle relies on some C++14 features to make test
 writing simpler:</p>
-<pre class="prettyprint well"><code class="sh">clang++ -std=c++1y -Imettle/include -lboost_program_options -o test_first test_first.cpp
+<pre class="prettyprint well"><code class="sh">clang++ -std=c++1y -lmettle -o test_first test_first.cpp
 </code></pre>
 
 <p>Once it's built, just run the binary and check the test results.</p>
