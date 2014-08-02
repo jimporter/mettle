@@ -8,6 +8,8 @@
 #include <mettle/log/single_run.hpp>
 #include <mettle/log/child.hpp>
 
+#include "forked_test_runner.hpp"
+
 namespace mettle {
 
 using suites_list = std::vector<runnable_suite>;

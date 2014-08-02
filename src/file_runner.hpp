@@ -3,8 +3,9 @@
 
 #include <chrono>
 
-#include <mettle/optional.hpp>
 #include <mettle/log/core.hpp>
+
+#include "optional.hpp"
 
 namespace mettle {
 

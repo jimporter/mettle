@@ -43,8 +43,8 @@ mettle: src/mettle.o src/file_runner.o
 
 libmettle.so: CXXFLAGS += -fPIC
 libmettle.so: SRC_LDFLAGS += -lboost_program_options
-libmettle.so: src/libmettle/driver.o
-	$(CXX) -shared $(CXXFLAGS) $< $(SRC_LDFLAGS) -o $@
+libmettle.so: src/libmettle/driver.o src/libmettle/forked_test_runner.o
+	$(CXX) -shared $(CXXFLAGS) $^ $(SRC_LDFLAGS) -o $@
 
 .PHONY: test
 test: tests mettle
