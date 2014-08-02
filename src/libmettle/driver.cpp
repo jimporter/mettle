@@ -50,7 +50,7 @@ namespace detail {
 
     unsigned int verbosity = args.count("verbose") ?
       args["verbose"].as<unsigned int>() : 0;
-    term::colors_enabled = args.count("color");
+    term::enabled(args.count("color"));
     bool fork_tests = !args.count("no-fork");
     bool show_terminal = args.count("show-terminal");
 

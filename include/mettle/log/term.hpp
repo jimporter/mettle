@@ -6,6 +6,28 @@
 
 namespace term {
 
+namespace detail {
+  // This is just a dumb template trick so that this file can have a static
+  // variable and be header-only. That'll make life easier for users of the lib.
+  template<typename Tag>
+  struct status {
+    static std::atomic<bool> enabled_;
+  };
+
+  template<typename Tag>
+  std::atomic<bool> status<Tag>::enabled_(false);
+
+  struct status_tag {};
+}
+
+inline void enabled(bool enabled) {
+  detail::status<detail::status_tag>::enabled_ = enabled;
+}
+
+inline bool enabled() {
+  return detail::status<detail::status_tag>::enabled_;
+}
+
 enum class color {
   black   = 0,
   red     = 1,
@@ -60,9 +82,8 @@ inline format reset() {
   return format(sgr::normal);
 }
 
-bool colors_enabled = false;
 inline std::ostream & operator <<(std::ostream &o, const format &fmt) {
-  if(colors_enabled)
+  if(enabled())
     return o << fmt.string_;
   return o;
 }
