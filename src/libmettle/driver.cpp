@@ -6,9 +6,9 @@
 #include <mettle/runner.hpp>
 #include <mettle/log/multi_run.hpp>
 #include <mettle/log/single_run.hpp>
-#include <mettle/log/child.hpp>
 
 #include "forked_test_runner.hpp"
+#include "log_child.hpp"
 
 namespace mettle {
 

@@ -1,11 +1,11 @@
-#ifndef INC_METTLE_LOG_PIPE_HPP
-#define INC_METTLE_LOG_PIPE_HPP
+#ifndef INC_METTLE_PIPE_LOG_HPP
+#define INC_METTLE_PIPE_LOG_HPP
 
 #include <istream>
 
 #include <bencode.hpp>
 
-#include "core.hpp"
+#include <mettle/log/core.hpp>
 
 namespace mettle {
 

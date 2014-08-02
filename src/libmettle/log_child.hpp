@@ -1,13 +1,11 @@
-#ifndef INC_METTLE_LOG_CHILD_HPP
-#define INC_METTLE_LOG_CHILD_HPP
+#ifndef INC_METTLE_CHILD_LOG_HPP
+#define INC_METTLE_CHILD_LOG_HPP
 
 #include <ostream>
-#include <iomanip>
 
 #include <bencode.hpp>
 
-#include "term.hpp"
-#include "core.hpp"
+#include <mettle/log/core.hpp>
 
 namespace mettle {
 

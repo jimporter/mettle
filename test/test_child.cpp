@@ -1,9 +1,9 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-#include <mettle/log/child.hpp>
-#include <mettle/log/pipe.hpp>
 #include "../src/file_runner.hpp"
+#include "../src/log_pipe.hpp"
+#include "../src/libmettle/log_child.hpp"
 
 struct recording_logger : log::test_logger {
   void start_run() {
