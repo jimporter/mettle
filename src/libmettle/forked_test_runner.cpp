@@ -6,7 +6,7 @@
 
 #include <thread>
 
-#include <mettle/scoped_pipe.hpp>
+#include "../scoped_pipe.hpp"
 
 namespace mettle {
 

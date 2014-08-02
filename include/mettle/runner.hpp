@@ -1,7 +1,6 @@
 #ifndef INC_METTLE_RUNNER_HPP
 #define INC_METTLE_RUNNER_HPP
 
-#include "scoped_pipe.hpp"
 #include "compiled_suite.hpp"
 #include "log/core.hpp"
 
