@@ -94,6 +94,6 @@ allows you to improve build times and to better isolate tests from each other.
 
 When doing so, you can use the `mettle` executable to run all of your individual
 binaries at once. The interface is much like that of the individual binaries,
-and all of the command-line options above (except for `--no-fork`) work with
-the `mettle` executable as well. To specify which of the test binaries to run,
-just pass their filenames to `mettle`.
+and all of the command-line options above work with the `mettle` executable as
+well. To specify which of the test binaries to run, just pass their filenames to
+`mettle`.
