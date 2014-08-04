@@ -42,7 +42,7 @@ mettle: src/mettle.o src/file_runner.o
 	$(CXX) $(CXXFLAGS) $^ $(SRC_LDFLAGS) -o $@
 
 libmettle.so: CXXFLAGS += -fPIC
-libmettle.so: SRC_LDFLAGS += -lboost_program_options
+libmettle.so: SRC_LDFLAGS += -lboost_program_options -lboost_iostreams
 libmettle.so: src/libmettle/driver.o src/libmettle/forked_test_runner.o
 	$(CXX) -shared $(CXXFLAGS) $^ $(SRC_LDFLAGS) -o $@
 

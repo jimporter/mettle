@@ -18,6 +18,7 @@ int main(int argc, const char *argv[]) {
     ("color,c", "show colored output")
     ("runs,n", opts::value<size_t>(), "number of test runs")
     ("timeout,t", opts::value<size_t>(), "timeout in ms")
+    ("no-fork", "don't fork for each test")
     ("show-terminal", "show terminal output for each test")
     ("file", opts::value< std::vector<std::string> >(), "input file")
   ;
@@ -40,27 +41,37 @@ int main(int argc, const char *argv[]) {
     return 1;
   }
 
+  if(!args.count("file")) {
+    std::cerr << "no inputs specified" << std::endl;
+    return 1;
+  }
+
+  run_options ropts;
+
   unsigned int verbosity = args.count("verbose") ?
     args["verbose"].as<unsigned int>() : 0;
   term::enabled(args.count("color"));
+  ropts.no_fork = args.count("no-fork");
   bool show_terminal = args.count("show-terminal");
 
   if(show_terminal && verbosity < 2) {
     std::cerr << "--show-terminal requires verbosity >=2" << std::endl;
     return 1;
   }
-
-  if(!args.count("file")) {
-    std::cerr << "no inputs specified" << std::endl;
+  if(show_terminal && ropts.no_fork) {
+    std::cerr << "--show-terminal requires forking tests" << std::endl;
+    return 1;
+  }
+  if(args.count("timeout") && ropts.no_fork) {
+    std::cerr << "--timeout requires forking tests" << std::endl;
     return 1;
   }
 
   auto files = args["file"].as< std::vector<std::string> >();
   log::verbose vlog(std::cout, verbosity, show_terminal);
 
-  METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout;
   if(args.count("timeout"))
-    timeout.emplace(args["timeout"].as<size_t>());
+    ropts.timeout.emplace(args["timeout"].as<size_t>());
 
   if(args.count("runs")) {
     size_t runs = args["runs"].as<size_t>();
@@ -71,14 +82,14 @@ int main(int argc, const char *argv[]) {
 
     log::multi_run logger(vlog);
     for(size_t i = 0; i < runs; i++)
-      run_test_files(files, logger, timeout);
+      run_test_files(files, logger, ropts);
     logger.summarize();
 
     return !logger.good();
   }
   else {
     log::single_run logger(vlog);
-    run_test_files(files, logger, timeout);
+    run_test_files(files, logger, ropts);
     logger.summarize();
 
     return !logger.good();

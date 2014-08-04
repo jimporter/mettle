@@ -1,5 +1,6 @@
 #include "file_runner.hpp"
 
+#include <sys/resource.h>
 #include <sys/wait.h>
 
 #include <chrono>
@@ -13,9 +14,15 @@
 namespace mettle {
 
 namespace detail {
-  inline void run_test_file(
-    const std::string &file, log::pipe &logger,
-    METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout
+  int execvec(const std::string &path, const std::vector<std::string> &argv) {
+    auto real_argv = std::make_unique<char *[]>(argv.size() + 1);
+    for(size_t i = 0; i != argv.size(); i++)
+      real_argv[i] = const_cast<char*>(argv[i].c_str());
+    return execv(path.c_str(), real_argv.get());
+  }
+
+  void run_test_file(
+    const std::string &file, log::pipe &logger, const run_options &options
   ) {
     scoped_pipe stdout_pipe;
     stdout_pipe.open();
@@ -28,15 +35,27 @@ namespace detail {
       if(stdout_pipe.close_read() < 0)
         goto child_fail;
 
-      if(dup2(stdout_pipe.write_fd, STDOUT_FILENO) < 0)
+      rlimit lim;
+      int fd;
+      if(getrlimit(RLIMIT_NOFILE, &lim) < 0)
+        goto child_fail;
+      fd = lim.rlim_cur - 1;
+
+      if(dup2(stdout_pipe.write_fd, fd) < 0)
         goto child_fail;
 
-      if(timeout) {
-        execl(file.c_str(), file.c_str(), "--child", "--timeout",
-              std::to_string(timeout->count()).c_str(), nullptr);
-      }
-      else {
-        execl(file.c_str(), file.c_str(), "--child", nullptr);
+      {
+        std::vector<std::string> argv = {file, "--child", std::to_string(fd)};
+
+        if(options.timeout) {
+          argv.push_back("--timeout");
+          argv.push_back(std::to_string(options.timeout->count()));
+        }
+
+        if(options.no_fork)
+          argv.push_back("--no-fork");
+
+        execvec(file, argv);
       }
     child_fail:
       _exit(128);
@@ -53,8 +72,14 @@ namespace detail {
       while(!fds.eof())
         logger(fds);
 
-      if(waitpid(pid, nullptr, 0) < 0)
+      int status;
+      if(waitpid(pid, &status, 0) < 0)
         goto parent_fail;
+
+      if(WIFSIGNALED(status)) {
+        std::cerr << strsignal(WTERMSIG(status)) << std::endl;
+        goto parent_fail;
+      }
       return;
     }
 
@@ -65,12 +90,12 @@ namespace detail {
 
 void run_test_files(
   const std::vector<std::string> &files, log::test_logger &logger,
-  METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout
+  const run_options &options
 ) {
   logger.start_run();
   log::pipe pipe(logger);
   for(const auto &file : files)
-    detail::run_test_file(file, pipe, timeout);
+    detail::run_test_file(file, pipe, options);
   logger.end_run();
 }
 

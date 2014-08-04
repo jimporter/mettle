@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 
+#include <boost/iostreams/device/file_descriptor.hpp>
+#include <boost/iostreams/stream.hpp>
 #include <boost/program_options.hpp>
 
 #include <mettle/runner.hpp>
@@ -31,7 +33,7 @@ namespace detail {
       ("timeout,t", opts::value<size_t>(), "timeout in ms")
       ("no-fork", "don't fork for each test")
       ("show-terminal", "show terminal output for each test")
-      ("child", "run this file as a child process")
+      ("child", opts::value<int>(), "run this file as a child process")
     ;
 
     opts::variables_map args;
@@ -79,7 +81,11 @@ namespace detail {
     }
 
     if(args.count("child")) {
-      log::child logger(std::cout);
+      namespace io = boost::iostreams;
+      io::stream<io::file_descriptor_sink> fds(
+        args["child"].as<int>(), io::never_close_handle
+      );
+      log::child logger(fds);
       run_tests(detail::all_suites, logger, runner);
       return 0;
     }
