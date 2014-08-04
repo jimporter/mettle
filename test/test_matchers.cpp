@@ -37,6 +37,13 @@ suite<> matcher_tests("test matchers", [](auto &_) {
 
       expect(is_not(123).desc(), equal_to("not 123"));
     });
+
+    _.test("describe()", []() {
+      expect(true, describe(equal_to(true), "foo"));
+      expect(true, is_not(describe(equal_to(false), "foo")));
+
+      expect(describe(equal_to(123), "foo").desc(), equal_to("foo"));
+    });
   });
 
   subsuite<>(_, "relational", [](auto &_) {

@@ -141,7 +141,13 @@ inline auto is_not(T &&thing) {
     ensure_matcher(std::forward<T>(thing)),
     [](const auto &value, auto &&matcher) -> bool {
       return !matcher(value);
-  }, "not ");
+    }, "not "
+  );
+}
+
+template<typename T>
+inline auto describe(T &&matcher, const std::string &desc) {
+  return make_matcher(std::forward<T>(matcher), desc);
 }
 
 } // namespace mettle

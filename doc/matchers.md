@@ -38,6 +38,12 @@ still want to test it.
 
 A matcher that negates another matcher.
 
+#### describe(*matcher*, *desc*)
+
+A matcher that overrides the description of another matcher. `desc` is a string
+describing the resulting matcher. This can be useful for when the default
+description is unclear or overly-verbose.
+
 ### Relational matchers
 
 #### equal_to(*value*)
