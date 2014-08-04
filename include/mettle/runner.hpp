@@ -51,8 +51,8 @@ inline_test_runner(const test_function &test, log::test_output &) {
 }
 
 template<typename T>
-inline void run_tests(const T &suites, log::test_logger &logger,
-                      const test_runner &runner) {
+void run_tests(const T &suites, log::test_logger &logger,
+               const test_runner &runner) {
   std::vector<std::string> parents;
   logger.start_run();
   detail::run_tests_impl(suites, logger, runner, parents);

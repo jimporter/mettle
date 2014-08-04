@@ -42,8 +42,7 @@ class basic_matcher : public matcher_tag {
 public:
   template<typename T2, typename F2>
   basic_matcher(T2 &&thing, F2 &&f, const std::string &prefix)
-    : thing_(std::forward<T2>(thing)),
-      f_(std::forward<F2>(f)),
+    : thing_(std::forward<T2>(thing)), f_(std::forward<F2>(f)),
       prefix_(prefix) {}
 
   template<typename U>
@@ -97,9 +96,9 @@ inline auto make_matcher(F &&f, const std::string &desc) {
 }
 
 template<typename T>
-auto equal_to(T &&expected) -> basic_matcher<
-  std::remove_reference_t<T>, std::equal_to<>
->;
+auto equal_to(T &&expected) {
+  return make_matcher(std::forward<T>(expected), std::equal_to<>(), "");
+}
 
 template<typename T, typename Matcher>
 void expect(const T &value, const Matcher &matcher) {

@@ -7,8 +7,6 @@ namespace mettle {
 
 class scoped_pipe {
 public:
-  scoped_pipe() : read_fd(-1), write_fd(-1) {}
-
   int open(int flags = 0) {
     return pipe2(&read_fd, flags);
   }
@@ -26,7 +24,7 @@ public:
     return do_close(write_fd);
   }
 
-  int read_fd, write_fd;
+  int read_fd = -1, write_fd = -1;
 private:
   int do_close(int &fd) {
     if(fd == -1)

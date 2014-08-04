@@ -13,8 +13,7 @@ namespace log {
   class verbose {
   public:
     verbose(std::ostream &out, unsigned int verbosity, bool show_terminal)
-      : out(out), verbosity_(verbosity), show_terminal_(show_terminal),
-        first_(true), base_indent_(0) {}
+      : out(out), verbosity_(verbosity), show_terminal_(show_terminal) {}
 
     void start_run() {
       first_ = true;
@@ -126,8 +125,8 @@ namespace log {
 
     unsigned int verbosity_;
     bool show_terminal_;
-    bool first_;
-    size_t base_indent_;
+    bool first_ = true;
+    size_t base_indent_ = 0;
   };
 
 }

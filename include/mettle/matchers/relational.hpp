@@ -5,13 +5,7 @@
 
 namespace mettle {
 
-// Predeclared in core.hpp, so we can't use deduced return types.
-template<typename T>
-inline auto equal_to(T &&expected) -> basic_matcher<
-  std::remove_reference_t<T>, std::equal_to<>
-> {
-  return make_matcher(std::forward<T>(expected), std::equal_to<>(), "");
-}
+// Note: equal_to is declared in core.hpp, since it's pretty important!
 
 template<typename T>
 inline auto not_equal_to(T &&expected) {

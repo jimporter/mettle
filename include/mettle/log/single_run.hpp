@@ -13,7 +13,7 @@ namespace log {
 
   class single_run : public test_logger {
   public:
-    single_run(verbose vlog) : vlog_(vlog), total_(0), passes_(0), skips_(0) {}
+    single_run(verbose vlog) : vlog_(vlog) {}
 
     void start_run() {
       vlog_.start_run();
@@ -81,7 +81,7 @@ namespace log {
     };
 
     verbose vlog_;
-    size_t total_, passes_, skips_;
+    size_t total_ = 0, passes_ = 0, skips_ = 0;
     std::vector<const failure> failures_;
   };
 

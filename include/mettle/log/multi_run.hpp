@@ -15,7 +15,7 @@ namespace log {
 
   class multi_run : public test_logger {
   public:
-    multi_run(verbose vlog) : vlog_(vlog), total_(0), skips_(0), runs_(0) {
+    multi_run(verbose vlog) : vlog_(vlog) {
       if(vlog_.verbosity() == 2)
         vlog_.indent(2);
     }
@@ -109,7 +109,7 @@ namespace log {
     };
 
     verbose vlog_;
-    size_t total_, skips_, runs_;
+    size_t total_ = 0, skips_ = 0, runs_ = 0;
     std::map<test_name, std::vector<const failure>> failures_;
   };
 
