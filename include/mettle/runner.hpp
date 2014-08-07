@@ -18,11 +18,11 @@ namespace detail {
     for(const auto &suite : suites) {
       parents.push_back(suite.name());
 
-      logger.start_suite(parents);
+      logger.started_suite(parents);
 
       for(const auto &test : suite) {
         const log::test_name name = {parents, test.name, test.id};
-        logger.start_test(name);
+        logger.started_test(name);
 
         if(test.skip) {
           logger.skipped_test(name);
@@ -37,7 +37,7 @@ namespace detail {
           logger.failed_test(name, result.message, output);
       }
 
-      logger.end_suite(parents);
+      logger.ended_suite(parents);
 
       run_tests_impl(suite.subsuites(), logger, runner, parents);
       parents.pop_back();
@@ -54,9 +54,9 @@ template<typename T>
 void run_tests(const T &suites, log::test_logger &logger,
                const test_runner &runner) {
   std::vector<std::string> parents;
-  logger.start_run();
+  logger.started_run();
   detail::run_tests_impl(suites, logger, runner, parents);
-  logger.end_run();
+  logger.ended_run();
 }
 
 template<typename T>

@@ -25,23 +25,23 @@ namespace log {
       auto &data = any_cast<bencode::dict &>(tmp);
       auto &event = any_cast<bencode::string &>(data.at("event"));
 
-      if(event == "start_suite") {
-        logger_.start_suite(read_suites(data.at("suites")));
+      if(event == "started_suite") {
+        logger_.started_suite(read_suites(data.at("suites")));
       }
-      else if(event == "end_suite") {
-        logger_.end_suite(read_suites(data.at("suites")));
+      else if(event == "ended_suite") {
+        logger_.ended_suite(read_suites(data.at("suites")));
       }
-      else if(event == "start_test") {
-        logger_.start_test(read_test_name(data.at("test")));
+      else if(event == "started_test") {
+        logger_.started_test(read_test_name(data.at("test")));
       }
       else if(event == "passed_test") {
         logger_.passed_test(read_test_name(data.at("test")),
-                           read_test_output(data.at("output")));
+                            read_test_output(data.at("output")));
       }
       else if(event == "failed_test") {
         logger_.failed_test(read_test_name(data.at("test")),
-                           read_test_message(data.at("message")),
-                           read_test_output(data.at("output")));
+                            read_test_message(data.at("message")),
+                            read_test_output(data.at("output")));
       }
       else if(event == "skipped_test") {
         logger_.skipped_test(read_test_name(data.at("test")));

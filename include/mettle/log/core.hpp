@@ -50,13 +50,13 @@ namespace log {
   public:
     virtual ~test_logger() {}
 
-    virtual void start_run() = 0;
-    virtual void end_run() = 0;
+    virtual void started_run() = 0;
+    virtual void ended_run() = 0;
 
-    virtual void start_suite(const std::vector<std::string> &suites) = 0;
-    virtual void end_suite(const std::vector<std::string> &suites) = 0;
+    virtual void started_suite(const std::vector<std::string> &suites) = 0;
+    virtual void ended_suite(const std::vector<std::string> &suites) = 0;
 
-    virtual void start_test(const test_name &test) = 0;
+    virtual void started_test(const test_name &test) = 0;
     virtual void passed_test(const test_name &test, const test_output &log) = 0;
     virtual void failed_test(const test_name &test, const std::string &message,
                              const test_output &log) = 0;

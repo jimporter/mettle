@@ -6,24 +6,24 @@ using namespace mettle;
 #include "../src/libmettle/log_child.hpp"
 
 struct recording_logger : log::test_logger {
-  void start_run() {
-    called = "start_run";
+  void started_run() {
+    called = "started_run";
   }
-  void end_run() {
-    called = "end_run";
-  }
-
-  void start_suite(const std::vector<std::string> &actual_suites) {
-    called = "start_suite";
-    suites = actual_suites;
-  }
-  void end_suite(const std::vector<std::string> &actual_suites) {
-    called = "end_suite";
-    suites = actual_suites;
+  void ended_run() {
+    called = "ended_run";
   }
 
-  void start_test(const log::test_name &actual_test) {
-    called = "start_test";
+  void started_suite(const std::vector<std::string> &actual_suites) {
+    called = "started_suite";
+    suites = actual_suites;
+  }
+  void ended_suite(const std::vector<std::string> &actual_suites) {
+    called = "ended_suite";
+    suites = actual_suites;
+  }
+
+  void started_test(const log::test_name &actual_test) {
+    called = "started_test";
     test = actual_test;
   }
   void passed_test(const log::test_name &actual_test,
@@ -63,46 +63,46 @@ struct fixture {
 
 suite<fixture> test_child("test child logger", [](auto &_) {
 
-  _.test("start_run()", [](fixture &f) {
-    f.child.start_run();
+  _.test("started_run()", [](fixture &f) {
+    f.child.started_run();
     f.pipe(f.stream);
 
-    // Shouldn't be called, since we ignore start_run and end_run.
+    // Shouldn't be called, since we ignore started_run and ended_run.
     expect(f.parent.called, equal_to(""));
   });
 
-  _.test("end_run()", [](fixture &f) {
-    f.child.end_run();
+  _.test("ended_run()", [](fixture &f) {
+    f.child.ended_run();
     f.pipe(f.stream);
 
-    // Shouldn't be called, since we ignore start_run and end_run.
+    // Shouldn't be called, since we ignore started_run and ended_run.
     expect(f.parent.called, equal_to(""));
   });
 
-  _.test("start_suite()", [](fixture &f) {
+  _.test("started_suite()", [](fixture &f) {
     std::vector<std::string> suites = {"suite", "subsuite"};
-    f.child.start_suite(suites);
+    f.child.started_suite(suites);
     f.pipe(f.stream);
 
-    expect(f.parent.called, equal_to("start_suite"));
+    expect(f.parent.called, equal_to("started_suite"));
     expect(f.parent.suites, equal_to(suites));
   });
 
-  _.test("end_suite()", [](fixture &f) {
+  _.test("ended_suite()", [](fixture &f) {
     std::vector<std::string> suites = {"suite", "subsuite"};
-    f.child.end_suite(suites);
+    f.child.ended_suite(suites);
     f.pipe(f.stream);
 
-    expect(f.parent.called, equal_to("end_suite"));
+    expect(f.parent.called, equal_to("ended_suite"));
     expect(f.parent.suites, equal_to(suites));
   });
 
-  _.test("start_test()", [](fixture &f) {
+  _.test("started_test()", [](fixture &f) {
     log::test_name test = {{"suite", "subsuite"}, "test", 1};
-    f.child.start_test(test);
+    f.child.started_test(test);
     f.pipe(f.stream);
 
-    expect(f.parent.called, equal_to("start_test"));
+    expect(f.parent.called, equal_to("started_test"));
     expect(f.parent.test, equal_to(test));
   });
 

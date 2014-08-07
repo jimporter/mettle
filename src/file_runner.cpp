@@ -92,11 +92,11 @@ void run_test_files(
   const std::vector<std::string> &files, log::test_logger &logger,
   const run_options &options
 ) {
-  logger.start_run();
+  logger.started_run();
   log::pipe pipe(logger);
   for(const auto &file : files)
     detail::run_test_file(file, pipe, options);
-  logger.end_run();
+  logger.ended_run();
 }
 
 } // namespace mettle

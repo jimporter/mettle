@@ -15,18 +15,18 @@ namespace log {
     verbose(std::ostream &out, unsigned int verbosity, bool show_terminal)
       : out(out), verbosity_(verbosity), show_terminal_(show_terminal) {}
 
-    void start_run() {
+    void started_run() {
       first_ = true;
       if(verbosity_ == 1)
         out << std::string(base_indent_, ' ');
     }
 
-    void end_run() {
+    void ended_run() {
       if(verbosity_ == 1)
         out << std::endl;
     }
 
-    void start_suite(const std::vector<std::string> &suites) {
+    void started_suite(const std::vector<std::string> &suites) {
       using namespace term;
       if(verbosity_ >= 2) {
         if(!first_)
@@ -39,9 +39,9 @@ namespace log {
       }
     }
 
-    void end_suite(const std::vector<std::string> &) {}
+    void ended_suite(const std::vector<std::string> &) {}
 
-    void start_test(const test_name &test) {
+    void started_test(const test_name &test) {
       if(verbosity_ >= 2) {
         const std::string indent(test.suites.size() * 2 + base_indent_, ' ');
         out << indent << test.test << " " << std::flush;

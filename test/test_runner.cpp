@@ -15,13 +15,13 @@ struct my_test_logger : log::test_logger {
   my_test_logger()
     : tests_run(0), tests_passed(0), tests_failed(0), tests_skipped(0) {}
 
-  virtual void start_run() {}
-  virtual void end_run() {}
+  virtual void started_run() {}
+  virtual void ended_run() {}
 
-  virtual void start_suite(const std::vector<std::string> &) {}
-  virtual void end_suite(const std::vector<std::string> &) {}
+  virtual void started_suite(const std::vector<std::string> &) {}
+  virtual void ended_suite(const std::vector<std::string> &) {}
 
-  virtual void start_test(const log::test_name &) {
+  virtual void started_test(const log::test_name &) {
     tests_run++;
   }
   virtual void passed_test(const log::test_name &, const log::test_output &) {

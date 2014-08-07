@@ -20,7 +20,7 @@ namespace log {
         vlog_.indent(2);
     }
 
-    void start_run() {
+    void started_run() {
       using namespace term;
       runs_++;
       total_ = skips_ = 0;
@@ -32,24 +32,24 @@ namespace log {
                   << format(sgr::bold, fg(color::yellow)) << "[#" << runs_
                   << "]" << reset() << std::endl << std::endl;
       }
-      vlog_.start_run();
+      vlog_.started_run();
     }
 
-    void end_run() {
-      vlog_.end_run();
+    void ended_run() {
+      vlog_.ended_run();
     }
 
-    void start_suite(const std::vector<std::string> &suites) {
-      vlog_.start_suite(suites);
+    void started_suite(const std::vector<std::string> &suites) {
+      vlog_.started_suite(suites);
     }
 
-    void end_suite(const std::vector<std::string> &suites) {
-      vlog_.end_suite(suites);
+    void ended_suite(const std::vector<std::string> &suites) {
+      vlog_.ended_suite(suites);
     }
 
-    void start_test(const test_name &test) {
+    void started_test(const test_name &test) {
       total_++;
-      vlog_.start_test(test);
+      vlog_.started_test(test);
     }
 
     void passed_test(const test_name &test, const test_output &output) {

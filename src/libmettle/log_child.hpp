@@ -30,33 +30,33 @@ namespace log {
   public:
     child(std::ostream &out) : out(out) {}
 
-    void start_run() {
-      bencode::encode_dict(out, "event", "start_run");
+    void started_run() {
+      bencode::encode_dict(out, "event", "started_run");
       out.flush();
     }
-    void end_run() {
-      bencode::encode_dict(out, "event", "end_run");
+    void ended_run() {
+      bencode::encode_dict(out, "event", "ended_run");
       out.flush();
     }
 
-    void start_suite(const std::vector<std::string> &suites) {
+    void started_suite(const std::vector<std::string> &suites) {
       bencode::encode_dict(out,
-        "event", "start_suite",
+        "event", "started_suite",
         "suites", suites
       );
       out.flush();
     }
-    void end_suite(const std::vector<std::string> &suites) {
+    void ended_suite(const std::vector<std::string> &suites) {
       bencode::encode_dict(out,
-        "event", "end_suite",
+        "event", "ended_suite",
         "suites", suites
       );
       out.flush();
     }
 
-    void start_test(const test_name &test) {
+    void started_test(const test_name &test) {
       bencode::encode_dict(out,
-        "event", "start_test",
+        "event", "started_test",
         "test", test
       );
       out.flush();
