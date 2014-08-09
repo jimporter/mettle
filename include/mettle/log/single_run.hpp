@@ -52,6 +52,11 @@ namespace log {
       vlog_.skipped_test(test);
     }
 
+    void failed_file(const std::string &file, const std::string &message) {
+      failed_files_.push_back({file, message});
+      vlog_.failed_file(file, message);
+    }
+
     void summarize() {
       using namespace term;
 
@@ -62,27 +67,45 @@ namespace log {
                 << " tests passed";
       if(skips_)
         vlog_.out << " (" << skips_ << " skipped)";
+      if(!failed_files_.empty()) {
+        std::string s = failed_files_.size() > 1 ? "s" : "";
+        vlog_.out << " [" << failed_files_.size() << " file" << s << " "
+                  << format(fg(color::red)) << "FAILED"
+                  << format(fg(color::normal)) << "]";
+      }
       vlog_.out << reset() << std::endl;
 
-      for(const auto &i : failures_) {
-        vlog_.out << "  " << i.test.full_name() << " "
-                  << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
-                  << ": " << i.message << std::endl;
-      }
+      for(const auto &i : failures_)
+        summarize_failure(i.test.full_name(), i.message);
+      for(const auto &i : failed_files_)
+        summarize_failure("`" + i.file + "`", i.message);
     }
 
     bool good() const {
       return failures_.empty();
     }
   private:
-    struct failure {
+    struct test_failure {
       test_name test;
       std::string message;
     };
 
+    struct file_failure {
+      std::string file;
+      std::string message;
+    };
+
+    void summarize_failure(const std::string &where,
+                           const std::string &message) {
+      using namespace term;
+      vlog_.out << "  " << where << " " << format(sgr::bold, fg(color::red))
+                << "FAILED" << reset() << ": " << message << std::endl;
+    }
+
     verbose vlog_;
     size_t total_ = 0, passes_ = 0, skips_ = 0;
-    std::vector<const failure> failures_;
+    std::vector<const test_failure> failures_;
+    std::vector<const file_failure> failed_files_;
   };
 
 }

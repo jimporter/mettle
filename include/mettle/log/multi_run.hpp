@@ -67,6 +67,12 @@ namespace log {
       vlog_.skipped_test(test);
     }
 
+    void failed_file(const std::string &file, const std::string &message) {
+      // XXX: Distinguish between files executed multiple times per run?
+      failed_files_[file].push_back({runs_, message});
+      vlog_.failed_file(file, message);
+    }
+
     void summarize() {
       using namespace term;
       size_t passes = total_ - skips_ - failures_.size();
@@ -78,25 +84,18 @@ namespace log {
                 << " tests passed";
       if(skips_)
         vlog_.out << " (" << skips_ << " skipped)";
+      if(!failed_files_.empty()) {
+        std::string s = failed_files_.size() > 1 ? "s" : "";
+        vlog_.out << " [" << failed_files_.size() << " file" << s << " "
+                  << format(fg(color::red)) << "FAILED"
+                  << format(fg(color::normal)) << "]";
+      }
       vlog_.out << reset() << std::endl;
 
-      int run_width = std::ceil(std::log10(runs_));
-      for(const auto &i : failures_) {
-        format fail_count_fmt(
-          sgr::bold, fg(i.second.size() == runs_ ? color::red : color::yellow)
-        );
-        vlog_.out << "  " << i.first.full_name() << " "
-                  << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
-                  << " " << fail_count_fmt << "[" << i.second.size() << "/"
-                  << runs_ << "]" << reset() << ":" << std::endl;
-
-        for(const auto &j : i.second) {
-          vlog_.out << "    " << j.message << " "
-                    << format(sgr::bold, fg(color::yellow)) << "["
-                    << std::setw(run_width) << j.run << "]" << reset()
-                    << std::endl;
-        }
-      }
+      for(const auto &i : failures_)
+        summarize_failure(i.first.full_name(), i.second);
+      for(const auto &i : failed_files_)
+        summarize_failure("`" + i.first + "`", i.second);
     }
 
     bool good() const {
@@ -108,9 +107,30 @@ namespace log {
       std::string message;
     };
 
+    void summarize_failure(const std::string &where,
+                           const std::vector<const failure> &failures) {
+      using namespace term;
+      int run_width = std::ceil(std::log10(runs_));
+      format fail_count_fmt(
+        sgr::bold, fg(failures.size() == runs_ ? color::red : color::yellow)
+      );
+      vlog_.out << "  " << where << " " << format(sgr::bold, fg(color::red))
+                << "FAILED" << reset() << " " << fail_count_fmt << "["
+                << failures.size() << "/" << runs_ << "]" << reset() << ":"
+                << std::endl;
+
+      for(const auto &i : failures) {
+        vlog_.out << "    " << i.message << " "
+                  << format(sgr::bold, fg(color::yellow)) << "[#"
+                  << std::setw(run_width) << i.run << "]" << reset()
+                  << std::endl;
+      }
+    }
+
     verbose vlog_;
     size_t total_ = 0, skips_ = 0, runs_ = 0;
     std::map<test_name, std::vector<const failure>> failures_;
+    std::map<std::string, std::vector<const failure>> failed_files_;
   };
 
 }

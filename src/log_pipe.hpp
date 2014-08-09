@@ -40,12 +40,20 @@ namespace log {
       }
       else if(event == "failed_test") {
         logger_.failed_test(read_test_name(data.at("test")),
-                            read_test_message(data.at("message")),
+                            read_string(data.at("message")),
                             read_test_output(data.at("output")));
       }
       else if(event == "skipped_test") {
         logger_.skipped_test(read_test_name(data.at("test")));
       }
+      else if(event == "failed_file") {
+        logger_.failed_file(read_string(data.at("file")),
+                            read_string(data.at("message")));
+      }
+    }
+
+    void failed_file(const std::string &file, const std::string &message) {
+      logger_.failed_file(file, message);
     }
   private:
     std::vector<std::string> read_suites(BENCODE_ANY_NS::any &suites) {
@@ -75,7 +83,7 @@ namespace log {
       };
     }
 
-    std::string read_test_message(BENCODE_ANY_NS::any &message) {
+    std::string read_string(BENCODE_ANY_NS::any &message) {
       using namespace BENCODE_ANY_NS;
       return std::move(any_cast<bencode::string &>(message));
     }

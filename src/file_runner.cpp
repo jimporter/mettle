@@ -14,11 +14,40 @@
 namespace mettle {
 
 namespace detail {
-  int execvec(const std::string &path, const std::vector<std::string> &argv) {
+  std::unique_ptr<char *[]>
+  make_argv(const std::vector<std::string> &argv) {
     auto real_argv = std::make_unique<char *[]>(argv.size() + 1);
     for(size_t i = 0; i != argv.size(); i++)
       real_argv[i] = const_cast<char*>(argv[i].c_str());
-    return execv(path.c_str(), real_argv.get());
+    return real_argv;
+  }
+
+  [[noreturn]] void
+  child_failed(int fd, const std::string &file) {
+    // We know this is single-threaded, since we're the child of a fork(),
+    // so strerror is safe.
+    const char *err = strerror(errno);
+
+    try {
+      namespace io = boost::iostreams;
+      io::stream<io::file_descriptor_sink> stream(fd, io::never_close_handle);
+      bencode::encode_dict(stream,
+        "event", "failed_file",
+        "file", file,
+        "message", err
+      );
+      stream.flush();
+      _exit(0);
+    }
+    catch(...) {
+      _exit(128);
+    }
+  }
+
+  inline void parent_failed(log::pipe &logger, const std::string &file) {
+    // `mettle` is single-threaded, since mixing fork() and threads is evil, so
+    // strerror is safe.
+    logger.failed_file(file, strerror(errno));
   }
 
   void run_test_file(
@@ -27,42 +56,45 @@ namespace detail {
     scoped_pipe stdout_pipe;
     stdout_pipe.open();
 
+    rlimit lim;
+    if(getrlimit(RLIMIT_NOFILE, &lim) < 0)
+      return parent_failed(logger, file);
+    int max_fd = lim.rlim_cur - 1;
+
+    std::vector<std::string> args = {file, "--child", std::to_string(max_fd)};
+
+    if(options.timeout) {
+      args.push_back("--timeout");
+      args.push_back(std::to_string(options.timeout->count()));
+    }
+
+    if(options.no_fork)
+      args.push_back("--no-fork");
+
+    auto argv = make_argv(args);
+
     pid_t pid;
     if((pid = fork()) < 0)
-      goto parent_fail;
+      return parent_failed(logger, file);
 
     if(pid == 0) {
       if(stdout_pipe.close_read() < 0)
-        goto child_fail;
+        child_failed(stdout_pipe.write_fd, file);
 
-      rlimit lim;
-      int fd;
-      if(getrlimit(RLIMIT_NOFILE, &lim) < 0)
-        goto child_fail;
-      fd = lim.rlim_cur - 1;
+      if(stdout_pipe.write_fd != max_fd) {
+        if(dup2(stdout_pipe.write_fd, max_fd) < 0)
+          child_failed(stdout_pipe.write_fd, file);
 
-      if(dup2(stdout_pipe.write_fd, fd) < 0)
-        goto child_fail;
-
-      {
-        std::vector<std::string> argv = {file, "--child", std::to_string(fd)};
-
-        if(options.timeout) {
-          argv.push_back("--timeout");
-          argv.push_back(std::to_string(options.timeout->count()));
-        }
-
-        if(options.no_fork)
-          argv.push_back("--no-fork");
-
-        execvec(file, argv);
+        if(stdout_pipe.close_write() < 0)
+          child_failed(max_fd, file);
       }
-    child_fail:
-      _exit(128);
+
+      execv(file.c_str(), argv.get());
+      child_failed(max_fd, file);
     }
     else {
       if(stdout_pipe.close_write() < 0)
-        goto parent_fail;
+        return parent_failed(logger, file);
 
       namespace io = boost::iostreams;
       io::stream<io::file_descriptor_source> fds(
@@ -74,17 +106,25 @@ namespace detail {
 
       int status;
       if(waitpid(pid, &status, 0) < 0)
-        goto parent_fail;
+        return parent_failed(logger, file);
 
-      if(WIFSIGNALED(status)) {
-        std::cerr << strsignal(WTERMSIG(status)) << std::endl;
-        goto parent_fail;
+      if(WIFEXITED(status)) {
+        int exit_code = WEXITSTATUS(status);
+        if(exit_code) {
+          std::stringstream ss;
+          ss << "Exited with status " << exit_code;
+          logger.failed_file(file, ss.str());
+        }
       }
+      else if(WIFSIGNALED(status)) {
+        logger.failed_file(file, strsignal(WTERMSIG(status)));
+      }
+      else { // WIFSTOPPED
+        logger.failed_file(file, "Stopped");
+      }
+
       return;
     }
-
-  parent_fail:
-    exit(128); // TODO: what should we do here?
   }
 }
 

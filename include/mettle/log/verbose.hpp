@@ -96,6 +96,26 @@ namespace log {
       }
     }
 
+    void failed_file(const std::string &file, const std::string &message) {
+      using namespace term;
+      if(verbosity_ == 0) {
+        return;
+      }
+      else if(verbosity_ == 1) {
+        out << format(sgr::bold, fg(color::red)) << "X" << reset()
+            << std::flush;
+      }
+      else {
+        if(!first_)
+          out << std::endl;
+        first_ = false;
+        const std::string indent(base_indent_, ' ');
+        out << indent << "`" << file << "` "
+            << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
+            << ": " << message << std::endl;
+      }
+    }
+
     unsigned int verbosity() const {
       return verbosity_;
     }

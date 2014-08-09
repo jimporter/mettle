@@ -45,6 +45,10 @@ struct recording_logger : log::test_logger {
     test = actual_test;
   }
 
+  void failed_file(const std::string &, const std::string &) {
+    called = "failed_file";
+  }
+
   std::string called;
   std::vector<std::string> suites;
   log::test_name test;

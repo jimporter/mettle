@@ -36,7 +36,8 @@ enum class color {
   blue    = 4,
   magenta = 5,
   cyan    = 6,
-  white   = 7
+  white   = 7,
+  normal  = 9
 };
 
 inline size_t fg(const color &c) {
@@ -48,7 +49,7 @@ inline size_t bg(const color &c) {
 }
 
 enum class sgr {
-  normal    = 0,
+  reset     = 0,
   bold      = 1,
   underline = 4
 };
@@ -79,7 +80,7 @@ private:
 };
 
 inline format reset() {
-  return format(sgr::normal);
+  return format(sgr::reset);
 }
 
 inline std::ostream & operator <<(std::ostream &o, const format &fmt) {

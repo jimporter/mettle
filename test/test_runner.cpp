@@ -35,6 +35,8 @@ struct my_test_logger : log::test_logger {
     tests_skipped++;
   }
 
+  void failed_file(const std::string &, const std::string &) {}
+
   size_t tests_run, tests_passed, tests_failed, tests_skipped;
 };
 
