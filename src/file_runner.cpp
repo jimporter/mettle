@@ -96,13 +96,18 @@ namespace detail {
       if(message_pipe.close_write() < 0)
         return parent_failed(logger, file);
 
-      namespace io = boost::iostreams;
-      io::stream<io::file_descriptor_source> fds(
-        message_pipe.read_fd, io::never_close_handle
-      );
-
-      while(!fds.eof())
-        logger(fds);
+      std::exception_ptr except;
+      try {
+        namespace io = boost::iostreams;
+        io::stream<io::file_descriptor_source> fds(
+          message_pipe.read_fd, io::never_close_handle
+        );
+        while(!fds.eof())
+          logger(fds);
+      }
+      catch(...) {
+        except = std::current_exception();
+      }
 
       int status;
       if(waitpid(pid, &status, 0) < 0)
@@ -114,6 +119,14 @@ namespace detail {
           std::stringstream ss;
           ss << "Exited with status " << exit_code;
           logger.failed_file(file, ss.str());
+        }
+        else if(except) {
+          try {
+            std::rethrow_exception(except);
+          }
+          catch(const std::exception &e) {
+            logger.failed_file(file, e.what());
+          }
         }
       }
       else if(WIFSIGNALED(status)) {
