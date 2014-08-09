@@ -53,8 +53,8 @@ namespace detail {
   void run_test_file(
     const std::string &file, log::pipe &logger, const run_options &options
   ) {
-    scoped_pipe stdout_pipe;
-    stdout_pipe.open();
+    scoped_pipe message_pipe;
+    message_pipe.open();
 
     rlimit lim;
     if(getrlimit(RLIMIT_NOFILE, &lim) < 0)
@@ -78,14 +78,14 @@ namespace detail {
       return parent_failed(logger, file);
 
     if(pid == 0) {
-      if(stdout_pipe.close_read() < 0)
-        child_failed(stdout_pipe.write_fd, file);
+      if(message_pipe.close_read() < 0)
+        child_failed(message_pipe.write_fd, file);
 
-      if(stdout_pipe.write_fd != max_fd) {
-        if(dup2(stdout_pipe.write_fd, max_fd) < 0)
-          child_failed(stdout_pipe.write_fd, file);
+      if(message_pipe.write_fd != max_fd) {
+        if(dup2(message_pipe.write_fd, max_fd) < 0)
+          child_failed(message_pipe.write_fd, file);
 
-        if(stdout_pipe.close_write() < 0)
+        if(message_pipe.close_write() < 0)
           child_failed(max_fd, file);
       }
 
@@ -93,12 +93,12 @@ namespace detail {
       child_failed(max_fd, file);
     }
     else {
-      if(stdout_pipe.close_write() < 0)
+      if(message_pipe.close_write() < 0)
         return parent_failed(logger, file);
 
       namespace io = boost::iostreams;
       io::stream<io::file_descriptor_source> fds(
-        stdout_pipe.read_fd, io::never_close_handle
+        message_pipe.read_fd, io::never_close_handle
       );
 
       while(!fds.eof())
