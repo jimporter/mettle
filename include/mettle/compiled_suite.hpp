@@ -9,18 +9,10 @@
 namespace mettle {
 
 namespace detail {
-  template<typename T>
-  class id_generator {
-  public:
-    static inline T generate() {
-      return id_++;
-    }
-  private:
-    static std::atomic<T> id_;
-  };
-
-  template<typename T>
-  std::atomic<T> id_generator<T>::id_(0);
+  static inline size_t generate_id() {
+    static std::atomic<size_t> id_(0);
+    return id_++;
+  }
 }
 
 struct test_result {
@@ -37,7 +29,7 @@ public:
     test_info(const std::string &name, const function_type &function,
               bool skip = false)
       : name(name), function(function), skip(skip),
-        id(detail::id_generator<size_t>::generate()) {}
+        id(detail::generate_id()) {}
 
     std::string name;
     function_type function;

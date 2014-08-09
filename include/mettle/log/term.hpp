@@ -7,25 +7,18 @@
 namespace term {
 
 namespace detail {
-  // This is just a dumb template trick so that this file can have a static
-  // variable and be header-only. That'll make life easier for users of the lib.
-  template<typename Tag>
-  struct status {
-    static std::atomic<bool> enabled_;
-  };
-
-  template<typename Tag>
-  std::atomic<bool> status<Tag>::enabled_(false);
-
-  struct status_tag {};
+  inline std::atomic<bool> & status() {
+    static std::atomic<bool> status(false);
+    return status;
+  }
 }
 
 inline void enabled(bool enabled) {
-  detail::status<detail::status_tag>::enabled_ = enabled;
+  detail::status() = enabled;
 }
 
 inline bool enabled() {
-  return detail::status<detail::status_tag>::enabled_;
+  return detail::status();
 }
 
 enum class color {
