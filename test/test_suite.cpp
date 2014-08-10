@@ -532,12 +532,13 @@ suite<basic_fixture> test_fixtures("suite fixtures", [](auto &_) {
       expect(f.data, equal_to(2));
     });
 
-    _.template subsuite<int>("sub-subsuite", [](auto &_) {
-      _.setup([](basic_fixture &f, int &) {
+    _.template subsuite<basic_fixture>("sub-subsuite", [](auto &_) {
+      _.setup([](basic_fixture &f, basic_fixture &) {
         f.data++;
       });
 
-      _.test("fixture was passed by reference", [](basic_fixture &f, int &) {
+      _.test("fixture was passed by reference",
+             [](basic_fixture &f, basic_fixture &) {
         expect(f.data, equal_to(3));
       });
     });

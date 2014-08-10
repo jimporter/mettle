@@ -46,6 +46,34 @@ namespace detail {
       detail::apply(std::forward<F>(teardown), fixtures);
   }
 
+  template<typename Parent, typename Child>
+  class test_caller;
+
+  template<typename ...Parent>
+  class test_caller<std::tuple<Parent...>, std::tuple<>> {
+  public:
+    using function_type = std::function<void(Parent&...)>;
+
+    void operator ()(Parent &...args) const {
+      std::tuple<Parent&...> fixtures(args...);
+      detail::do_test(setup_, teardown_, test_, fixtures);
+    }
+    function_type setup_, teardown_, test_;
+  };
+
+  template<typename ...Parent, typename Child>
+  class test_caller<std::tuple<Parent...>, std::tuple<Child>> {
+  public:
+    using function_type = std::function<void(Parent&..., Child&)>;
+
+    void operator ()(Parent &...args) const {
+      Child child;
+      std::tuple<Parent&..., Child&> fixtures(args..., child);
+      detail::do_test(setup_, teardown_, test_, fixtures);
+    }
+    function_type setup_, teardown_, test_;
+  };
+
   template<typename T>
   std::string annotate_type(const std::string &s) {
     return s + " (" + type_name<T>() + ")";
@@ -221,16 +249,14 @@ public:
     );
   }
 private:
-  template<typename V>
-  typename compiled_suite_type::test_info wrap_test(const V &test) const {
-    typename compiled_suite_type::test_info::function_type test_function = [
-      setup = base::setup_, teardown = base::teardown_, f = test.function
-    ](T &...args) -> void {
-      std::tuple<T&..., U...> fixtures(args..., U()...);
-      detail::do_test(setup, teardown, f, fixtures);
+  template<typename Test>
+  auto wrap_test(const Test &test) const {
+    detail::test_caller<std::tuple<T...>, std::tuple<U...>> test_function{
+      base::setup_, base::teardown_, test.function
     };
 
-    return { test.name, test_function, test.skip || base::skip_all_ };
+    using info = typename compiled_suite_type::test_info;
+    return info{ test.name, test_function, test.skip || base::skip_all_ };
   }
 };
 
@@ -251,17 +277,18 @@ public:
     );
   }
 private:
-  template<typename U>
-  runnable_suite::test_info wrap_test(const U &test) const {
-    runnable_suite::test_info::function_type test_function = [
-      setup = base::setup_, teardown = base::teardown_, f = test.function
+  template<typename Test>
+  auto wrap_test(const Test &test) const {
+    auto wrapped_test = [
+      test_function = detail::test_caller<std::tuple<>, std::tuple<T...>>{
+        base::setup_, base::teardown_, test.function
+      }
     ]() -> test_result {
       bool passed = false;
       std::string message;
 
       try {
-        std::tuple<T...> fixtures;
-        detail::do_test(setup, teardown, f, fixtures);
+        test_function();
         passed = true;
       }
       catch(const exception_type &e) {
@@ -277,7 +304,9 @@ private:
       return { passed, message };
     };
 
-    return { test.name, test_function, test.skip || base::skip_all_ };
+    return runnable_suite::test_info{
+      test.name, wrapped_test, test.skip || base::skip_all_
+    };
   }
 };
 
