@@ -10,6 +10,7 @@
 
 #include "log_pipe.hpp"
 #include "scoped_pipe.hpp"
+#include "utils.hpp"
 
 namespace mettle {
 
@@ -22,11 +23,13 @@ namespace detail {
     return real_argv;
   }
 
+  inline void parent_failed(log::pipe &logger, const std::string &file) {
+    logger.failed_file(file, err_string(errno));
+  }
+
   [[noreturn]] void
   child_failed(int fd, const std::string &file) {
-    // We know this is single-threaded, since we're the child of a fork(),
-    // so strerror is safe.
-    const char *err = strerror(errno);
+    auto err = err_string(errno);
 
     try {
       namespace io = boost::iostreams;
@@ -42,12 +45,6 @@ namespace detail {
     catch(...) {
       _exit(128);
     }
-  }
-
-  inline void parent_failed(log::pipe &logger, const std::string &file) {
-    // `mettle` is single-threaded, since mixing fork() and threads is evil, so
-    // strerror is safe.
-    logger.failed_file(file, strerror(errno));
   }
 
   void run_test_file(

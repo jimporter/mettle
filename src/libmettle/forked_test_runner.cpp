@@ -7,8 +7,17 @@
 #include <thread>
 
 #include "../scoped_pipe.hpp"
+#include "../utils.hpp"
 
 namespace mettle {
+
+inline test_result parent_fail() {
+  return { false, err_string(errno) };
+}
+
+[[noreturn]] inline void child_fail() {
+  _exit(128);
+}
 
 test_result forked_test_runner::operator ()(
   const test_function &test, log::test_output &output
@@ -17,13 +26,13 @@ test_result forked_test_runner::operator ()(
   if(stdout_pipe.open() < 0 ||
      stderr_pipe.open() < 0 ||
      log_pipe.open(O_CLOEXEC) < 0)
-    goto parent_fail;
+    return parent_fail();
 
   fflush(nullptr);
 
   pid_t pid;
   if((pid = fork()) < 0)
-    goto parent_fail;
+    return parent_fail();
 
   if(pid == 0) {
     if(timeout_)
@@ -32,33 +41,29 @@ test_result forked_test_runner::operator ()(
     if(stdout_pipe.close_read() < 0 ||
        stderr_pipe.close_read() < 0 ||
        log_pipe.close_read() < 0)
-      goto child_fail;
+      child_fail();
 
     if(dup2(stdout_pipe.write_fd, STDOUT_FILENO) < 0 ||
        dup2(stderr_pipe.write_fd, STDERR_FILENO) < 0)
-      goto child_fail;
+      child_fail();
 
     if(stdout_pipe.close_write() < 0 ||
        stderr_pipe.close_write() < 0)
-      goto child_fail;
+      child_fail();
 
-    {
-      auto result = test();
-      if(write(log_pipe.write_fd, result.message.c_str(),
-               result.message.length()) < 0)
-        goto child_fail;
+    auto result = test();
+    if(write(log_pipe.write_fd, result.message.c_str(),
+             result.message.length()) < 0)
+      child_fail();
 
-      fflush(nullptr);
-      _exit(!result.passed);
-    }
-  child_fail:
-    _exit(128);
+    fflush(nullptr);
+    _exit(!result.passed);
   }
   else {
     if(stdout_pipe.close_write() < 0 ||
        stderr_pipe.close_write() < 0 ||
        log_pipe.close_write() < 0)
-      goto parent_fail;
+      return parent_fail();
 
     ssize_t size;
     char buf[BUFSIZ];
@@ -73,7 +78,7 @@ test_result forked_test_runner::operator ()(
       for(size_t i = 0; i < 2; i++) {
         if(fds[i].revents & POLLIN) {
           if((size = read(fds[i].fd, buf, sizeof(buf))) < 0)
-            goto parent_fail;
+            return parent_fail();
           dests[i]->append(buf, size);
         }
         if(fds[i].revents & POLLHUP) {
@@ -83,18 +88,18 @@ test_result forked_test_runner::operator ()(
       }
     }
     if(rv < 0) // poll() failed!
-      goto parent_fail;
+      return parent_fail();
 
     // Read from our logging pipe (which sends the message from the test run).
     std::string message;
     while((size = read(log_pipe.read_fd, buf, sizeof(buf))) > 0)
       message.append(buf, size);
     if(size < 0) // read() failed!
-      goto parent_fail;
+      return parent_fail();
 
     int status;
     if(waitpid(pid, &status, 0) < 0)
-      goto parent_fail;
+      return parent_fail();
 
     if(WIFEXITED(status)) {
       int exit_code = WEXITSTATUS(status);
@@ -114,10 +119,6 @@ test_result forked_test_runner::operator ()(
       return { false, "Stopped" };
     }
   }
-parent_fail:
-  char errbuf[256];
-  strerror_r(errno, errbuf, sizeof(errbuf));
-  return { false, errbuf };
 }
 
 void forked_test_runner::fork_watcher(std::chrono::milliseconds timeout) const {
