@@ -131,6 +131,8 @@
         
             <li><a href="#parameterizing-tests">Parameterizing tests</a></li>
         
+            <li><a href="#fixture-factories">Fixture factories</a></li>
+        
     
     </ul>
 </div></div>
@@ -251,6 +253,8 @@ a less-flexible helper class. For instance, your fixture might be a database
 object from your production code that you want to add some test records to for
 testing. Rather than wrapping the database in a helper, you can just add the
 test records in <code>setup</code>.</p>
+<p>For more advanced uses of fixtures, see <a href="#fixture-factories">Fixture factories</a>
+below.</p>
 <h2 id="subsuites">Subsuites</h2>
 <p>When testing something particularly complex, you might find it useful to group
 test suites together. You can do this by creating a subsuite inside a parent
@@ -369,6 +373,67 @@ to create your own instances of the object. You can retrieve this via the
 });
 </code></pre>
 
+<h2 id="fixture-factories">Fixture factories</h2>
+<p>Sometimes, a fixture can't be constructed as is, e.g if the fixture isn't
+default-constructible. In these cases, you can use a <em>fixture factory</em> to create
+your fixture object with any parameters you like. A fixture factory is simply an
+object with a templated <code>make&lt;T&gt;()</code> function:</p>
+<pre class="prettyprint well"><code class="c++">struct my_factory {
+  template&lt;typename T&gt;
+  T make() {
+    return T(12);
+  }
+};
+
+suite&lt;my_fixture&gt; with_fixture_factory(&quot;suite&quot;, my_factory{}, [](auto &amp;_) {
+  /* ... */
+});
+</code></pre>
+
+<p>In fact, ordinary fixtures use their own factory: <code>auto_factory</code>. The following
+code snippets are equivalent:</p>
+<pre class="prettyprint well"><code class="c++">suite&lt;my_fixture&gt; without_auto_factory(&quot;suite&quot;, [](auto &amp;_) {
+  /* ... */
+});
+
+suite&lt;my_fixture&gt; with_auto_factory(&quot;suite&quot;, auto_factory, [](auto &amp;_) {
+  /* ... */
+});
+</code></pre>
+
+<h3 id="transforming-fixture-types">Transforming fixture types</h3>
+<p>In addition, a fixture factory's <code>make&lt;T&gt;()</code> can return <em>any</em> type (including
+<code>void</code>!), not just <code>T</code>. This can be useful for more complex tests, like testing
+a container type with several different element types:</p>
+<pre class="prettyprint well"><code class="c++">struct vector_factory {
+  template&lt;typename T&gt;
+  std::vector&lt;T&gt; make() {
+    return {};
+  }
+};
+
+suite&lt;int, float&gt; vector_suite(&quot;suite&quot;, vector_factory{}, [](auto &amp;_) {
+  _.test(&quot;empty()&quot;, [](auto &amp;vec) {
+    expect(vec.empty(), equal_to(true));
+  });
+});
+</code></pre>
+
+<h3 id="type-only-fixtures">Type-only fixtures</h3>
+<p>As mentioned above, a fixture factory's <code>make&lt;T&gt;()</code> can return <code>void</code>. In this
+case, the suite has no fixture whatsoever. This is primarily useful when you
+want to parameterize on a list of types, but you don't want to automatically
+instantiate the fixture object. The built-in fixture factory <code>type_only</code> handles
+this for you. In particular, note the parameter-less test function:</p>
+<pre class="prettyprint well"><code class="c++">suite&lt;int, float&gt; type_only_suite(&quot;suite&quot;, type_only, [](auto &amp;_) {
+  _.test(&quot;empty()&quot;, []() {
+    /* ... */
+  });
+});
+</code></pre>
+
+<p>Remember, of course, that you can use <code>fixture_type_t</code> to get the type of the
+fixture if you wish to use it inside your tests.</p>
 </div>
         </div>
 
