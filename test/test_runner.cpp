@@ -41,17 +41,15 @@ struct my_test_logger : log::test_logger {
 };
 
 
-struct forked_fixture {
-  forked_fixture() : runner(std::chrono::seconds(1)) {}
-
-  operator forked_test_runner &() {
-    return runner;
+struct ftr_factory {
+  template<typename T>
+  T make() {
+    return T(std::chrono::seconds(1));
   }
-
-  forked_test_runner runner;
 };
 
-suite<forked_fixture> test_fork("forked_test_runner", [](auto &_) {
+suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
+                                    [](auto &_) {
 
   subsuite<log::test_output>(_, "run one test", [](auto &_) {
     _.test("passing test", [](forked_test_runner &runner,

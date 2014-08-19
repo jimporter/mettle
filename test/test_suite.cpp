@@ -43,6 +43,15 @@ struct basic_fixture {
   int data;
 };
 
+struct basic_factory {
+  template<typename T>
+  T make() {
+    return { data };
+  }
+
+  int data = 0;
+};
+
 suite<> test_suite("suite creation", [](auto &_) {
 
   auto check_suite = [](const runnable_suite &s) {
@@ -78,6 +87,15 @@ suite<> test_suite("suite creation", [](auto &_) {
     check_suite(s);
   });
 
+  _.test("create a test suite with type-only fixture", [&check_suite]() {
+    auto s = make_suite<int>("inner test suite", type_only, [](auto &_){
+      _.test("inner test", []() {});
+      _.skip_test("skipped test", []() {});
+    });
+
+    check_suite(s);
+  });
+
   _.test("create a test suite with setup/teardown", [&check_suite]() {
     auto s = make_suite<>("inner test suite", [](auto &_){
       _.setup([]() {});
@@ -101,12 +119,35 @@ suite<> test_suite("suite creation", [](auto &_) {
     check_suite(s);
   });
 
-  _.test("create a parameterized test suite", [&check_suite]() {
+  _.test("create a parameterized test suite", []() {
     auto suites = make_suites<int, float>("inner test suite", [](auto &_) {
       using Fixture = fixture_type_t<decltype(_)>;
 
       _.test("inner test", [](auto &) {});
       _.skip_test("skipped test", [](auto &) {});
+    });
+
+    expect(suites.size(), equal_to<size_t>(2));
+
+    std::string names[] = {
+      "inner test suite (int)", "inner test suite (float)"
+    };
+    for(size_t i = 0; i < 2; i++) {
+      expect(suites[i].name(), equal_to( names[i] ));
+      expect(suites[i].size(), equal_to<size_t>(2));
+      expect(suites[i], array(
+        match_test("inner test", false), match_test("skipped test", true)
+      ));
+    }
+  });
+
+  _.test("create a type-only parameterized test suite", []() {
+    auto suites = make_suites<int, float>("inner test suite", type_only,
+                                          [](auto &_) {
+      using Fixture = fixture_type_t<decltype(_)>;
+
+      _.test("inner test", []() {});
+      _.skip_test("skipped test", []() {});
     });
 
     expect(suites.size(), equal_to<size_t>(2));
@@ -137,6 +178,17 @@ suite<> test_suite("suite creation", [](auto &_) {
     auto suites = make_suites<int>("inner test suite", [](auto &_) {
       _.test("inner test", [](int &) {});
       _.skip_test("skipped test", [](int &) {});
+    });
+
+    expect(suites.size(), equal_to<size_t>(1));
+    check_suite(suites[0]);
+  });
+
+  _.test("create a test suite with type-only fixture via make_suites",
+         [&check_suite]() {
+    auto suites = make_suites<int>("inner test suite", type_only, [](auto &_) {
+      _.test("inner test", []() {});
+      _.skip_test("skipped test", []() {});
     });
 
     expect(suites.size(), equal_to<size_t>(1));
@@ -523,24 +575,31 @@ suite<> test_calling("test calling", [](auto &_) {
 
 suite<basic_fixture> test_fixtures("suite fixtures", [](auto &_) {
 
-  _.template subsuite<>("subsuite", [](auto &_) {
+  _.template subsuite<int>("subsuite", type_only, [](auto &_) {
     _.setup([](basic_fixture &f) {
       f.data++;
     });
 
-    _.test("fixture was passed by reference", [](basic_fixture &f) {
+    _.test("outer fixture was passed by reference", [](basic_fixture &f) {
       expect(f.data, equal_to(2));
     });
 
-    _.template subsuite<basic_fixture>("sub-subsuite", [](auto &_) {
+    _.template subsuite<basic_fixture>("sub-subsuite", basic_factory{5},
+                                       [](auto &_) {
       _.setup([](basic_fixture &f, basic_fixture &) {
         f.data++;
       });
 
-      _.test("fixture was passed by reference",
+      _.test("outer fixture was passed by reference",
              [](basic_fixture &f, basic_fixture &) {
         expect(f.data, equal_to(3));
       });
+
+      _.test("inner fixture was constructed by factory",
+             [](basic_fixture &, basic_fixture &f2) {
+        expect(f2.data, equal_to(5));
+      });
+
     });
 
   });

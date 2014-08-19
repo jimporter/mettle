@@ -139,6 +139,9 @@ object from your production code that you want to add some test records to for
 testing. Rather than wrapping the database in a helper, you can just add the
 test records in `setup`.
 
+For more advanced uses of fixtures, see [Fixture factories](#fixture-factories)
+below.
+
 ## Subsuites
 
 When testing something particularly complex, you might find it useful to group
@@ -276,3 +279,76 @@ suite<int, float> param_type_test("parameterized suite", [](auto &_) {
   });
 });
 ```
+
+## Fixture factories
+
+Sometimes, a fixture can't be constructed as is, e.g if the fixture isn't
+default-constructible. In these cases, you can use a *fixture factory* to create
+your fixture object with any parameters you like. A fixture factory is simply an
+object with a templated `make<T>()` function:
+
+```c++
+struct my_factory {
+  template<typename T>
+  T make() {
+    return T(12);
+  }
+};
+
+suite<my_fixture> with_fixture_factory("suite", my_factory{}, [](auto &_) {
+  /* ... */
+});
+```
+
+In fact, ordinary fixtures use their own factory: `auto_factory`. The following
+code snippets are equivalent:
+
+```c++
+suite<my_fixture> without_auto_factory("suite", [](auto &_) {
+  /* ... */
+});
+
+suite<my_fixture> with_auto_factory("suite", auto_factory, [](auto &_) {
+  /* ... */
+});
+```
+
+### Transforming fixture types
+
+In addition, a fixture factory's `make<T>()` can return *any* type (including
+`void`!), not just `T`. This can be useful for more complex tests, like testing
+a container type with several different element types:
+
+```c++
+struct vector_factory {
+  template<typename T>
+  std::vector<T> make() {
+    return {};
+  }
+};
+
+suite<int, float> vector_suite("suite", vector_factory{}, [](auto &_) {
+  _.test("empty()", [](auto &vec) {
+    expect(vec.empty(), equal_to(true));
+  });
+});
+```
+
+### Type-only fixtures
+
+As mentioned above, a fixture factory's `make<T>()` can return `void`. In this
+case, the suite has no fixture whatsoever. This is primarily useful when you
+want to parameterize on a list of types, but you don't want to automatically
+instantiate the fixture object. The built-in fixture factory `type_only` handles
+this for you. In particular, note the parameter-less test function:
+
+```c++
+suite<int, float> type_only_suite("suite", type_only, [](auto &_) {
+  _.test("empty()", []() {
+    /* ... */
+  });
+});
+```
+
+Remember, of course, that you can use `fixture_type_t` to get the type of the
+fixture if you wish to use it inside your tests.
