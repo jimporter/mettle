@@ -31,7 +31,7 @@ struct my_test_logger : log::test_logger {
                    const log::test_output &) {
     tests_failed++;
   }
-  void skipped_test(const log::test_name &) {
+  void skipped_test(const log::test_name &, const std::string &) {
     tests_skipped++;
   }
 

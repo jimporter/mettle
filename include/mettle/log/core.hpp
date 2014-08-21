@@ -60,7 +60,8 @@ namespace log {
     virtual void passed_test(const test_name &test, const test_output &log) = 0;
     virtual void failed_test(const test_name &test, const std::string &message,
                              const test_output &log) = 0;
-    virtual void skipped_test(const test_name &test) = 0;
+    virtual void skipped_test(const test_name &test,
+                              const std::string &message) = 0;
 
     virtual void failed_file(const std::string &file,
                              const std::string &message) = 0;

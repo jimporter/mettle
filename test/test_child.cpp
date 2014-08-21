@@ -40,9 +40,11 @@ struct recording_logger : log::test_logger {
     message = actual_message;
     output = actual_output;
   }
-  void skipped_test(const log::test_name &actual_test) {
+  void skipped_test(const log::test_name &actual_test,
+                    const std::string &actual_message) {
     called = "skipped_test";
     test = actual_test;
+    message = actual_message;
   }
 
   void failed_file(const std::string &, const std::string &) {
@@ -140,10 +142,12 @@ suite<fixture> test_child("test child logger", [](auto &_) {
 
   _.test("skipped_test()", [](fixture &f) {
     log::test_name test = {{"suite", "subsuite"}, "test", 1};
-    f.child.skipped_test(test);
+    std::string message = "message";
+    f.child.skipped_test(test, message);
     f.pipe(f.stream);
 
     expect(f.parent.called, equal_to("skipped_test"));
+    expect(f.parent.message, equal_to(message));
     expect(f.parent.test, equal_to(test));
   });
 

@@ -24,15 +24,16 @@ namespace detail {
         const log::test_name name = {parents, test.name, test.id};
         logger.started_test(name);
 
-        bool skipped = std::any_of(
-          test.attrs.begin(), test.attrs.end(), [](const attr_instance &a) {
-            return a.skip();
+        bool skipped = false;
+        for(const auto &attr : test.attrs) {
+          if(attr.skip()) {
+            logger.skipped_test(name, attr.comment());
+            skipped = true;
+            break;
           }
-        );
-        if(skipped) {
-          logger.skipped_test(name);
-          continue;
         }
+        if(skipped)
+          continue;
 
         log::test_output output;
         auto result = runner(test.function, output);

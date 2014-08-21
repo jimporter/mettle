@@ -47,9 +47,9 @@ namespace log {
       vlog_.failed_test(test, message, output);
     }
 
-    void skipped_test(const test_name &test) {
+    void skipped_test(const test_name &test, const std::string &message) {
       skips_++;
-      vlog_.skipped_test(test);
+      vlog_.skipped_test(test, message);
     }
 
     void failed_file(const std::string &file, const std::string &message) {

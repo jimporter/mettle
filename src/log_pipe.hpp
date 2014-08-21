@@ -44,7 +44,8 @@ namespace log {
                             read_test_output(data.at("output")));
       }
       else if(event == "skipped_test") {
-        logger_.skipped_test(read_test_name(data.at("test")));
+        logger_.skipped_test(read_test_name(data.at("test")),
+                             read_string(data.at("message")));
       }
       else if(event == "failed_file") {
         logger_.failed_file(read_string(data.at("file")),

@@ -9,7 +9,7 @@ suite<> regular_suite("a regular suite", [](auto &_) {
     // ...
   });
 
-  subsuite(_, "a skipped subsuite", {skip}, [](auto &_) {
+  subsuite(_, "a skipped subsuite", {skip("broken")}, [](auto &_) {
     _.test("a test", []() {
       // ...
     });

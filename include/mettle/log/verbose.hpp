@@ -75,13 +75,15 @@ namespace log {
             << std::flush;
       }
       else {
-        out << format(sgr::bold, fg(color::red)) << "FAILED" << reset() << ": "
-            << message << std::endl;
+        out << format(sgr::bold, fg(color::red)) << "FAILED" << reset();
+        if(!message.empty())
+          out << ": " << message;
+        out << std::endl;
         log_output(test.suites.size(), output);
       }
     }
 
-    void skipped_test(const test_name &) {
+    void skipped_test(const test_name &, const std::string &message) {
       using namespace term;
       if(verbosity_ == 0) {
         return;
@@ -91,8 +93,10 @@ namespace log {
             << std::flush;
       }
       else {
-        out << format(sgr::bold, fg(color::blue)) << "SKIPPED" << reset()
-            << std::endl;
+        out << format(sgr::bold, fg(color::blue)) << "SKIPPED" << reset();
+        if(!message.empty())
+          out << ": " << message;
+        out << std::endl;
       }
     }
 

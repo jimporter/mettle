@@ -81,9 +81,10 @@ namespace log {
       );
       out.flush();
     }
-    void skipped_test(const test_name &test) {
+    void skipped_test(const test_name &test, const std::string &message) {
       bencode::encode_dict(out,
         "event", "skipped_test",
+        "message", message,
         "test", test
       );
       out.flush();
