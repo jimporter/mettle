@@ -24,7 +24,12 @@ namespace detail {
         const log::test_name name = {parents, test.name, test.id};
         logger.started_test(name);
 
-        if(test.skip) {
+        bool skipped = std::any_of(
+          test.attrs.begin(), test.attrs.end(), [](const attr_instance &a) {
+            return a.skip();
+          }
+        );
+        if(skipped) {
           logger.skipped_test(name);
           continue;
         }

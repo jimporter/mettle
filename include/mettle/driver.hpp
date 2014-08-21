@@ -17,61 +17,33 @@ namespace detail {
 
 template<typename Exception, typename ...Fixture>
 struct basic_suite {
-  template<typename Factory, typename F>
-  basic_suite(suites_list &list, const std::string &name, Factory &&factory,
-              F &&f) {
+  template<typename ...Args>
+  basic_suite(suites_list &list, const std::string &name,
+              const attribute_list &attrs, Args &&...args) {
     auto &&suites = make_basic_suites<Exception, Fixture...>(
-      name, std::forward<Factory>(factory), std::forward<F>(f)
+      name, attrs, std::forward<Args>(args)...
     );
     for(auto &&i : suites)
       list.push_back(std::move(i));
   }
 
-  template<typename F>
-  basic_suite(suites_list &list, const std::string &name, F &&f)
-    : basic_suite(list, name, auto_factory, std::forward<F>(f)) {}
+  template<typename ...Args>
+  basic_suite(suites_list &list, const std::string &name, Args &&...args)
+    : basic_suite(list, name, {}, std::forward<Args>(args)...) {}
 
-  template<typename Factory, typename F>
-  basic_suite(const std::string &name, Factory &&factory, F &&f)
-    : basic_suite(detail::all_suites, name, std::forward<Factory>(factory),
-                  std::forward<F>(f)) {}
+  template<typename ...Args>
+  basic_suite(const std::string &name, const attribute_list &attrs,
+              Args &&...args)
+    : basic_suite(detail::all_suites, name, attrs,
+                  std::forward<Args>(args)...) {}
 
-  template<typename F>
-  basic_suite(const std::string &name, const F &f)
-    : basic_suite(detail::all_suites, name, auto_factory, f) {}
-};
-
-template<typename Exception, typename ...Fixture>
-struct skip_basic_suite {
-  template<typename Factory, typename F>
-  skip_basic_suite(suites_list &list, const std::string &name,
-                   Factory &&factory, F &&f) {
-    auto &&suites = make_skip_basic_suites<Exception, Fixture...>(
-      name, std::forward<Factory>(factory), std::forward<F>(f)
-    );
-    for(auto &&i : suites)
-      list.push_back(std::move(i));
-  }
-
-  template<typename F>
-  skip_basic_suite(suites_list &list, const std::string &name, F &&f)
-    : skip_basic_suite(list, name, auto_factory, std::forward<F>(f)) {}
-
-  template<typename Factory, typename F>
-  skip_basic_suite(const std::string &name, Factory &&factory, F &&f)
-    : skip_basic_suite(detail::all_suites, name, std::forward<Factory>(factory),
-                       std::forward<F>(f)) {}
-
-  template<typename F>
-  skip_basic_suite(const std::string &name, const F &f)
-    : skip_basic_suite(detail::all_suites, name, auto_factory, f) {}
+  template<typename ...Args>
+  basic_suite(const std::string &name, Args &&...args)
+    : basic_suite(name, {}, std::forward<Args>(args)...) {}
 };
 
 template<typename ...T>
 using suite = basic_suite<expectation_error, T...>;
-
-template<typename ...T>
-using skip_suite = skip_basic_suite<expectation_error, T...>;
 
 } // namespace mettle
 

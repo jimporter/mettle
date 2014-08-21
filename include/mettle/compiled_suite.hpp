@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "attributes.hpp"
+
 namespace mettle {
 
 namespace detail {
@@ -27,13 +29,13 @@ public:
     using function_type = std::function<Ret(T&...)>;
 
     test_info(const std::string &name, const function_type &function,
-              bool skip = false)
-      : name(name), function(function), skip(skip),
+              const attribute_list &attrs)
+      : name(name), function(function), attrs(attrs),
         id(detail::generate_id()) {}
 
     std::string name;
     function_type function;
-    bool skip;
+    attribute_list attrs;
     size_t id;
   };
 

@@ -6,7 +6,7 @@ suite<suites_list> test_driver("driver suite declaration", [](auto &_) {
   _.test("create a test suite", [](suites_list &suites) {
     suite<>(suites, "inner test suite", [](auto &_){
       _.test("inner test", []() {});
-      _.skip_test("skipped test", []() {});
+      _.test("skipped test", {skip}, []() {});
     });
 
     expect(suites.size(), equal_to<size_t>(1));
@@ -18,7 +18,7 @@ suite<suites_list> test_driver("driver suite declaration", [](auto &_) {
   _.test("create a test suite with fixture", [](suites_list &suites) {
     suite<int>(suites, "inner test suite", [](auto &_){
       _.test("inner test", [](int &) {});
-      _.skip_test("skipped test", [](int &) {});
+      _.test("skipped test", {skip}, [](int &) {});
     });
 
     expect(suites.size(), equal_to<size_t>(1));
@@ -33,7 +33,7 @@ suite<suites_list> test_driver("driver suite declaration", [](auto &_) {
       using Fixture = fixture_type_t<decltype(_)>;
 
       _.test("inner test", [](auto &) {});
-      _.skip_test("skipped test", [](auto &) {});
+      _.test("skipped test", {skip}, [](auto &) {});
     });
 
     expect(suites.size(), equal_to<size_t>(2));
@@ -45,9 +45,9 @@ suite<suites_list> test_driver("driver suite declaration", [](auto &_) {
   });
 
   _.test("create a skipped test suite", [](suites_list &suites) {
-    skip_suite<>(suites, "inner test suite", [](auto &_){
+    suite<>(suites, "inner test suite", {skip}, [](auto &_){
       _.test("inner test", []() {});
-      _.skip_test("skipped test", []() {});
+      _.test("skipped test", {skip}, []() {});
     });
 
     expect(suites.size(), equal_to<size_t>(1));
@@ -57,9 +57,9 @@ suite<suites_list> test_driver("driver suite declaration", [](auto &_) {
   });
 
   _.test("create a skipped test suite with fixture", [](suites_list &suites) {
-    skip_suite<int>(suites, "inner test suite", [](auto &_){
+    suite<int>(suites, "inner test suite", {skip}, [](auto &_){
       _.test("inner test", [](int &) {});
-      _.skip_test("skipped test", [](int &) {});
+      _.test("skipped test", {skip}, [](int &) {});
     });
 
     expect(suites.size(), equal_to<size_t>(1));
@@ -70,11 +70,11 @@ suite<suites_list> test_driver("driver suite declaration", [](auto &_) {
 
   _.test("create a skipped test suite with parameterized fixtures",
          [](suites_list &suites) {
-    skip_suite<int, float>(suites, "inner test suite", [](auto &_){
+    suite<int, float>(suites, "inner test suite", {skip}, [](auto &_){
       using Fixture = fixture_type_t<decltype(_)>;
 
       _.test("inner test", [](auto &) {});
-      _.skip_test("skipped test", [](auto &) {});
+      _.test("skipped test", {skip}, [](auto &) {});
     });
 
     expect(suites.size(), equal_to<size_t>(2));

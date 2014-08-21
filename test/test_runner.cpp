@@ -194,7 +194,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
                                           my_test_logger &logger) {
       auto s = make_suites<>("inner", [](auto &_){
         _.test("test 1", []() {});
-        _.skip_test("test 2", []() {});
+        _.test("test 2", {skip}, []() {});
         _.test("test 3", []() {});
       });
 

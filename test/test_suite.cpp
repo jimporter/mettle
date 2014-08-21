@@ -11,7 +11,14 @@ inline auto match_test(const std::string &name, bool skip) {
     s << "skipped ";
   s << "test named \"" << name << "\"";
   return make_matcher([name, skip](const runnable_suite::test_info &actual) {
-    return actual.name == name && actual.skip == skip;
+    if(actual.name != name)
+      return false;
+    bool skipped = false;
+    for(auto &&i : actual.attrs) {
+      if(i.name() == "skip")
+        skipped = true;
+    }
+    return skipped == skip;
   }, s.str());
 }
 
@@ -65,14 +72,14 @@ suite<> test_suite("suite creation", [](auto &_) {
   _.test("create a test suite", [&check_suite]() {
     auto s = make_suite<>("inner test suite", [](auto &_){
       _.test("inner test", []() {});
-      _.skip_test("skipped test", []() {});
+      _.test("skipped test", {skip}, []() {});
     });
 
     check_suite(s);
 
     auto s2 = make_suite("inner test suite", [](auto &_){
       _.test("inner test", []() {});
-      _.skip_test("skipped test", []() {});
+      _.test("skipped test", {skip}, []() {});
     });
 
     check_suite(s);
@@ -81,7 +88,7 @@ suite<> test_suite("suite creation", [](auto &_) {
   _.test("create a test suite with fixture", [&check_suite]() {
     auto s = make_suite<int>("inner test suite", [](auto &_){
       _.test("inner test", [](int &) {});
-      _.skip_test("skipped test", [](int &) {});
+      _.test("skipped test", {skip}, [](int &) {});
     });
 
     check_suite(s);
@@ -90,7 +97,7 @@ suite<> test_suite("suite creation", [](auto &_) {
   _.test("create a test suite with type-only fixture", [&check_suite]() {
     auto s = make_suite<int>("inner test suite", type_only, [](auto &_){
       _.test("inner test", []() {});
-      _.skip_test("skipped test", []() {});
+      _.test("skipped test", {skip}, []() {});
     });
 
     check_suite(s);
@@ -101,7 +108,7 @@ suite<> test_suite("suite creation", [](auto &_) {
       _.setup([]() {});
       _.teardown([]() {});
       _.test("inner test", []() {});
-      _.skip_test("skipped test", []() {});
+      _.test("skipped test", {skip}, []() {});
     });
 
     check_suite(s);
@@ -113,7 +120,7 @@ suite<> test_suite("suite creation", [](auto &_) {
       _.setup([](int &) {});
       _.teardown([](int &) {});
       _.test("inner test", [](int &) {});
-      _.skip_test("skipped test", [](int &) {});
+      _.test("skipped test", {skip}, [](int &) {});
     });
 
     check_suite(s);
@@ -124,7 +131,7 @@ suite<> test_suite("suite creation", [](auto &_) {
       using Fixture = fixture_type_t<decltype(_)>;
 
       _.test("inner test", [](auto &) {});
-      _.skip_test("skipped test", [](auto &) {});
+      _.test("skipped test", {skip}, [](auto &) {});
     });
 
     expect(suites.size(), equal_to<size_t>(2));
@@ -147,7 +154,7 @@ suite<> test_suite("suite creation", [](auto &_) {
       using Fixture = fixture_type_t<decltype(_)>;
 
       _.test("inner test", []() {});
-      _.skip_test("skipped test", []() {});
+      _.test("skipped test", {skip}, []() {});
     });
 
     expect(suites.size(), equal_to<size_t>(2));
@@ -167,7 +174,7 @@ suite<> test_suite("suite creation", [](auto &_) {
   _.test("create a test suite via make_suites", [&check_suite]() {
     auto suites = make_suites<>("inner test suite", [](auto &_) {
       _.test("inner test", []() {});
-      _.skip_test("skipped test", []() {});
+      _.test("skipped test", {skip}, []() {});
     });
 
     expect(suites.size(), equal_to<size_t>(1));
@@ -177,7 +184,7 @@ suite<> test_suite("suite creation", [](auto &_) {
   _.test("create a test suite with fixture via make_suites", [&check_suite]() {
     auto suites = make_suites<int>("inner test suite", [](auto &_) {
       _.test("inner test", [](int &) {});
-      _.skip_test("skipped test", [](int &) {});
+      _.test("skipped test", {skip}, [](int &) {});
     });
 
     expect(suites.size(), equal_to<size_t>(1));
@@ -188,7 +195,7 @@ suite<> test_suite("suite creation", [](auto &_) {
          [&check_suite]() {
     auto suites = make_suites<int>("inner test suite", type_only, [](auto &_) {
       _.test("inner test", []() {});
-      _.skip_test("skipped test", []() {});
+      _.test("skipped test", {skip}, []() {});
     });
 
     expect(suites.size(), equal_to<size_t>(1));
@@ -235,11 +242,11 @@ suite<> test_suite("suite creation", [](auto &_) {
       auto s = make_suite<>("inner test suite", [](auto &_){
         _.template subsuite<int>("subsuite", [](auto &_) {
           _.test("subtest", [](int &) {});
-          _.skip_test("skipped subtest", [](int &) {});
+          _.test("skipped subtest", {skip}, [](int &) {});
 
           _.template subsuite<>("sub-subsuite", [](auto &_) {
             _.test("sub-subtest", [](int &) {});
-            _.skip_test("skipped sub-subtest", [](int &) {});
+            _.test("skipped sub-subtest", {skip}, [](int &) {});
           });
         });
       });
@@ -251,11 +258,11 @@ suite<> test_suite("suite creation", [](auto &_) {
       auto s = make_suite<>("inner test suite", [](auto &_){
         subsuite<int>(_, "subsuite", [](auto &_) {
           _.test("subtest", [](int &) {});
-          _.skip_test("skipped subtest", [](int &) {});
+          _.test("skipped subtest", {skip}, [](int &) {});
 
           subsuite<>(_, "sub-subsuite", [](auto &_) {
             _.test("sub-subtest", [](int &) {});
-            _.skip_test("skipped sub-subtest", [](int &) {});
+            _.test("skipped sub-subtest", {skip}, [](int &) {});
           });
         });
       });
@@ -267,11 +274,11 @@ suite<> test_suite("suite creation", [](auto &_) {
       auto s = make_suite<>("inner test suite", [](auto &_){
         _.subsuite(make_subsuite<int>(_, "subsuite", [](auto &_) {
           _.test("subtest", [](int &) {});
-          _.skip_test("skipped subtest", [](int &) {});
+          _.test("skipped subtest", {skip}, [](int &) {});
 
           _.subsuite(make_subsuite<>(_, "sub-subsuite", [](auto &_) {
             _.test("sub-subtest", [](int &) {});
-            _.skip_test("skipped sub-subtest", [](int &) {});
+            _.test("skipped sub-subtest", {skip}, [](int &) {});
           }));
         }));
       });
@@ -305,7 +312,7 @@ suite<> test_suite("suite creation", [](auto &_) {
           using Fixture = fixture_type_t<decltype(_)>;
 
           _.test("subtest", [](auto &) {});
-          _.skip_test("skipped subtest", [](auto &) {});
+          _.test("skipped subtest", {skip}, [](auto &) {});
         });
       });
 
@@ -319,7 +326,7 @@ suite<> test_suite("suite creation", [](auto &_) {
           using Fixture = fixture_type_t<decltype(_)>;
 
           _.test("subtest", [](auto &) {});
-          _.skip_test("skipped subtest", [](auto &) {});
+          _.test("skipped subtest", {skip}, [](auto &) {});
         });
       });
 
@@ -333,7 +340,7 @@ suite<> test_suite("suite creation", [](auto &_) {
           using Fixture = fixture_type_t<decltype(_)>;
 
           _.test("subtest", [](auto &) {});
-          _.skip_test("skipped subtest", [](auto &) {});
+          _.test("skipped subtest", {skip}, [](auto &) {});
         }));
       });
 
@@ -351,30 +358,30 @@ suite<> test_suite("suite creation", [](auto &_) {
     };
 
     _.test("create a skipped test suite", [&check_suite]() {
-      auto s = make_skip_suite<>("inner test suite", [](auto &_){
+        auto s = make_suite<>("inner test suite", {skip}, [](auto &_){
         _.test("inner test", []() {});
-        _.skip_test("skipped test", []() {});
+        _.test("skipped test", {skip}, []() {});
       });
 
       check_suite(s);
     });
 
     _.test("create a skipped test suite with fixture", [&check_suite]() {
-      auto s = make_skip_suite<int>("inner test suite", [](auto &_){
+      auto s = make_suite<int>("inner test suite", {skip}, [](auto &_){
         _.test("inner test", [](int &) {});
-        _.skip_test("skipped test", [](int &) {});
+        _.test("skipped test", {skip}, [](int &) {});
       });
 
       check_suite(s);
     });
 
     _.test("create a skipped parameterized test suite", [&check_suite]() {
-      auto suites = make_skip_suites<int, float>("inner test suite",
-                                                 [](auto &_){
+      auto suites = make_suites<int, float>("inner test suite", {skip},
+                                            [](auto &_){
         using Fixture = fixture_type_t<decltype(_)>;
 
         _.test("inner test", [](auto &) {});
-        _.skip_test("skipped test", [](auto &) {});
+        _.test("skipped test", {skip}, [](auto &) {});
       });
 
       for(size_t i = 0; i < 2; i++)
@@ -400,15 +407,15 @@ suite<> test_suite("suite creation", [](auto &_) {
     _.test("create skipped subsuites", [&check_subsuites]() {
       auto s = make_suite<>("inner test suite", [](auto &_){
         _.test("inner test", []() {});
-        _.skip_test("skipped test", []() {});
+        _.test("skipped test", {skip}, []() {});
 
-        _.template skip_subsuite<int>("subsuite", [](auto &_) {
+        _.template subsuite<int>("subsuite", {skip}, [](auto &_) {
           _.test("subtest", [](int &) {});
-          _.skip_test("skipped subtest", [](int &) {});
+          _.test("skipped subtest", {skip}, [](int &) {});
 
           _.template subsuite<>("sub-subsuite", [](auto &_) {
             _.test("sub-subtest", [](int &) {});
-            _.skip_test("skipped sub-subtest", [](int &) {});
+            _.test("skipped sub-subtest", {skip}, [](int &) {});
           });
         });
       });
@@ -419,15 +426,15 @@ suite<> test_suite("suite creation", [](auto &_) {
     _.test("create skipped subsuites with helper syntax", [&check_subsuites]() {
       auto s = make_suite<>("inner test suite", [](auto &_){
         _.test("inner test", []() {});
-        _.skip_test("skipped test", []() {});
+        _.test("skipped test", {skip}, []() {});
 
-        skip_subsuite<int>(_, "subsuite", [](auto &_) {
+        subsuite<int>(_, "subsuite", {skip}, [](auto &_) {
           _.test("subtest", [](int &) {});
-          _.skip_test("skipped subtest", [](int &) {});
+          _.test("skipped subtest", {skip}, [](int &) {});
 
           subsuite<>(_, "sub-subsuite", [](auto &_) {
             _.test("sub-subtest", [](int &) {});
-            _.skip_test("skipped sub-subtest", [](int &) {});
+            _.test("skipped sub-subtest", {skip}, [](int &) {});
           });
         });
       });
@@ -438,15 +445,15 @@ suite<> test_suite("suite creation", [](auto &_) {
     _.test("create skipped subsuites with make_subsuite", [&check_subsuites]() {
       auto s = make_suite<>("inner test suite", [](auto &_){
         _.test("inner test", []() {});
-        _.skip_test("skipped test", []() {});
+        _.test("skipped test", {skip}, []() {});
 
-        _.subsuite(make_skip_subsuite<int>(_, "subsuite", [](auto &_) {
+        _.subsuite(make_subsuite<int>(_, "subsuite", {skip}, [](auto &_) {
           _.test("subtest", [](int &) {});
-          _.skip_test("skipped subtest", [](int &) {});
+          _.test("skipped subtest", {skip}, [](int &) {});
 
           _.subsuite(make_subsuite<>(_, "sub-subsuite", [](auto &_) {
             _.test("sub-subtest", [](int &) {});
-            _.skip_test("skipped sub-subtest", [](int &) {});
+            _.test("skipped sub-subtest", {skip}, [](int &) {});
           }));
         }));
       });
