@@ -47,9 +47,8 @@ namespace detail {
     }
   }
 
-  void run_test_file(
-    const std::string &file, log::pipe &logger, const run_options &options
-  ) {
+  void run_test_file(const std::string &file, log::pipe &logger,
+                     const std::vector<std::string> &args) {
     scoped_pipe message_pipe;
     message_pipe.open();
 
@@ -58,17 +57,11 @@ namespace detail {
       return parent_failed(logger, file);
     int max_fd = lim.rlim_cur - 1;
 
-    std::vector<std::string> args = {file, "--child", std::to_string(max_fd)};
-
-    if(options.timeout) {
-      args.push_back("--timeout");
-      args.push_back(std::to_string(options.timeout->count()));
-    }
-
-    if(options.no_fork)
-      args.push_back("--no-fork");
-
-    auto argv = make_argv(args);
+    std::vector<std::string> final_args = {
+      file, "--child", std::to_string(max_fd)
+    };
+    final_args.insert(final_args.end(), args.begin(), args.end());
+    auto argv = make_argv(final_args);
 
     pid_t pid;
     if((pid = fork()) < 0)
@@ -140,12 +133,12 @@ namespace detail {
 
 void run_test_files(
   const std::vector<std::string> &files, log::test_logger &logger,
-  const run_options &options
+  const std::vector<std::string> &args
 ) {
   logger.started_run();
   log::pipe pipe(logger);
   for(const auto &file : files)
-    detail::run_test_file(file, pipe, options);
+    detail::run_test_file(file, pipe, args);
   logger.ended_run();
 }
 

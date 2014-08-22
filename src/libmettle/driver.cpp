@@ -23,22 +23,37 @@ namespace detail {
     using namespace mettle;
     namespace opts = boost::program_options;
 
-    opts::options_description desc("Allowed options");
-    desc.add_options()
+    opts::options_description generic("Generic options");
+    generic.add_options()
       ("help,h", "show help")
+    ;
+
+    opts::options_description output("Output options");
+    output.add_options()
       ("verbose,v", opts::value<unsigned int>()->implicit_value(1),
        "show verbose output")
       ("color,c", "show colored output")
       ("runs,n", opts::value<size_t>(), "number of test runs")
+      ("show-terminal", "show terminal output for each test")
+    ;
+
+    opts::options_description child("Child options");
+    child.add_options()
       ("timeout,t", opts::value<size_t>(), "timeout in ms")
       ("no-fork", "don't fork for each test")
-      ("show-terminal", "show terminal output for each test")
+    ;
+
+    opts::options_description hidden("Hidden options");
+    hidden.add_options()
       ("child", opts::value<int>(), "run this file as a child process")
     ;
 
     opts::variables_map args;
     try {
-      opts::store(opts::parse_command_line(argc, argv, desc), args);
+      opts::options_description all;
+      all.add(generic).add(output).add(child).add(hidden);
+
+      opts::store(opts::parse_command_line(argc, argv, all), args);
       opts::notify(args);
     } catch(const std::exception &e) {
       std::cerr << e.what() << std::endl;
@@ -46,7 +61,9 @@ namespace detail {
     }
 
     if(args.count("help")) {
-      std::cout << desc << std::endl;
+      opts::options_description displayed;
+      displayed.add(generic).add(output).add(child);
+      std::cout << displayed << std::endl;
       return 1;
     }
 
@@ -60,13 +77,16 @@ namespace detail {
       std::cerr << "--show-terminal requires verbosity >=2" << std::endl;
       return 1;
     }
-    if(show_terminal && !fork_tests) {
-      std::cerr << "--show-terminal requires forking tests" << std::endl;
-      return 1;
-    }
-    if(args.count("timeout") && !fork_tests) {
-      std::cerr << "--timeout requires forking tests" << std::endl;
-      return 1;
+
+    if(!fork_tests) {
+      if(show_terminal) {
+        std::cerr << "--show-terminal requires forking tests" << std::endl;
+        return 1;
+      }
+      if(args.count("timeout")) {
+        std::cerr << "--timeout requires forking tests" << std::endl;
+        return 1;
+      }
     }
 
     test_runner runner;

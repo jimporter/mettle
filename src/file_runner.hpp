@@ -9,14 +9,9 @@
 
 namespace mettle {
 
-struct run_options {
-  METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout;
-  bool no_fork = false;
-};
-
 void run_test_files(
   const std::vector<std::string> &files, log::test_logger &logger,
-  const run_options &options = run_options{}
+  const std::vector<std::string> &args = std::vector<std::string>{}
 );
 
 } // namespace mettle
