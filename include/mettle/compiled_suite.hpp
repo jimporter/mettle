@@ -29,13 +29,13 @@ public:
     using function_type = std::function<Ret(T&...)>;
 
     test_info(const std::string &name, const function_type &function,
-              const attribute_list &attrs)
+              const attr_list &attrs)
       : name(name), function(function), attrs(attrs),
         id(detail::generate_id()) {}
 
     std::string name;
     function_type function;
-    attribute_list attrs;
+    attr_list attrs;
     size_t id;
   };
 

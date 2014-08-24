@@ -26,8 +26,8 @@ namespace detail {
 
         bool skipped = false;
         for(const auto &attr : test.attrs) {
-          if(attr.skip()) {
-            logger.skipped_test(name, attr.comment());
+          if(attr.action() == attr_action::skip) {
+            logger.skipped_test(name, attr.value());
             skipped = true;
             break;
           }

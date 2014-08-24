@@ -1,11 +1,24 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-constexpr attribute slow("slow");
+constexpr bool_attr slow("slow");
+constexpr string_attr tag("tag");
 
 suite<> regular_suite("a regular suite", [](auto &_) {
 
   _.test("a skipped test", {skip}, []() {
+    // ...
+  });
+
+  _.test("a skipped test with a comment", {skip("broken")}, []() {
+    // ...
+  });
+
+  _.test("a slow test", {slow}, []() {
+    // ...
+  });
+
+  _.test("a tagged test", {tag("kitten")}, []() {
     // ...
   });
 
@@ -20,20 +33,6 @@ suite<> regular_suite("a regular suite", [](auto &_) {
 suite<> skipped_suite("a skipped suite", {skip}, [](auto &_) {
 
   _.test("a test", []() {
-    // ...
-  });
-
-  subsuite(_, "a subsuite", [](auto &_) {
-    _.test("a test", []() {
-      // ...
-    });
-  });
-
-});
-
-suite<> slow_suite("a slow suite", {slow("takes too long")}, [](auto &_) {
-
-  _.test("a test", {skip}, []() {
     // ...
   });
 
