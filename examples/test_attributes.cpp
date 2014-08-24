@@ -2,7 +2,8 @@
 using namespace mettle;
 
 constexpr bool_attr slow("slow");
-constexpr string_attr tag("tag");
+constexpr string_attr status("status");
+constexpr list_attr tags("tags");
 
 suite<> regular_suite("a regular suite", [](auto &_) {
 
@@ -18,7 +19,11 @@ suite<> regular_suite("a regular suite", [](auto &_) {
     // ...
   });
 
-  _.test("a tagged test", {tag("kitten")}, []() {
+  _.test("a test with a status", {status("wip")}, []() {
+    // ...
+  });
+
+  _.test("a tagged test", {tags("cat", "goat")}, []() {
     // ...
   });
 

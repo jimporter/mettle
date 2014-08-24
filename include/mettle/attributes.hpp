@@ -31,7 +31,8 @@ private:
 
 class attr_instance {
 public:
-  explicit attr_instance(const attr_base &attr, const std::string &value)
+  using value_type = std::set<std::string>;
+  explicit attr_instance(const attr_base &attr, const value_type &value)
     : attr_(attr), value_(value) {}
 
   std::string name() const {
@@ -42,12 +43,16 @@ public:
     return attr_.action();
   }
 
-  const std::string & value() const {
+  bool empty() const {
+    return value_.empty();
+  }
+
+  const value_type & value() const {
     return value_;
   }
 private:
   const attr_base &attr_;
-  std::string value_;
+  value_type value_;
 };
 
 namespace detail {
@@ -64,11 +69,12 @@ public:
     : attr_base(name, action) {}
 
   operator const attr_instance() const {
-    return (*this)();
+    return attr_instance(*this, {});
   }
 
-  const attr_instance operator ()(const std::string &comment = "") const {
-    return attr_instance(*this, comment);
+  template<typename T>
+  const attr_instance operator ()(T &&comment) const {
+    return attr_instance(*this, {std::forward<T>(comment)});
   }
 };
 
@@ -77,14 +83,27 @@ public:
   constexpr string_attr(const char *name)
     : attr_base(name) {}
 
-  const attr_instance operator ()(const std::string &value) const {
-    return attr_instance(*this, value);
+  template<typename T>
+  const attr_instance operator ()(T &&value) const {
+    return attr_instance(*this, {std::forward<T>(value)});
+  }
+};
+
+class list_attr : public attr_base {
+public:
+  constexpr list_attr(const char *name)
+    : attr_base(name) {}
+
+  template<typename ...T>
+  const attr_instance operator ()(T &&...args) const {
+    return attr_instance(*this, {std::forward<T>(args)...});
   }
 };
 
 using attr_list = std::set<attr_instance, detail::attr_less>;
 
 inline attr_list unite(const attr_list &lhs, const attr_list &rhs) {
+  // XXX: Make list_attrs merge instead of overriding.
   attr_list all_attrs;
   std::set_union(
     lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
