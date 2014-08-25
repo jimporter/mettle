@@ -37,7 +37,7 @@ suite<> regular_suite("a regular suite", [](auto &_) {
 
 suite<> skipped_suite("a skipped suite", {skip}, [](auto &_) {
 
-  _.test("a test", []() {
+  _.test("a tagged test", {tags("goat")}, []() {
     // ...
   });
 

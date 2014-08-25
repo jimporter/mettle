@@ -11,6 +11,7 @@
 
 #include "forked_test_runner.hpp"
 #include "log_child.hpp"
+#include "parse_attr.hpp"
 
 namespace mettle {
 
@@ -22,6 +23,8 @@ namespace detail {
   int real_main(int argc, const char *argv[]) {
     using namespace mettle;
     namespace opts = boost::program_options;
+
+    attr_filter_set filters;
 
     opts::options_description generic("Generic options");
     generic.add_options()
@@ -41,6 +44,7 @@ namespace detail {
     child.add_options()
       ("timeout,t", opts::value<size_t>(), "timeout in ms")
       ("no-fork", "don't fork for each test")
+      ("attr,a", opts::value(&filters), "attributes of tests to run")
     ;
 
     opts::options_description hidden("Hidden options");
@@ -106,7 +110,7 @@ namespace detail {
         args["child"].as<int>(), io::never_close_handle
       );
       log::child logger(fds);
-      run_tests(detail::all_suites, logger, runner);
+      run_tests(detail::all_suites, logger, runner, filters);
       return 0;
     }
 
@@ -121,14 +125,14 @@ namespace detail {
 
       log::multi_run logger(vlog);
       for(size_t i = 0; i < runs; i++)
-        run_tests(detail::all_suites, logger, runner);
+        run_tests(detail::all_suites, logger, runner, filters);
       logger.summarize();
 
       return !logger.good();
     }
     else {
       log::single_run logger(vlog);
-      run_tests(detail::all_suites, logger, runner);
+      run_tests(detail::all_suites, logger, runner, filters);
       logger.summarize();
 
       return !logger.good();

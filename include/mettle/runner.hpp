@@ -13,29 +13,30 @@ using test_runner = std::function<
 namespace detail {
   template<typename T>
   void run_tests_impl(const T &suites, log::test_logger &logger,
-                      const test_runner &runner,
+                      const test_runner &runner, const attr_filter_set &filter,
                       std::vector<std::string> &parents) {
     for(const auto &suite : suites) {
       parents.push_back(suite.name());
 
+      // XXX: Don't emit started/ended_suite if all the children are hidden.
       logger.started_suite(parents);
 
       for(const auto &test : suite) {
+        auto action = filter(test.attrs);
+
+        if(action.first == attr_action::hide)
+          continue;
+
         const log::test_name name = {parents, test.name, test.id};
         logger.started_test(name);
 
-        bool skipped = false;
-        for(const auto &attr : test.attrs) {
-          if(attr.action() == attr_action::skip) {
-            logger.skipped_test(
-              name, attr.empty() ? "" : *attr.value().begin()
-            );
-            skipped = true;
-            break;
-          }
-        }
-        if(skipped)
+        if(action.first == attr_action::skip) {
+          auto &&attr = *action.second;
+          logger.skipped_test(
+            name, attr.empty() ? "" : *attr.value().begin()
+          );
           continue;
+        }
 
         log::test_output output;
         auto result = runner(test.function, output);
@@ -47,7 +48,7 @@ namespace detail {
 
       logger.ended_suite(parents);
 
-      run_tests_impl(suite.subsuites(), logger, runner, parents);
+      run_tests_impl(suite.subsuites(), logger, runner, filter, parents);
       parents.pop_back();
     }
   }
@@ -59,18 +60,20 @@ inline_test_runner(const test_function &test, log::test_output &) {
 }
 
 template<typename T>
-void run_tests(const T &suites, log::test_logger &logger,
-               const test_runner &runner) {
+void
+run_tests(const T &suites, log::test_logger &logger,
+          const test_runner &runner, const attr_filter_set &filter = {}) {
   std::vector<std::string> parents;
   logger.started_run();
-  detail::run_tests_impl(suites, logger, runner, parents);
+  detail::run_tests_impl(suites, logger, runner, filter, parents);
   logger.ended_run();
 }
 
 template<typename T>
-inline void run_tests(const T &suites, log::test_logger &&logger,
-                      const test_runner &runner) {
-  run_tests(suites, logger, runner);
+inline void
+run_tests(const T &suites, log::test_logger &&logger,
+          const test_runner &runner, const attr_filter_set &filter = {}) {
+  run_tests(suites, logger, runner, filter);
 }
 
 } // namespace mettle
