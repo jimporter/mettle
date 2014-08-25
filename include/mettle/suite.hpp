@@ -357,19 +357,14 @@ public:
 
   compiled_suite_type finalize() {
     return compiled_suite_type(
-      base::name_, base::tests_, base::subsuites_,
-      [this](const auto &a) { return wrap_test(a); }
+      base::name_, base::tests_, base::subsuites_, base::attrs_,
+      std::bind(&subsuite_builder::wrap_test, this, std::placeholders::_1)
     );
   }
 private:
-  template<typename Test>
-  auto wrap_test(const Test &test) {
-    detail::test_caller<factory_type, std::tuple<T...>, U...> test_function{
-      factory_, base::setup_, base::teardown_, test.function
-    };
-
-    return typename compiled_suite_type::test_info{
-      test.name, test_function, unite(test.attrs, base::attrs_)
+  auto wrap_test(const typename base::function_type &test) {
+    return detail::test_caller<factory_type, std::tuple<T...>, U...>{
+      factory_, base::setup_, base::teardown_, test
     };
   }
 
@@ -392,16 +387,15 @@ public:
 
   runnable_suite finalize() {
     return runnable_suite(
-      base::name_, base::tests_, base::subsuites_,
-      [this](const auto &a) { return wrap_test(a); }
+      base::name_, base::tests_, base::subsuites_, base::attrs_,
+      std::bind(&suite_builder::wrap_test, this, std::placeholders::_1)
     );
   }
 private:
-  template<typename Test>
-  auto wrap_test(const Test &test) {
-    auto wrapped_test = [
+  auto wrap_test(const typename base::function_type &test) {
+    return [
       test_function = detail::test_caller<factory_type, std::tuple<>, T...>{
-        factory_, base::setup_, base::teardown_, test.function
+        factory_, base::setup_, base::teardown_, test
       }
     ]() mutable -> test_result {
       bool passed = false;
@@ -422,10 +416,6 @@ private:
       }
 
       return { passed, message };
-    };
-
-    return runnable_suite::test_info{
-      test.name, wrapped_test, unite(test.attrs, base::attrs_)
     };
   }
 

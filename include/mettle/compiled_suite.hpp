@@ -43,16 +43,20 @@ public:
 
   template<typename U, typename V, typename Func>
   compiled_suite(const std::string &name, const U &tests, const V &subsuites,
-                 const Func &f) : name_(name) {
-    for(const auto &test : tests)
-      tests_.push_back(f(test));
+                 const attr_list &attrs, const Func &f) : name_(name) {
+    for(const auto &test : tests) {
+      tests_.emplace_back(
+        test.name, f(test.function), unite(test.attrs, attrs)
+      );
+    }
     for(const auto &ss : subsuites)
-      subsuites_.push_back(compiled_suite(ss, f));
+      subsuites_.emplace_back(ss, attrs, f);
   }
 
   template<typename Ret2, typename ...T2, typename Func>
-  compiled_suite(const compiled_suite<Ret2, T2...> &suite, const Func &f)
-    : compiled_suite(suite.name(), suite, suite.subsuites(), f) {}
+  compiled_suite(const compiled_suite<Ret2, T2...> &suite,
+                 const attr_list &attrs, const Func &f)
+    : compiled_suite(suite.name(), suite, suite.subsuites(), attrs, f) {}
 
   const std::string & name() const {
     return name_;
