@@ -132,7 +132,7 @@ class attr_filter {
 public:
   struct filter_item {
     std::string attr;
-    std::function<bool(const attr_instance *)> f;
+    std::function<bool(const attr_instance *)> func;
   };
 
   attr_filter() = default;
@@ -144,7 +144,7 @@ public:
     for(const auto &f : filters_) {
       auto i = attrs.find(f.attr);
       const attr_instance *attr = i == attrs.end() ? nullptr: &*i;
-      if(!f.f(attr))
+      if(!f.func(attr))
         return {attr_action::hide, attr};
       else if(attr)
         explicitly_shown.insert(*attr);
