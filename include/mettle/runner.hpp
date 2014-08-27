@@ -11,9 +11,9 @@ using test_runner = std::function<
 >;
 
 namespace detail {
-  template<typename T>
-  void run_tests_impl(const T &suites, log::test_logger &logger,
-                      const test_runner &runner, const attr_filter_set &filter,
+  template<typename Suites, typename Filter>
+  void run_tests_impl(const Suites &suites, log::test_logger &logger,
+                      const test_runner &runner, const Filter &filter,
                       std::vector<std::string> &parents) {
     for(const auto &suite : suites) {
       parents.push_back(suite.name());
@@ -59,22 +59,33 @@ inline_test_runner(const test_function &test, log::test_output &) {
   return test();
 }
 
-template<typename T>
-void
-run_tests(const T &suites, log::test_logger &logger,
-          const test_runner &runner, const attr_filter_set &filter = {}) {
+template<typename Suites, typename Filter>
+void run_tests(const Suites &suites, log::test_logger &logger,
+               const test_runner &runner, const Filter &filter) {
   std::vector<std::string> parents;
   logger.started_run();
   detail::run_tests_impl(suites, logger, runner, filter, parents);
   logger.ended_run();
 }
 
-template<typename T>
-inline void
-run_tests(const T &suites, log::test_logger &&logger,
-          const test_runner &runner, const attr_filter_set &filter = {}) {
+template<typename Suites, typename Filter>
+inline void run_tests(const Suites &suites, log::test_logger &&logger,
+                      const test_runner &runner, const Filter &filter) {
   run_tests(suites, logger, runner, filter);
 }
+
+template<typename Suites>
+inline void run_tests(const Suites &suites, log::test_logger &logger,
+                      const test_runner &runner) {
+  run_tests(suites, logger, runner, default_attr_filter());
+}
+
+template<typename Suites>
+inline void run_tests(const Suites &suites, log::test_logger &&logger,
+                      const test_runner &runner) {
+  run_tests(suites, logger, runner, default_attr_filter());
+}
+
 
 } // namespace mettle
 

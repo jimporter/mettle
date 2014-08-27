@@ -6,7 +6,7 @@
 
 #include <boost/any.hpp>
 
-#include <mettle/attributes.hpp>
+#include "filters.hpp"
 
 namespace mettle {
 

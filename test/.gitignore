@@ -1,6 +1,7 @@
 test_attributes
 test_child
 test_driver
+test_filters
 test_matchers
 test_output
 test_runner

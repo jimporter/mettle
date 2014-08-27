@@ -127,104 +127,16 @@ inline attr_list unite(const attr_list &lhs, const attr_list &rhs) {
   return all_attrs;
 }
 
-// XXX: Pull these into a .cpp file?
-class attr_filter {
-public:
-  struct filter_item {
-    std::string attr;
-    std::function<bool(const attr_instance *)> func;
-  };
+using filter_result = std::pair<attr_action, const attr_instance*>;
 
-  attr_filter() = default;
-  attr_filter(const std::initializer_list<filter_item> &i) : filters_(i) {}
-
-  std::pair<attr_action, const attr_instance*>
-  operator ()(const attr_list &attrs) const {
-    attr_list explicitly_shown;
-    for(const auto &f : filters_) {
-      auto i = attrs.find(f.attr);
-      const attr_instance *attr = i == attrs.end() ? nullptr: &*i;
-      if(!f.func(attr))
-        return {attr_action::hide, attr};
-      else if(attr)
-        explicitly_shown.insert(*attr);
-    }
+struct default_attr_filter {
+  filter_result operator ()(const attr_list &attrs) const {
     for(const auto &attr : attrs) {
-      if(attr.action() == attr_action::skip && !explicitly_shown.count(attr))
+      if(attr.action() == attr_action::skip)
         return {attr_action::skip, &attr};
     }
     return {attr_action::run, nullptr};
   }
-
-  void insert(const filter_item &item) {
-    filters_.push_back(item);
-  }
-
-  void insert(filter_item &&item) {
-    filters_.push_back(std::move(item));
-  }
-private:
-  std::vector<filter_item> filters_;
-};
-
-inline attr_filter::filter_item
-has_attr(const std::string &name) {
-  return {name, [](const attr_instance *attr) {
-    return attr;
-  }};
-}
-
-inline attr_filter::filter_item
-has_attr(const std::string &name, const std::string &value) {
-  return {name, [value](const attr_instance *attr) {
-    return attr && attr->value().count(value);
-  }};
-}
-
-class attr_filter_set {
-public:
-  attr_filter_set() = default;
-  attr_filter_set(const std::initializer_list<attr_filter> &i) : filters_(i) {}
-
-  std::pair<attr_action, const attr_instance*>
-  operator ()(const attr_list &attrs) const {
-    // Pretend we always have a default filter, if nothing else.
-    if(filters_.empty())
-      return attr_filter{}(attrs);
-
-    bool set = false;
-    std::pair<attr_action, const attr_instance*> result;
-    for(const auto &f : filters_) {
-      auto curr = f(attrs);
-      switch(curr.first) {
-      case attr_action::run:
-        return curr;
-      case attr_action::skip:
-        if(!set || result.first == attr_action::hide) {
-          result = curr;
-          set = true;
-        }
-        break;
-      case attr_action::hide:
-        if(!set) {
-          result = curr;
-          set = true;
-        }
-        break;
-      }
-    }
-    return result;
-  }
-
-  void insert(const attr_filter &item) {
-    filters_.push_back(item);
-  }
-
-  void insert(attr_filter &&item) {
-    filters_.push_back(std::move(item));
-  }
-private:
-  std::vector<attr_filter> filters_;
 };
 
 constexpr bool_attr skip("skip", attr_action::skip);
