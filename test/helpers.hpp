@@ -7,11 +7,11 @@ namespace mettle {
 
 std::string ensure_printable(const attr_instance &attr) {
   std::stringstream s;
-  s << attr.name();
-  if(!attr.empty()) {
-    auto i = attr.value().begin();
+  s << attr.attribute.name();
+  if(!attr.value.empty()) {
+    auto i = attr.value.begin();
     s << "(" << ensure_printable(*i);
-    for(++i; i != attr.value().end(); ++i)
+    for(++i; i != attr.value.end(); ++i)
       s << ", " << ensure_printable(*i);
     s << ")";
   }
@@ -43,9 +43,9 @@ std::string ensure_printable(const attr_action &action) {
 }
 
 bool operator ==(const attr_instance &lhs, const attr_instance &rhs) {
-  return lhs.name() == rhs.name() && std::equal(
-    lhs.value().begin(), lhs.value().end(),
-    rhs.value().begin(), rhs.value().end()
+  return lhs.attribute.name() == rhs.attribute.name() && std::equal(
+    lhs.value.begin(), lhs.value.end(),
+    rhs.value.begin(), rhs.value.end()
   );
 }
 

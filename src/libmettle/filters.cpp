@@ -4,7 +4,7 @@ namespace mettle {
   filter_result attr_filter::operator ()(const attr_list &attrs) const {
     attr_list explicitly_shown;
     for(const auto &f : filters_) {
-      auto i = attrs.find(f.attr);
+      auto i = attrs.find(f.attribute);
       const attr_instance *attr = i == attrs.end() ? nullptr: &*i;
       if(!f.func(attr))
         return {attr_action::hide, attr};
@@ -12,7 +12,8 @@ namespace mettle {
         explicitly_shown.insert(*attr);
     }
     for(const auto &attr : attrs) {
-      if(attr.action() == attr_action::skip && !explicitly_shown.count(attr))
+      if(attr.attribute.action() == attr_action::skip &&
+         !explicitly_shown.count(attr))
         return {attr_action::skip, &attr};
     }
     return {attr_action::run, nullptr};

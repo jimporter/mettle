@@ -9,7 +9,7 @@ suite<> test_filter("attribute filtering", [](auto &_) {
     subsuite<>(_, "has_attr(name)", [](auto &_) {
       _.test("basic", []() {
         auto filter = has_attr("attribute");
-        expect(filter.attr, equal_to("attribute"));
+        expect(filter.attribute, equal_to("attribute"));
         expect(filter.func(nullptr), equal_to(false));
       });
 
@@ -44,7 +44,7 @@ suite<> test_filter("attribute filtering", [](auto &_) {
     subsuite<>(_, "has_attr(name, value)", [](auto &_) {
       _.test("basic", []() {
         auto filter = has_attr("attribute", "value");
-        expect(filter.attr, equal_to("attribute"));
+        expect(filter.attribute, equal_to("attribute"));
         expect(filter.func(nullptr), equal_to(false));
       });
 

@@ -15,7 +15,7 @@ inline auto match_test(const std::string &name, bool skip) {
       return false;
     bool skipped = false;
     for(auto &&i : actual.attrs) {
-      if(i.name() == "skip")
+      if(i.attribute.name() == "skip")
         skipped = true;
     }
     return skipped == skip;

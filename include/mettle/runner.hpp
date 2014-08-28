@@ -33,7 +33,7 @@ namespace detail {
         if(action.first == attr_action::skip) {
           auto &&attr = *action.second;
           logger.skipped_test(
-            name, attr.empty() ? "" : *attr.value().begin()
+            name, attr.value.empty() ? "" : *attr.value.begin()
           );
           continue;
         }

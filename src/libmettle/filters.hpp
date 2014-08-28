@@ -10,7 +10,7 @@ namespace mettle {
 class attr_filter {
 public:
   struct filter_item {
-    std::string attr;
+    std::string attribute;
     std::function<bool(const attr_instance *)> func;
   };
 
@@ -40,7 +40,7 @@ has_attr(const std::string &name) {
 inline attr_filter::filter_item
 has_attr(const std::string &name, const std::string &value) {
   return {name, [value](const attr_instance *attr) {
-    return attr && attr->value().count(value);
+    return attr && attr->value.count(value);
   }};
 }
 
