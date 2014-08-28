@@ -73,16 +73,37 @@ suite<> test_attr("attributes", [](auto &_) {
     });
   });
 
-  subsuite<>(_, "attr_list", [](auto &_) {
-    _.test("unite", []() {
-      constexpr bool_attr attr1("1");
-      constexpr bool_attr attr2("2");
-      constexpr bool_attr attr3("3");
+  subsuite<>(_, "unite(attr_list, attr_list)", [](auto &_) {
+    _.test("empty sets", []() {
+      constexpr string_attr attr("1");
 
-      attr_list a = {attr1, attr2};
-      attr_list b = {attr2, attr3};
-      auto united = unite(a, b);
-      expect(united, equal_to(attr_list{attr1, attr2, attr3}));
+      expect(unite({}, {}), equal_to(attr_list{}));
+      expect(unite({attr("a")}, {}), equal_to(attr_list{attr("a")}));
+      expect(unite({}, {attr("b")}), equal_to(attr_list{attr("b")}));
+    });
+
+    _.test("disjoint sets", []() {
+      constexpr string_attr attr1("1");
+      constexpr string_attr attr2("2");
+      constexpr string_attr attr3("3");
+
+      auto united = unite(
+        {attr1("a")},
+        {attr2("b"), attr3("b")}
+      );
+      expect(united, equal_to(attr_list{attr1("a"), attr2("b"), attr3("b")}));
+    });
+
+    _.test("intersecting sets", []() {
+      constexpr string_attr attr1("1");
+      constexpr string_attr attr2("2");
+      constexpr string_attr attr3("3");
+
+      auto united = unite(
+        {attr1("a"), attr2("a")},
+        {attr2("b"), attr3("b")}
+      );
+      expect(united, equal_to(attr_list{attr1("a"), attr2("a"), attr3("b")}));
     });
   });
 
