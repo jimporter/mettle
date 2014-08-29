@@ -43,14 +43,7 @@ std::string ensure_printable(const attr_action &action) {
 }
 
 bool operator ==(const attr_instance &lhs, const attr_instance &rhs) {
-  return lhs.attribute.name() == rhs.attribute.name() && std::equal(
-    lhs.value.begin(), lhs.value.end(),
-    rhs.value.begin(), rhs.value.end()
-  );
-}
-
-bool operator ==(const attr_list &lhs, const attr_list &rhs) {
-  return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+  return lhs.attribute.name() == rhs.attribute.name() && lhs.value == rhs.value;
 }
 
 } // namespace mettle
