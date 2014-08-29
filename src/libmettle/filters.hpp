@@ -32,16 +32,32 @@ private:
 
 inline attr_filter::filter_item
 has_attr(const std::string &name) {
-  return {name, [](const attr_instance *attr) {
+  return {name, [](const attr_instance *attr) -> bool {
     return attr;
   }};
 }
 
 inline attr_filter::filter_item
 has_attr(const std::string &name, const std::string &value) {
-  return {name, [value](const attr_instance *attr) {
+  return {name, [value](const attr_instance *attr) -> bool {
     return attr && attr->value.count(value);
   }};
+}
+
+inline attr_filter::filter_item
+operator !(const attr_filter::filter_item &filter) {
+  auto f = [func = filter.func](const attr_instance *attr) -> bool {
+    return !func(attr);
+  };
+  return {filter.attribute, std::move(f)};
+}
+
+inline attr_filter::filter_item
+operator !(attr_filter::filter_item &&filter) {
+  auto f = [func = std::move(filter.func)](const attr_instance *attr) -> bool {
+    return !func(attr);
+  };
+  return {std::move(filter.attribute), std::move(f)};
 }
 
 class attr_filter_set {

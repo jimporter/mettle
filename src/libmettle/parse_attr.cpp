@@ -7,11 +7,16 @@ namespace mettle {
 namespace detail {
   // XXX: These could use some bullet-proofing.
   attr_filter::filter_item parse_item(const std::string &value) {
+    bool negate = !value.empty() && value[0] == '!';
     size_t i = value.find('=');
+
+    attr_filter::filter_item filter;
     if(i == std::string::npos)
-      return has_attr(value);
+      filter = has_attr(value.substr(negate ? 1 : 0));
     else
-      return has_attr(value.substr(0, i), value.substr(i + 1));
+      filter = has_attr(value.substr(negate ? 1 : 0, i), value.substr(i + 1));
+
+    return negate ? !std::move(filter) : filter;
   }
 
   attr_filter parse_attr(const std::string &value) {
