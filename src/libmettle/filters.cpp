@@ -2,18 +2,19 @@
 
 namespace mettle {
   filter_result attr_filter::operator ()(const attr_list &attrs) const {
-    attr_list explicitly_shown;
+    std::set<const attr_instance*> explicitly_shown;
     for(const auto &f : filters_) {
       auto i = attrs.find(f.attribute);
       const attr_instance *attr = i == attrs.end() ? nullptr: &*i;
+
       if(!f.func(attr))
         return {attr_action::hide, attr};
       else if(attr)
-        explicitly_shown.insert(*attr);
+        explicitly_shown.insert(attr);
     }
     for(const auto &attr : attrs) {
       if(attr.attribute.action() == attr_action::skip &&
-         !explicitly_shown.count(attr))
+         !explicitly_shown.count(&attr))
         return {attr_action::skip, &attr};
     }
     return {attr_action::run, nullptr};
