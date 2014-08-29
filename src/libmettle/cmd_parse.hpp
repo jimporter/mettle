@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_PARSE_ATTR_HPP
-#define INC_METTLE_PARSE_ATTR_HPP
+#ifndef INC_METTLE_CMD_PARSE_HPP
+#define INC_METTLE_CMD_PARSE_HPP
 
 #include <vector>
 #include <string>
@@ -9,6 +9,8 @@
 #include "filters.hpp"
 
 namespace mettle {
+
+attr_filter parse_attr(const std::string &value);
 
 void validate(boost::any &v, const std::vector<std::string> &values,
               attr_filter_set*, int);

@@ -9,9 +9,9 @@
 #include <mettle/log/multi_run.hpp>
 #include <mettle/log/single_run.hpp>
 
+#include "cmd_parse.hpp"
 #include "forked_test_runner.hpp"
 #include "log_child.hpp"
-#include "parse_attr.hpp"
 
 namespace mettle {
 

@@ -13,6 +13,8 @@ public:
     std::string attribute;
     std::function<bool(const attr_instance *)> func;
   };
+  using value_type = std::vector<filter_item>;
+  using iterator = value_type::const_iterator;
 
   attr_filter() = default;
   attr_filter(const std::initializer_list<filter_item> &i) : filters_(i) {}
@@ -26,8 +28,24 @@ public:
   void insert(filter_item &&item) {
     filters_.push_back(std::move(item));
   }
+
+  bool empty() const {
+    return filters_.empty();
+  }
+
+  size_t size() const {
+    return filters_.size();
+  }
+
+  iterator begin() const {
+    return filters_.begin();
+  }
+
+  iterator end() const {
+    return filters_.end();
+  }
 private:
-  std::vector<filter_item> filters_;
+  value_type filters_;
 };
 
 inline attr_filter::filter_item
@@ -62,6 +80,9 @@ operator !(attr_filter::filter_item &&filter) {
 
 class attr_filter_set {
 public:
+  using value_type = std::vector<attr_filter>;
+  using iterator = value_type::const_iterator;
+
   attr_filter_set() = default;
   attr_filter_set(const std::initializer_list<attr_filter> &i) : filters_(i) {}
 
@@ -74,8 +95,24 @@ public:
   void insert(attr_filter &&item) {
     filters_.push_back(std::move(item));
   }
+
+  bool empty() const {
+    return filters_.empty();
+  }
+
+  size_t size() const {
+    return filters_.size();
+  }
+
+  iterator begin() const {
+    return filters_.begin();
+  }
+
+  iterator end() const {
+    return filters_.end();
+  }
 private:
-  std::vector<attr_filter> filters_;
+  value_type filters_;
 };
 
 } // namespace mettle

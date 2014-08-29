@@ -1,5 +1,6 @@
 test_attributes
 test_child
+test_cmd_parse
 test_driver
 test_filters
 test_matchers
