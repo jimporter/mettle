@@ -43,6 +43,7 @@ public:
   virtual const attr_instance
   compose(const attr_instance &lhs, const attr_instance &rhs) const {
     assert(&lhs.attribute == this && &rhs.attribute == this);
+    (void)rhs;
     return lhs;
   }
 private:

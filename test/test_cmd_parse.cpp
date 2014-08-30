@@ -14,6 +14,12 @@ auto match_filter_item(const attr_instance &attr, bool matched) {
   }, s.str());
 }
 
+namespace mettle {
+  std::string ensure_printable(const attr_filter::filter_item &item) {
+    return "filter_item(" + ensure_printable(item.attribute) + ")";
+  }
+}
+
 suite<> test_parse_attr("parse attributes", [](auto &_) {
   _.test("attr", []() {
     constexpr bool_attr attr("attr");
@@ -35,6 +41,16 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
            equal_to( filter_result{attr_action::run, nullptr} ));
   });
 
+  _.test("attr=", []() {
+    constexpr string_attr attr("attr");
+
+    auto filter = parse_attr("attr=");
+    expect(filter.size(), equal_to(1u));
+    expect(filter, array( match_filter_item(attr(""), true) ));
+    expect(filter({attr("")}),
+           equal_to( filter_result{attr_action::run, nullptr} ));
+  });
+
   _.test("!attr", []() {
     constexpr bool_attr attr("attr");
 
@@ -53,6 +69,17 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     expect(filter.size(), equal_to(1u));
     expect(filter, array( match_filter_item(attr("value"), false) ));
     attr_list attrs = {attr("value")};
+    expect(filter(attrs),
+           equal_to( filter_result{attr_action::hide, &*attrs.begin()} ));
+  });
+
+  _.test("!attr=", []() {
+    constexpr string_attr attr("attr");
+
+    auto filter = parse_attr("!attr=");
+    expect(filter.size(), equal_to(1u));
+    expect(filter, array( match_filter_item(attr(""), false) ));
+    attr_list attrs = {attr("")};
     expect(filter(attrs),
            equal_to( filter_result{attr_action::hide, &*attrs.begin()} ));
   });
@@ -109,5 +136,22 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     attr_list attrs = {attr1("1"), attr2("2")};
     expect(filter(attrs),
            equal_to( filter_result{attr_action::hide, &*(++attrs.begin())}) );
+  });
+
+  _.test("parse failures", []() {
+    expect([]() {parse_attr(""); },
+           thrown<std::invalid_argument>("unexpected end of string"));
+    expect([]() {parse_attr("!"); },
+           thrown<std::invalid_argument>("unexpected end of string"));
+    expect([]() {parse_attr(","); },
+           thrown<std::invalid_argument>("expected attribute name"));
+    expect([]() {parse_attr("="); },
+           thrown<std::invalid_argument>("expected attribute name"));
+    expect([]() {parse_attr("attr,"); },
+           thrown<std::invalid_argument>("unexpected end of string"));
+    expect([]() {parse_attr("attr,,"); },
+           thrown<std::invalid_argument>("expected attribute name"));
+    expect([]() {parse_attr("attr,="); },
+           thrown<std::invalid_argument>("expected attribute name"));
   });
 });
