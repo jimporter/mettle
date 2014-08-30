@@ -11,23 +11,62 @@ using test_runner = std::function<
 >;
 
 namespace detail {
-  template<typename Suites, typename Filter>
-  void run_tests_impl(const Suites &suites, log::test_logger &logger,
-                      const test_runner &runner, const Filter &filter,
-                      std::vector<std::string> &parents) {
-    for(const auto &suite : suites) {
-      parents.push_back(suite.name());
+  class suite_stack {
+  public:
+    using value_type = std::vector<std::string>;
 
-      // XXX: Don't emit started/ended_suite if all the children are hidden.
-      logger.started_suite(parents);
+    template<typename T>
+    void push(T &&t) {
+      queued_.push_back(std::forward<T>(t));
+    }
+
+    void pop() {
+      if(!queued_.empty())
+        queued_.pop_back();
+      else
+        committed_.pop_back();
+    }
+
+    template<typename T>
+    void commit(T &&callback) {
+      if(!queued_.empty()) {
+        for(auto &&i : queued_) {
+          committed_.push_back(std::move(i));
+          callback(committed_);
+        }
+        queued_.clear();
+      }
+    }
+
+    const value_type committed() const {
+      return committed_;
+    }
+
+    bool has_queued() const {
+      return !queued_.empty();
+    }
+  private:
+    value_type committed_, queued_;
+  };
+
+  template<typename Suites, typename Filter>
+  void run_tests_impl(
+    const Suites &suites, log::test_logger &logger, const test_runner &runner,
+    const Filter &filter, suite_stack &parents
+  ) {
+    for(const auto &suite : suites) {
+      parents.push(suite.name());
 
       for(const auto &test : suite) {
         auto action = filter(test.attrs);
 
         if(action.first == attr_action::hide)
           continue;
+        parents.commit([&logger](const auto &committed) {
+          logger.started_suite(committed);
+        });
 
-        const log::test_name name = {parents, test.name, test.id};
+        const log::test_name name = {parents.committed(), test.name, test.id};
         logger.started_test(name);
 
         if(action.first == attr_action::skip) {
@@ -46,10 +85,11 @@ namespace detail {
           logger.failed_test(name, result.message, output);
       }
 
-      logger.ended_suite(parents);
-
       run_tests_impl(suite.subsuites(), logger, runner, filter, parents);
-      parents.pop_back();
+
+      if(!parents.has_queued())
+        logger.ended_suite(parents.committed());
+      parents.pop();
     }
   }
 }
@@ -62,7 +102,7 @@ inline_test_runner(const test_function &test, log::test_output &) {
 template<typename Suites, typename Filter>
 void run_tests(const Suites &suites, log::test_logger &logger,
                const test_runner &runner, const Filter &filter) {
-  std::vector<std::string> parents;
+  detail::suite_stack parents;
   logger.started_run();
   detail::run_tests_impl(suites, logger, runner, filter, parents);
   logger.ended_run();

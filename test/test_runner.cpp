@@ -11,35 +11,43 @@ using namespace mettle;
 #include <mettle/log/core.hpp>
 #include "../src/libmettle/forked_test_runner.hpp"
 
-struct my_test_logger : log::test_logger {
-  my_test_logger()
-    : tests_run(0), tests_passed(0), tests_failed(0), tests_skipped(0) {}
+struct test_event_logger : log::test_logger {
+  test_event_logger() {}
 
-  void started_run() {}
-  void ended_run() {}
+  void started_run() {
+    events.push_back("started_run");
+  }
+  void ended_run() {
+    events.push_back("ended_run");
+  }
 
-  void started_suite(const std::vector<std::string> &) {}
-  void ended_suite(const std::vector<std::string> &) {}
+  void started_suite(const std::vector<std::string> &) {
+    events.push_back("started_suite");
+  }
+  void ended_suite(const std::vector<std::string> &) {
+    events.push_back("ended_suite");
+  }
 
   void started_test(const log::test_name &) {
-    tests_run++;
+    events.push_back("started_test");
   }
   void passed_test(const log::test_name &, const log::test_output &) {
-    tests_passed++;
+    events.push_back("passed_test");
   }
   void failed_test(const log::test_name &, const std::string &,
                    const log::test_output &) {
-    tests_failed++;
+    events.push_back("failed_test");
   }
   void skipped_test(const log::test_name &, const std::string &) {
-    tests_skipped++;
+    events.push_back("skipped_test");
   }
 
-  void failed_file(const std::string &, const std::string &) {}
+  void failed_file(const std::string &, const std::string &) {
+    events.push_back("failed_file");
+  }
 
-  size_t tests_run, tests_passed, tests_failed, tests_skipped;
+  std::vector<std::string> events;
 };
-
 
 struct ftr_factory {
   template<typename T>
@@ -52,6 +60,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
                                     [](auto &_) {
 
   subsuite<log::test_output>(_, "run one test", [](auto &_) {
+
     _.test("passing test", [](forked_test_runner &runner,
                               log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
@@ -153,61 +162,143 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
         expect(output.stderr, equal_to("stderr"));
       }
     });
+
   });
 
-  subsuite<my_test_logger>(_, "run_tests()", [](auto &_) {
-      _.test("suite of passing tests", [](forked_test_runner &runner,
-                                          my_test_logger &logger) {
+  subsuite<test_event_logger>(_, "run_tests()", [](auto &_) {
+
+    _.test("single suite", [](forked_test_runner &runner,
+                              test_event_logger &logger) {
       auto s = make_suites<>("inner", [](auto &_){
         _.test("test 1", []() {});
-        _.test("test 2", []() {});
-        _.test("test 3", []() {});
+        _.test("test 2", []() { expect(true, equal_to(false)); });
+        _.test("test 3", {skip}, []() {});
       });
 
+      std::vector<std::string> expected = {
+        "started_run",
+        "started_suite",
+          "started_test",
+          "passed_test",
+          "started_test",
+          "failed_test",
+          "started_test",
+          "skipped_test",
+        "ended_suite",
+        "ended_run"
+      };
+
       run_tests(s, logger, runner);
-      expect(logger.tests_run, equal_to(3));
-      expect(logger.tests_passed, equal_to(3));
-      expect(logger.tests_skipped, equal_to(0));
-      expect(logger.tests_failed, equal_to(0));
+      expect(logger.events, equal_to(expected));
     });
 
-    _.test("suite with failing tests", [](forked_test_runner &runner,
-                                          my_test_logger &logger) {
+    _.test("multiple suites", [](forked_test_runner &runner,
+                                 test_event_logger &logger) {
+      auto s = make_suites<int, float>("inner", [](auto &_){
+        _.test("test 1", [](const auto &) {});
+      });
+
+      std::vector<std::string> expected = {
+        "started_run",
+        "started_suite",
+          "started_test",
+          "passed_test",
+        "ended_suite",
+        "started_suite",
+          "started_test",
+          "passed_test",
+        "ended_suite",
+        "ended_run"
+      };
+
+      run_tests(s, logger, runner);
+      expect(logger.events, equal_to(expected));
+    });
+
+    _.test("suite with subsuites", [](forked_test_runner &runner,
+                                      test_event_logger &logger) {
       auto s = make_suites<>("inner", [](auto &_){
-        _.test("test 1", []() {
-          expect(true, equal_to(false));
+        _.test("test 1", []() {});
+        subsuite<>(_, "subsuite 1", [](auto &_) {
+          _.test("sub-test 1", []() {});
+          subsuite<>(_, "sub-subsuite", [](auto &_) {
+            _.test("sub-sub-test 1", []() {});
+          });
         });
-        _.test("test 2", []() {});
-        _.test("test 3", []() {});
+        subsuite<>(_, "subsuite 2", [](auto &_) {
+          _.test("sub-test 2", []() {});
+        });
       });
 
-      run_tests(s, logger, runner);
+      std::vector<std::string> expected = {
+        "started_run",
+        "started_suite",
+          "started_test",
+          "passed_test",
+          "started_suite",
+            "started_test",
+            "passed_test",
+            "started_suite",
+              "started_test",
+              "passed_test",
+            "ended_suite",
+          "ended_suite",
+          "started_suite",
+            "started_test",
+            "passed_test",
+          "ended_suite",
+        "ended_suite",
+        "ended_run"
+      };
 
-      expect(logger.tests_run, equal_to(3));
-      expect(logger.tests_passed, equal_to(2));
-      expect(logger.tests_skipped, equal_to(0));
-      expect(logger.tests_failed, equal_to(1));
+      run_tests(s, logger, runner);
+      expect(logger.events, equal_to(expected));
     });
 
-
-    _.test("suite with skipped tests", [](forked_test_runner &runner,
-                                          my_test_logger &logger) {
-      auto s = make_suites<>("inner", [](auto &_){
+    _.test("suite with hidden subsuites", [](forked_test_runner &runner,
+                                             test_event_logger &logger) {
+      constexpr bool_attr hide("hide");
+      auto s = make_suites<>("inner", [&hide](auto &_){
         _.test("test 1", []() {});
-        _.test("test 2", {skip}, []() {});
-        _.test("test 3", []() {});
+        _.test("test 2", {hide}, []() {});
+        subsuite<>(_, "subsuite 1", {hide}, [](auto &_) {
+          _.test("sub-test 1", []() {});
+          subsuite<>(_, "sub-subsuite", [](auto &_) {
+            _.test("sub-sub-test 1", []() {});
+          });
+        });
+        subsuite<>(_, "subsuite 2", [](auto &_) {
+          _.test("sub-test 2", []() {});
+        });
+        subsuite<>(_, "subsuite 3", [&hide](auto &_) {
+          _.test("sub-test 3", {hide}, []() {});
+        });
       });
 
-      run_tests(s, logger, runner);
+      std::vector<std::string> expected = {
+        "started_run",
+        "started_suite",
+          "started_test",
+          "passed_test",
+          "started_suite",
+            "started_test",
+            "passed_test",
+          "ended_suite",
+        "ended_suite",
+        "ended_run"
+      };
 
-      expect(logger.tests_run, equal_to(3));
-      expect(logger.tests_passed, equal_to(2));
-      expect(logger.tests_skipped, equal_to(1));
-      expect(logger.tests_failed, equal_to(0));
+      auto filter = [](const attr_list &attrs) -> filter_result {
+        if(attrs.find("hide") != attrs.end())
+          return {attr_action::hide, nullptr};
+        return {attr_action::run, nullptr};
+      };
+      run_tests(s, logger, runner, filter);
+      expect(logger.events, equal_to(expected));
     });
 
     _.test("crashing tests don't crash framework", [](
-             forked_test_runner &runner, my_test_logger &logger
+      forked_test_runner &runner, test_event_logger &logger
     ) {
       auto s = make_suites<>("inner", [](auto &_){
         _.test("test 1", []() {});
@@ -217,12 +308,22 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
         _.test("test 3", []() {});
       });
 
-      run_tests(s, logger, runner);
+      std::vector<std::string> expected = {
+        "started_run",
+        "started_suite",
+          "started_test",
+          "passed_test",
+          "started_test",
+          "failed_test",
+          "started_test",
+          "passed_test",
+        "ended_suite",
+        "ended_run"
+      };
 
-      expect(logger.tests_run, equal_to(3));
-      expect(logger.tests_passed, equal_to(2));
-      expect(logger.tests_skipped, equal_to(0));
-      expect(logger.tests_failed, equal_to(1));
+      run_tests(s, logger, runner);
+      expect(logger.events, equal_to(expected));
     });
+
   });
 });
