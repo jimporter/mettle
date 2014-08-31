@@ -19,7 +19,7 @@ public:
   attr_filter() = default;
   attr_filter(const std::initializer_list<filter_item> &i) : filters_(i) {}
 
-  filter_result operator ()(const attr_list &attrs) const;
+  filter_result operator ()(const attributes &attrs) const;
 
   void insert(const filter_item &item) {
     filters_.push_back(item);
@@ -86,7 +86,7 @@ public:
   attr_filter_set() = default;
   attr_filter_set(const std::initializer_list<attr_filter> &i) : filters_(i) {}
 
-  filter_result operator ()(const attr_list &attrs) const;
+  filter_result operator ()(const attributes &attrs) const;
 
   void insert(const attr_filter &item) {
     filters_.push_back(item);

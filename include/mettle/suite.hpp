@@ -153,7 +153,7 @@ class subsuite_builder;
 
 template<typename Parent, typename ...Fixture, typename Factory, typename F>
 typename subsuite_builder<Factory, Parent, Fixture...>::compiled_suite_type
-make_subsuite(const std::string &name, const attr_list &attrs,
+make_subsuite(const std::string &name, const attributes &attrs,
               Factory &&factory, const F &f);
 
 template<typename Parent, typename ...Fixture, typename Factory, typename F>
@@ -166,7 +166,7 @@ make_subsuite(const std::string &name, Factory &&factory, const F &f) {
 
 template<typename Parent, typename ...Fixture, typename F>
 inline auto
-make_subsuite(const std::string &name, const attr_list &attrs, const F &f) {
+make_subsuite(const std::string &name, const attributes &attrs, const F &f) {
   return make_subsuite<Parent, Fixture...>(name, attrs, auto_factory, f);
 }
 
@@ -179,7 +179,7 @@ make_subsuite(const std::string &name, const F &f) {
 
 template<typename Parent, typename Factory, typename F>
 std::array<typename subsuite_builder<Factory, Parent>::compiled_suite_type, 1>
-make_subsuites(const std::string &name, const attr_list &attrs,
+make_subsuites(const std::string &name, const attributes &attrs,
                Factory &&factory, const F &f) {
   return {{ make_subsuite<Parent>(
     name, attrs, std::forward<Factory>(factory), f
@@ -188,7 +188,7 @@ make_subsuites(const std::string &name, const attr_list &attrs,
 
 template<typename Parent, typename Fixture, typename Factory, typename F>
 std::array<typename subsuite_builder<Factory, Parent>::compiled_suite_type, 1>
-make_subsuites(const std::string &name, const attr_list &attrs,
+make_subsuites(const std::string &name, const attributes &attrs,
                Factory &&factory, const F &f) {
   return {{ make_subsuite<Parent, Fixture>(
     name, attrs, std::forward<Factory>(factory), f
@@ -201,7 +201,7 @@ std::array<
   typename subsuite_builder<Factory, Parent, First>::compiled_suite_type,
   sizeof...(Rest) + 2
 >
-make_subsuites(const std::string &name, const attr_list &attrs,
+make_subsuites(const std::string &name, const attributes &attrs,
                Factory &&factory, const F &f) {
   using detail::annotate_type;
   return {{
@@ -227,7 +227,7 @@ make_subsuites(const std::string &name, Factory &&factory, const F &f) {
 
 template<typename Parent, typename ...Fixture, typename F>
 inline auto
-make_subsuites(const std::string &name, const attr_list &attrs, const F &f) {
+make_subsuites(const std::string &name, const attributes &attrs, const F &f) {
   return make_subsuites<Parent, Fixture...>(name, attrs, auto_factory, f);
 }
 
@@ -243,7 +243,7 @@ public:
   using tuple_type = std::tuple<T...>;
   using function_type = std::function<void(T&...)>;
 
-  suite_builder_base(const std::string &name, const attr_list &attrs)
+  suite_builder_base(const std::string &name, const attributes &attrs)
     : name_(name), attrs_(attrs) {}
   suite_builder_base(const suite_builder_base &) = delete;
   suite_builder_base & operator =(const suite_builder_base &) = delete;
@@ -260,7 +260,7 @@ public:
     tests_.push_back({name, f, {}});
   }
 
-  void test(const std::string &name, const attr_list &attrs,
+  void test(const std::string &name, const attributes &attrs,
             const function_type &f) {
     tests_.push_back({name, f, attrs});
   }
@@ -286,7 +286,7 @@ public:
   }
 
   template<typename ...Fixture, typename ...Args>
-  void subsuite(const std::string &name, const attr_list &attrs,
+  void subsuite(const std::string &name, const attributes &attrs,
                 Args &&...args) {
     subsuite(make_subsuites<tuple_type, Fixture...>(
       name, attrs, std::forward<Args>(args)...
@@ -303,11 +303,11 @@ protected:
   struct test_info {
     std::string name;
     function_type function;
-    attr_list attrs;
+    attributes attrs;
   };
 
   std::string name_;
-  attr_list attrs_;
+  attributes attrs_;
   function_type setup_, teardown_;
   std::vector<test_info> tests_;
   std::vector<compiled_suite<void, T...>> subsuites_;
@@ -351,7 +351,7 @@ public:
   using fixture_type = detail::first_t<U...>;
   using compiled_suite_type = compiled_suite<void, T...>;
 
-  subsuite_builder(const std::string &name, const attr_list &attrs,
+  subsuite_builder(const std::string &name, const attributes &attrs,
                    Factory factory)
     : base(name, attrs), factory_(factory) {}
 
@@ -381,7 +381,7 @@ public:
   using factory_type = Factory;
   using fixture_type = detail::first_t<T...>;
 
-  suite_builder(const std::string &name, const attr_list &attrs,
+  suite_builder(const std::string &name, const attributes &attrs,
                 Factory factory)
     : base(name, attrs), factory_(factory) {}
 
@@ -424,7 +424,7 @@ private:
 
 template<typename Exception, typename ...Fixture, typename Factory, typename F>
 auto
-make_basic_suite(const std::string &name, const attr_list &attrs,
+make_basic_suite(const std::string &name, const attributes &attrs,
                  Factory &&factory, const F &f) {
   suite_builder<Exception, Factory, Fixture...> builder(
     name, attrs, std::forward<Factory>(factory)
@@ -443,7 +443,7 @@ make_basic_suite(const std::string &name, Factory &&factory, const F &f) {
 
 template<typename Exception, typename ...Fixture, typename F>
 inline auto
-make_basic_suite(const std::string &name, const attr_list &attrs, const F &f) {
+make_basic_suite(const std::string &name, const attributes &attrs, const F &f) {
   return make_basic_suite<Exception, Fixture...>(name, attrs, auto_factory, f);
 }
 
@@ -456,7 +456,7 @@ make_basic_suite(const std::string &name, const F &f) {
 
 template<typename Exception, typename Factory, typename F>
 std::array<runnable_suite, 1>
-make_basic_suites(const std::string &name, const attr_list &attrs,
+make_basic_suites(const std::string &name, const attributes &attrs,
                   Factory &&factory, const F &f) {
   return {{ make_basic_suite<Exception>(
     name, attrs, std::forward<Factory>(factory), f
@@ -465,7 +465,7 @@ make_basic_suites(const std::string &name, const attr_list &attrs,
 
 template<typename Exception, typename Fixture, typename Factory, typename F>
 std::array<runnable_suite, 1>
-make_basic_suites(const std::string &name, const attr_list &attrs,
+make_basic_suites(const std::string &name, const attributes &attrs,
                   Factory &&factory, const F &f) {
   return {{ make_basic_suite<Exception, Fixture>(
     name, attrs, std::forward<Factory>(factory), f
@@ -475,7 +475,7 @@ make_basic_suites(const std::string &name, const attr_list &attrs,
 template<typename Exception, typename First, typename Second,
          typename ...Rest, typename Factory, typename F>
 std::array<runnable_suite, sizeof...(Rest) + 2>
-make_basic_suites(const std::string &name, const attr_list &attrs,
+make_basic_suites(const std::string &name, const attributes &attrs,
                   Factory &&factory, const F &f) {
   using detail::annotate_type;
   return {{
@@ -501,7 +501,8 @@ make_basic_suites(const std::string &name, Factory &&factory, const F &f) {
 
 template<typename Exception, typename ...Fixture, typename F>
 inline auto
-make_basic_suites(const std::string &name, const attr_list &attrs, const F &f) {
+make_basic_suites(const std::string &name, const attributes &attrs,
+                  const F &f) {
   return make_basic_suites<Exception, Fixture...>(name, attrs, auto_factory, f);
 }
 
@@ -514,7 +515,7 @@ make_basic_suites(const std::string &name, const F &f) {
 
 template<typename Parent, typename ...Fixture, typename Factory, typename F>
 typename subsuite_builder<Factory, Parent, Fixture...>::compiled_suite_type
-make_subsuite(const std::string &name, const attr_list &attrs,
+make_subsuite(const std::string &name, const attributes &attrs,
               Factory &&factory, const F &f) {
   subsuite_builder<Factory, Parent, Fixture...> builder(
     name, attrs, std::forward<Factory>(factory)
@@ -526,7 +527,7 @@ make_subsuite(const std::string &name, const attr_list &attrs,
 
 template<typename ...Fixture, typename Parent, typename ...Args>
 inline auto
-make_subsuite(const Parent &, const std::string &name, const attr_list &attrs,
+make_subsuite(const Parent &, const std::string &name, const attributes &attrs,
               Args &&...args) {
   return make_subsuite<typename Parent::tuple_type, Fixture...>(
     name, attrs, std::forward<Args>(args)...
@@ -544,7 +545,7 @@ make_subsuite(const Parent &, const std::string &name, Args &&...args) {
 
 template<typename ...Fixture, typename Parent, typename ...Args>
 inline auto
-make_subsuites(const Parent &, const std::string &name, const attr_list &attrs,
+make_subsuites(const Parent &, const std::string &name, const attributes &attrs,
                Args &&...args) {
   return make_subsuites<typename Parent::tuple_type, Fixture...>(
     name, attrs, std::forward<Args>(args)...
@@ -562,7 +563,7 @@ make_subsuites(const Parent &, const std::string &name, Args &&...args) {
 
 template<typename ...Fixture, typename Parent, typename ...Args>
 inline void
-subsuite(Parent &builder, const std::string &name, const attr_list &attrs,
+subsuite(Parent &builder, const std::string &name, const attributes &attrs,
          Args &&...args) {
   builder.template subsuite<Fixture...>(
     name, attrs, std::forward<Args>(args)...

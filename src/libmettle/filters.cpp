@@ -1,7 +1,7 @@
 #include "filters.hpp"
 
 namespace mettle {
-  filter_result attr_filter::operator ()(const attr_list &attrs) const {
+  filter_result attr_filter::operator ()(const attributes &attrs) const {
     std::set<const attr_instance*> explicitly_shown;
     for(const auto &f : filters_) {
       auto i = attrs.find(f.attribute);
@@ -20,7 +20,7 @@ namespace mettle {
     return {attr_action::run, nullptr};
   }
 
-  filter_result attr_filter_set::operator ()(const attr_list &attrs) const {
+  filter_result attr_filter_set::operator ()(const attributes &attrs) const {
     // Pretend we always have a default filter, if nothing else.
     if(filters_.empty())
       return default_attr_filter{}(attrs);

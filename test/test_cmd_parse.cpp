@@ -57,7 +57,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     auto filter = parse_attr("!attr");
     expect(filter.size(), equal_to(1u));
     expect(filter, array( match_filter_item(attr, false) ));
-    attr_list attrs = {attr};
+    attributes attrs = {attr};
     expect(filter(attrs),
            equal_to( filter_result{attr_action::hide, &*attrs.begin()}) );
   });
@@ -68,7 +68,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     auto filter = parse_attr("!attr=value");
     expect(filter.size(), equal_to(1u));
     expect(filter, array( match_filter_item(attr("value"), false) ));
-    attr_list attrs = {attr("value")};
+    attributes attrs = {attr("value")};
     expect(filter(attrs),
            equal_to( filter_result{attr_action::hide, &*attrs.begin()} ));
   });
@@ -79,7 +79,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     auto filter = parse_attr("!attr=");
     expect(filter.size(), equal_to(1u));
     expect(filter, array( match_filter_item(attr(""), false) ));
-    attr_list attrs = {attr("")};
+    attributes attrs = {attr("")};
     expect(filter(attrs),
            equal_to( filter_result{attr_action::hide, &*attrs.begin()} ));
   });
@@ -119,7 +119,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     expect(filter, array(
       match_filter_item(attr1, true), match_filter_item(attr2, false)
     ));
-    attr_list attrs = {attr1, attr2};
+    attributes attrs = {attr1, attr2};
     expect(filter(attrs),
            equal_to( filter_result{attr_action::hide, &*(++attrs.begin())}) );
   });
@@ -133,7 +133,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     expect(filter, array(
       match_filter_item(attr1("1"), true), match_filter_item(attr2("2"), false)
     ));
-    attr_list attrs = {attr1("1"), attr2("2")};
+    attributes attrs = {attr1("1"), attr2("2")};
     expect(filter(attrs),
            equal_to( filter_result{attr_action::hide, &*(++attrs.begin())}) );
   });

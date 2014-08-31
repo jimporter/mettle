@@ -249,9 +249,9 @@ _.test("my test", {skip, slow("takes too long"), tags("cat", "goat")},
        [](auto &fixture) { /* ... */ });
 ```
 
-This creates an `attr_list` that gets stored alongside the test. As you might
-notice, `bool_attrs` can be implicitly converted to an attribute instance, but
-other types require you to call them to list their values.
+This creates an `attributes` object that gets stored alongside the test. As you
+might notice, `bool_attrs` can be implicitly converted to an attribute instance,
+but other types require you to call them to list their values.
 
 #### Suite attributes
 

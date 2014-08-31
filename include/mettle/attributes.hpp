@@ -118,7 +118,7 @@ public:
   }
 };
 
-using attr_list = std::set<const attr_instance, detail::attr_less>;
+using attributes = std::set<const attr_instance, detail::attr_less>;
 
 namespace detail {
   template<typename Input1, typename Input2, typename Output, typename Compare,
@@ -146,8 +146,8 @@ inline attr_instance unite(const attr_instance &lhs, const attr_instance &rhs) {
   return lhs.attribute.compose(lhs, rhs);
 }
 
-inline attr_list unite(const attr_list &lhs, const attr_list &rhs) {
-  attr_list all_attrs;
+inline attributes unite(const attributes &lhs, const attributes &rhs) {
+  attributes all_attrs;
   detail::merge_union(
     lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
     std::inserter(all_attrs, all_attrs.begin()), detail::attr_less(),
@@ -161,7 +161,7 @@ inline attr_list unite(const attr_list &lhs, const attr_list &rhs) {
 using filter_result = std::pair<attr_action, const attr_instance*>;
 
 struct default_attr_filter {
-  filter_result operator ()(const attr_list &attrs) const {
+  filter_result operator ()(const attributes &attrs) const {
     for(const auto &attr : attrs) {
       if(attr.attribute.action() == attr_action::skip)
         return {attr_action::skip, &attr};

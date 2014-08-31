@@ -98,13 +98,13 @@ suite<> test_attr("attributes", [](auto &_) {
     });
   });
 
-  subsuite<>(_, "unite(attr_list, attr_list)", [](auto &_) {
+  subsuite<>(_, "unite(attributes, attributes)", [](auto &_) {
     _.test("empty sets", []() {
       constexpr string_attr attr("1");
 
-      expect(unite({}, {}), equal_to(attr_list{}));
-      expect(unite({attr("a")}, {}), equal_to(attr_list{attr("a")}));
-      expect(unite({}, {attr("b")}), equal_to(attr_list{attr("b")}));
+      expect(unite({}, {}), equal_to(attributes{}));
+      expect(unite({attr("a")}, {}), equal_to(attributes{attr("a")}));
+      expect(unite({}, {attr("b")}), equal_to(attributes{attr("b")}));
     });
 
     _.test("disjoint sets", []() {
@@ -116,7 +116,7 @@ suite<> test_attr("attributes", [](auto &_) {
         {attr1("a")},
         {attr2("b"), attr3("b")}
       );
-      expect(united, equal_to(attr_list{attr1("a"), attr2("b"), attr3("b")}));
+      expect(united, equal_to(attributes{attr1("a"), attr2("b"), attr3("b")}));
     });
 
     _.test("intersecting sets", []() {
@@ -128,7 +128,7 @@ suite<> test_attr("attributes", [](auto &_) {
         {attr1("a"), attr2("a")},
         {attr2("b"), attr3("b")}
       );
-      expect(united, equal_to(attr_list{attr1("a"), attr2("a"), attr3("b")}));
+      expect(united, equal_to(attributes{attr1("a"), attr2("a"), attr3("b")}));
     });
 
     _.test("intersecting sets (composable attrs)", []() {
@@ -140,7 +140,7 @@ suite<> test_attr("attributes", [](auto &_) {
         {attr1("a"), attr2("a")},
         {attr2("b"), attr3("b")}
       );
-      expect(united, equal_to(attr_list{
+      expect(united, equal_to(attributes{
         attr1("a"), attr2("a", "b"), attr3("b")
       }));
     });
@@ -164,7 +164,7 @@ suite<> test_attr("attributes", [](auto &_) {
 
     _.test("skipped attribute", []() {
       constexpr bool_attr attr("bool", attr_action::skip);
-      attr_list attrs = {attr};
+      attributes attrs = {attr};
       expect(
         default_attr_filter{}(attrs),
         equal_to(filter_result{attr_action::skip, &*attrs.begin()})

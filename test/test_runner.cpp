@@ -288,7 +288,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
         "ended_run"
       };
 
-      auto filter = [](const attr_list &attrs) -> filter_result {
+      auto filter = [](const attributes &attrs) -> filter_result {
         if(attrs.find("hide") != attrs.end())
           return {attr_action::hide, nullptr};
         return {attr_action::run, nullptr};

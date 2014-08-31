@@ -18,7 +18,7 @@ std::string ensure_printable(const attr_instance &attr) {
   return s.str();
 }
 
-std::string ensure_printable(const attr_list &attrs) {
+std::string ensure_printable(const attributes &attrs) {
   std::stringstream s;
   s << "{";
   if(!attrs.empty()) {

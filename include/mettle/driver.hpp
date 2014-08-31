@@ -19,7 +19,7 @@ template<typename Exception, typename ...Fixture>
 struct basic_suite {
   template<typename ...Args>
   basic_suite(suites_list &list, const std::string &name,
-              const attr_list &attrs, Args &&...args) {
+              const attributes &attrs, Args &&...args) {
     auto &&suites = make_basic_suites<Exception, Fixture...>(
       name, attrs, std::forward<Args>(args)...
     );
@@ -32,7 +32,7 @@ struct basic_suite {
     : basic_suite(list, name, {}, std::forward<Args>(args)...) {}
 
   template<typename ...Args>
-  basic_suite(const std::string &name, const attr_list &attrs, Args &&...args)
+  basic_suite(const std::string &name, const attributes &attrs, Args &&...args)
     : basic_suite(detail::all_suites, name, attrs,
                   std::forward<Args>(args)...) {}
 

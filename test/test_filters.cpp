@@ -209,7 +209,7 @@ suite<> test_filter("attribute filtering", [](auto &_) {
         constexpr bool_attr attr2("second");
         constexpr bool_attr attr3("third");
 
-        attr_list attrs = { attr1, attr2, attr3 };
+        attributes attrs = { attr1, attr2, attr3 };
         expect(
           attr_filter{}(attrs),
           equal_to(filter_result{attr_action::skip, &*attrs.begin()})
@@ -254,7 +254,7 @@ suite<> test_filter("attribute filtering", [](auto &_) {
           attr_filter{ has_attr("mismatch", "value") }( {attr("value")} ),
           equal_to(filter_result{attr_action::hide, nullptr})
         );
-        attr_list attrs = { attr("value") };
+        attributes attrs = { attr("value") };
         expect(
           attr_filter{ has_attr("string", "mismatch") }(attrs),
           equal_to(filter_result{attr_action::hide, &*attrs.begin()})
@@ -265,8 +265,8 @@ suite<> test_filter("attribute filtering", [](auto &_) {
         constexpr bool_attr attr1("first");
         constexpr bool_attr attr2("second");
 
-        attr_list first_attr = { attr1 };
-        attr_list both_attrs = { attr1, attr2 };
+        attributes first_attr = { attr1 };
+        attributes both_attrs = { attr1, attr2 };
 
         expect(
           attr_filter{ !has_attr("first") }(first_attr),
@@ -294,8 +294,8 @@ suite<> test_filter("attribute filtering", [](auto &_) {
         constexpr string_attr attr1("first");
         constexpr string_attr attr2("second");
 
-        attr_list first_attr = { attr1("1") };
-        attr_list both_attrs = { attr1("1"), attr2("2") };
+        attributes first_attr = { attr1("1") };
+        attributes both_attrs = { attr1("1"), attr2("2") };
 
         expect(
           attr_filter{ !has_attr("first", "1") }(first_attr),
@@ -356,7 +356,7 @@ suite<> test_filter("attribute filtering", [](auto &_) {
         attr_filter_set{}( {attr2} ),
         equal_to(filter_result{attr_action::run, nullptr})
       );
-      attr_list attrs = { attr1 };
+      attributes attrs = { attr1 };
       expect(
         attr_filter_set{}(attrs),
         equal_to(filter_result{attr_action::skip, &*attrs.begin()})
@@ -379,7 +379,7 @@ suite<> test_filter("attribute filtering", [](auto &_) {
         attr_filter_set{ {has_attr("first")} }( {attr1} ),
         equal_to(filter_result{attr_action::run, nullptr})
       );
-      attr_list attrs = { attr1, attr2 };
+      attributes attrs = { attr1, attr2 };
       expect(
         attr_filter_set{ {has_attr("second")} }(attrs),
         equal_to(filter_result{attr_action::skip, &*attrs.begin()})
@@ -394,7 +394,7 @@ suite<> test_filter("attribute filtering", [](auto &_) {
       constexpr bool_attr attr1("first", attr_action::skip);
       constexpr bool_attr attr2("second");
 
-      attr_list both_attrs = { attr1, attr2 };
+      attributes both_attrs = { attr1, attr2 };
 
       // hide + hide => hide
       expect(

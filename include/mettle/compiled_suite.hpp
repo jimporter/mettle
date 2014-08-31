@@ -29,13 +29,13 @@ public:
     using function_type = std::function<Ret(T&...)>;
 
     test_info(const std::string &name, const function_type &function,
-              const attr_list &attrs)
+              const attributes &attrs)
       : name(name), function(function), attrs(attrs),
         id(detail::generate_id()) {}
 
     std::string name;
     function_type function;
-    attr_list attrs;
+    attributes attrs;
     size_t id;
   };
 
@@ -43,7 +43,7 @@ public:
 
   template<typename U, typename V, typename Func>
   compiled_suite(const std::string &name, const U &tests, const V &subsuites,
-                 const attr_list &attrs, const Func &f) : name_(name) {
+                 const attributes &attrs, const Func &f) : name_(name) {
     for(const auto &test : tests) {
       tests_.emplace_back(
         test.name, f(test.function), unite(test.attrs, attrs)
@@ -55,7 +55,7 @@ public:
 
   template<typename Ret2, typename ...T2, typename Func>
   compiled_suite(const compiled_suite<Ret2, T2...> &suite,
-                 const attr_list &attrs, const Func &f)
+                 const attributes &attrs, const Func &f)
     : compiled_suite(suite.name(), suite, suite.subsuites(), attrs, f) {}
 
   const std::string & name() const {
