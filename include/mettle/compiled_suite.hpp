@@ -15,6 +15,15 @@ namespace detail {
     static std::atomic<size_t> id_(0);
     return id_++;
   }
+
+  template<typename Container, typename Element>
+  inline auto move_if(Element &&value) {
+    using Value = typename std::remove_reference<Element>::type;
+    using ReturnType = typename std::conditional<
+      std::is_lvalue_reference<Container>::value, Value &, Value &&
+    >::type;
+    return static_cast<ReturnType>(value);
+  }
 }
 
 struct test_result {
@@ -24,6 +33,8 @@ struct test_result {
 
 template<typename Ret, typename ...T>
 class compiled_suite {
+  template<typename Ret2, typename ...T2>
+  friend class compiled_suite;
 public:
   struct test_info {
     using function_type = std::function<Ret(T&...)>;
@@ -41,22 +52,32 @@ public:
 
   using iterator = typename std::vector<test_info>::const_iterator;
 
-  template<typename U, typename V, typename Func>
-  compiled_suite(const std::string &name, const U &tests, const V &subsuites,
-                 const attributes &attrs, const Func &f) : name_(name) {
-    for(const auto &test : tests) {
+  template<typename String, typename Tests, typename Subsuites, typename Func>
+  compiled_suite(
+    String &&name, Tests &&tests, Subsuites &&subsuites,
+    const attributes &attrs, const Func &f
+  ) : name_(std::forward<String>(name)) {
+    for(auto &&test : tests) {
       tests_.emplace_back(
-        test.name, f(test.function), unite(test.attrs, attrs)
+        detail::move_if<Tests>(test.name),
+        f(detail::move_if<Tests>(test.function)),
+        unite(detail::move_if<Tests>(test.attrs), attrs)
       );
     }
-    for(const auto &ss : subsuites)
-      subsuites_.emplace_back(ss, attrs, f);
+    for(auto &&ss : subsuites)
+      subsuites_.emplace_back(detail::move_if<Subsuites>(ss), attrs, f);
   }
 
   template<typename Ret2, typename ...T2, typename Func>
   compiled_suite(const compiled_suite<Ret2, T2...> &suite,
                  const attributes &attrs, const Func &f)
-    : compiled_suite(suite.name(), suite, suite.subsuites(), attrs, f) {}
+    : compiled_suite(suite.name_, suite.tests_, suite.subsuites_, attrs, f) {}
+
+  template<typename Ret2, typename ...T2, typename Func>
+  compiled_suite(compiled_suite<Ret2, T2...> &&suite,
+                 const attributes &attrs, const Func &f)
+    : compiled_suite(std::move(suite.name_), std::move(suite.tests_),
+                     std::move(suite.subsuites_), attrs, f) {}
 
   const std::string & name() const {
     return name_;
