@@ -37,6 +37,14 @@ Once it's built, just run the binary and check the test results.
 
 ## Command-line options
 
+### Generic options
+
+#### --help (-h)
+
+Show help and usage information.
+
+### Output options
+
 #### --verbose *N=1* (-v)
 
 Show output of tests as they're being run. If `--verbose` isn't passed, the
@@ -68,6 +76,15 @@ Run the tests a total of *N* times. This is useful for catching intermittent
 failures. At the end, the summary will show the output of each failure for every
 test.
 
+#### --show-terminal
+
+Show the terminal output (stdout and stderr) of each test after it finishes. To
+enable this, `--verbose` must be at least 2, and `--no-fork` can't be
+specified (if `--no-fork` is specified, the terminal output will just appear
+in-line with the tests).
+
+### Child options
+
 #### --timeout *N* (-t)
 
 Time out and fail any tests that take longer than *N* milliseconds to execute.
@@ -79,12 +96,40 @@ By default, mettle forks its process to run each test, in order to detect
 crashes during the execution of a test. To disable this, you can pass
 `--no-fork`, and all the tests will run in the same process.
 
-#### --show-terminal
+#### --attr *ATTR[=VALUE],...* (-a)
 
-Show the terminal output (stdout and stderr) of each test after it finishes. To
-enable this, `--verbose` must be at least 2, and `--no-fork` can't be
-specified (if `--no-fork` is specified, the terminal output will just appear
-in-line with the tests).
+Filter the tests that will be run based on the tests'
+[attributes](writing-tests.md#test-attributes). Tests matching each of the
+attributes (and, optionally, values) will be run by the test driver. If `--attr`
+is specified multiple times, tests that match *any* of the filters will be run.
+You can also prepend *ATTR* with `!` to negate that test. Let's look at some
+examples to get a better sense of how this works:
+
+*   `--attr slow`
+
+    Run only tests with the attribute `slow`.
+
+*   `--attr protocol=http`
+
+    Run only tests with the attribute `protocol` having a value of `http`.
+
+*   `--attr '!slow'`
+
+    Run only tests *without* the attribute `slow`. (Note the use of quotation
+    marks, since many shells treat `!` as a special character.)
+
+*   `--attr '!protocol=http'`
+
+    Run only tests *without* the attribute `protocol`, or which have `protocol`
+    set to something other than `http`.
+
+*   `--attr slow,protocol=http`
+
+    Run only tests that match both attributes.
+
+*   `--attr slow --attr protocol=http`
+
+    Run tests that match either attribute.
 
 ## Using the *mettle* executable
 

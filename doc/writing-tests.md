@@ -48,36 +48,6 @@ This is an *expectation*. We'll discuss them in more detail
 If it's not, the test will alert us to the fact so we can fix it (hopefully
 before the universe finishes crashing down around us).
 
-## Skipping tests
-
-Some days, you just can't get a test to pass. While I can only assume this is
-your fault, and that you should therefore feel bad until you fix it, you may
-choose to skip the test for the time being:
-
-```c++
-_.skip_test("my broken test", []() {
-  /* ... */
-});
-```
-
-This will prevent the test from running and keep your test suite passing (with a
-note that there are some skipped tests). But please, for everyone's sake, fix
-your test! Thanks in advance.
-
-### Skipping suites
-
-Even worse, sometimes a whole suite has problems, and needs to be skipped
-(heaven forfend!). Like skipped tests, you can just add `skip_` to the beginning
-of the suite declaration like so:
-
-```c++
-skip_suite<> broken_suite("my broken suite", [](auto &_) {
-  /* ... */
-});
-```
-
-The same rule applies to subsuites as well, which we'll cover below.
-
 ## Setup and teardown
 
 Sometimes, you'll have a bunch of tests that all have the same setup and
@@ -225,6 +195,82 @@ suite<int> nested_fixtures("suite with subsuites", [](auto &_) {
 
 As you can see above, subsuites inherit their parents' fixtures, much like they
 inherit their parents' setup and teardown functions.
+
+## Test attributes
+
+For large projects with many tests, it can be useful to run only a subset of
+them, instead of the entire collection. While splitting up tests by file can
+help, it doesn't allow for very precise control of what tests get run. Instead,
+you can apply attributes to your tests (or whole suites!) and filter on them.
+
+### The *skip* attribute
+
+mettle provides one built-in attribute: `skip`. As the name implies, this
+attribute causes a test to be skipped by default. This can be useful when a test
+is broken, since the test runner will keep track of the skipped tests as a
+reminder that you need to go back and fix the test. You can also provide a
+comment for the skipped test that will be shown in the test logs explaining why
+it was skipped.
+
+For more information about how to use the `skip` attribute, see [Using
+Attributes](#using-attributes) below.
+
+### Defining attributes
+
+In addition to the built-in `skip` attribute, you can define your own
+attributes. There are three basic kinds of attributes, differentiated by the
+number of values each can hold: `bool_attr`, which holds 0 or 1 values;
+`string_attr`, which holds exactly 1 value; and `list_attr`, which holds 1 or
+more distinct values.
+
+`bool_attr`s are somewhat special and can be given a default action
+when they're encountered (either `attr_action::run` or `attr_action::skip`). As
+you might be able to guess, the predefined `skip` attribute is just a
+`bool_attr` whose action is `attr_action::skip`.
+
+To define an attribute, you just need to create a global instance of one of the
+aforementioned attribute kinds (making them `constexpr` is recommended, but not
+required):
+
+```c++
+constexpr bool_attr slow("slow");
+constexpr bool_attr busted("busted", attr_action::skip);
+constexpr list_attr tags("tags");
+```
+
+### Using attributes
+
+It's easy to apply attributes to your tests: simply create instances of each
+kind of attribute you want, and pass them to the test creation function
+immediately after the test name:
+
+```c++
+_.test("my test", {skip, slow("takes too long"), tags("cat", "goat")},
+       [](auto &fixture) { /* ... */ });
+```
+
+This creates an `attr_list` that gets stored alongside the test. As you might
+notice, `bool_attrs` can be implicitly converted to an attribute instance, but
+other types require you to call them to list their values.
+
+#### Suite attributes
+
+Like tests, whole suites can have attributes associated with them; these are
+applied the same way as for tests, and the list of attributes will automatically
+be inherited by any descendent tests. For `bool_attr`s and `string_attr`s, this
+means that children with the same attributes as their parents will override
+the parent attributes, but for `list_attr`s, the values of the parent and child
+will be merged:
+
+```c++
+suite<> attr_test("suite with attributes", {skip("broken"), tags("cat")},
+                  [](auto &_) {
+  _.test("my test", {slow, skip("fixme"), tags("dog")}, [](auto &fixture) {
+    /* This test has the following attributes: slow, skip("fixme"), and
+       tags("cat", "dog"). */
+  });
+});
+```
 
 ## Parameterizing tests
 
