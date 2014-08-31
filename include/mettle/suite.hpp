@@ -436,7 +436,8 @@ template<typename Exception, typename ...Fixture, typename Factory, typename F>
 runnable_suite
 make_basic_suite(const std::string &name, const attributes &attrs,
                  Factory &&factory, const F &f) {
-  suite_builder<Exception, Factory, Fixture...> builder(
+  using FactoryValue = typename std::remove_reference<Factory>::type;
+  suite_builder<Exception, FactoryValue, Fixture...> builder(
     name, attrs, std::forward<Factory>(factory)
   );
   f(builder);
@@ -528,7 +529,8 @@ template<typename ParentFixture, typename ...Fixture, typename Factory,
 compiled_subsuite<ParentFixture>
 make_subsuite(const std::string &name, const attributes &attrs,
               Factory &&factory, const F &f) {
-  subsuite_builder<Factory, ParentFixture, Fixture...> builder(
+  using FactoryValue = typename std::remove_reference<Factory>::type;
+  subsuite_builder<FactoryValue, ParentFixture, Fixture...> builder(
     name, attrs, std::forward<Factory>(factory)
   );
   f(builder);
