@@ -121,13 +121,13 @@
         
             <li><a href="#your-first-test">Your first test</a></li>
         
-            <li><a href="#skipping-tests">Skipping tests</a></li>
-        
             <li><a href="#setup-and-teardown">Setup and teardown</a></li>
         
             <li><a href="#fixtures">Fixtures</a></li>
         
             <li><a href="#subsuites">Subsuites</a></li>
+        
+            <li><a href="#test-attributes">Test attributes</a></li>
         
             <li><a href="#parameterizing-tests">Parameterizing tests</a></li>
         
@@ -177,28 +177,6 @@ executes.</p>
 <em>test</em> in our tests. This expectation makes sure that <code>true</code> is equal to <code>true</code>.
 If it's not, the test will alert us to the fact so we can fix it (hopefully
 before the universe finishes crashing down around us).</p>
-<h2 id="skipping-tests">Skipping tests</h2>
-<p>Some days, you just can't get a test to pass. While I can only assume this is
-your fault, and that you should therefore feel bad until you fix it, you may
-choose to skip the test for the time being:</p>
-<pre class="prettyprint well"><code class="c++">_.skip_test(&quot;my broken test&quot;, []() {
-  /* ... */
-});
-</code></pre>
-
-<p>This will prevent the test from running and keep your test suite passing (with a
-note that there are some skipped tests). But please, for everyone's sake, fix
-your test! Thanks in advance.</p>
-<h3 id="skipping-suites">Skipping suites</h3>
-<p>Even worse, sometimes a whole suite has problems, and needs to be skipped
-(heaven forfend!). Like skipped tests, you can just add <code>skip_</code> to the beginning
-of the suite declaration like so:</p>
-<pre class="prettyprint well"><code class="c++">skip_suite&lt;&gt; broken_suite(&quot;my broken suite&quot;, [](auto &amp;_) {
-  /* ... */
-});
-</code></pre>
-
-<p>The same rule applies to subsuites as well, which we'll cover below.</p>
 <h2 id="setup-and-teardown">Setup and teardown</h2>
 <p>Sometimes, you'll have a bunch of tests that all have the same setup and
 teardown code. Test fixtures let you do this (mostly) automatically. If a test
@@ -328,6 +306,65 @@ a bunch of subsuites, reducing code duplication:</p>
 
 <p>As you can see above, subsuites inherit their parents' fixtures, much like they
 inherit their parents' setup and teardown functions.</p>
+<h2 id="test-attributes">Test attributes</h2>
+<p>For large projects with many tests, it can be useful to run only a subset of
+them, instead of the entire collection. While splitting up tests by file can
+help, it doesn't allow for very precise control of what tests get run. Instead,
+you can apply attributes to your tests (or whole suites!) and filter on them.</p>
+<h3 id="the-skip-attribute">The <em>skip</em> attribute</h3>
+<p>mettle provides one built-in attribute: <code>skip</code>. As the name implies, this
+attribute causes a test to be skipped by default. This can be useful when a test
+is broken, since the test runner will keep track of the skipped tests as a
+reminder that you need to go back and fix the test. You can also provide a
+comment for the skipped test that will be shown in the test logs explaining why
+it was skipped.</p>
+<p>For more information about how to use the <code>skip</code> attribute, see <a href="#using-attributes">Using
+Attributes</a> below.</p>
+<h3 id="defining-attributes">Defining attributes</h3>
+<p>In addition to the built-in <code>skip</code> attribute, you can define your own
+attributes. There are three basic kinds of attributes, differentiated by the
+number of values each can hold: <code>bool_attr</code>, which holds 0 or 1 values;
+<code>string_attr</code>, which holds exactly 1 value; and <code>list_attr</code>, which holds 1 or
+more distinct values.</p>
+<p><code>bool_attr</code>s are somewhat special and can be given a default action
+when they're encountered (either <code>attr_action::run</code> or <code>attr_action::skip</code>). As
+you might be able to guess, the predefined <code>skip</code> attribute is just a
+<code>bool_attr</code> whose action is <code>attr_action::skip</code>.</p>
+<p>To define an attribute, you just need to create a global instance of one of the
+aforementioned attribute kinds (making them <code>constexpr</code> is recommended, but not
+required):</p>
+<pre class="prettyprint well"><code class="c++">constexpr bool_attr slow(&quot;slow&quot;);
+constexpr bool_attr busted(&quot;busted&quot;, attr_action::skip);
+constexpr list_attr tags(&quot;tags&quot;);
+</code></pre>
+
+<h3 id="using-attributes">Using attributes</h3>
+<p>It's easy to apply attributes to your tests: simply create instances of each
+kind of attribute you want, and pass them to the test creation function
+immediately after the test name:</p>
+<pre class="prettyprint well"><code class="c++">_.test(&quot;my test&quot;, {skip, slow(&quot;takes too long&quot;), tags(&quot;cat&quot;, &quot;goat&quot;)},
+       [](auto &amp;fixture) { /* ... */ });
+</code></pre>
+
+<p>This creates an <code>attributes</code> object that gets stored alongside the test. As you
+might notice, <code>bool_attrs</code> can be implicitly converted to an attribute instance,
+but other types require you to call them to list their values.</p>
+<h4 id="suite-attributes">Suite attributes</h4>
+<p>Like tests, whole suites can have attributes associated with them; these are
+applied the same way as for tests, and the list of attributes will automatically
+be inherited by any descendent tests. For <code>bool_attr</code>s and <code>string_attr</code>s, this
+means that children with the same attributes as their parents will override
+the parent attributes, but for <code>list_attr</code>s, the values of the parent and child
+will be merged:</p>
+<pre class="prettyprint well"><code class="c++">suite&lt;&gt; attr_test(&quot;suite with attributes&quot;, {skip(&quot;broken&quot;), tags(&quot;cat&quot;)},
+                  [](auto &amp;_) {
+  _.test(&quot;my test&quot;, {slow, skip(&quot;fixme&quot;), tags(&quot;dog&quot;)}, [](auto &amp;fixture) {
+    /* This test has the following attributes: slow, skip(&quot;fixme&quot;), and
+       tags(&quot;cat&quot;, &quot;dog&quot;). */
+  });
+});
+</code></pre>
+
 <h2 id="parameterizing-tests">Parameterizing tests</h2>
 <p>While suites are a good way to group your tests together, sometimes you want to
 run the <em>same</em> tests on several different types of objects. In this case, all

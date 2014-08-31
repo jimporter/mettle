@@ -161,6 +161,10 @@ writing simpler:</p>
 
 <p>Once it's built, just run the binary and check the test results.</p>
 <h2 id="command-line-options">Command-line options</h2>
+<h3 id="generic-options">Generic options</h3>
+<h4 id="-help-h">--help (-h)</h4>
+<p>Show help and usage information.</p>
+<h3 id="output-options">Output options</h3>
 <h4 id="-verbose-n1-v">--verbose <em>N=1</em> (-v)</h4>
 <p>Show output of tests as they're being run. If <code>--verbose</code> isn't passed, the
 verbosity is set to 0; if no value for <em>N</em> is specified, then the verbosity is
@@ -180,6 +184,12 @@ since it makes the results much easier to read!</p>
 <p>Run the tests a total of <em>N</em> times. This is useful for catching intermittent
 failures. At the end, the summary will show the output of each failure for every
 test.</p>
+<h4 id="-show-terminal">--show-terminal</h4>
+<p>Show the terminal output (stdout and stderr) of each test after it finishes. To
+enable this, <code>--verbose</code> must be at least 2, and <code>--no-fork</code> can't be
+specified (if <code>--no-fork</code> is specified, the terminal output will just appear
+in-line with the tests).</p>
+<h3 id="child-options">Child options</h3>
 <h4 id="-timeout-n-t">--timeout <em>N</em> (-t)</h4>
 <p>Time out and fail any tests that take longer than <em>N</em> milliseconds to execute.
 <code>--no-fork</code> can't be specified while using this option.</p>
@@ -187,11 +197,41 @@ test.</p>
 <p>By default, mettle forks its process to run each test, in order to detect
 crashes during the execution of a test. To disable this, you can pass
 <code>--no-fork</code>, and all the tests will run in the same process.</p>
-<h4 id="-show-terminal">--show-terminal</h4>
-<p>Show the terminal output (stdout and stderr) of each test after it finishes. To
-enable this, <code>--verbose</code> must be at least 2, and <code>--no-fork</code> can't be
-specified (if <code>--no-fork</code> is specified, the terminal output will just appear
-in-line with the tests).</p>
+<h4 id="-attr-attrvalue-a">--attr <em>ATTR[=VALUE],...</em> (-a)</h4>
+<p>Filter the tests that will be run based on the tests'
+<a href="../writing-tests/#test-attributes">attributes</a>. Tests matching each of the
+attributes (and, optionally, values) will be run by the test driver. If <code>--attr</code>
+is specified multiple times, tests that match <em>any</em> of the filters will be run.
+You can also prepend <em>ATTR</em> with <code>!</code> to negate that test. Let's look at some
+examples to get a better sense of how this works:</p>
+<ul>
+<li>
+<p><code>--attr slow</code></p>
+<p>Run only tests with the attribute <code>slow</code>.</p>
+</li>
+<li>
+<p><code>--attr protocol=http</code></p>
+<p>Run only tests with the attribute <code>protocol</code> having a value of <code>http</code>.</p>
+</li>
+<li>
+<p><code>--attr '!slow'</code></p>
+<p>Run only tests <em>without</em> the attribute <code>slow</code>. (Note the use of quotation
+marks, since many shells treat <code>!</code> as a special character.)</p>
+</li>
+<li>
+<p><code>--attr '!protocol=http'</code></p>
+<p>Run only tests <em>without</em> the attribute <code>protocol</code>, or which have <code>protocol</code>
+set to something other than <code>http</code>.</p>
+</li>
+<li>
+<p><code>--attr slow,protocol=http</code></p>
+<p>Run only tests that match both attributes.</p>
+</li>
+<li>
+<p><code>--attr slow --attr protocol=http</code></p>
+<p>Run tests that match either attribute.</p>
+</li>
+</ul>
 <h2 id="using-the-mettle-executable">Using the <em>mettle</em> executable</h2>
 <p>For testing larger projects, it's generally recommended to divide your test
 suites into multiple <code>.cpp</code> files and compile them into separate binaries. This
