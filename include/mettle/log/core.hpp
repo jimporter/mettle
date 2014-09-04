@@ -62,7 +62,14 @@ namespace log {
                              const test_output &log) = 0;
     virtual void skipped_test(const test_name &test,
                               const std::string &message) = 0;
+  };
 
+  class file_logger : public test_logger {
+  public:
+    virtual ~file_logger() {}
+
+    virtual void started_file(const std::string &file) = 0;
+    virtual void ended_file(const std::string &file) = 0;
     virtual void failed_file(const std::string &file,
                              const std::string &message) = 0;
   };

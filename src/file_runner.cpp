@@ -49,6 +49,7 @@ namespace detail {
 
   void run_test_file(const std::string &file, log::pipe &logger,
                      const std::vector<std::string> &args) {
+    logger.started_file(file);
     scoped_pipe message_pipe;
     message_pipe.open();
 
@@ -118,6 +119,9 @@ namespace detail {
             logger.failed_file(file, e.what());
           }
         }
+        else {
+          logger.ended_file(file);
+        }
       }
       else if(WIFSIGNALED(status)) {
         logger.failed_file(file, strsignal(WTERMSIG(status)));
@@ -132,7 +136,7 @@ namespace detail {
 }
 
 void run_test_files(
-  const std::vector<std::string> &files, log::test_logger &logger,
+  const std::vector<std::string> &files, log::file_logger &logger,
   const std::vector<std::string> &args
 ) {
   logger.started_run();

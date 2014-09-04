@@ -11,7 +11,7 @@ namespace mettle {
 
 namespace log {
 
-  class single_run : public test_logger {
+  class single_run : public file_logger {
   public:
     single_run(verbose vlog) : vlog_(vlog) {}
 
@@ -51,6 +51,9 @@ namespace log {
       skips_++;
       vlog_.skipped_test(test, message);
     }
+
+    void started_file(const std::string &) {}
+    void ended_file(const std::string &) {}
 
     void failed_file(const std::string &file, const std::string &message) {
       failed_files_.push_back({file, message});

@@ -89,10 +89,6 @@ namespace log {
       );
       out.flush();
     }
-
-    void failed_file(const std::string &, const std::string &) {
-      assert(false && "child::failed_file should never be called!");
-    }
   private:
     std::ostream &out;
   };

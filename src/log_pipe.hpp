@@ -13,7 +13,7 @@ namespace log {
 
   class pipe {
   public:
-    explicit pipe(log::test_logger &logger) : logger_(logger) {}
+    explicit pipe(log::file_logger &logger) : logger_(logger) {}
 
     void operator ()(std::istream &s) {
       using namespace BENCODE_ANY_NS;
@@ -53,6 +53,14 @@ namespace log {
       }
     }
 
+    void started_file(const std::string &file) {
+      logger_.started_file(file);
+    }
+
+    void ended_file(const std::string &file) {
+      logger_.ended_file(file);
+    }
+
     void failed_file(const std::string &file, const std::string &message) {
       logger_.failed_file(file, message);
     }
@@ -89,7 +97,7 @@ namespace log {
       return std::move(any_cast<bencode::string &>(message));
     }
 
-    log::test_logger &logger_;
+    log::file_logger &logger_;
   };
 
 }

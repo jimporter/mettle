@@ -42,10 +42,6 @@ struct test_event_logger : log::test_logger {
     events.push_back("skipped_test");
   }
 
-  void failed_file(const std::string &, const std::string &) {
-    events.push_back("failed_file");
-  }
-
   std::vector<std::string> events;
 };
 

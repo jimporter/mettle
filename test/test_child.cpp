@@ -5,12 +5,22 @@ using namespace mettle;
 #include "../src/log_pipe.hpp"
 #include "../src/libmettle/log_child.hpp"
 
-struct recording_logger : log::test_logger {
+struct recording_logger : log::file_logger {
   void started_run() {
     called = "started_run";
   }
   void ended_run() {
     called = "ended_run";
+  }
+
+  void started_file(const std::string &) {
+    called = "started_file";
+  }
+  void ended_file(const std::string &) {
+    called = "ended_file";
+  }
+  void failed_file(const std::string &, const std::string &) {
+    called = "failed_file";
   }
 
   void started_suite(const std::vector<std::string> &actual_suites) {
@@ -45,10 +55,6 @@ struct recording_logger : log::test_logger {
     called = "skipped_test";
     test = actual_test;
     message = actual_message;
-  }
-
-  void failed_file(const std::string &, const std::string &) {
-    called = "failed_file";
   }
 
   std::string called;

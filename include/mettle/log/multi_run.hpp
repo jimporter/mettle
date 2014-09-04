@@ -13,7 +13,7 @@ namespace mettle {
 
 namespace log {
 
-  class multi_run : public test_logger {
+  class multi_run : public file_logger {
   public:
     multi_run(verbose vlog) : vlog_(vlog) {
       if(vlog_.verbosity() == 2)
@@ -66,6 +66,9 @@ namespace log {
       skips_++;
       vlog_.skipped_test(test, message);
     }
+
+    void started_file(const std::string &) {}
+    void ended_file(const std::string &) {}
 
     void failed_file(const std::string &file, const std::string &message) {
       // XXX: Distinguish between files executed multiple times per run?
