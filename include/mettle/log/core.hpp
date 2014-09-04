@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_LOG_CORE_HPP
 #define INC_METTLE_LOG_CORE_HPP
 
+#include <cstdint>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -12,7 +13,7 @@ namespace log {
   struct test_name {
     std::vector<std::string> suites;
     std::string test;
-    size_t id;
+    uint64_t id;
 
     std::string full_name() const {
       std::stringstream s;

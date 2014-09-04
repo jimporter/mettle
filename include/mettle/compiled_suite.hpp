@@ -2,6 +2,7 @@
 #define INC_METTLE_COMPILED_SUITE_HPP
 
 #include <atomic>
+#include <cstdint>
 #include <functional>
 #include <string>
 #include <vector>
@@ -11,8 +12,8 @@
 namespace mettle {
 
 namespace detail {
-  static inline size_t generate_id() {
-    static std::atomic<size_t> id_(0);
+  static inline uint64_t generate_id() {
+    static std::atomic<uint64_t> id_(0);
     return id_++;
   }
 
@@ -47,7 +48,7 @@ public:
     std::string name;
     function_type function;
     attributes attrs;
-    size_t id;
+    uint64_t id;
   };
 
   using iterator = typename std::vector<test_info>::const_iterator;

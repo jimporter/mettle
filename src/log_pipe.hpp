@@ -59,10 +59,12 @@ namespace log {
 
     void ended_file(const std::string &file) {
       logger_.ended_file(file);
+      file_index_++;
     }
 
     void failed_file(const std::string &file, const std::string &message) {
       logger_.failed_file(file, message);
+      file_index_++;
     }
   private:
     std::vector<std::string> read_suites(BENCODE_ANY_NS::any &suites) {
@@ -76,10 +78,16 @@ namespace log {
     log::test_name read_test_name(BENCODE_ANY_NS::any &test) {
       using namespace BENCODE_ANY_NS;
       auto &data = any_cast<bencode::dict &>(test);
+
+      // Make sure every test has a unique ID, even if some files have
+      // overlapping IDs.
+      uint64_t id = (file_index_ << 32) + static_cast<uint64_t>(
+        any_cast<bencode::integer>(data.at("id"))
+      );
       return log::test_name{
         read_suites(data.at("suites")),
-        std::move(any_cast<bencode::string &>( data.at("test")  )),
-        static_cast<size_t>(any_cast<bencode::integer>( data.at("id") )),
+        std::move(any_cast<bencode::string &>( data.at("test") )),
+        id
       };
     }
 
@@ -98,6 +106,7 @@ namespace log {
     }
 
     log::file_logger &logger_;
+    uint64_t file_index_ = 0;
   };
 
 }
