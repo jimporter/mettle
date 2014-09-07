@@ -6,8 +6,8 @@ using namespace mettle;
 
 auto match_filter_item(const attr_instance &attr, bool matched) {
   std::stringstream s;
-  s << "filter_item(" << ensure_printable(attr.attribute.name()) << ") => "
-    << ensure_printable(matched);
+  s << "filter_item(" << to_printable(attr.attribute.name()) << ") => "
+    << to_printable(matched);
   return make_matcher([attr, matched](const attr_filter::filter_item &actual) {
     return actual.attribute == attr.attribute.name() &&
            actual.func(&attr) == matched;
@@ -15,8 +15,8 @@ auto match_filter_item(const attr_instance &attr, bool matched) {
 }
 
 namespace mettle {
-  std::string ensure_printable(const attr_filter::filter_item &item) {
-    return "filter_item(" + ensure_printable(item.attribute) + ")";
+  std::string to_printable(const attr_filter::filter_item &item) {
+    return "filter_item(" + to_printable(item.attribute) + ")";
   }
 }
 

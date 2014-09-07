@@ -5,33 +5,33 @@
 
 namespace mettle {
 
-std::string ensure_printable(const attr_instance &attr) {
+std::string to_printable(const attr_instance &attr) {
   std::stringstream s;
   s << attr.attribute.name();
   if(!attr.value.empty()) {
     auto i = attr.value.begin();
-    s << "(" << ensure_printable(*i);
+    s << "(" << to_printable(*i);
     for(++i; i != attr.value.end(); ++i)
-      s << ", " << ensure_printable(*i);
+      s << ", " << to_printable(*i);
     s << ")";
   }
   return s.str();
 }
 
-std::string ensure_printable(const attributes &attrs) {
+std::string to_printable(const attributes &attrs) {
   std::stringstream s;
   s << "{";
   if(!attrs.empty()) {
     auto i = attrs.begin();
-    s << ensure_printable(*i);
+    s << to_printable(*i);
     for(++i; i != attrs.end(); ++i)
-      s << ", " << ensure_printable(*i);
+      s << ", " << to_printable(*i);
   }
   s << "}";
   return s.str();
 }
 
-std::string ensure_printable(const attr_action &action) {
+std::string to_printable(const attr_action &action) {
   switch(action) {
   case attr_action::run:
     return "attr_action::run";

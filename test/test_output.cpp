@@ -10,7 +10,7 @@ auto stringified(T &&thing) {
     ensure_matcher(std::forward<T>(thing)),
     [](const auto &value, auto &&matcher) -> bool {
       std::stringstream s;
-      s << ensure_printable(value);
+      s << to_printable(value);
       return matcher(s.str());
     }, ""
   );
@@ -32,7 +32,7 @@ enum class my_enum_class {
 void sample_function(void) {}
 
 suite<> output("debug output", [](auto &_){
-  subsuite<>(_, "ensure_printable()", [](auto &_) {
+  subsuite<>(_, "to_printable()", [](auto &_) {
     _.test("integers", []() {
       expect(666, stringified("666"));
       expect(666L, stringified("666"));

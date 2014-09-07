@@ -31,7 +31,7 @@ namespace detail {
   inline auto matcher_desc(T &&expected, typename std::enable_if<
     !is_matcher<T>::value
   >::type* = 0) {
-    return ensure_printable(std::forward<T>(expected));
+    return to_printable(std::forward<T>(expected));
   }
 }
 
@@ -102,7 +102,7 @@ template<typename T, typename Matcher>
 void expect(const T &value, const Matcher &matcher) {
   if(!matcher(value)) {
     std::stringstream s;
-    s << "expected " << matcher.desc() << ", got " << ensure_printable(value);
+    s << "expected " << matcher.desc() << ", got " << to_printable(value);
     throw expectation_error(s.str());
   }
 }

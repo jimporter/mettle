@@ -132,22 +132,22 @@ public:
 template<typename T, size_t N>
 class is_iterable<T[N]> : public std::true_type {};
 
-// The ensure_printable overloads below are rather complicated, to say the
-// least; we need to be extra-careful to ensure that things which are
-// convertible to bool don't erroneously get printed out *as* bools. As such, if
-// a type is "bool-ish" (convertible to bool, but not a non-bool arithmetic
-// type), we delegate to ensure_printable_boolish. Here's the basic structure:
+// The to_printable overloads below are rather complicated, to say the least; we
+// need to be extra-careful to ensure that things which are convertible to bool
+// don't erroneously get printed out *as* bools. As such, if a type is
+// "bool-ish" (convertible to bool, but not a non-bool arithmetic type), we
+// delegate to to_printable_boolish. Here's the basic structure:
 //
-// ensure_printable:
+// to_printable:
 //   if is_printable
-//     if is_boolish -> ensure_printable_boolish
+//     if is_boolish -> to_printable_boolish
 //     else -> pass-through
 //   else
 //     if is_iterable -> iterable
 //     else if is_enum -> enum (class)
 //     else -> fallback
 //
-// ensure_printable_boolish:
+// to_printable_boolish:
 //   if is_bool -> bool
 //   if is_enum -> enum
 //   if is_pointer
@@ -163,52 +163,52 @@ class is_iterable<T[N]> : public std::true_type {};
 
 // Non-generic overloads
 
-inline std::string ensure_printable(std::nullptr_t) {
+inline std::string to_printable(std::nullptr_t) {
   return "nullptr";
 }
 
-inline std::string ensure_printable(const std::string &s) {
+inline std::string to_printable(const std::string &s) {
   return detail::quoted(s);
 }
 
-inline std::string ensure_printable(const std::wstring &s) {
+inline std::string to_printable(const std::wstring &s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
   return detail::quoted(conv.to_bytes(s));
 }
 
-inline std::string ensure_printable(const std::u16string &s) {
+inline std::string to_printable(const std::u16string &s) {
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
   return detail::quoted(conv.to_bytes(s));
 }
 
-inline std::string ensure_printable(const std::u32string &s) {
+inline std::string to_printable(const std::u32string &s) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
   return detail::quoted(conv.to_bytes(s));
 }
 
-inline std::string ensure_printable(char c) {
+inline std::string to_printable(char c) {
   return detail::quoted(std::string(1, c), '\'');
 }
 
-inline std::string ensure_printable(unsigned char c) {
+inline std::string to_printable(unsigned char c) {
   return detail::quoted(std::string(1, c), '\'');
 }
 
-inline std::string ensure_printable(signed char c) {
+inline std::string to_printable(signed char c) {
   return detail::quoted(std::string(1, c), '\'');
 }
 
-inline std::string ensure_printable(wchar_t c) {
+inline std::string to_printable(wchar_t c) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
   return detail::quoted(conv.to_bytes(std::wstring(1, c)), '\'');
 }
 
-inline std::string ensure_printable(char16_t c) {
+inline std::string to_printable(char16_t c) {
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
   return detail::quoted(conv.to_bytes(std::u16string(1, c)), '\'');
 }
 
-inline std::string ensure_printable(char32_t c) {
+inline std::string to_printable(char32_t c) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
   return detail::quoted(conv.to_bytes(std::u32string(1, c)), '\'');
 }
@@ -216,62 +216,63 @@ inline std::string ensure_printable(char32_t c) {
 // Helper for bool-ish types
 
 template<typename T>
-inline auto ensure_printable_boolish(T b) -> typename std::enable_if<
+inline auto to_printable_boolish(T b) -> typename std::enable_if<
   std::is_same<typename std::remove_cv<T>::type, bool>::value, std::string
 >::type {
   return b ? "true" : "false";
 }
 
 template<typename T>
-auto ensure_printable_boolish(T t) ->
-typename std::enable_if<std::is_enum<T>::value, std::string>::type {
+auto to_printable_boolish(T t) -> typename std::enable_if<
+  std::is_enum<T>::value, std::string
+>::type {
   return type_name<T>() + "(" + std::to_string(
     static_cast<typename std::underlying_type<T>::type>(t)
   ) + ")";
 }
 
 template<typename T>
-constexpr inline auto ensure_printable_boolish(const T *t) ->
+constexpr inline auto to_printable_boolish(const T *t) ->
 typename std::enable_if<!std::is_function<T>::value, const T *>::type {
   return t;
 }
 
 template<typename Ret, typename ...Args>
-inline auto ensure_printable_boolish(Ret (*)(Args...)) {
+inline auto to_printable_boolish(Ret (*)(Args...)) {
   return type_name<Ret(Args...)>();
 }
 
 // XXX: These don't work for volatile strings.
 
-inline std::string ensure_printable_boolish(const char *s) {
+inline std::string to_printable_boolish(const char *s) {
   return detail::quoted(s);
 }
 
-inline std::string ensure_printable_boolish(const unsigned char *s) {
+inline std::string to_printable_boolish(const unsigned char *s) {
   return detail::quoted(reinterpret_cast<const char*>(s));
 }
 
-inline std::string ensure_printable_boolish(const signed char *s) {
+inline std::string to_printable_boolish(const signed char *s) {
   return detail::quoted(reinterpret_cast<const char*>(s));
 }
 
-inline std::string ensure_printable_boolish(const wchar_t *s) {
+inline std::string to_printable_boolish(const wchar_t *s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
   return detail::quoted(conv.to_bytes(s));
 }
 
-inline std::string ensure_printable_boolish(const char16_t *s) {
+inline std::string to_printable_boolish(const char16_t *s) {
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
   return detail::quoted(conv.to_bytes(s));
 }
 
-inline std::string ensure_printable_boolish(const char32_t *s) {
+inline std::string to_printable_boolish(const char32_t *s) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
   return detail::quoted(conv.to_bytes(s));
 }
 
 template<typename T>
-auto ensure_printable_boolish(const T &t) -> typename std::enable_if<
+auto to_printable_boolish(const T &t) -> typename std::enable_if<
   !std::is_scalar<typename std::remove_reference<T>::type>::value, std::string
 >::type {
   try {
@@ -285,7 +286,7 @@ auto ensure_printable_boolish(const T &t) -> typename std::enable_if<
 // Pass-through
 
 template<typename T>
-constexpr auto ensure_printable(const T &t) -> typename std::enable_if<
+constexpr auto to_printable(const T &t) -> typename std::enable_if<
   is_printable<T>::value && !is_boolish<T>::value, T
 >::type {
   return t;
@@ -294,17 +295,17 @@ constexpr auto ensure_printable(const T &t) -> typename std::enable_if<
 // Bool-ish types
 
 template<typename T>
-constexpr inline auto ensure_printable(const T &t) -> typename std::enable_if<
+constexpr inline auto to_printable(const T &t) -> typename std::enable_if<
   is_printable<T>::value && is_boolish<T>::value,
-  decltype(ensure_printable_boolish(t))
+  decltype(to_printable_boolish(t))
 >::type {
-  return ensure_printable_boolish(t);
+  return to_printable_boolish(t);
 }
 
 // Fallback
 
 template<typename T>
-auto ensure_printable(const T &t) -> typename std::enable_if<
+auto to_printable(const T &t) -> typename std::enable_if<
   !is_printable<T>::value && !is_iterable<T>::value && !std::is_enum<T>::value,
   std::string
 >::type {
@@ -319,23 +320,23 @@ auto ensure_printable(const T &t) -> typename std::enable_if<
 // Enum classes
 
 template<typename T>
-constexpr inline auto ensure_printable(T t) -> typename std::enable_if<
+constexpr inline auto to_printable(T t) -> typename std::enable_if<
   !is_printable<T>::value && std::is_enum<T>::value, std::string
 >::type {
-  return ensure_printable_boolish(t);
+  return to_printable_boolish(t);
 }
 
 // Iterables
 
 template<typename T>
-auto ensure_printable(const T &v) -> typename std::enable_if<
+auto to_printable(const T &v) -> typename std::enable_if<
   !is_printable<T>::value && is_iterable<T>::value, std::string
 >::type {
   return detail::stringify_iterable(std::begin(v), std::end(v));
 }
 
 template<typename T, size_t N>
-auto ensure_printable(const T (&v)[N]) -> typename std::enable_if<
+auto to_printable(const T (&v)[N]) -> typename std::enable_if<
   !is_any_char<T>::value, std::string
 >::type {
   return detail::stringify_iterable(std::begin(v), std::end(v));
@@ -344,12 +345,12 @@ auto ensure_printable(const T (&v)[N]) -> typename std::enable_if<
 // Pairs/Tuples
 
 template<typename T, typename U>
-std::string ensure_printable(const std::pair<T, U> &pair) {
+std::string to_printable(const std::pair<T, U> &pair) {
   return detail::stringify_tuple(pair);
 }
 
 template<typename ...T>
-std::string ensure_printable(const std::tuple<T...> &tuple) {
+std::string to_printable(const std::tuple<T...> &tuple) {
   return detail::stringify_tuple(tuple);
 }
 
@@ -360,9 +361,9 @@ namespace detail {
     s << "[";
     if(begin != end) {
       auto i = begin;
-      s << ensure_printable(*i);
+      s << to_printable(*i);
       for(++i; i != end; ++i)
-        s << ", " << ensure_printable(*i);
+        s << ", " << to_printable(*i);
     }
     s << "]";
     return s.str();
@@ -375,7 +376,7 @@ namespace detail {
     reduce_tuple(tuple, [&s](bool first, const auto &x, bool &) {
       if(!first)
         s << ", ";
-      s << ensure_printable(x);
+      s << to_printable(x);
       return false;
     }, true);
     s << "]";
