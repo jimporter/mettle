@@ -17,8 +17,15 @@ auto stringified(T &&thing) {
 }
 
 struct my_type {};
+std::string to_printable(const my_type &) {
+  return "{my_type}";
+}
+
 namespace my_namespace {
   struct another_type {};
+  std::string to_printable(const another_type &) {
+    return "{another_type}";
+  }
 }
 
 enum my_enum {
@@ -152,6 +159,27 @@ suite<> output("debug output", [](auto &_){
     });
 
     _.test("custom types", []() {
+      expect(my_type{}, stringified("{my_type}"));
+      expect(my_namespace::another_type{}, stringified("{another_type}"));
+
+      expect(std::vector<my_type>(2), stringified("[{my_type}, {my_type}]"));
+      expect(std::vector<my_namespace::another_type>(2),
+             stringified("[{another_type}, {another_type}]"));
+
+      expect(std::pair<my_type, my_type>{},
+             stringified("[{my_type}, {my_type}]"));
+      expect(std::pair<my_namespace::another_type,
+                       my_namespace::another_type>{},
+             stringified("[{another_type}, {another_type}]"));
+
+      expect(std::tuple<my_type, my_type>{},
+             stringified("[{my_type}, {my_type}]"));
+      expect(std::tuple<my_namespace::another_type,
+                        my_namespace::another_type>{},
+             stringified("[{another_type}, {another_type}]"));
+    });
+
+    _.test("fallback", []() {
       struct some_type {};
       struct another_type {
         operator bool() { return true; }
