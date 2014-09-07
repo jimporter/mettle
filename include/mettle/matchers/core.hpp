@@ -12,8 +12,6 @@
 
 namespace mettle {
 
-// TODO: There's probably a better way to ensure something is a matcher, but
-// this'll do for now.
 struct matcher_tag {};
 
 template<typename T>
