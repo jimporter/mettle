@@ -144,7 +144,7 @@ void forked_test_runner::fork_watcher(std::chrono::milliseconds timeout) const {
     wait(nullptr);
 
     if(WIFEXITED(status))
-      exit(WEXITSTATUS(status));
+      _exit(WEXITSTATUS(status));
     else if(WIFSIGNALED(status))
       raise(WTERMSIG(status));
     else // WIFSTOPPED
