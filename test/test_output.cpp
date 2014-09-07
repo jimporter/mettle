@@ -25,6 +25,10 @@ enum my_enum {
   enum_value = 0
 };
 
+enum class my_enum_class {
+  value = 0
+};
+
 void sample_function(void) {}
 
 suite<> output("debug output", [](auto &_){
@@ -55,7 +59,8 @@ suite<> output("debug output", [](auto &_){
     });
 
     _.test("enums", []() {
-      expect(enum_value, stringified("0"));
+      expect(enum_value, stringified("my_enum(0)"));
+      expect(my_enum_class::value, stringified("my_enum_class(0)"));
     });
 
     _.test("pointers", []() {

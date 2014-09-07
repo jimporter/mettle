@@ -88,8 +88,7 @@ public:
 template<typename T>
 struct is_boolish : std::integral_constant<bool,
   std::is_same<typename std::remove_cv<T>::type, bool>::value ||
-  (std::is_convertible<T, bool>::value && !std::is_arithmetic<T>::value &&
-   !std::is_enum<T>::value)
+  (std::is_convertible<T, bool>::value && !std::is_arithmetic<T>::value)
 > {};
 
 template<typename T>
@@ -145,10 +144,12 @@ class is_iterable<T[N]> : public std::true_type {};
 //     else -> pass-through
 //   else
 //     if is_iterable -> iterable
+//     else if is_enum -> enum (class)
 //     else -> fallback
 //
 // ensure_printable_boolish:
 //   if is_bool -> bool
+//   if is_enum -> enum
 //   if is_pointer
 //     if is_any_char -> c string
 //     else if is_function -> function pointer
@@ -222,10 +223,16 @@ inline auto ensure_printable_boolish(T b) -> typename std::enable_if<
 }
 
 template<typename T>
+auto ensure_printable_boolish(T t) ->
+typename std::enable_if<std::is_enum<T>::value, std::string>::type {
+  return type_name<T>() + "(" + std::to_string(
+    static_cast<typename std::underlying_type<T>::type>(t)
+  ) + ")";
+}
+
+template<typename T>
 constexpr inline auto ensure_printable_boolish(const T *t) ->
-typename std::enable_if<
-  !std::is_function<T>::value, const T *
->::type {
+typename std::enable_if<!std::is_function<T>::value, const T *>::type {
   return t;
 }
 
@@ -298,7 +305,7 @@ constexpr inline auto ensure_printable(const T &t) -> typename std::enable_if<
 
 template<typename T>
 auto ensure_printable(const T &t) -> typename std::enable_if<
-  !is_printable<T>::value && !is_iterable<T>::value,
+  !is_printable<T>::value && !is_iterable<T>::value && !std::is_enum<T>::value,
   std::string
 >::type {
   try {
@@ -307,6 +314,15 @@ auto ensure_printable(const T &t) -> typename std::enable_if<
   catch(...) {
     return "...";
   }
+}
+
+// Enum classes
+
+template<typename T>
+constexpr inline auto ensure_printable(T t) -> typename std::enable_if<
+  !is_printable<T>::value && std::is_enum<T>::value, std::string
+>::type {
+  return ensure_printable_boolish(t);
 }
 
 // Iterables
