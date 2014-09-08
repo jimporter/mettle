@@ -2,22 +2,24 @@
 
 namespace mettle {
   filter_result attr_filter::operator ()(const attributes &attrs) const {
+    using detail::join;
+
     std::set<const attr_instance*> explicitly_shown;
     for(const auto &f : filters_) {
       auto i = attrs.find(f.attribute);
       const attr_instance *attr = i == attrs.end() ? nullptr: &*i;
 
       if(!f.func(attr))
-        return {attr_action::hide, attr};
+        return {attr_action::hide, attr ? join(attr->value, ", ") : ""};
       else if(attr)
         explicitly_shown.insert(attr);
     }
     for(const auto &attr : attrs) {
       if(attr.attribute.action() == attr_action::skip &&
          !explicitly_shown.count(&attr))
-        return {attr_action::skip, &attr};
+        return {attr_action::skip, join(attr.value, ", ")};
     }
-    return {attr_action::run, nullptr};
+    return {attr_action::run, ""};
   }
 
   filter_result attr_filter_set::operator ()(const attributes &attrs) const {
@@ -26,7 +28,7 @@ namespace mettle {
       return default_attr_filter{}(attrs);
 
     bool set = false;
-    std::pair<attr_action, const attr_instance*> result;
+    filter_result result;
     for(const auto &f : filters_) {
       auto curr = f(attrs);
       switch(curr.first) {

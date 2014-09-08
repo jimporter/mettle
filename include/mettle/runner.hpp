@@ -70,10 +70,7 @@ namespace detail {
         logger.started_test(name);
 
         if(action.first == attr_action::skip) {
-          auto &&attr = *action.second;
-          logger.skipped_test(
-            name, attr.value.empty() ? "" : *attr.value.begin()
-          );
+          logger.skipped_test(name, action.second);
           continue;
         }
 

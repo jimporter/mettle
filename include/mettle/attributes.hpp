@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <set>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -67,6 +68,18 @@ namespace detail {
       return lhs < rhs.attribute.name();
     }
   };
+
+  template<typename T>
+  std::string join(const T &t, const std::string &delim) {
+    auto begin = t.begin(), end = t.end();
+    if(begin == end)
+      return "";
+    std::stringstream s;
+    s << *begin;
+    for(++begin; begin != end; ++begin)
+      s << delim << *begin;
+    return s.str();
+  }
 }
 
 class bool_attr : public attr_base {
@@ -158,15 +171,15 @@ inline attributes unite(const attributes &lhs, const attributes &rhs) {
   return all_attrs;
 }
 
-using filter_result = std::pair<attr_action, const attr_instance*>;
+using filter_result = std::pair<attr_action, std::string>;
 
 struct default_attr_filter {
   filter_result operator ()(const attributes &attrs) const {
     for(const auto &attr : attrs) {
       if(attr.attribute.action() == attr_action::skip)
-        return {attr_action::skip, &attr};
+        return {attr_action::skip, detail::join(attr.value, ", ")};
     }
-    return {attr_action::run, nullptr};
+    return {attr_action::run, ""};
   }
 };
 

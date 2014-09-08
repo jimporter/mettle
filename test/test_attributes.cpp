@@ -150,7 +150,7 @@ suite<> test_attr("attributes", [](auto &_) {
     _.test("no attributes", []() {
       expect(
         default_attr_filter{}( {} ),
-        equal_to(filter_result{attr_action::run, nullptr})
+        equal_to(filter_result{attr_action::run, ""})
       );
     });
 
@@ -158,16 +158,16 @@ suite<> test_attr("attributes", [](auto &_) {
       constexpr bool_attr attr("bool");
       expect(
         default_attr_filter{}( {attr} ),
-        equal_to(filter_result{attr_action::run, nullptr})
+        equal_to(filter_result{attr_action::run, ""})
       );
     });
 
     _.test("skipped attribute", []() {
       constexpr bool_attr attr("bool", attr_action::skip);
-      attributes attrs = {attr};
+      attributes attrs = {attr("message")};
       expect(
         default_attr_filter{}(attrs),
-        equal_to(filter_result{attr_action::skip, &*attrs.begin()})
+        equal_to(filter_result{attr_action::skip, "message"})
       );
     });
   });
