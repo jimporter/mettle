@@ -31,14 +31,14 @@ std::string to_printable(const attributes &attrs) {
   return s.str();
 }
 
-std::string to_printable(const attr_action &action) {
+std::string to_printable(const test_action &action) {
   switch(action) {
-  case attr_action::run:
-    return "attr_action::run";
-  case attr_action::skip:
-    return "attr_action::skip";
-  case attr_action::hide:
-    return "attr_action::hide";
+  case test_action::run:
+    return "test_action::run";
+  case test_action::skip:
+    return "test_action::skip";
+  case test_action::hide:
+    return "test_action::hide";
   }
 }
 

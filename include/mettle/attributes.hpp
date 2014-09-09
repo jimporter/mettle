@@ -9,7 +9,7 @@
 
 namespace mettle {
 
-enum class attr_action {
+enum class test_action {
   run,
   skip,
   hide
@@ -26,9 +26,9 @@ struct attr_instance {
 
 class attr_base {
 protected:
-  constexpr attr_base(const char *name, attr_action action = attr_action::run)
+  constexpr attr_base(const char *name, test_action action = test_action::run)
     : name_(name), action_(action) {
-    if(action == attr_action::hide)
+    if(action == test_action::hide)
       throw std::invalid_argument("attribute's action can't be \"hide\"");
   }
   ~attr_base() = default;
@@ -37,7 +37,7 @@ public:
     return name_;
   }
 
-  attr_action action() const {
+  test_action action() const {
     return action_;
   }
 
@@ -49,7 +49,7 @@ public:
   }
 private:
   const char *name_;
-  attr_action action_;
+  test_action action_;
 };
 
 namespace detail {
@@ -84,7 +84,7 @@ namespace detail {
 
 class bool_attr : public attr_base {
 public:
-  constexpr bool_attr(const char *name, attr_action action = attr_action::run)
+  constexpr bool_attr(const char *name, test_action action = test_action::run)
     : attr_base(name, action) {}
 
   operator const attr_instance() const {
@@ -171,19 +171,19 @@ inline attributes unite(const attributes &lhs, const attributes &rhs) {
   return all_attrs;
 }
 
-using filter_result = std::pair<attr_action, std::string>;
+using filter_result = std::pair<test_action, std::string>;
 
 struct default_attr_filter {
   filter_result operator ()(const attributes &attrs) const {
     for(const auto &attr : attrs) {
-      if(attr.attribute.action() == attr_action::skip)
-        return {attr_action::skip, detail::join(attr.value, ", ")};
+      if(attr.attribute.action() == test_action::skip)
+        return {test_action::skip, detail::join(attr.value, ", ")};
     }
-    return {attr_action::run, ""};
+    return {test_action::run, ""};
   }
 };
 
-constexpr bool_attr skip("skip", attr_action::skip);
+constexpr bool_attr skip("skip", test_action::skip);
 
 } // namespace mettle
 

@@ -286,8 +286,8 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
 
       auto filter = [](const attributes &attrs) -> filter_result {
         if(attrs.find("hide") != attrs.end())
-          return {attr_action::hide, ""};
-        return {attr_action::run, ""};
+          return {test_action::hide, ""};
+        return {test_action::run, ""};
       };
       run_tests(s, logger, runner, filter);
       expect(logger.events, equal_to(expected));

@@ -10,16 +10,16 @@ namespace mettle {
       const attr_instance *attr = i == attrs.end() ? nullptr: &*i;
 
       if(!f.func(attr))
-        return {attr_action::hide, attr ? join(attr->value, ", ") : ""};
+        return {test_action::hide, attr ? join(attr->value, ", ") : ""};
       else if(attr)
         explicitly_shown.insert(attr);
     }
     for(const auto &attr : attrs) {
-      if(attr.attribute.action() == attr_action::skip &&
+      if(attr.attribute.action() == test_action::skip &&
          !explicitly_shown.count(&attr))
-        return {attr_action::skip, join(attr.value, ", ")};
+        return {test_action::skip, join(attr.value, ", ")};
     }
-    return {attr_action::run, ""};
+    return {test_action::run, ""};
   }
 
   filter_result attr_filter_set::operator ()(const attributes &attrs) const {
@@ -32,15 +32,15 @@ namespace mettle {
     for(const auto &f : filters_) {
       auto curr = f(attrs);
       switch(curr.first) {
-      case attr_action::run:
+      case test_action::run:
         return curr;
-      case attr_action::skip:
-        if(!set || result.first == attr_action::hide) {
+      case test_action::skip:
+        if(!set || result.first == test_action::hide) {
           result = curr;
           set = true;
         }
         break;
-      case attr_action::hide:
+      case test_action::hide:
         if(!set) {
           result = curr;
           set = true;

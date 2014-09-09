@@ -60,7 +60,7 @@ namespace detail {
       for(const auto &test : suite) {
         auto action = filter(test.attrs);
 
-        if(action.first == attr_action::hide)
+        if(action.first == test_action::hide)
           continue;
         parents.commit([&logger](const auto &committed) {
           logger.started_suite(committed);
@@ -69,7 +69,7 @@ namespace detail {
         const log::test_name name = {parents.committed(), test.name, test.id};
         logger.started_test(name);
 
-        if(action.first == attr_action::skip) {
+        if(action.first == test_action::skip) {
           logger.skipped_test(name, action.second);
           continue;
         }

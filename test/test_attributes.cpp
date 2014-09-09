@@ -31,7 +31,7 @@ suite<> test_attr("attributes", [](auto &_) {
     });
 
     _.test("skipped attribute", []() {
-      constexpr bool_attr attr("attribute", attr_action::skip);
+      constexpr bool_attr attr("attribute", test_action::skip);
       attr_instance a = attr;
 
       expect(&a.attribute, equal_to(&attr));
@@ -40,7 +40,7 @@ suite<> test_attr("attributes", [](auto &_) {
 
     _.test("hidden attribute fails", []() {
       expect(
-        []() { bool_attr("attribute", attr_action::hide); },
+        []() { bool_attr("attribute", test_action::hide); },
         thrown<std::invalid_argument>("attribute's action can't be \"hide\"")
       );
     });
@@ -150,7 +150,7 @@ suite<> test_attr("attributes", [](auto &_) {
     _.test("no attributes", []() {
       expect(
         default_attr_filter{}( {} ),
-        equal_to(filter_result{attr_action::run, ""})
+        equal_to(filter_result{test_action::run, ""})
       );
     });
 
@@ -158,16 +158,16 @@ suite<> test_attr("attributes", [](auto &_) {
       constexpr bool_attr attr("bool");
       expect(
         default_attr_filter{}( {attr} ),
-        equal_to(filter_result{attr_action::run, ""})
+        equal_to(filter_result{test_action::run, ""})
       );
     });
 
     _.test("skipped attribute", []() {
-      constexpr bool_attr attr("bool", attr_action::skip);
+      constexpr bool_attr attr("bool", test_action::skip);
       attributes attrs = {attr("message")};
       expect(
         default_attr_filter{}(attrs),
-        equal_to(filter_result{attr_action::skip, "message"})
+        equal_to(filter_result{test_action::skip, "message"})
       );
     });
   });
