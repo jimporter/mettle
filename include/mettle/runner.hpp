@@ -3,6 +3,7 @@
 
 #include "compiled_suite.hpp"
 #include "log/core.hpp"
+#include "filters_core.hpp"
 
 namespace mettle {
 
@@ -59,6 +60,8 @@ namespace detail {
 
       for(const auto &test : suite) {
         auto action = filter(test.attrs);
+        if(action.first == test_action::indeterminate)
+          action = filter_by_attr(test.attrs);
 
         if(action.first == test_action::hide)
           continue;
@@ -114,13 +117,13 @@ inline void run_tests(const Suites &suites, log::test_logger &&logger,
 template<typename Suites>
 inline void run_tests(const Suites &suites, log::test_logger &logger,
                       const test_runner &runner) {
-  run_tests(suites, logger, runner, default_attr_filter());
+  run_tests(suites, logger, runner, default_filter());
 }
 
 template<typename Suites>
 inline void run_tests(const Suites &suites, log::test_logger &&logger,
                       const test_runner &runner) {
-  run_tests(suites, logger, runner, default_attr_filter());
+  run_tests(suites, logger, runner, default_filter());
 }
 
 

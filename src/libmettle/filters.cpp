@@ -23,9 +23,8 @@ namespace mettle {
   }
 
   filter_result attr_filter_set::operator ()(const attributes &attrs) const {
-    // Pretend we always have a default filter, if nothing else.
     if(filters_.empty())
-      return default_attr_filter{}(attrs);
+      return {test_action::indeterminate, ""};
 
     bool set = false;
     filter_result result;
@@ -46,6 +45,8 @@ namespace mettle {
           set = true;
         }
         break;
+      case test_action::indeterminate:
+        assert(false && "unexpected test_action");
       }
     }
     return result;

@@ -39,6 +39,8 @@ std::string to_printable(const test_action &action) {
     return "test_action::skip";
   case test_action::hide:
     return "test_action::hide";
+  case test_action::indeterminate:
+    return "attr_action::indeterminate";
   }
 }
 

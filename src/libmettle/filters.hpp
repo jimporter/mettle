@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <mettle/attributes.hpp>
+#include <mettle/filters_core.hpp>
 
 namespace mettle {
 

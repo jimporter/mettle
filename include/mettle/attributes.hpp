@@ -12,7 +12,8 @@ namespace mettle {
 enum class test_action {
   run,
   skip,
-  hide
+  hide,
+  indeterminate
 };
 
 class attr_base;
@@ -28,8 +29,11 @@ class attr_base {
 protected:
   constexpr attr_base(const char *name, test_action action = test_action::run)
     : name_(name), action_(action) {
-    if(action == test_action::hide)
-      throw std::invalid_argument("attribute's action can't be \"hide\"");
+    if(action != test_action::run && action != test_action::skip) {
+      throw std::invalid_argument(
+        "attribute's action must be \"run\" or \"skip\""
+      );
+    }
   }
   ~attr_base() = default;
 public:
@@ -68,18 +72,6 @@ namespace detail {
       return lhs < rhs.attribute.name();
     }
   };
-
-  template<typename T>
-  std::string join(const T &t, const std::string &delim) {
-    auto begin = t.begin(), end = t.end();
-    if(begin == end)
-      return "";
-    std::stringstream s;
-    s << *begin;
-    for(++begin; begin != end; ++begin)
-      s << delim << *begin;
-    return s.str();
-  }
 }
 
 class bool_attr : public attr_base {
@@ -170,18 +162,6 @@ inline attributes unite(const attributes &lhs, const attributes &rhs) {
   );
   return all_attrs;
 }
-
-using filter_result = std::pair<test_action, std::string>;
-
-struct default_attr_filter {
-  filter_result operator ()(const attributes &attrs) const {
-    for(const auto &attr : attrs) {
-      if(attr.attribute.action() == test_action::skip)
-        return {test_action::skip, detail::join(attr.value, ", ")};
-    }
-    return {test_action::run, ""};
-  }
-};
 
 constexpr bool_attr skip("skip", test_action::skip);
 

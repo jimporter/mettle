@@ -41,7 +41,9 @@ suite<> test_attr("attributes", [](auto &_) {
     _.test("hidden attribute fails", []() {
       expect(
         []() { bool_attr("attribute", test_action::hide); },
-        thrown<std::invalid_argument>("attribute's action can't be \"hide\"")
+        thrown<std::invalid_argument>(
+          "attribute's action must be \"run\" or \"skip\""
+        )
       );
     });
 
@@ -143,32 +145,6 @@ suite<> test_attr("attributes", [](auto &_) {
       expect(united, equal_to(attributes{
         attr1("a"), attr2("a", "b"), attr3("b")
       }));
-    });
-  });
-
-  subsuite<>(_, "default_attr_filter", [](auto &_) {
-    _.test("no attributes", []() {
-      expect(
-        default_attr_filter{}( {} ),
-        equal_to(filter_result{test_action::run, ""})
-      );
-    });
-
-    _.test("regular attribute", []() {
-      constexpr bool_attr attr("bool");
-      expect(
-        default_attr_filter{}( {attr} ),
-        equal_to(filter_result{test_action::run, ""})
-      );
-    });
-
-    _.test("skipped attribute", []() {
-      constexpr bool_attr attr("bool", test_action::skip);
-      attributes attrs = {attr("message")};
-      expect(
-        default_attr_filter{}(attrs),
-        equal_to(filter_result{test_action::skip, "message"})
-      );
     });
   });
 });

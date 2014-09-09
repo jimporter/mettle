@@ -92,6 +92,60 @@ auto value_filter_suite(bool negated) {
   });
 }
 
+suite<> test_core_filters("core filters", [](auto &_) {
+  subsuite<>(_, "default_filter", [](auto &_) {
+    _.test("no attributes", []() {
+      expect(
+        default_filter{}({}),
+        equal_to(filter_result{test_action::indeterminate, ""})
+      );
+    });
+
+    _.test("regular attribute", []() {
+      constexpr bool_attr attr("bool");
+      expect(
+        default_filter{}({attr}),
+        equal_to(filter_result{test_action::indeterminate, ""})
+      );
+    });
+
+    _.test("skipped attribute", []() {
+      constexpr bool_attr attr("bool", test_action::skip);
+      attributes attrs = {attr("message")};
+      expect(
+        default_filter{}(attrs),
+        equal_to(filter_result{test_action::indeterminate, ""})
+      );
+    });
+  });
+
+  subsuite<>(_, "filter_by_attr", [](auto &_) {
+    _.test("no attributes", []() {
+      expect(
+        filter_by_attr({}),
+        equal_to(filter_result{test_action::run, ""})
+      );
+    });
+
+    _.test("regular attribute", []() {
+      constexpr bool_attr attr("bool");
+      expect(
+        filter_by_attr({attr}),
+        equal_to(filter_result{test_action::run, ""})
+      );
+    });
+
+    _.test("skipped attribute", []() {
+      constexpr bool_attr attr("bool", test_action::skip);
+      attributes attrs = {attr("message")};
+      expect(
+        filter_by_attr(attrs),
+        equal_to(filter_result{test_action::skip, "message"})
+      );
+    });
+  });
+});
+
 suite<> test_filter("attribute filtering", [](auto &_) {
   subsuite<>(_, "filter_item", [](auto &_) {
     for(bool negated : {false, true}) {
@@ -350,16 +404,16 @@ suite<> test_filter("attribute filtering", [](auto &_) {
 
       expect(
         attr_filter_set{}( {} ),
-        equal_to(filter_result{test_action::run, ""})
+        equal_to(filter_result{test_action::indeterminate, ""})
       );
       expect(
         attr_filter_set{}( {attr2} ),
-        equal_to(filter_result{test_action::run, ""})
+        equal_to(filter_result{test_action::indeterminate, ""})
       );
       attributes attrs = { attr1("message") };
       expect(
         attr_filter_set{}(attrs),
-        equal_to(filter_result{test_action::skip, "message"})
+        equal_to(filter_result{test_action::indeterminate, ""})
       );
     });
 
