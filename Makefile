@@ -1,6 +1,8 @@
-CXX := clang++
-CXXFLAGS := -std=c++1y -stdlib=libc++ -Wall -Wextra -pedantic -Werror
-LDFLAGS := -lsupc++
+CXXFLAGS := -std=c++1y
+
+-include config.mk
+
+CXXFLAGS += -Wall -Wextra -pedantic -Werror
 
 TESTS := $(patsubst %.cpp,%,$(wildcard test/*.cpp))
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
@@ -46,6 +48,12 @@ libmettle.so: SRC_LDFLAGS += -lboost_program_options -lboost_iostreams
 libmettle.so: src/libmettle/driver.o src/libmettle/filters.o \
               src/libmettle/forked_test_runner.o src/libmettle/cmd_parse.o
 	$(CXX) -shared $(CXXFLAGS) $^ $(SRC_LDFLAGS) -o $@
+
+.PHONY: install
+install: all
+	cp -R include $(PREFIX)/include
+	cp mettle $(PREFIX)/bin/mettle
+	cp libmettle.so $(PREFIX)/lib/libmettle.so
 
 .PHONY: test
 test: tests mettle
