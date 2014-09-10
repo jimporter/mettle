@@ -8,14 +8,14 @@ auto match_filter_item(const attr_instance &attr, bool matched) {
   std::stringstream s;
   s << "filter_item(" << to_printable(attr.attribute.name()) << ") => "
     << to_printable(matched);
-  return make_matcher([attr, matched](const attr_filter::filter_item &actual) {
+  return make_matcher([attr, matched](const attr_filter_item &actual) {
     return actual.attribute == attr.attribute.name() &&
            actual.func(&attr) == matched;
   }, s.str());
 }
 
 namespace mettle {
-  std::string to_printable(const attr_filter::filter_item &item) {
+  std::string to_printable(const attr_filter_item &item) {
     return "filter_item(" + to_printable(item.attribute) + ")";
   }
 }

@@ -147,7 +147,7 @@ suite<> test_core_filters("core filters", [](auto &_) {
 });
 
 suite<> test_filter("attribute filtering", [](auto &_) {
-  subsuite<>(_, "filter_item", [](auto &_) {
+  subsuite<>(_, "attr_filter_item", [](auto &_) {
     for(bool negated : {false, true}) {
       _.subsuite(name_filter_suite(negated));
       _.subsuite(value_filter_suite(negated));
