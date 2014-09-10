@@ -19,11 +19,18 @@ namespace detail {
   }
 }
 
-using filter_result = std::pair<test_action, std::string>;
+struct filter_result {
+  filter_result() = default;
+  filter_result(test_action action, std::string message = "")
+    : action(action), message(message) {}
+
+  test_action action;
+  std::string message;
+};
 
 struct default_filter {
   filter_result operator ()(const attributes &) const {
-    return {test_action::indeterminate, ""};
+    return test_action::indeterminate;
   }
 };
 
@@ -32,7 +39,7 @@ inline filter_result filter_by_attr(const attributes &attrs) {
     if(attr.attribute.action() == test_action::skip)
       return {test_action::skip, detail::join(attr.value, ", ")};
   }
-  return {test_action::run, ""};
+  return test_action::run;
 }
 
 } // namespace mettle

@@ -60,10 +60,10 @@ namespace detail {
 
       for(const auto &test : suite) {
         auto action = filter(test.attrs);
-        if(action.first == test_action::indeterminate)
+        if(action.action == test_action::indeterminate)
           action = filter_by_attr(test.attrs);
 
-        if(action.first == test_action::hide)
+        if(action.action == test_action::hide)
           continue;
         parents.commit([&logger](const auto &committed) {
           logger.started_suite(committed);
@@ -72,8 +72,8 @@ namespace detail {
         const log::test_name name = {parents.committed(), test.name, test.id};
         logger.started_test(name);
 
-        if(action.first == test_action::skip) {
-          logger.skipped_test(name, action.second);
+        if(action.action == test_action::skip) {
+          logger.skipped_test(name, action.message);
           continue;
         }
 

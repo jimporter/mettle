@@ -2,6 +2,7 @@
 #define INC_METTLE_TEST_HELPERS_HPP
 
 #include <mettle/attributes.hpp>
+#include <mettle/filters_core.hpp>
 
 namespace mettle {
 
@@ -46,6 +47,10 @@ std::string to_printable(const test_action &action) {
 
 bool operator ==(const attr_instance &lhs, const attr_instance &rhs) {
   return lhs.attribute.name() == rhs.attribute.name() && lhs.value == rhs.value;
+}
+
+bool operator ==(const filter_result &lhs, const filter_result &rhs) {
+  return lhs.action == rhs.action && lhs.message == rhs.message;
 }
 
 } // namespace mettle

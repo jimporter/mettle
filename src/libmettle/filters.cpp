@@ -19,22 +19,22 @@ namespace mettle {
          !explicitly_shown.count(&attr))
         return {test_action::skip, join(attr.value, ", ")};
     }
-    return {test_action::run, ""};
+    return test_action::run;
   }
 
   filter_result attr_filter_set::operator ()(const attributes &attrs) const {
     if(filters_.empty())
-      return {test_action::indeterminate, ""};
+      return test_action::indeterminate;
 
     bool set = false;
     filter_result result;
     for(const auto &f : filters_) {
       auto curr = f(attrs);
-      switch(curr.first) {
+      switch(curr.action) {
       case test_action::run:
         return curr;
       case test_action::skip:
-        if(!set || result.first == test_action::hide) {
+        if(!set || result.action == test_action::hide) {
           result = curr;
           set = true;
         }
