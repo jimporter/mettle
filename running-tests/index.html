@@ -15,7 +15,7 @@
         <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
         <link href="../css/prettify-1.0.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link href="../css/extra.css" rel="stylesheet">
+        <link href=".././css/extra.css" rel="stylesheet">
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -49,12 +49,6 @@
         <div class="navbar-collapse collapse">
             <!-- Main navigation -->
             <ul class="nav navbar-nav">
-            
-            
-                <li >
-                    <a href="..">Home</a>
-                </li>
-            
             
             
                 <li class="dropdown active">
@@ -197,6 +191,9 @@ in-line with the tests).</p>
 <p>By default, mettle forks its process to run each test, in order to detect
 crashes during the execution of a test. To disable this, you can pass
 <code>--no-fork</code>, and all the tests will run in the same process.</p>
+<h4 id="-test-regex-t">--test <em>REGEX</em> (-T)</h4>
+<p>Filter the tests that will be run to those matching a regex. If <code>--test</code> is
+specified multiple times, tests that match <em>any</em> of the regexes will be run.</p>
 <h4 id="-attr-attrvalue-a">--attr <em>ATTR[=VALUE],...</em> (-a)</h4>
 <p>Filter the tests that will be run based on the tests'
 <a href="../writing-tests/#test-attributes">attributes</a>. Tests matching each of the
