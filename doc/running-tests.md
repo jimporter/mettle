@@ -96,6 +96,11 @@ By default, mettle forks its process to run each test, in order to detect
 crashes during the execution of a test. To disable this, you can pass
 `--no-fork`, and all the tests will run in the same process.
 
+#### --test *REGEX* (-T)
+
+Filter the tests that will be run to those matching a regex. If `--test` is
+specified multiple times, tests that match *any* of the regexes will be run.
+
 #### --attr *ATTR[=VALUE],...* (-a)
 
 Filter the tests that will be run based on the tests'

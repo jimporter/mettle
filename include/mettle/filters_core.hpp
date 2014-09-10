@@ -29,7 +29,7 @@ struct filter_result {
 };
 
 struct default_filter {
-  filter_result operator ()(const attributes &) const {
+  filter_result operator ()(const test_name &, const attributes &) const {
     return test_action::indeterminate;
   }
 };

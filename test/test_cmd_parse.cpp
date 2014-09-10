@@ -27,7 +27,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     auto filter = parse_attr("attr");
     expect(filter.size(), equal_to(1u));
     expect(filter, array( match_filter_item(attr, true) ));
-    expect(filter({attr}),
+    expect(filter(test_name(), {attr}),
            equal_to( filter_result{test_action::run, ""}) );
   });
 
@@ -37,7 +37,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     auto filter = parse_attr("attr=value");
     expect(filter.size(), equal_to(1u));
     expect(filter, array( match_filter_item(attr("value"), true) ));
-    expect(filter({attr("value")}),
+    expect(filter(test_name(), {attr("value")}),
            equal_to( filter_result{test_action::run, ""} ));
   });
 
@@ -47,7 +47,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     auto filter = parse_attr("attr=");
     expect(filter.size(), equal_to(1u));
     expect(filter, array( match_filter_item(attr(""), true) ));
-    expect(filter({attr("")}),
+    expect(filter(test_name(), {attr("")}),
            equal_to( filter_result{test_action::run, ""} ));
   });
 
@@ -58,7 +58,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     expect(filter.size(), equal_to(1u));
     expect(filter, array( match_filter_item(attr, false) ));
     attributes attrs = {attr("message")};
-    expect(filter(attrs),
+    expect(filter(test_name(), attrs),
            equal_to( filter_result{test_action::hide, "message"}) );
   });
 
@@ -69,7 +69,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     expect(filter.size(), equal_to(1u));
     expect(filter, array( match_filter_item(attr("value"), false) ));
     attributes attrs = {attr("value")};
-    expect(filter(attrs),
+    expect(filter(test_name(), attrs),
            equal_to( filter_result{test_action::hide, "value"} ));
   });
 
@@ -80,7 +80,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     expect(filter.size(), equal_to(1u));
     expect(filter, array( match_filter_item(attr(""), false) ));
     attributes attrs = {attr("")};
-    expect(filter(attrs),
+    expect(filter(test_name(), attrs),
            equal_to( filter_result{test_action::hide, ""} ));
   });
 
@@ -93,7 +93,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     expect(filter, array(
       match_filter_item(attr1, true), match_filter_item(attr2, true)
     ));
-    expect(filter({attr1, attr2}),
+    expect(filter(test_name(), {attr1, attr2}),
            equal_to( filter_result{test_action::run, ""}) );
   });
 
@@ -106,7 +106,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
     expect(filter, array(
       match_filter_item(attr1("1"), true), match_filter_item(attr2("2"), true)
     ));
-    expect(filter({attr1("1"), attr2("2")}),
+    expect(filter(test_name(), {attr1("1"), attr2("2")}),
            equal_to( filter_result{test_action::run, ""}) );
   });
 
@@ -120,7 +120,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
       match_filter_item(attr1, true), match_filter_item(attr2, false)
     ));
     attributes attrs = {attr1, attr2};
-    expect(filter(attrs),
+    expect(filter(test_name(), attrs),
            equal_to( filter_result{test_action::hide, ""}) );
   });
 
@@ -134,7 +134,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
       match_filter_item(attr1("1"), true), match_filter_item(attr2("2"), false)
     ));
     attributes attrs = {attr1("1"), attr2("2")};
-    expect(filter(attrs),
+    expect(filter(test_name(), attrs),
            equal_to( filter_result{test_action::hide, "2"}) );
   });
 

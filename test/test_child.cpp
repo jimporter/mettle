@@ -32,17 +32,17 @@ struct recording_logger : log::file_logger {
     suites = actual_suites;
   }
 
-  void started_test(const log::test_name &actual_test) {
+  void started_test(const test_name &actual_test) {
     called = "started_test";
     test = actual_test;
   }
-  void passed_test(const log::test_name &actual_test,
+  void passed_test(const test_name &actual_test,
                    const log::test_output &actual_output) {
     called = "passed_test";
     test = actual_test;
     output = actual_output;
   }
-  void failed_test(const log::test_name &actual_test,
+  void failed_test(const test_name &actual_test,
                    const std::string &actual_message,
                    const log::test_output &actual_output) {
     called = "failed_test";
@@ -50,7 +50,7 @@ struct recording_logger : log::file_logger {
     message = actual_message;
     output = actual_output;
   }
-  void skipped_test(const log::test_name &actual_test,
+  void skipped_test(const test_name &actual_test,
                     const std::string &actual_message) {
     called = "skipped_test";
     test = actual_test;
@@ -59,7 +59,7 @@ struct recording_logger : log::file_logger {
 
   std::string called;
   std::vector<std::string> suites;
-  log::test_name test;
+  test_name test;
   std::string message;
   log::test_output output;
 };
@@ -110,7 +110,7 @@ suite<fixture> test_child("test child logger", [](auto &_) {
   });
 
   _.test("started_test()", [](fixture &f) {
-    log::test_name test = {{"suite", "subsuite"}, "test", 1};
+    test_name test = {{"suite", "subsuite"}, "test", 1};
     f.child.started_test(test);
     f.pipe(f.stream);
 
@@ -119,7 +119,7 @@ suite<fixture> test_child("test child logger", [](auto &_) {
   });
 
   _.test("passed_test()", [](fixture &f) {
-    log::test_name test = {{"suite", "subsuite"}, "test", 1};
+    test_name test = {{"suite", "subsuite"}, "test", 1};
     log::test_output output = {"stdout", "stderr"};
 
     f.child.passed_test(test, output);
@@ -132,7 +132,7 @@ suite<fixture> test_child("test child logger", [](auto &_) {
   });
 
   _.test("failed_test()", [](fixture &f) {
-    log::test_name test = {{"suite", "subsuite"}, "test", 1};
+    test_name test = {{"suite", "subsuite"}, "test", 1};
     std::string message = "failure";
     log::test_output output = {"stdout", "stderr"};
 
@@ -147,7 +147,7 @@ suite<fixture> test_child("test child logger", [](auto &_) {
   });
 
   _.test("skipped_test()", [](fixture &f) {
-    log::test_name test = {{"suite", "subsuite"}, "test", 1};
+    test_name test = {{"suite", "subsuite"}, "test", 1};
     std::string message = "message";
     f.child.skipped_test(test, message);
     f.pipe(f.stream);

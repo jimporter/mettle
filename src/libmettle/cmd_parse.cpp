@@ -1,7 +1,9 @@
 #include "cmd_parse.hpp"
 
-#include <boost/program_options.hpp>
+#include <regex>
 #include <stdexcept>
+
+#include <boost/program_options.hpp>
 
 namespace mettle {
 
@@ -82,6 +84,23 @@ void validate(boost::any &v, const std::vector<std::string> &values,
   for(const auto &i : values) {
     try {
       filters->insert(parse_attr(i));
+    }
+    catch(...) {
+      boost::throw_exception(invalid_option_value(i));
+    }
+  }
+}
+
+void validate(boost::any &v, const std::vector<std::string> &values,
+              name_filter_set*, int) {
+  using namespace boost::program_options;
+  if(v.empty())
+    v = name_filter_set();
+  name_filter_set* filters = boost::any_cast<name_filter_set>(&v);
+  assert(filters != nullptr);
+  for(const auto &i : values) {
+    try {
+      filters->insert(std::regex(i));
     }
     catch(...) {
       boost::throw_exception(invalid_option_value(i));

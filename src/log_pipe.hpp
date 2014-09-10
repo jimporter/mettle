@@ -75,7 +75,7 @@ namespace log {
       return result;
     }
 
-    log::test_name read_test_name(BENCODE_ANY_NS::any &test) {
+    test_name read_test_name(BENCODE_ANY_NS::any &test) {
       using namespace BENCODE_ANY_NS;
       auto &data = any_cast<bencode::dict &>(test);
 
@@ -84,7 +84,7 @@ namespace log {
       uint64_t id = (file_index_ << 32) + static_cast<uint64_t>(
         any_cast<bencode::integer>(data.at("id"))
       );
-      return log::test_name{
+      return {
         read_suites(data.at("suites")),
         std::move(any_cast<bencode::string &>( data.at("test") )),
         id

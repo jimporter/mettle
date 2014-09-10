@@ -28,17 +28,17 @@ struct test_event_logger : log::test_logger {
     events.push_back("ended_suite");
   }
 
-  void started_test(const log::test_name &) {
+  void started_test(const test_name &) {
     events.push_back("started_test");
   }
-  void passed_test(const log::test_name &, const log::test_output &) {
+  void passed_test(const test_name &, const log::test_output &) {
     events.push_back("passed_test");
   }
-  void failed_test(const log::test_name &, const std::string &,
+  void failed_test(const test_name &, const std::string &,
                    const log::test_output &) {
     events.push_back("failed_test");
   }
-  void skipped_test(const log::test_name &, const std::string &) {
+  void skipped_test(const test_name &, const std::string &) {
     events.push_back("skipped_test");
   }
 
@@ -284,10 +284,11 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
         "ended_run"
       };
 
-      auto filter = [](const attributes &attrs) -> filter_result {
-        if(attrs.find("hide") != attrs.end())
-          return {test_action::hide, ""};
-        return {test_action::run, ""};
+      auto filter = [](
+        const test_name &, const attributes &attrs
+      ) -> filter_result {
+        return attrs.find("hide") != attrs.end() ? test_action::hide :
+          test_action::run;
       };
       run_tests(s, logger, runner, filter);
       expect(logger.events, equal_to(expected));

@@ -1,7 +1,8 @@
 #include "filters.hpp"
 
 namespace mettle {
-  filter_result attr_filter::operator ()(const attributes &attrs) const {
+  filter_result attr_filter::operator ()(const test_name &,
+                                         const attributes &attrs) const {
     using detail::join;
 
     std::set<const attr_instance*> explicitly_shown;
@@ -22,14 +23,15 @@ namespace mettle {
     return test_action::run;
   }
 
-  filter_result attr_filter_set::operator ()(const attributes &attrs) const {
+  filter_result attr_filter_set::operator ()(const test_name &name,
+                                             const attributes &attrs) const {
     if(filters_.empty())
       return test_action::indeterminate;
 
     bool set = false;
     filter_result result;
     for(const auto &f : filters_) {
-      auto curr = f(attrs);
+      auto curr = f(name, attrs);
       switch(curr.action) {
       case test_action::run:
         return curr;
@@ -50,5 +52,17 @@ namespace mettle {
       }
     }
     return result;
+  }
+
+  filter_result name_filter_set::operator ()(const test_name &name,
+                                             const attributes &) const {
+    if(filters_.empty())
+      return test_action::indeterminate;
+
+    for(const auto &f : filters_) {
+      if(std::regex_search(name.full_name(), f))
+        return test_action::run;
+    }
+    return test_action::hide;
   }
 }

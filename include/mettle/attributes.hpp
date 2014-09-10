@@ -7,14 +7,9 @@
 #include <stdexcept>
 #include <string>
 
-namespace mettle {
+#include "test_info.hpp"
 
-enum class test_action {
-  run,
-  skip,
-  hide,
-  indeterminate
-};
+namespace mettle {
 
 class attr_base;
 

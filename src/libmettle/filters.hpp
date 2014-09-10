@@ -1,11 +1,50 @@
 #ifndef INC_METTLE_FILTERS_HPP
 #define INC_METTLE_FILTERS_HPP
 
+#include <regex>
 #include <vector>
 
 #include <mettle/filters_core.hpp>
 
 namespace mettle {
+
+class name_filter_set {
+public:
+  using value_type = std::regex;
+  using container_type = std::vector<value_type>;
+  using iterator = container_type::const_iterator;
+
+  name_filter_set() = default;
+  name_filter_set(const std::initializer_list<value_type> &i) : filters_(i) {}
+
+  filter_result operator ()(const test_name &name, const attributes &) const;
+
+  void insert(const value_type &item) {
+    filters_.push_back(item);
+  }
+
+  void insert(value_type &&item) {
+    filters_.push_back(std::move(item));
+  }
+
+  bool empty() const {
+    return filters_.empty();
+  }
+
+  size_t size() const {
+    return filters_.size();
+  }
+
+  iterator begin() const {
+    return filters_.begin();
+  }
+
+  iterator end() const {
+    return filters_.end();
+  }
+private:
+  container_type filters_;
+};
 
 struct attr_filter_item {
   std::string attribute;
@@ -51,7 +90,7 @@ public:
   attr_filter() = default;
   attr_filter(const std::initializer_list<value_type> &i) : filters_(i) {}
 
-  filter_result operator ()(const attributes &attrs) const;
+  filter_result operator ()(const test_name &, const attributes &attrs) const;
 
   void insert(const value_type &item) {
     filters_.push_back(item);
@@ -89,7 +128,7 @@ public:
   attr_filter_set() = default;
   attr_filter_set(const std::initializer_list<value_type> &i) : filters_(i) {}
 
-  filter_result operator ()(const attributes &attrs) const;
+  filter_result operator ()(const test_name &, const attributes &attrs) const;
 
   void insert(const value_type &item) {
     filters_.push_back(item);
@@ -116,6 +155,23 @@ public:
   }
 private:
   container_type filters_;
+};
+
+struct filter_set {
+  name_filter_set by_name;
+  attr_filter_set by_attr;
+
+  filter_result
+  operator ()(const test_name &name, const attributes &attrs) const {
+    auto first = by_name(name, attrs);
+    if(first.action == test_action::hide)
+      return first;
+
+    auto second = by_attr(name, attrs);
+    if(second.action == test_action::indeterminate)
+      return first;
+    return second;
+  }
 };
 
 } // namespace mettle

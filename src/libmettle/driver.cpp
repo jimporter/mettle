@@ -24,7 +24,7 @@ namespace detail {
     using namespace mettle;
     namespace opts = boost::program_options;
 
-    attr_filter_set filters;
+    filter_set filters;
 
     opts::options_description generic("Generic options");
     generic.add_options()
@@ -44,7 +44,9 @@ namespace detail {
     child.add_options()
       ("timeout,t", opts::value<size_t>(), "timeout in ms")
       ("no-fork", "don't fork for each test")
-      ("attr,a", opts::value(&filters), "attributes of tests to run")
+      ("test,T", opts::value(&filters.by_name),
+       "regex matching names of tests to run")
+      ("attr,a", opts::value(&filters.by_attr), "attributes of tests to run")
     ;
 
     opts::options_description hidden("Hidden options");

@@ -45,6 +45,13 @@ std::string to_printable(const test_action &action) {
   }
 }
 
+std::string to_printable(const filter_result &result) {
+  std::stringstream s;
+  s << "filter_result(" << to_printable(result.action) << ", "
+    << to_printable(result.message) << ")";
+  return s.str();
+}
+
 bool operator ==(const attr_instance &lhs, const attr_instance &rhs) {
   return lhs.attribute.name() == rhs.attribute.name() && lhs.value == rhs.value;
 }

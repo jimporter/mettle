@@ -43,6 +43,8 @@ int main(int argc, const char *argv[]) {
   child.add_options()
     ("timeout,t", opts::value<size_t>(), "timeout in ms")
     ("no-fork", "don't fork for each test")
+    ("test,T", opts::value< std::vector<std::string> >(),
+     "regex matching names of tests to run")
     ("attr,a", opts::value< std::vector<std::string> >(),
      "attributes of tests to run")
   ;

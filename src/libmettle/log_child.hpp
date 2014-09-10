@@ -10,15 +10,15 @@
 
 namespace mettle {
 
-namespace log {
+inline void encode(std::ostream &os, const test_name &test) {
+  bencode::encode_dict(os,
+    "id", test.id,
+    "suites", test.suites,
+    "test", test.test
+  );
+}
 
-  inline void encode(std::ostream &os, const test_name &test) {
-    bencode::encode_dict(os,
-      "id", test.id,
-      "suites", test.suites,
-      "test", test.test
-    );
-  }
+namespace log {
 
   inline void encode(std::ostream &os, const test_output &output) {
     bencode::encode_dict(os,

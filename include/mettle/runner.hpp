@@ -43,6 +43,12 @@ namespace detail {
       return committed_;
     }
 
+    value_type all() const {
+      value_type all = committed_;
+      all.insert(all.end(), queued_.begin(), queued_.end());
+      return all;
+    }
+
     bool has_queued() const {
       return !queued_.empty();
     }
@@ -59,7 +65,8 @@ namespace detail {
       parents.push(suite.name());
 
       for(const auto &test : suite) {
-        auto action = filter(test.attrs);
+        const test_name name = {parents.all(), test.name, test.id};
+        auto action = filter(name, test.attrs);
         if(action.action == test_action::indeterminate)
           action = filter_by_attr(test.attrs);
 
@@ -69,7 +76,6 @@ namespace detail {
           logger.started_suite(committed);
         });
 
-        const log::test_name name = {parents.committed(), test.name, test.id};
         logger.started_test(name);
 
         if(action.action == test_action::skip) {
