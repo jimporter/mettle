@@ -87,7 +87,7 @@ int main(int argc, const char *argv[]) {
 
   unsigned int verbosity = args.count("verbose") ?
     args["verbose"].as<unsigned int>() : 0;
-  term::enabled(args.count("color"));
+  term::enable(std::cout, args.count("color"));
   bool show_terminal = args.count("show-terminal");
 
   if(show_terminal && verbosity < 2) {

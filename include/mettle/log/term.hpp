@@ -7,18 +7,14 @@
 namespace term {
 
 namespace detail {
-  inline std::atomic<bool> & status() {
-    static std::atomic<bool> status(false);
-    return status;
+  inline int stream_flag() {
+    static int flag = std::ios_base::xalloc();
+    return flag;
   }
 }
 
-inline void enabled(bool enabled) {
-  detail::status() = enabled;
-}
-
-inline bool enabled() {
-  return detail::status();
+inline void enable(std::ios_base &ios, bool enabled) {
+  ios.iword(detail::stream_flag()) = enabled;
 }
 
 enum class color {
@@ -77,7 +73,7 @@ inline format reset() {
 }
 
 inline std::ostream & operator <<(std::ostream &o, const format &fmt) {
-  if(enabled())
+  if(o.iword(detail::stream_flag()))
     return o << fmt.string_;
   return o;
 }
