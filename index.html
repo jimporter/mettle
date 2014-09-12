@@ -51,6 +51,12 @@
             <ul class="nav navbar-nav">
             
             
+                <li >
+                    <a href="install/">Installation</a>
+                </li>
+            
+            
+            
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
                     <ul class="dropdown-menu">
@@ -88,7 +94,7 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="running-tests/">
+                    <a rel="prev" href="install/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -116,10 +122,6 @@
             <li><a href="#features">Features</a></li>
         
             <li><a href="#a-brief-example">A brief example</a></li>
-        
-            <li><a href="#dependencies">Dependencies</a></li>
-        
-            <li><a href="#installation">Installation</a></li>
         
     
     </ul>
@@ -176,18 +178,6 @@ suite&lt;&gt; basic(&quot;a basic suite&quot;, [](auto &amp;_) {
 <p>For further examples, please see the
 <a href="https://github.com/jimporter/mettle/tree/master/examples"><code>examples/</code></a>
 subdirectory.</p>
-<h2 id="dependencies">Dependencies</h2>
-<p>This project currently requires a C++14 compiler (for generic lambdas in the
-matchers), <a href="http://www.boost.org/">Boost</a> (for program_options and iostreams),
-and <a href="https://github.com/jimporter/bencode.hpp">bencode.hpp</a>. It's been tested
-against clang 3.4 (get it from <a href="http://llvm.org/apt/">http://llvm.org/apt/</a>;
-Ubuntu 13.10's version won't work!).</p>
-<h2 id="installation">Installation</h2>
-<p>mettle has two parts: a library and an executable called <code>mettle</code>. To build the
-<code>mettle</code> executable and <code>libmettle.so</code>, just run <code>make</code> to create the files in
-the root directory. Installation of the library headers is simple: just copy all
-the files in the <code>include/</code> directory to wherever you'd like. (This is, of
-course, suboptimal, but expect improvements to the process soon!)</p>
 </div>
         </div>
 
