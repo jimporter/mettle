@@ -63,19 +63,3 @@ suite<> basic("a basic suite", [](auto &_) {
 For further examples, please see the
 [`examples/`](https://github.com/jimporter/mettle/tree/master/examples)
 subdirectory.
-
-## Dependencies
-
-This project currently requires a C++14 compiler (for generic lambdas in the
-matchers), [Boost](http://www.boost.org/) (for program_options and iostreams),
-and [bencode.hpp](https://github.com/jimporter/bencode.hpp). It's been tested
-against clang 3.4 (get it from [http://llvm.org/apt/](http://llvm.org/apt/);
-Ubuntu 13.10's version won't work!).
-
-## Installation
-
-mettle has two parts: a library and an executable called `mettle`. To build the
-`mettle` executable and `libmettle.so`, just run `make` to create the files in
-the root directory. Installation of the library headers is simple: just copy all
-the files in the `include/` directory to wherever you'd like. (This is, of
-course, suboptimal, but expect improvements to the process soon!)
