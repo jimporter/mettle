@@ -15,10 +15,7 @@ namespace log {
 
   class multi_run : public file_logger {
   public:
-    multi_run(verbose vlog) : vlog_(vlog) {
-      if(vlog_.verbosity() == 2)
-        vlog_.indent(2);
-    }
+    multi_run(verbose &vlog) : vlog_(vlog), indent_(vlog.out) {}
 
     void started_run() {
       using namespace term;
@@ -31,12 +28,14 @@ namespace log {
         vlog_.out << format(sgr::bold) << "Test run" << reset() << " "
                   << format(sgr::bold, fg(color::yellow)) << "[#" << runs_
                   << "]" << reset() << std::endl << std::endl;
+        indent_++;
       }
       vlog_.started_run();
     }
 
     void ended_run() {
-      vlog_.ended_run();
+      if(vlog_.verbosity() == 2)
+        indent_--;
     }
 
     void started_suite(const std::vector<std::string> &suites) {
@@ -67,8 +66,13 @@ namespace log {
       vlog_.skipped_test(test, message);
     }
 
-    void started_file(const std::string &) {}
-    void ended_file(const std::string &) {}
+    void started_file(const std::string &file) {
+      vlog_.started_file(file);
+    }
+
+    void ended_file(const std::string &file) {
+      vlog_.ended_file(file);
+    }
 
     void failed_file(const std::string &file, const std::string &message) {
       // XXX: Distinguish between files executed multiple times per run?
@@ -95,6 +99,7 @@ namespace log {
       }
       vlog_.out << reset() << std::endl;
 
+      scoped_indent si(vlog_.out);
       for(const auto &i : failures_)
         summarize_failure(i.first.full_name(), i.second);
       for(const auto &i : failed_files_)
@@ -117,20 +122,21 @@ namespace log {
       format fail_count_fmt(
         sgr::bold, fg(failures.size() == runs_ ? color::red : color::yellow)
       );
-      vlog_.out << "  " << where << " " << format(sgr::bold, fg(color::red))
+      vlog_.out << where << " " << format(sgr::bold, fg(color::red))
                 << "FAILED" << reset() << " " << fail_count_fmt << "["
                 << failures.size() << "/" << runs_ << "]" << reset() << ":"
                 << std::endl;
 
+      scoped_indent si(vlog_.out);
       for(const auto &i : failures) {
-        vlog_.out << "    " << i.message << " "
-                  << format(sgr::bold, fg(color::yellow)) << "[#"
-                  << std::setw(run_width) << i.run << "]" << reset()
+        vlog_.out << i.message << " " << format(sgr::bold, fg(color::yellow))
+                  << "[#" << std::setw(run_width) << i.run << "]" << reset()
                   << std::endl;
       }
     }
 
-    verbose vlog_;
+    verbose &vlog_;
+    indenter indent_;
     size_t total_ = 0, skips_ = 0, runs_ = 0;
     std::map<test_name, std::vector<const failure>> failures_;
     std::map<std::string, std::vector<const failure>> failed_files_;

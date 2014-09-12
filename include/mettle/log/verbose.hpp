@@ -4,6 +4,7 @@
 #include <ostream>
 
 #include "core.hpp"
+#include "indent.hpp"
 #include "term.hpp"
 
 namespace mettle {
@@ -12,13 +13,12 @@ namespace log {
 
   class verbose {
   public:
-    verbose(std::ostream &out, unsigned int verbosity, bool show_terminal)
-      : out(out), verbosity_(verbosity), show_terminal_(show_terminal) {}
+    verbose(std::ostream &os, unsigned int verbosity, bool show_terminal)
+      : out(os), indent_(out), verbosity_(verbosity),
+        show_terminal_(show_terminal) {}
 
     void started_run() {
       first_ = true;
-      if(verbosity_ == 1)
-        out << std::string(base_indent_, ' ');
     }
 
     void ended_run() {
@@ -33,22 +33,22 @@ namespace log {
           out << std::endl;
         first_ = false;
 
-        const std::string indent((suites.size() - 1) * 2 + base_indent_, ' ');
-        out << indent << format(sgr::bold) << suites.back() << reset()
-            << std::endl;
+        out << format(sgr::bold) << suites.back() << reset() << std::endl;
+        indent_++;
       }
     }
 
-    void ended_suite(const std::vector<std::string> &) {}
+    void ended_suite(const std::vector<std::string> &) {
+      if(verbosity_ >= 2)
+        indent_--;
+    }
 
     void started_test(const test_name &test) {
-      if(verbosity_ >= 2) {
-        const std::string indent(test.suites.size() * 2 + base_indent_, ' ');
-        out << indent << test.test << " " << std::flush;
-      }
+      if(verbosity_ >= 2)
+        out << test.test << " " << std::flush;
     }
 
-    void passed_test(const test_name &test, const test_output &output) {
+    void passed_test(const test_name &, const test_output &output) {
       using namespace term;
       if(verbosity_ == 0) {
         return;
@@ -60,11 +60,11 @@ namespace log {
       else {
         out << format(sgr::bold, fg(color::green)) << "PASSED" << reset()
             << std::endl;
-        log_output(test.suites.size(), output);
+        log_output(output);
       }
     }
 
-    void failed_test(const test_name &test, const std::string &message,
+    void failed_test(const test_name &, const std::string &message,
                      const test_output &output) {
       using namespace term;
       if(verbosity_ == 0) {
@@ -79,7 +79,7 @@ namespace log {
         if(!message.empty())
           out << ": " << message;
         out << std::endl;
-        log_output(test.suites.size(), output);
+        log_output(output);
       }
     }
 
@@ -100,7 +100,15 @@ namespace log {
       }
     }
 
+    void started_file(const std::string &) {}
+
+    void ended_file(const std::string &) {
+      indent_.reset();
+    }
+
     void failed_file(const std::string &file, const std::string &message) {
+      indent_.reset();
+
       using namespace term;
       if(verbosity_ == 0) {
         return;
@@ -113,10 +121,8 @@ namespace log {
         if(!first_)
           out << std::endl;
         first_ = false;
-        const std::string indent(base_indent_, ' ');
-        out << indent << "`" << file << "` "
-            << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
-            << ": " << message << std::endl;
+        out << "`" << file << "` " << format(sgr::bold, fg(color::red))
+            << "FAILED" << reset() << ": " << message << std::endl;
       }
     }
 
@@ -124,33 +130,29 @@ namespace log {
       return verbosity_;
     }
 
-    void indent(size_t n) {
-      base_indent_ = n;
-    }
-
-    std::ostream &out;
+    indenting_ostream out;
   private:
-    void log_output(size_t depth, const test_output &output) {
+    void log_output(const test_output &output) {
       if(!show_terminal_)
         return;
 
       using namespace term;
-      const std::string indent((depth + 1) * 2 + base_indent_, ' ');
 
+      scoped_indent si(out);
       if(!output.stdout.empty()) {
-        out << indent << format(fg(color::yellow)) << "stdout" << reset() << ":"
+        out << format(fg(color::yellow)) << "stdout" << reset() << ":"
             << std::endl << output.stdout << std::endl;
       }
       if(!output.stderr.empty()) {
-        out << indent << format(fg(color::yellow)) << "stderr" << reset() << ":"
+        out << format(fg(color::yellow)) << "stderr" << reset() << ":"
             << std::endl << output.stderr << std::endl;
       }
     }
 
+    indenter indent_;
     unsigned int verbosity_;
     bool show_terminal_;
     bool first_ = true;
-    size_t base_indent_ = 0;
   };
 
 }

@@ -13,7 +13,7 @@ namespace log {
 
   class single_run : public file_logger {
   public:
-    single_run(verbose vlog) : vlog_(vlog) {}
+    single_run(verbose &vlog) : vlog_(vlog) {}
 
     void started_run() {
       vlog_.started_run();
@@ -78,6 +78,7 @@ namespace log {
       }
       vlog_.out << reset() << std::endl;
 
+      scoped_indent indent(vlog_.out);
       for(const auto &i : failures_)
         summarize_failure(i.test.full_name(), i.message);
       for(const auto &i : failed_files_)
@@ -101,11 +102,11 @@ namespace log {
     void summarize_failure(const std::string &where,
                            const std::string &message) {
       using namespace term;
-      vlog_.out << "  " << where << " " << format(sgr::bold, fg(color::red))
+      vlog_.out << where << " " << format(sgr::bold, fg(color::red))
                 << "FAILED" << reset() << ": " << message << std::endl;
     }
 
-    verbose vlog_;
+    verbose &vlog_;
     size_t total_ = 0, passes_ = 0, skips_ = 0;
     std::vector<const test_failure> failures_;
     std::vector<const file_failure> failed_files_;
