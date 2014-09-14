@@ -48,21 +48,21 @@ class format {
 public:
   template<typename First>
   explicit format(First &&first) {
-    std::stringstream s;
-    s << "\033[" << static_cast<size_t>(std::forward<First>(first)) << "m";
-    string_ = s.str();
+    std::ostringstream ss;
+    ss << "\033[" << static_cast<size_t>(std::forward<First>(first)) << "m";
+    string_ = ss.str();
   }
 
   template<typename First, typename ...Rest>
   explicit format(First &&first, Rest &&...rest) {
-    std::stringstream s;
-    s << "\033[" << static_cast<size_t>(std::forward<First>(first));
+    std::ostringstream ss;
+    ss << "\033[" << static_cast<size_t>(std::forward<First>(first));
 
     size_t args[] = {static_cast<size_t>(std::forward<Rest>(rest))...};
     for(const auto &i : args)
-      s << ";" << i;
-    s << "m";
-    string_ = s.str();
+      ss << ";" << i;
+    ss << "m";
+    string_ = ss.str();
   }
 private:
   std::string string_;

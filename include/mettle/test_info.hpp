@@ -14,11 +14,11 @@ struct test_name {
   uint64_t id;
 
   std::string full_name() const {
-    std::stringstream s;
+    std::ostringstream ss;
     for(const auto &i : suites)
-      s << i << " > ";
-    s << test;
-    return s.str();
+      ss << i << " > ";
+    ss << test;
+    return ss.str();
   }
 };
 

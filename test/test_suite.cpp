@@ -6,10 +6,10 @@ using namespace mettle;
 #include <stdexcept>
 
 inline auto match_test(const std::string &name, bool skip) {
-  std::stringstream s;
+  std::ostringstream ss;
   if(skip)
-    s << "skipped ";
-  s << "test named \"" << name << "\"";
+    ss << "skipped ";
+  ss << "test named \"" << name << "\"";
   return make_matcher([name, skip](const runnable_suite::test_info &actual) {
     if(actual.name != name)
       return false;
@@ -19,7 +19,7 @@ inline auto match_test(const std::string &name, bool skip) {
         skipped = true;
     }
     return skipped == skip;
-  }, s.str());
+  }, ss.str());
 }
 
 template<typename ...T>

@@ -107,7 +107,7 @@ namespace detail {
       if(WIFEXITED(status)) {
         int exit_code = WEXITSTATUS(status);
         if(exit_code) {
-          std::stringstream ss;
+          std::ostringstream ss;
           ss << "Exited with status " << exit_code;
           logger.failed_file(file, ss.str());
         }

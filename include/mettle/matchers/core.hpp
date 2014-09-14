@@ -49,9 +49,9 @@ public:
   }
 
   std::string desc() const {
-    std::stringstream s;
-    s << prefix_ << detail::matcher_desc(thing_.value);
-    return s.str();
+    std::ostringstream ss;
+    ss << prefix_ << detail::matcher_desc(thing_.value);
+    return ss.str();
   }
 private:
   any_capture<T> thing_;
@@ -101,9 +101,9 @@ auto equal_to(T &&expected) {
 template<typename T, typename Matcher>
 void expect(const T &value, const Matcher &matcher) {
   if(!matcher(value)) {
-    std::stringstream s;
-    s << "expected " << matcher.desc() << ", got " << to_printable(value);
-    throw expectation_error(s.str());
+    std::ostringstream ss;
+    ss << "expected " << matcher.desc() << ", got " << to_printable(value);
+    throw expectation_error(ss.str());
   }
 }
 

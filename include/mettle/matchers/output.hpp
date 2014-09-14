@@ -68,7 +68,7 @@ namespace detail {
   }
 
   template<typename T>
-  std::string stringify_iterable(const T &begin, const T &end);
+  std::string stringify_iterable(T begin, T end);
 
   template<typename T>
   std::string stringify_tuple(const T &tuple);
@@ -411,31 +411,30 @@ std::string to_printable(const std::tuple<T...> &tuple) {
 
 namespace detail {
   template<typename T>
-  std::string stringify_iterable(const T &begin, const T &end) {
-    std::stringstream s;
-    s << "[";
+  std::string stringify_iterable(T begin, T end) {
+    std::ostringstream ss;
+    ss << "[";
     if(begin != end) {
-      auto i = begin;
-      s << to_printable(*i);
-      for(++i; i != end; ++i)
-        s << ", " << to_printable(*i);
+      ss << to_printable(*begin);
+      for(++begin; begin != end; ++begin)
+        ss << ", " << to_printable(*begin);
     }
-    s << "]";
-    return s.str();
+    ss << "]";
+    return ss.str();
   }
 
   template<typename T>
   std::string stringify_tuple(const T &tuple) {
-    std::stringstream s;
-    s << "[";
-    reduce_tuple(tuple, [&s](bool first, const auto &x, bool &) {
+    std::ostringstream ss;
+    ss << "[";
+    reduce_tuple(tuple, [&ss](bool first, const auto &x, bool &) {
       if(!first)
-        s << ", ";
-      s << to_printable(x);
+        ss << ", ";
+      ss << to_printable(x);
       return false;
     }, true);
-    s << "]";
-    return s.str();
+    ss << "]";
+    return ss.str();
   }
 }
 

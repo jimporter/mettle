@@ -9,7 +9,7 @@ auto stringified(T &&thing) {
   return make_matcher(
     ensure_matcher(std::forward<T>(thing)),
     [](const auto &value, auto &&matcher) -> bool {
-      std::stringstream s;
+      std::ostringstream s;
       s << to_printable(value);
       return matcher(s.str());
     }, ""

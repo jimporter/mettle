@@ -7,7 +7,7 @@
 namespace mettle {
 
 std::string to_printable(const attr_instance &attr) {
-  std::stringstream s;
+  std::ostringstream s;
   s << attr.attribute.name();
   if(!attr.value.empty()) {
     auto i = attr.value.begin();
@@ -20,7 +20,7 @@ std::string to_printable(const attr_instance &attr) {
 }
 
 std::string to_printable(const attributes &attrs) {
-  std::stringstream s;
+  std::ostringstream s;
   s << "{";
   if(!attrs.empty()) {
     auto i = attrs.begin();
@@ -46,7 +46,7 @@ std::string to_printable(const test_action &action) {
 }
 
 std::string to_printable(const filter_result &result) {
-  std::stringstream s;
+  std::ostringstream s;
   s << "filter_result(" << to_printable(result.action) << ", "
     << to_printable(result.message) << ")";
   return s.str();

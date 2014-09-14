@@ -11,11 +11,11 @@ namespace detail {
     auto begin = t.begin(), end = t.end();
     if(begin == end)
       return "";
-    std::stringstream s;
-    s << *begin;
+    std::ostringstream ss;
+    ss << *begin;
     for(++begin; begin != end; ++begin)
-      s << delim << *begin;
-    return s.str();
+      ss << delim << *begin;
+    return ss.str();
   }
 }
 

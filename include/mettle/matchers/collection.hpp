@@ -62,17 +62,17 @@ namespace detail {
     }
 
     std::string desc() const {
-      std::stringstream s;
-      s << "[";
-      detail::reduce_tuple(matchers_, [&s](bool first, const auto &matcher,
-                                           bool &) {
+      std::ostringstream ss;
+      ss << "[";
+      detail::reduce_tuple(matchers_, [&ss](bool first, const auto &matcher,
+                                            bool &) {
         if(!first)
-          s << ", ";
-        s << matcher.desc();
+          ss << ", ";
+        ss << matcher.desc();
         return false;
       }, true);
-      s << "]";
-      return s.str();
+      ss << "]";
+      return ss.str();
     }
   private:
     tuple_type matchers_;
