@@ -1,12 +1,26 @@
 #ifndef INC_METTLE_OUTPUT_HPP
 #define INC_METTLE_OUTPUT_HPP
 
-#include <locale>
 #include <codecvt>
+#include <locale>
 #include <iomanip>
+#include <map>
 #include <sstream>
 #include <type_traits>
 #include <typeinfo>
+
+#ifdef __has_include
+#  if __has_include(<experimental/string_view>)
+#    include <experimental/string_view>
+#    define METTLE_STRING_VIEW std::experimental::basic_string_view
+#  else
+#    include <boost/utility/string_ref.hpp>
+#    define METTLE_STRING_VIEW boost::basic_string_ref
+#  endif
+#else
+#  include <boost/utility/string_ref.hpp>
+#  define METTLE_STRING_VIEW boost::basic_string_ref
+#endif
 
 namespace mettle {
 
@@ -59,11 +73,52 @@ namespace detail {
   template<typename T>
   std::string stringify_tuple(const T &tuple);
 
-  template<typename T>
-  inline std::string quoted(T &&s, char delim = '"', char escape = '\\') {
-    std::stringstream ss;
-    ss << std::quoted(std::forward<T>(s), delim, escape);
+  template<typename Char, typename Traits>
+  void escape_char(std::basic_ostream<Char, Traits> &os, Char c, Char delim) {
+    const char escape = '\\';
+    if(c < 32 || c == 0x7f) {
+      os << escape;
+      switch(c) {
+      case '\0': os << os.widen('0'); break;
+      case '\a': os << os.widen('a'); break;
+      case '\b': os << os.widen('b'); break;
+      case '\f': os << os.widen('f'); break;
+      case '\n': os << os.widen('n'); break;
+      case '\r': os << os.widen('r'); break;
+      case '\t': os << os.widen('t'); break;
+      case '\v': os << os.widen('v'); break;
+      default:   os << os.widen('x') << static_cast<unsigned long>(c);
+      }
+    }
+    else if(c == delim || c == escape) {
+      os << escape << c;
+    }
+    else {
+      os << c;
+    }
+  }
+
+  template<typename Char, typename Traits>
+  std::basic_string<Char, Traits>
+  escape_str(const METTLE_STRING_VIEW<Char, Traits> &s, Char delim = '"') {
+    std::basic_ostringstream<Char, Traits> ss;
+    ss << std::hex << delim;
+    for(const auto &c : s)
+      escape_char(ss, c, delim);
+    ss << delim;
     return ss.str();
+  }
+
+  template<typename Char, typename Traits>
+  std::basic_string<Char, Traits>
+  escape_str(const std::basic_string<Char, Traits> &s, Char delim = '"') {
+    return escape_str(METTLE_STRING_VIEW<Char, Traits>(s), delim);
+  }
+
+  template<typename Char>
+  std::basic_string<Char>
+  escape_str(const Char *s, Char delim = '"') {
+    return escape_str(METTLE_STRING_VIEW<Char>(s), delim);
   }
 }
 
@@ -168,49 +223,49 @@ inline std::string to_printable(std::nullptr_t) {
 }
 
 inline std::string to_printable(const std::string &s) {
-  return detail::quoted(s);
+  return detail::escape_str(s);
 }
 
 inline std::string to_printable(const std::wstring &s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
-  return detail::quoted(conv.to_bytes(s));
+  return detail::escape_str(conv.to_bytes(s));
 }
 
 inline std::string to_printable(const std::u16string &s) {
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
-  return detail::quoted(conv.to_bytes(s));
+  return detail::escape_str(conv.to_bytes(s));
 }
 
 inline std::string to_printable(const std::u32string &s) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-  return detail::quoted(conv.to_bytes(s));
+  return detail::escape_str(conv.to_bytes(s));
 }
 
 inline std::string to_printable(char c) {
-  return detail::quoted(std::string(1, c), '\'');
+  return detail::escape_str(std::string(1, c), '\'');
 }
 
 inline std::string to_printable(unsigned char c) {
-  return detail::quoted(std::string(1, c), '\'');
+  return detail::escape_str(std::string(1, c), '\'');
 }
 
 inline std::string to_printable(signed char c) {
-  return detail::quoted(std::string(1, c), '\'');
+  return detail::escape_str(std::string(1, c), '\'');
 }
 
 inline std::string to_printable(wchar_t c) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
-  return detail::quoted(conv.to_bytes(std::wstring(1, c)), '\'');
+  return detail::escape_str(conv.to_bytes(std::wstring(1, c)), '\'');
 }
 
 inline std::string to_printable(char16_t c) {
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
-  return detail::quoted(conv.to_bytes(std::u16string(1, c)), '\'');
+  return detail::escape_str(conv.to_bytes(std::u16string(1, c)), '\'');
 }
 
 inline std::string to_printable(char32_t c) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-  return detail::quoted(conv.to_bytes(std::u32string(1, c)), '\'');
+  return detail::escape_str(conv.to_bytes(std::u32string(1, c)), '\'');
 }
 
 // Helper for bool-ish types
@@ -245,30 +300,30 @@ inline auto to_printable_boolish(Ret (*)(Args...)) {
 // XXX: These don't work for volatile strings.
 
 inline std::string to_printable_boolish(const char *s) {
-  return detail::quoted(s);
+  return detail::escape_str(s);
 }
 
 inline std::string to_printable_boolish(const unsigned char *s) {
-  return detail::quoted(reinterpret_cast<const char*>(s));
+  return detail::escape_str(reinterpret_cast<const char*>(s));
 }
 
 inline std::string to_printable_boolish(const signed char *s) {
-  return detail::quoted(reinterpret_cast<const char*>(s));
+  return detail::escape_str(reinterpret_cast<const char*>(s));
 }
 
 inline std::string to_printable_boolish(const wchar_t *s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
-  return detail::quoted(conv.to_bytes(s));
+  return detail::escape_str(conv.to_bytes(s));
 }
 
 inline std::string to_printable_boolish(const char16_t *s) {
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
-  return detail::quoted(conv.to_bytes(s));
+  return detail::escape_str(conv.to_bytes(s));
 }
 
 inline std::string to_printable_boolish(const char32_t *s) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-  return detail::quoted(conv.to_bytes(s));
+  return detail::escape_str(conv.to_bytes(s));
 }
 
 template<typename T>
