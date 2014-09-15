@@ -149,12 +149,12 @@ actual:   123
 <h3 id="describing-an-expectation">Describing an expectation</h3>
 <p>You can also provide an optional description for an expectation to make it
 easier to figure out what it was testing if you get a failure:</p>
-<pre class="prettyprint well"><code class="c++">expect(&quot;is 'to mega therion?'&quot;, the_beast, equal_to(666));
+<pre class="prettyprint well"><code class="c++">expect(&quot;is 'to mega therion'?&quot;, the_beast, equal_to(666));
 </code></pre>
 
 <p>If this expectation fails, you'll see a message like the previous failure, but
 with the description shown as well:</p>
-<pre class="prettyprint well"><code>is 'to mega therion?'
+<pre class="prettyprint well"><code>is 'to mega therion'?
 expected: 666
 actual:   123
 </code></pre>
