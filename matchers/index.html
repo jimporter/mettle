@@ -15,9 +15,7 @@
         <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
         <link href="../css/prettify-1.0.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        
         <link href="../css/extra.css" rel="stylesheet">
-        
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -140,6 +138,25 @@ expectation, similar to an <code>assert</code>. If the expectation is met, then 
 proceeds as normal. Otherwise, it throws an exception and aborts the current
 test. Expectations are very simple to write:</p>
 <pre class="prettyprint well"><code class="c++">expect(the_beast, equal_to(666));
+</code></pre>
+
+<p>If this expectation failed, you'd see something like the following logged to
+your console (with the name of the failing test preceding it):</p>
+<pre class="prettyprint well"><code>expected: 666
+actual:   123
+</code></pre>
+
+<h3 id="describing-an-expectation">Describing an expectation</h3>
+<p>You can also provide an optional description for an expectation to make it
+easier to figure out what it was testing if you get a failure:</p>
+<pre class="prettyprint well"><code class="c++">expect(&quot;is 'to mega therion?'&quot;, the_beast, equal_to(666));
+</code></pre>
+
+<p>If this expectation fails, you'll see a message like the previous failure, but
+with the description shown as well:</p>
+<pre class="prettyprint well"><code>is 'to mega therion?'
+expected: 666
+actual:   123
 </code></pre>
 
 <h2 id="matchers">Matchers</h2>
@@ -341,6 +358,5 @@ free to consult these to get some ideas for how to implement your own matchers!<
         <script src="../js/bootstrap-3.0.3.min.js"></script>
         <script src="../js/prettify-1.0.min.js"></script>
         <script src="../js/base.js"></script>
-        
     </body>
 </html>
