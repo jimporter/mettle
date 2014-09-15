@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_CHILD_LOG_HPP
-#define INC_METTLE_CHILD_LOG_HPP
+#ifndef INC_METTLE_SRC_LIBMETTLE_LOG_CHILD_HPP
+#define INC_METTLE_SRC_LIBMETTLE_LOG_CHILD_HPP
 
 #include <cassert>
 #include <ostream>

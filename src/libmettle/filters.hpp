@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_FILTERS_HPP
-#define INC_METTLE_FILTERS_HPP
+#ifndef INC_METTLE_SRC_LIBMETTLE_FILTERS_HPP
+#define INC_METTLE_SRC_LIBMETTLE_FILTERS_HPP
 
 #include <regex>
 #include <vector>

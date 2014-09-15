@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_PIPE_LOG_HPP
-#define INC_METTLE_PIPE_LOG_HPP
+#ifndef INC_METTLE_SRC_LOG_PIPE_HPP
+#define INC_METTLE_SRC_LOG_PIPE_HPP
 
 #include <istream>
 

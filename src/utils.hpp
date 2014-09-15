@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_UTILS_HPP
-#define INC_METTLE_UTILS_HPP
+#ifndef INC_METTLE_SRC_UTILS_HPP
+#define INC_METTLE_SRC_UTILS_HPP
 
 #include <string.h>
 #include <string>

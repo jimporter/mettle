@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_OUTPUT_HPP
-#define INC_METTLE_OUTPUT_HPP
+#ifndef INC_METTLE_MATCHERS_OUTPUT_HPP
+#define INC_METTLE_MATCHERS_OUTPUT_HPP
 
 #include <codecvt>
 #include <locale>
