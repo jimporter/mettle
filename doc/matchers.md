@@ -26,14 +26,14 @@ You can also provide an optional description for an expectation to make it
 easier to figure out what it was testing if you get a failure:
 
 ```c++
-expect("is 'to mega therion?'", the_beast, equal_to(666));
+expect("is 'to mega therion'?", the_beast, equal_to(666));
 ```
 
 If this expectation fails, you'll see a message like the previous failure, but
 with the description shown as well:
 
 ```
-is 'to mega therion?'
+is 'to mega therion'?
 expected: 666
 actual:   123
 ```
