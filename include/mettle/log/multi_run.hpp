@@ -129,9 +129,10 @@ namespace log {
 
       scoped_indent si(vlog_.out);
       for(const auto &i : failures) {
-        vlog_.out << i.message << " " << format(sgr::bold, fg(color::yellow))
-                  << "[#" << std::setw(run_width) << i.run << "]" << reset()
-                  << std::endl;
+        vlog_.out << format(sgr::bold, fg(color::yellow)) << "[#"
+                  << std::setw(run_width) << i.run << "]" << reset() << " ";
+        scoped_indent si(vlog_.out, indent_style::visual, run_width + 4);
+        vlog_.out << i.message << std::endl;
       }
     }
 
