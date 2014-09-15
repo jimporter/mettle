@@ -108,45 +108,45 @@ suite<> output("debug output", [](auto &_){
     });
 
     _.test("tuples in iterables", []() {
-        using vec_0_tuple = std::vector<std::tuple<>>;
-        expect(vec_0_tuple{}, stringified("[]"));
-        expect(vec_0_tuple{{}, {}}, stringified("[[], []]"));
+      using vec_0_tuple = std::vector<std::tuple<>>;
+      expect(vec_0_tuple{}, stringified("[]"));
+      expect(vec_0_tuple{{}, {}}, stringified("[[], []]"));
 
-        using vec_1_tuple = std::vector<std::tuple<std::string>>;
-        expect(vec_1_tuple{}, stringified("[]"));
-        expect(vec_1_tuple{ std::make_tuple("foo"), std::make_tuple("bar") },
-               stringified("[[\"foo\"], [\"bar\"]]"));
+      using vec_1_tuple = std::vector<std::tuple<std::string>>;
+      expect(vec_1_tuple{}, stringified("[]"));
+      expect(vec_1_tuple{ std::make_tuple("foo"), std::make_tuple("bar") },
+             stringified("[[\"foo\"], [\"bar\"]]"));
 
-        using vec_3_tuple = std::vector<std::tuple<std::string, int, bool>>;
-        expect(vec_3_tuple{}, stringified("[]"));
-        expect(vec_3_tuple{ std::make_tuple("foo", 1, true),
-                            std::make_tuple("bar", 2, false) },
-               stringified("[[\"foo\", 1, true], [\"bar\", 2, false]]"));
+      using vec_3_tuple = std::vector<std::tuple<std::string, int, bool>>;
+      expect(vec_3_tuple{}, stringified("[]"));
+      expect(vec_3_tuple{ std::make_tuple("foo", 1, true),
+          std::make_tuple("bar", 2, false) },
+      stringified("[[\"foo\", 1, true], [\"bar\", 2, false]]"));
 
-        using vec_pair = std::vector<std::pair<std::string, int>>;
-        expect(vec_pair{}, stringified("[]"));
-        expect(vec_pair{{"foo", 1}, {"bar", 2}},
-               stringified("[[\"foo\", 1], [\"bar\", 2]]"));
+      using vec_pair = std::vector<std::pair<std::string, int>>;
+      expect(vec_pair{}, stringified("[]"));
+      expect(vec_pair{{"foo", 1}, {"bar", 2}},
+             stringified("[[\"foo\", 1], [\"bar\", 2]]"));
     });
 
     _.test("iterables in tuples", []() {
-        using vec_str = std::vector<std::string>;
-        using vec_int = std::vector<int>;
+      using vec_str = std::vector<std::string>;
+      using vec_int = std::vector<int>;
 
-        expect(std::make_tuple( vec_str{} ), stringified("[[]]"));
-        expect(std::make_tuple( vec_str{"foo", "bar"} ),
-               stringified("[[\"foo\", \"bar\"]]"));
+      expect(std::make_tuple( vec_str{} ), stringified("[[]]"));
+      expect(std::make_tuple( vec_str{"foo", "bar"} ),
+             stringified("[[\"foo\", \"bar\"]]"));
 
-        expect(std::make_pair( vec_str{}, vec_int{} ),
-               stringified("[[], []]"));
-        expect(std::make_pair( vec_str{"foo"}, vec_int{1, 2} ),
-               stringified("[[\"foo\"], [1, 2]]"));
+      expect(std::make_pair( vec_str{}, vec_int{} ),
+             stringified("[[], []]"));
+      expect(std::make_pair( vec_str{"foo"}, vec_int{1, 2} ),
+             stringified("[[\"foo\"], [1, 2]]"));
 
-        expect(std::make_tuple( vec_str{}, vec_int{}, vec_int{} ),
-               stringified("[[], [], []]"));
-        expect(std::make_tuple( vec_str{"foo"}, vec_int{1, 2},
-                                vec_int{1, 2, 3} ),
-               stringified("[[\"foo\"], [1, 2], [1, 2, 3]]"));
+      expect(std::make_tuple( vec_str{}, vec_int{}, vec_int{} ),
+             stringified("[[], [], []]"));
+      expect(std::make_tuple( vec_str{"foo"}, vec_int{1, 2},
+                              vec_int{1, 2, 3} ),
+             stringified("[[\"foo\"], [1, 2], [1, 2, 3]]"));
     });
 
     _.test("callables", []() {
