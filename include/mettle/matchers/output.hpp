@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <typeinfo>
 
+// Try to use N4082's string_view class, or fall back to Boost's.
 #ifdef __has_include
 #  if __has_include(<experimental/string_view>)
 #    include <experimental/string_view>
