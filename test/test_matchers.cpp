@@ -17,7 +17,7 @@ T about_one() {
   return value;
 }
 
-suite<> matcher_tests("test matchers", [](auto &_) {
+suite<> matcher_tests("matchers", [](auto &_) {
 
   subsuite<>(_, "basic", [](auto &_) {
     _.test("anything()", []() {
@@ -277,4 +277,28 @@ suite<> matcher_tests("test matchers", [](auto &_) {
     });
   });
 
+});
+
+suite<> test_expect("expect()", [](auto &_) {
+  _.test("expect(value, matcher)", []() {
+    std::string message;
+    try {
+      expect(false, equal_to(true));
+    }
+    catch(const expectation_error &e) {
+      message = e.what();
+    }
+    expect(message, equal_to("expected: true\nactual:   false"));
+  });
+
+  _.test("expect(desc, value, matcher)", []() {
+    std::string message;
+    try {
+      expect("description", false, equal_to(true));
+    }
+    catch(const expectation_error &e) {
+      message = e.what();
+    }
+    expect(message, equal_to("description\nexpected: true\nactual:   false"));
+  });
 });

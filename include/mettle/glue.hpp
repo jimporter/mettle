@@ -2,7 +2,7 @@
 #define INC_METTLE_GLUE_HPP
 
 #include "suite.hpp"
-#include "matchers/error.hpp"
+#include "matchers/expect.hpp"
 
 namespace mettle {
 

@@ -103,7 +103,11 @@ namespace log {
                            const std::string &message) {
       using namespace term;
       vlog_.out << where << " " << format(sgr::bold, fg(color::red))
-                << "FAILED" << reset() << ": " << message << std::endl;
+                << "FAILED" << reset() << std::endl;
+      if(!message.empty()) {
+        scoped_indent si(vlog_.out);
+        vlog_.out << message << std::endl;
+      }
     }
 
     verbose &vlog_;

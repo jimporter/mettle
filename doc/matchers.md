@@ -12,6 +12,32 @@ test. Expectations are very simple to write:
 expect(the_beast, equal_to(666));
 ```
 
+If this expectation failed, you'd see something like the following logged to
+your console (with the name of the failing test preceding it):
+
+```
+expected: 666
+actual:   123
+```
+
+### Describing an expectation
+
+You can also provide an optional description for an expectation to make it
+easier to figure out what it was testing if you get a failure:
+
+```c++
+expect("is 'to mega therion?'", the_beast, equal_to(666));
+```
+
+If this expectation fails, you'll see a message like the previous failure, but
+with the description shown as well:
+
+```
+is 'to mega therion?'
+expected: 666
+actual:   123
+```
+
 ## Matchers
 
 Above, you may have noticed the second argument to the expectation:

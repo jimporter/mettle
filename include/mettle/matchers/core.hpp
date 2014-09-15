@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "output.hpp"
-#include "error.hpp"
 #include "any_capture.hpp"
 
 namespace mettle {
@@ -96,15 +95,6 @@ inline auto make_matcher(F &&f, const std::string &desc) {
 template<typename T>
 auto equal_to(T &&expected) {
   return make_matcher(std::forward<T>(expected), std::equal_to<>(), "");
-}
-
-template<typename T, typename Matcher>
-void expect(const T &value, const Matcher &matcher) {
-  if(!matcher(value)) {
-    std::ostringstream ss;
-    ss << "expected " << matcher.desc() << ", got " << to_printable(value);
-    throw expectation_error(ss.str());
-  }
 }
 
 inline auto anything() {

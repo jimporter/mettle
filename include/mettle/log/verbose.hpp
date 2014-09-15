@@ -60,6 +60,8 @@ namespace log {
       else {
         out << format(sgr::bold, fg(color::green)) << "PASSED" << reset()
             << std::endl;
+
+        scoped_indent si(out);
         log_output(output);
       }
     }
@@ -75,11 +77,13 @@ namespace log {
             << std::flush;
       }
       else {
-        out << format(sgr::bold, fg(color::red)) << "FAILED" << reset();
+        out << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
+            << std::endl;
+
+        scoped_indent si(out);
         if(!message.empty())
-          out << ": " << message;
-        out << std::endl;
-        log_output(output);
+          out << message << std::endl;
+        log_output(output, !message.empty());
       }
     }
 
@@ -93,10 +97,13 @@ namespace log {
             << std::flush;
       }
       else {
-        out << format(sgr::bold, fg(color::blue)) << "SKIPPED" << reset();
-        if(!message.empty())
-          out << ": " << message;
-        out << std::endl;
+        out << format(sgr::bold, fg(color::blue)) << "SKIPPED" << reset()
+            << std::endl;
+
+        if(!message.empty()) {
+          scoped_indent si(out);
+          out << message << std::endl;
+        }
       }
     }
 
@@ -122,7 +129,9 @@ namespace log {
           out << std::endl;
         first_ = false;
         out << "`" << file << "` " << format(sgr::bold, fg(color::red))
-            << "FAILED" << reset() << ": " << message << std::endl;
+            << "FAILED" << reset() << std::endl;
+        scoped_indent si(out);
+        out << message << std::endl;
       }
     }
 
@@ -132,20 +141,22 @@ namespace log {
 
     indenting_ostream out;
   private:
-    void log_output(const test_output &output) {
+    void log_output(const test_output &output, bool extra_newline = false) {
       if(!show_terminal_)
         return;
 
       using namespace term;
 
-      scoped_indent si(out);
+      if(extra_newline && (!output.stdout.empty() || !output.stderr.empty()))
+        out << std::endl;
+
       if(!output.stdout.empty()) {
-        out << format(fg(color::yellow)) << "stdout" << reset() << ":"
-            << std::endl << output.stdout << std::endl;
+        out << format(fg(color::yellow), sgr::underline) << "stdout" << reset()
+            << ":" << std::endl << output.stdout << std::endl;
       }
       if(!output.stderr.empty()) {
-        out << format(fg(color::yellow)) << "stderr" << reset() << ":"
-            << std::endl << output.stderr << std::endl;
+        out << format(fg(color::yellow), sgr::underline) << "stderr" << reset()
+            << ":" << std::endl << output.stderr << std::endl;
       }
     }
 
