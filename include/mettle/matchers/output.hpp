@@ -168,6 +168,9 @@ template<typename T>
 struct is_any_char : is_any_char_helper<typename std::remove_cv<T>::type> {};
 
 template<typename T>
+using is_exception = std::is_base_of<std::exception, T>;
+
+template<typename T>
 class is_iterable {
   template<typename U> struct always_bool { typedef bool type; };
 
@@ -199,8 +202,9 @@ class is_iterable<T[N]> : public std::true_type {};
 //     if is_boolish -> to_printable_boolish
 //     else -> pass-through
 //   else
-//     if is_iterable -> iterable
-//     else if is_enum -> enum (class)
+//     if is_enum -> enum (class)
+//     else if is_exception -> exception
+//     else if is_iterable -> iterable
 //     else -> fallback
 //
 // to_printable_boolish:
@@ -267,12 +271,6 @@ inline std::string to_printable(char16_t c) {
 inline std::string to_printable(char32_t c) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
   return detail::escape_str(conv.to_bytes(std::u32string(1, c)), '\'');
-}
-
-inline std::string to_printable(const std::exception &e) {
-  std::ostringstream ss;
-  ss << "exception(" << detail::escape_str(e.what()) << ")";
-  return ss.str();
 }
 
 // Helper for bool-ish types
@@ -368,7 +366,8 @@ constexpr inline auto to_printable(const T &t) -> typename std::enable_if<
 
 template<typename T>
 auto to_printable(const T &t) -> typename std::enable_if<
-  !is_printable<T>::value && !is_iterable<T>::value && !std::is_enum<T>::value,
+  !is_printable<T>::value && !std::is_enum<T>::value &&
+  !is_exception<T>::value && !is_iterable<T>::value,
   std::string
 >::type {
   try {
@@ -388,11 +387,23 @@ constexpr inline auto to_printable(T t) -> typename std::enable_if<
   return to_printable_boolish(t);
 }
 
+// Exceptions
+
+template<typename T>
+inline auto to_printable(const T &e) -> typename std::enable_if<
+  !is_printable<T>::value && is_exception<T>::value, std::string
+>::type {
+  std::ostringstream ss;
+  ss << type_name<T>() << "(" << to_printable(e.what()) << ")";
+  return ss.str();
+}
+
 // Iterables
 
 template<typename T>
 auto to_printable(const T &v) -> typename std::enable_if<
-  !is_printable<T>::value && is_iterable<T>::value, std::string
+  !is_printable<T>::value && !is_exception<T>::value && is_iterable<T>::value,
+  std::string
 >::type {
   return detail::stringify_iterable(std::begin(v), std::end(v));
 }

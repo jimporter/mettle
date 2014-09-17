@@ -36,6 +36,11 @@ suite<> matcher_tests("matchers", [](auto &_) {
       expect(123, is_not(equal_to(100)));
 
       expect(is_not(123).desc(), equal_to("not 123"));
+
+      auto m = make_matcher([](const auto &) -> match_result {
+        return {true, "message"};
+      }, "");
+      expect(is_not(m)(123).message, equal_to("message"));
     });
 
     _.test("describe()", []() {
@@ -233,7 +238,13 @@ suite<> matcher_tests("matchers", [](auto &_) {
       expect(noop, is_not(thrown()));
 
       expect(thrown().desc(), equal_to("threw exception"));
+
       expect(thrown()(noop).message, equal_to("threw nothing"));
+
+      expect(is_not(thrown())(thrower).message,
+             equal_to("threw std::exception(\"message\")"));
+      expect(is_not(thrown())(int_thrower).message,
+             equal_to("threw unknown exception"));
     });
 
     _.test("thrown<T>()", [thrower, int_thrower, noop]() {
@@ -248,11 +259,17 @@ suite<> matcher_tests("matchers", [](auto &_) {
 
       expect(thrown<std::exception>().desc(),
              equal_to("threw " + type_name<std::exception>() + "(anything)"));
+
       expect(thrown<std::logic_error>()(thrower).message,
-             equal_to("threw exception(\"message\")"));
+             equal_to("threw std::exception(\"message\")"));
       expect(thrown<std::exception>()(int_thrower).message,
              equal_to("threw unknown exception"));
       expect(thrown<std::exception>()(noop).message, equal_to("threw nothing"));
+
+      expect(is_not(thrown<std::runtime_error>())(thrower).message,
+             equal_to("threw std::runtime_error(\"message\")"));
+      expect(is_not(thrown<int>())(int_thrower).message,
+             equal_to("threw 123"));
     });
 
     _.test("thrown<T>(what)", [thrower, int_thrower, noop]() {
@@ -267,14 +284,21 @@ suite<> matcher_tests("matchers", [](auto &_) {
       expect(thrown<std::exception>("message").desc(),
              equal_to("threw " + type_name<std::exception>() +
                       "(what: \"message\")"));
+
       expect(thrown<std::logic_error>("message")(thrower).message,
-             equal_to("threw exception(\"message\")"));
+             equal_to("threw std::exception(\"message\")"));
+
       expect(thrown<std::exception>("wrong")(thrower).message,
              equal_to("threw std::exception(what: \"message\")"));
       expect(thrown<std::exception>("message")(int_thrower).message,
              equal_to("threw unknown exception"));
       expect(thrown<std::exception>("message")(noop).message,
              equal_to("threw nothing"));
+
+      expect(is_not(thrown<std::runtime_error>("message"))(thrower).message,
+             equal_to("threw std::runtime_error(what: \"message\")"));
+      expect(is_not(thrown<std::runtime_error>(anything()))(thrower).message,
+             equal_to("threw std::runtime_error(what: \"message\")"));
     });
 
     _.test("thrown_raw<T>()", [thrower, int_thrower, noop]() {
@@ -288,10 +312,14 @@ suite<> matcher_tests("matchers", [](auto &_) {
 
       expect(thrown_raw<int>(123).desc(),
              equal_to("threw " + type_name<int>() + "(123)"));
+
       expect(thrown_raw<int>(666)(int_thrower).message,
-             equal_to("threw int"));
+             equal_to("threw 123"));
       expect(thrown_raw<int>(123)(noop).message,
              equal_to("threw nothing"));
+
+      expect(is_not(thrown_raw<int>(123))(int_thrower).message,
+             equal_to("threw 123"));
     });
   });
 

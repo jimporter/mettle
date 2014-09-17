@@ -15,7 +15,7 @@ class expectation_error : public std::runtime_error {
 template<typename T, typename Matcher>
 void expect(const T &value, const Matcher &matcher) {
   auto m = matcher(value);
-  if(!m) {
+  if(m == false) {
     std::ostringstream ss;
     ss << "expected: " << matcher.desc() << std::endl
        << "actual:   " << matcher_message(m, to_printable(value));
@@ -26,7 +26,7 @@ void expect(const T &value, const Matcher &matcher) {
 template<typename T, typename Matcher>
 void expect(const std::string &desc, const T &value, const Matcher &matcher) {
   auto m = matcher(value);
-  if(!m) {
+  if(m == false) {
     std::ostringstream ss;
     ss << desc << std::endl
        << "expected: " << matcher.desc() << std::endl

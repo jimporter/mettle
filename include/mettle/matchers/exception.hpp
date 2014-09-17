@@ -22,9 +22,11 @@ namespace detail {
     match_result match(const Exception &e) const {
       match_result m = matcher(e);
       std::ostringstream ss;
-      ss << "threw " << type_name<Exception>();
-      if(!m.message.empty())
-        ss << "(" << m.message << ")";
+      ss << "threw ";
+      if(m.message.empty())
+        ss << to_printable(e);
+      else
+        ss << type_name<Exception>() << "(" << m.message << ")";
       return {m.matched, ss.str()};
     }
   private:
@@ -113,8 +115,13 @@ inline auto thrown() {
       value();
       return {false, "threw nothing"};
     }
+    catch(const std::exception &e) {
+      std::ostringstream ss;
+      ss << "threw " << to_printable(e);
+      return {true, ss.str()};
+    }
     catch(...) {
-      return true;
+      return {true, "threw unknown exception"};
     }
   }, "threw exception");
 }

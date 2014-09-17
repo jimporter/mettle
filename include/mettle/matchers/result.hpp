@@ -18,6 +18,14 @@ struct match_result {
   }
 };
 
+inline match_result operator !(const match_result &m) {
+  return {!m.matched, m.message};
+}
+
+inline match_result operator !(match_result &&m) {
+  return {!m.matched, std::move(m.message)};
+}
+
 namespace detail {
   template<typename T>
   class message_impl {

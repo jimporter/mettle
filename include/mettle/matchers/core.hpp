@@ -126,7 +126,7 @@ template<typename T>
 inline auto is_not(T &&thing) {
   return make_matcher(
     ensure_matcher(std::forward<T>(thing)),
-    [](const auto &value, auto &&matcher) -> bool {
+    [](const auto &value, auto &&matcher) {
       return !matcher(value);
     }, "not "
   );
