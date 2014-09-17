@@ -43,7 +43,7 @@ public:
       prefix_(prefix) {}
 
   template<typename U>
-  bool operator ()(U &&actual) const {
+  auto operator ()(U &&actual) const {
     return f_(std::forward<U>(actual), thing_.value);
   }
 
@@ -66,7 +66,7 @@ public:
     : f_(std::forward<F2>(f)), desc_(desc) {}
 
   template<typename U>
-  bool operator ()(U &&actual) const {
+  auto operator ()(U &&actual) const {
     return f_(std::forward<U>(actual));
   }
 

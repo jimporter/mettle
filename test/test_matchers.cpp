@@ -233,6 +233,7 @@ suite<> matcher_tests("matchers", [](auto &_) {
       expect(noop, is_not(thrown()));
 
       expect(thrown().desc(), equal_to("threw exception"));
+      expect(thrown()(noop).message, equal_to("threw nothing"));
     });
 
     _.test("thrown<T>()", [thrower, int_thrower, noop]() {
@@ -246,7 +247,12 @@ suite<> matcher_tests("matchers", [](auto &_) {
       expect(noop, is_not(thrown<std::exception>()));
 
       expect(thrown<std::exception>().desc(),
-             equal_to("threw<" + type_name<std::exception>() + "> anything"));
+             equal_to("threw " + type_name<std::exception>() + "(anything)"));
+      expect(thrown<std::logic_error>()(thrower).message,
+             equal_to("threw exception(\"message\")"));
+      expect(thrown<std::exception>()(int_thrower).message,
+             equal_to("threw unknown exception"));
+      expect(thrown<std::exception>()(noop).message, equal_to("threw nothing"));
     });
 
     _.test("thrown<T>(what)", [thrower, int_thrower, noop]() {
@@ -259,8 +265,16 @@ suite<> matcher_tests("matchers", [](auto &_) {
       expect(noop, is_not(thrown<std::exception>( anything() )));
 
       expect(thrown<std::exception>("message").desc(),
-             equal_to("threw<" + type_name<std::exception>() +
-                      "> what: \"message\""));
+             equal_to("threw " + type_name<std::exception>() +
+                      "(what: \"message\")"));
+      expect(thrown<std::logic_error>("message")(thrower).message,
+             equal_to("threw exception(\"message\")"));
+      expect(thrown<std::exception>("wrong")(thrower).message,
+             equal_to("threw std::exception(what: \"message\")"));
+      expect(thrown<std::exception>("message")(int_thrower).message,
+             equal_to("threw unknown exception"));
+      expect(thrown<std::exception>("message")(noop).message,
+             equal_to("threw nothing"));
     });
 
     _.test("thrown_raw<T>()", [thrower, int_thrower, noop]() {
@@ -273,7 +287,11 @@ suite<> matcher_tests("matchers", [](auto &_) {
       expect(noop, is_not(thrown_raw<int>( anything() )));
 
       expect(thrown_raw<int>(123).desc(),
-             equal_to("threw<" + type_name<int>() + "> 123"));
+             equal_to("threw " + type_name<int>() + "(123)"));
+      expect(thrown_raw<int>(666)(int_thrower).message,
+             equal_to("threw int"));
+      expect(thrown_raw<int>(123)(noop).message,
+             equal_to("threw nothing"));
     });
   });
 

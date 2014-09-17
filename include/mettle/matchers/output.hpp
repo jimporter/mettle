@@ -269,6 +269,12 @@ inline std::string to_printable(char32_t c) {
   return detail::escape_str(conv.to_bytes(std::u32string(1, c)), '\'');
 }
 
+inline std::string to_printable(const std::exception &e) {
+  std::ostringstream ss;
+  ss << "exception(" << detail::escape_str(e.what()) << ")";
+  return ss.str();
+}
+
 // Helper for bool-ish types
 
 template<typename T>
@@ -343,7 +349,7 @@ auto to_printable_boolish(const T &t) -> typename std::enable_if<
 
 template<typename T>
 constexpr auto to_printable(const T &t) -> typename std::enable_if<
-  is_printable<T>::value && !is_boolish<T>::value, T
+  is_printable<T>::value && !is_boolish<T>::value, const T &
 >::type {
   return t;
 }
