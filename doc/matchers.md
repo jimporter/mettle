@@ -275,6 +275,33 @@ auto either(T &&a, T &&b) {
 }
 ```
 
+### Mismatch messages
+
+By default, when an expectation fails, it shows a stringified version of the
+actual value. However, for some matchers, this isn't very useful. For example,
+with the `thrown` matchers, you already know that the actual value is a
+function, so printing that fact out doesn't help. Instead, you can define a
+matcher to print a mismatch message that describes the exception the function
+*actually* threw (if any). To do this, you can return a `match_result` object
+from the matcher instead of the customary `bool`:
+
+```c++
+auto message_matcher() {
+  return make_matcher([](const auto &) -> match_result {
+    return {true, "message"};
+  }, "");
+}
+```
+
+A `match_result` is implicity convertible to and from a `bool`, so matchers that
+return `match_result`s can easily be mixed with ones that return `bool`s. You
+can also use the `!` operator to invert a `match_result` and preserve its
+message.
+
+Note that, despite the name "mismatch message", it's useful to provide a message
+even on success, since a successful match can easily become a mismatch simply by
+using the `is_not` matcher.
+
 ### Starting from scratch
 
 For particularly complex matchers, `make_matcher` may not provide much value. In
