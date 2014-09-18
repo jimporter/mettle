@@ -1,10 +1,14 @@
 #include <iostream>
+#include <vector>
 
 #include <boost/program_options.hpp>
 
+#include <mettle/log/summary.hpp>
+
+#include "cmd_line.hpp"
 #include "file_runner.hpp"
-#include <mettle/log/multi_run.hpp>
-#include <mettle/log/single_run.hpp>
+
+namespace mettle {
 
 template<typename Char>
 std::vector<std::basic_string<Char>> filter_options(
@@ -21,9 +25,15 @@ std::vector<std::basic_string<Char>> filter_options(
   return filtered;
 }
 
+}
+
 int main(int argc, const char *argv[]) {
   using namespace mettle;
   namespace opts = boost::program_options;
+
+  unsigned int verbosity = 1;
+  size_t runs = 1;
+  std::vector<std::string> files;
 
   opts::options_description generic("Generic options");
   generic.add_options()
@@ -32,10 +42,10 @@ int main(int argc, const char *argv[]) {
 
   opts::options_description output("Output options");
   output.add_options()
-    ("verbose,v", opts::value<unsigned int>()->implicit_value(1),
+    ("verbose,v", opts::value(&verbosity)->implicit_value(2),
      "show verbose output")
     ("color,c", "show colored output")
-    ("runs,n", opts::value<size_t>(), "number of test runs")
+    ("runs,n", opts::value(&runs), "number of test runs")
     ("show-terminal", "show terminal output for each test")
   ;
 
@@ -51,7 +61,7 @@ int main(int argc, const char *argv[]) {
 
   opts::options_description hidden("Hidden options");
   hidden.add_options()
-    ("file", opts::value< std::vector<std::string> >(), "input file")
+    ("file", opts::value(&files), "input file")
   ;
 
   opts::positional_options_description pos;
@@ -80,54 +90,27 @@ int main(int argc, const char *argv[]) {
     return 1;
   }
 
-  if(!args.count("file")) {
+  if(files.empty()) {
     std::cerr << "no inputs specified" << std::endl;
     return 1;
   }
 
-  unsigned int verbosity = args.count("verbose") ?
-    args["verbose"].as<unsigned int>() : 0;
-  term::enable(std::cout, args.count("color"));
-  bool show_terminal = args.count("show-terminal");
-
-  if(show_terminal && verbosity < 2) {
-    std::cerr << "--show-terminal requires verbosity >=2" << std::endl;
+  if(runs == 0) {
+    std::cerr << "no test runs, exiting" << std::endl;
     return 1;
   }
 
-  if(args.count("no-fork")) {
-    if(show_terminal) {
-      std::cerr << "--show-terminal requires forking tests" << std::endl;
-      return 1;
-    }
-    if(args.count("timeout")) {
-      std::cerr << "--timeout requires forking tests" << std::endl;
-      return 1;
-    }
-  }
+  term::enable(std::cout, args.count("color"));
+  indenting_ostream out(std::cout);
 
-  auto files = args["file"].as< std::vector<std::string> >();
-  log::verbose vlog(std::cout, verbosity, show_terminal);
+  auto progress_log = make_progress_logger(
+    out, verbosity, runs, args.count("show-terminal"), !args.count("no-fork")
+  );
+  log::summary logger(out, progress_log.get());
 
-  if(args.count("runs")) {
-    size_t runs = args["runs"].as<size_t>();
-    if(runs == 0) {
-      std::cout << "no test runs, exiting" << std::endl;
-      return 1;
-    }
-
-    log::multi_run logger(vlog);
-    for(size_t i = 0; i < runs; i++)
-      run_test_files(files, logger, child_args);
-    logger.summarize();
-
-    return !logger.good();
-  }
-  else {
-    log::single_run logger(vlog);
+  for(size_t i = 0; i != runs; i++)
     run_test_files(files, logger, child_args);
-    logger.summarize();
 
-    return !logger.good();
-  }
+  logger.summarize();
+  return !logger.good();
 }

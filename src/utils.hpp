@@ -1,7 +1,7 @@
 #ifndef INC_METTLE_SRC_UTILS_HPP
 #define INC_METTLE_SRC_UTILS_HPP
 
-#include <string.h>
+#include <cstring>
 #include <string>
 
 namespace mettle {
