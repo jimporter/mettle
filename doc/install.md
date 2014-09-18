@@ -43,6 +43,8 @@ CXXFLAGS := -std=c++1y -stdlib=libc++
 LDFLAGS := -lsupc++
 ```
 
+You can also specify `PREFIX` to change where mettle is installed.
+
 ## Running tests
 
 To build and run all the tests, just call:

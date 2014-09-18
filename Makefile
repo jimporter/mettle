@@ -1,4 +1,5 @@
 CXXFLAGS := -std=c++1y
+PREFIX := /usr
 
 -include config.mk
 
