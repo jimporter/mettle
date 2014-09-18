@@ -322,6 +322,28 @@ auto either(T &amp;&amp;a, T &amp;&amp;b) {
 }
 </code></pre>
 
+<h3 id="mismatch-messages">Mismatch messages</h3>
+<p>By default, when an expectation fails, it shows a stringified version of the
+actual value. However, for some matchers, this isn't very useful. For example,
+with the <code>thrown</code> matchers, you already know that the actual value is a
+function, so printing that fact out doesn't help. Instead, you can define a
+matcher to print a mismatch message that describes the exception the function
+<em>actually</em> threw (if any). To do this, you can return a <code>match_result</code> object
+from the matcher instead of the customary <code>bool</code>:</p>
+<pre class="prettyprint well"><code class="c++">auto message_matcher() {
+  return make_matcher([](const auto &amp;) -&gt; match_result {
+    return {true, &quot;message&quot;};
+  }, &quot;&quot;);
+}
+</code></pre>
+
+<p>A <code>match_result</code> is implicity convertible to and from a <code>bool</code>, so matchers that
+return <code>match_result</code>s can easily be mixed with ones that return <code>bool</code>s. You
+can also use the <code>!</code> operator to invert a <code>match_result</code> and preserve its
+message.</p>
+<p>Note that, despite the name "mismatch message", it's useful to provide a message
+even on success, since a successful match can easily become a mismatch simply by
+using the <code>is_not</code> matcher.</p>
 <h3 id="starting-from-scratch">Starting from scratch</h3>
 <p>For particularly complex matchers, <code>make_matcher</code> may not provide much value. In
 these cases, you can instead build your own matcher from scratch. First, and
