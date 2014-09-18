@@ -5,13 +5,13 @@ using namespace mettle;
 #include "../src/libmettle/cmd_parse.hpp"
 
 auto match_filter_item(const attr_instance &attr, bool matched) {
-  std::stringstream s;
-  s << "filter_item(" << to_printable(attr.attribute.name()) << ") => "
-    << to_printable(matched);
+  std::ostringstream ss;
+  ss << "filter_item(" << to_printable(attr.attribute.name()) << ") => "
+     << to_printable(matched);
   return make_matcher([attr, matched](const attr_filter_item &actual) {
     return actual.attribute == attr.attribute.name() &&
            actual.func(&attr) == matched;
-  }, s.str());
+  }, ss.str());
 }
 
 namespace mettle {
