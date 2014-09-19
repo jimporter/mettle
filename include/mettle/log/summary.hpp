@@ -19,7 +19,7 @@ namespace log {
       if(log_) log_->started_run();
 
       runs_++;
-      total_ = skips_ = 0;
+      total_ = skips_ = file_index_ = 0;
     }
 
     void ended_run() {
@@ -63,13 +63,14 @@ namespace log {
 
     void ended_file(const std::string &file) {
       if(log_) log_->ended_file(file);
+
+      file_index_++;
     }
 
     void failed_file(const std::string &file, const std::string &message) {
       if(log_) log_->failed_file(file, message);
 
-      // XXX: Distinguish between files executed multiple times per run?
-      failed_files_[file].push_back({runs_, message});
+      failed_files_[{file_index_++, file}].push_back({runs_, message});
     }
 
     void summarize() {
@@ -96,13 +97,22 @@ namespace log {
       for(const auto &i : failures_)
         summarize_failure(i.first.full_name(), i.second);
       for(const auto &i : failed_files_)
-        summarize_failure("`" + i.first + "`", i.second);
+        summarize_failure("`" + i.first.name + "`", i.second);
     }
 
     bool good() const {
       return failures_.empty();
     }
   private:
+    struct file_info {
+      size_t index;
+      std::string name;
+
+      bool operator <(const file_info &rhs) const {
+        return index < rhs.index;
+      }
+    };
+
     struct failure {
       size_t run;
       std::string message;
@@ -142,9 +152,9 @@ namespace log {
 
     indenting_ostream &out_;
     file_logger *log_;
-    size_t total_ = 0, skips_ = 0, runs_ = 0;
+    size_t total_ = 0, skips_ = 0, runs_ = 0, file_index_ = 0;
     std::map<test_name, std::vector<const failure>> failures_;
-    std::map<std::string, std::vector<const failure>> failed_files_;
+    std::map<file_info, std::vector<const failure>> failed_files_;
   };
 
 }
