@@ -45,11 +45,11 @@ Show help and usage information.
 
 ### Output options
 
-#### --verbose *N=1* (-v)
+#### --verbose *N=2* (-v)
 
 Show output of tests as they're being run. If `--verbose` isn't passed, the
-verbosity is set to 0; if no value for *N* is specified, then the verbosity is
-set to 1.
+verbosity is set to 1; if no value for *N* is specified, then the verbosity is
+set to 2.
 
 ##### Verbosity 0
 
