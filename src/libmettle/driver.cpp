@@ -44,7 +44,7 @@ namespace detail {
 
     opts::options_description child("Child options");
     child.add_options()
-      ("timeout,t", opts::value(&runs), "timeout in ms")
+      ("timeout,t", opts::value<size_t>(), "timeout in ms")
       ("no-fork", "don't fork for each test")
       ("test,T", opts::value(&filters.by_name),
        "regex matching names of tests to run")
@@ -92,7 +92,12 @@ namespace detail {
     }
 
     if(args.count("child")) {
-      // XXX: Complain if the user specified any output options.
+      if(auto output_opt = has_option(output, args)) {
+        using namespace opts::command_line_style;
+        std::cerr << output_opt->canonical_display_name(allow_long)
+                  << " can't be used with --child" << std::endl;
+        return 1;
+      }
 
       namespace io = boost::iostreams;
       io::stream<io::file_descriptor_sink> fds(
