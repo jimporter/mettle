@@ -1,8 +1,6 @@
 #ifndef INC_METTLE_LOG_CORE_HPP
 #define INC_METTLE_LOG_CORE_HPP
 
-#include <cstdint>
-#include <sstream>
 #include <string>
 #include <vector>
 
