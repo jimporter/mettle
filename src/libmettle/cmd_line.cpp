@@ -5,6 +5,9 @@
 
 #include <boost/program_options.hpp>
 
+#include "log_quiet.hpp"
+#include "log_verbose.hpp"
+
 namespace mettle {
 
 std::unique_ptr<log::file_logger>

@@ -9,8 +9,8 @@
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 
-#include <mettle/log/quiet.hpp>
-#include <mettle/log/verbose.hpp>
+#include <mettle/log/core.hpp>
+#include <mettle/log/indent.hpp>
 
 #include "filters.hpp"
 
