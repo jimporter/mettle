@@ -29,7 +29,7 @@ namespace log {
 
     void failed_file(const std::string &file, const std::string &message);
   private:
-    indenting_ostream& out_;
+    indenting_ostream &out_;
   };
 
 }
