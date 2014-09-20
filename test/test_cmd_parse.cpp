@@ -2,7 +2,7 @@
 using namespace mettle;
 
 #include "helpers.hpp"
-#include "../src/libmettle/cmd_parse.hpp"
+#include "../src/libmettle/cmd_line.hpp"
 
 auto match_filter_item(const attr_instance &attr, bool matched) {
   std::ostringstream ss;

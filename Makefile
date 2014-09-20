@@ -7,7 +7,10 @@ CXXFLAGS += -Wall -Wextra -pedantic -Werror
 
 TESTS := $(patsubst %.cpp,%,$(wildcard test/*.cpp))
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
-SOURCES := $(wildcard src/*.cpp src/libmettle/*.cpp)
+
+METTLE_SOURCES := $(wildcard src/*.cpp)
+LIBMETTLE_SOURCES := $(wildcard src/libmettle/*.cpp)
+SOURCES := $(METTLE_SOURCES) $(LIBMETTLE_SOURCES)
 
 # Include all the existing dependency files for automatic #include dependency
 # handling.
@@ -39,16 +42,14 @@ examples: $(EXAMPLES)
 
 tests: $(TESTS)
 
-SRC_LDFLAGS := $(LDFLAGS)
-mettle: SRC_LDFLAGS += -lboost_program_options -lboost_iostreams
-mettle: src/mettle.o src/file_runner.o
-	$(CXX) $(CXXFLAGS) $^ $(SRC_LDFLAGS) -o $@
+mettle: MY_LDFLAGS := $(LDFLAGS) -lboost_program_options -lboost_iostreams
+mettle: $(METTLE_SOURCES:.cpp=.o) libmettle.so
+	$(CXX) $(CXXFLAGS) $^ -L. -lmettle $(MY_LDFLAGS) -o $@
 
 libmettle.so: CXXFLAGS += -fPIC
-libmettle.so: SRC_LDFLAGS += -lboost_program_options -lboost_iostreams
-libmettle.so: src/libmettle/driver.o src/libmettle/filters.o \
-              src/libmettle/forked_test_runner.o src/libmettle/cmd_parse.o
-	$(CXX) -shared $(CXXFLAGS) $^ $(SRC_LDFLAGS) -o $@
+libmettle.so: MY_LDFLAGS := $(LDFLAGS) -lboost_program_options -lboost_iostreams
+libmettle.so: $(LIBMETTLE_SOURCES:.cpp=.o)
+	$(CXX) -shared $(CXXFLAGS) $^ -L. $(MY_LDFLAGS) -o $@
 
 .PHONY: install
 install: all

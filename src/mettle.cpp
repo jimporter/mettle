@@ -5,7 +5,7 @@
 
 #include <mettle/log/summary.hpp>
 
-#include "cmd_line.hpp"
+#include "libmettle/cmd_line.hpp"
 #include "file_runner.hpp"
 
 namespace mettle {

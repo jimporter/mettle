@@ -8,8 +8,7 @@
 #include <mettle/runner.hpp>
 #include <mettle/log/summary.hpp>
 
-#include "../cmd_line.hpp"
-#include "cmd_parse.hpp"
+#include "cmd_line.hpp"
 #include "forked_test_runner.hpp"
 #include "log_child.hpp"
 
