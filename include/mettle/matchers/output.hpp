@@ -337,12 +337,7 @@ template<typename T>
 auto to_printable_boolish(const T &t) -> typename std::enable_if<
   !std::is_scalar<typename std::remove_reference<T>::type>::value, std::string
 >::type {
-  try {
-    return typeid(t).name();
-  }
-  catch(...) {
-    return "...";
-  }
+  return type_name(t);
 }
 
 // Pass-through
@@ -372,12 +367,7 @@ auto to_printable(const T &t) -> typename std::enable_if<
   !is_exception<T>::value && !is_iterable<T>::value,
   std::string
 >::type {
-  try {
-    return typeid(t).name();
-  }
-  catch(...) {
-    return "...";
-  }
+  return type_name(t);
 }
 
 // Enum classes
