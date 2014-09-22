@@ -38,9 +38,16 @@ inline size_t bg(const color &c) {
 }
 
 enum class sgr {
-  reset     = 0,
-  bold      = 1,
-  underline = 4
+  reset       = 0,
+  bold        = 1,
+  faint       = 2,
+  italic      = 3,
+  underline   = 4,
+  blink       = 5,
+  blink_fast  = 6,
+  inverse     = 7,
+  conceal     = 8,
+  crossed_out = 9
 };
 
 class format {
