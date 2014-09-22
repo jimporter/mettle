@@ -40,13 +40,14 @@ namespace log {
       total_++;
     }
 
-    void passed_test(const test_name &test, const test_output &output) {
-      if(log_) log_->passed_test(test, output);
+    void passed_test(const test_name &test, const test_output &output,
+                     test_duration duration) {
+      if(log_) log_->passed_test(test, output, duration);
     }
 
     void failed_test(const test_name &test, const std::string &message,
-                     const test_output &output) {
-      if(log_) log_->failed_test(test, message, output);
+                     const test_output &output, test_duration duration) {
+      if(log_) log_->failed_test(test, message, output, duration);
 
       failures_[test].push_back({runs_, message});
     }

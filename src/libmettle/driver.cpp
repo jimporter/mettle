@@ -39,6 +39,7 @@ namespace detail {
       ("color,c", "show colored output")
       ("runs,n", opts::value(&runs), "number of test runs")
       ("show-terminal", "show terminal output for each test")
+      ("show-time", "show the duration for each test")
     ;
 
     opts::options_description child("Child options");
@@ -116,7 +117,8 @@ namespace detail {
     indenting_ostream out(std::cout);
 
     auto progress_log = make_progress_logger(
-      out, verbosity, runs, args.count("show-terminal"), fork_tests
+      out, verbosity, runs, args.count("show-terminal"),
+      args.count("show-time"), fork_tests
     );
     log::summary logger(out, progress_log.get());
 

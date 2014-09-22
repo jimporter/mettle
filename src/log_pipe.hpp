@@ -36,12 +36,14 @@ namespace log {
       }
       else if(event == "passed_test") {
         logger_.passed_test(read_test_name(data.at("test")),
-                            read_test_output(data.at("output")));
+                            read_test_output(data.at("output")),
+                            read_test_duration(data.at("duration")));
       }
       else if(event == "failed_test") {
         logger_.failed_test(read_test_name(data.at("test")),
                             read_string(data.at("message")),
-                            read_test_output(data.at("output")));
+                            read_test_output(data.at("output")),
+                            read_test_duration(data.at("duration")));
       }
       else if(event == "skipped_test") {
         logger_.skipped_test(read_test_name(data.at("test")),
@@ -98,6 +100,11 @@ namespace log {
         std::move(any_cast<bencode::string &>( data.at("stdout") )),
         std::move(any_cast<bencode::string &>( data.at("stderr") ))
       };
+    }
+
+    log::test_duration read_test_duration(BENCODE_ANY_NS::any &duration) {
+      using namespace BENCODE_ANY_NS;
+      return log::test_duration(any_cast<bencode::integer>(duration));
     }
 
     std::string read_string(BENCODE_ANY_NS::any &message) {

@@ -84,11 +84,17 @@ namespace detail {
         }
 
         log::test_output output;
+
+        using namespace std::chrono;
+        auto then = steady_clock::now();
         auto result = runner(test.function, output);
+        auto now = steady_clock::now();
+        auto duration = duration_cast<log::test_duration>(now - then);
+
         if(result.passed)
-          logger.passed_test(name, output);
+          logger.passed_test(name, output, duration);
         else
-          logger.failed_test(name, result.message, output);
+          logger.failed_test(name, result.message, output, duration);
       }
 
       run_tests_impl(suite.subsuites(), logger, runner, filter, parents);

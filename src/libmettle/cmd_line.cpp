@@ -12,7 +12,8 @@ namespace mettle {
 
 std::unique_ptr<log::file_logger>
 make_progress_logger(indenting_ostream &out, unsigned int verbosity,
-                     size_t runs, bool show_terminal, bool fork_tests) {
+                     size_t runs, bool show_terminal, bool show_time,
+                     bool fork_tests) {
   std::unique_ptr<log::file_logger> log;
   if(verbosity == 2) {
     if(!fork_tests) {
@@ -21,11 +22,15 @@ make_progress_logger(indenting_ostream &out, unsigned int verbosity,
         exit(1);
       }
     }
-    log = std::make_unique<log::verbose>(out, runs, show_terminal);
+    log = std::make_unique<log::verbose>(out, runs, show_terminal, show_time);
   }
   else {
     if(show_terminal) {
       std::cerr << "--show-terminal requires verbosity of 2" << std::endl;
+      exit(1);
+    }
+    if(show_time) {
+      std::cerr << "--show-time requires verbosity of 2" << std::endl;
       exit(1);
     }
 

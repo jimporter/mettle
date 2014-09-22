@@ -8,9 +8,10 @@ namespace mettle {
 
 namespace log {
 
-  verbose::verbose(indenting_ostream &out, size_t runs, bool show_terminal)
+  verbose::verbose(indenting_ostream &out, size_t runs, bool show_terminal,
+                   bool show_time)
     : out_(out), indent_(out), run_indent_(out), total_runs_(runs),
-      show_terminal_(show_terminal) {}
+      show_terminal_(show_terminal), show_time_(show_time) {}
 
   void verbose::started_run() {
     assert(run_ < total_runs_ && "tests were run too many times");
@@ -54,20 +55,29 @@ namespace log {
     out_ << test.test << " " << std::flush;
   }
 
-  void verbose::passed_test(const test_name &, const test_output &output) {
+  void verbose::passed_test(const test_name &, const test_output &output,
+                            test_duration duration) {
     using namespace term;
-    out_ << format(sgr::bold, fg(color::green)) << "PASSED" << reset()
-         << std::endl;
+    out_ << format(sgr::bold, fg(color::green)) << "PASSED" << reset();
+    if(show_time_) {
+      out_ << " " << format(sgr::bold, fg(color::black)) << "("
+           << duration.count() << " ms)" << reset();
+    }
+    out_ << std::endl;
 
     scoped_indent si(out_);
     log_output(output);
   }
 
   void verbose::failed_test(const test_name &, const std::string &message,
-                            const test_output &output) {
+                            const test_output &output, test_duration duration) {
     using namespace term;
-    out_ << format(sgr::bold, fg(color::red)) << "FAILED" << reset()
-         << std::endl;
+    out_ << format(sgr::bold, fg(color::red)) << "FAILED" << reset();
+    if(show_time_) {
+      out_ << " " << format(sgr::bold, fg(color::black)) << "("
+           << duration.count() << " ms)" << reset();
+    }
+    out_ << std::endl;
 
     scoped_indent si(out_);
     if(!message.empty())

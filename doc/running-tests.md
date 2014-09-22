@@ -79,9 +79,14 @@ test.
 #### --show-terminal
 
 Show the terminal output (stdout and stderr) of each test after it finishes. To
-enable this, `--verbose` must be at least 2, and `--no-fork` can't be
-specified (if `--no-fork` is specified, the terminal output will just appear
-in-line with the tests).
+enable this, `--verbose` must be 2, and `--no-fork` can't be specified (if
+`--no-fork` is specified, the terminal output will just appear in-line with the
+tests).
+
+#### --show-time
+
+Show the duration (in milliseconds) of each test as it runs. To enable this,
+`--verbose` must be 2.
 
 ### Child options
 

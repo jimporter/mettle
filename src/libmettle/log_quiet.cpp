@@ -20,14 +20,15 @@ namespace log {
 
   void quiet::started_test(const test_name &) {}
 
-  void quiet::passed_test(const test_name &, const test_output &) {
+  void quiet::passed_test(const test_name &, const test_output &,
+                          test_duration) {
     using namespace term;
     out_ << format(sgr::bold, fg(color::green)) << "." << reset()
          << std::flush;
   }
 
   void quiet::failed_test(const test_name &, const std::string &,
-                   const test_output &) {
+                          const test_output &, test_duration) {
     using namespace term;
     out_ << format(sgr::bold, fg(color::red)) << "!" << reset() << std::flush;
   }

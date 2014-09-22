@@ -18,7 +18,8 @@ namespace mettle {
 
 std::unique_ptr<log::file_logger>
 make_progress_logger(indenting_ostream &out, unsigned int verbosity,
-                     size_t runs, bool show_terminal, bool fork_tests);
+                     size_t runs, bool show_terminal, bool show_time,
+                     bool fork_tests);
 
 boost::program_options::option_description *
 has_option(const boost::program_options::options_description &options,

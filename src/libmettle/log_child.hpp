@@ -63,8 +63,10 @@ namespace log {
       out.flush();
     }
 
-    void passed_test(const test_name &test, const test_output &output) {
+    void passed_test(const test_name &test, const test_output &output,
+                     test_duration duration) {
       bencode::encode_dict(out,
+        "duration", duration.count(),
         "event", "passed_test",
         "output", output,
         "test", test
@@ -72,8 +74,9 @@ namespace log {
       out.flush();
     }
     void failed_test(const test_name &test, const std::string &message,
-                     const test_output &output) {
+                     const test_output &output, test_duration duration) {
       bencode::encode_dict(out,
+        "duration", duration.count(),
         "event", "failed_test",
         "message", message,
         "output", output,

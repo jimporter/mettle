@@ -31,11 +31,12 @@ struct test_event_logger : log::test_logger {
   void started_test(const test_name &) {
     events.push_back("started_test");
   }
-  void passed_test(const test_name &, const log::test_output &) {
+  void passed_test(const test_name &, const log::test_output &,
+                   log::test_duration) {
     events.push_back("passed_test");
   }
   void failed_test(const test_name &, const std::string &,
-                   const log::test_output &) {
+                   const log::test_output &, log::test_duration) {
     events.push_back("failed_test");
   }
   void skipped_test(const test_name &, const std::string &) {
