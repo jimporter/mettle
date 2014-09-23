@@ -78,10 +78,6 @@ make_progress_logger(indenting_ostream &out, const output_options &args,
       std::cerr << "--show-terminal requires verbosity of 2" << std::endl;
       exit(1);
     }
-    if(args.show_time) {
-      std::cerr << "--show-time requires verbosity of 2" << std::endl;
-      exit(1);
-    }
 
     if(args.verbosity == 1)
       log = std::make_unique<log::quiet>(out);

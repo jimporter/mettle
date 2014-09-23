@@ -71,7 +71,7 @@ int main(int argc, const char *argv[]) {
   indenting_ostream out(std::cout);
 
   auto progress_log = make_progress_logger(out, args, args.no_fork);
-  log::summary logger(out, progress_log.get());
+  log::summary logger(out, progress_log.get(), args.show_time);
 
   for(size_t i = 0; i != args.runs; i++)
     run_test_files(args.files, logger, child_args);

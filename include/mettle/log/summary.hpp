@@ -1,7 +1,9 @@
 #ifndef INC_METTLE_LOG_SUMMARY_HPP
 #define INC_METTLE_LOG_SUMMARY_HPP
 
+#include <chrono>
 #include <iomanip>
+#include <sstream>
 
 #include "core.hpp"
 #include "indent.hpp"
@@ -13,10 +15,14 @@ namespace log {
 
   class summary : public file_logger {
   public:
-    summary(indenting_ostream &out, file_logger *log) : out_(out), log_(log) {}
+    summary(indenting_ostream &out, file_logger *log, bool show_time)
+      : out_(out), log_(log), show_time_(show_time) {}
 
     void started_run() {
       if(log_) log_->started_run();
+
+      if(show_time_ && runs_ == 0)
+        start_time_ = std::chrono::steady_clock::now();
 
       runs_++;
       total_ = file_index_ = 0;
@@ -84,14 +90,28 @@ namespace log {
       size_t passes = total_ - skips_.size() - failures_.size();
 
       out_ << format(sgr::bold) << passes << "/" << total_ << " tests passed";
+
       if(!skips_.empty())
         out_ << " (" << skips_.size() << " skipped)";
+
       if(!failed_files_.empty()) {
         std::string s = failed_files_.size() > 1 ? "s" : "";
         out_ << " [" << failed_files_.size() << " file" << s << " "
              << format(fg(color::red)) << "FAILED" << format(fg(color::normal))
              << "]";
       }
+
+      if(show_time_) {
+        using namespace std::chrono;
+        auto elapsed = duration_cast<duration<float>>(
+          steady_clock::now() - start_time_
+        );
+        std::ostringstream elapsed_str;
+        elapsed_str << std::setprecision(4) << elapsed.count() << " s";
+        out_ << " " << format(fg(color::black)) << "(took "
+             << elapsed_str.str() << ")";
+      }
+
       out_ << reset() << std::endl;
 
       scoped_indent indent(out_);
@@ -168,6 +188,8 @@ namespace log {
 
     indenting_ostream &out_;
     file_logger *log_;
+    bool show_time_;
+    std::chrono::steady_clock::time_point start_time_;
     size_t total_ = 0, runs_ = 0, file_index_ = 0;
     std::map<test_name, std::vector<const failure>> failures_;
     std::map<test_name, std::string> skips_;

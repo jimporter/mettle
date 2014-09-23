@@ -85,8 +85,8 @@ tests).
 
 #### --show-time
 
-Show the duration (in milliseconds) of each test as it runs. To enable this,
-`--verbose` must be 2.
+Show the duration (in milliseconds) of each test as it runs, as well as the
+total time of the entire job. To enable this, `--verbose` must be 2.
 
 ### Child options
 
