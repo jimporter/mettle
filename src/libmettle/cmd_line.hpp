@@ -65,8 +65,7 @@ std::vector<std::basic_string<Char>> filter_options(
 }
 
 std::unique_ptr<log::file_logger>
-make_progress_logger(indenting_ostream &out, const output_options &args,
-                     bool fork_tests);
+make_progress_logger(indenting_ostream &out, const output_options &args);
 
 attr_filter parse_attr(const std::string &value);
 

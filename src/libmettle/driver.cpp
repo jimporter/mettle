@@ -87,6 +87,11 @@ namespace detail {
       return 0;
     }
 
+    if(args.no_fork && args.show_terminal) {
+      std::cerr << "--show-terminal requires forking tests" << std::endl;
+      return 1;
+    }
+
     if(args.runs == 0) {
       std::cerr << "no test runs, exiting" << std::endl;
       return 1;
@@ -95,8 +100,9 @@ namespace detail {
     term::enable(std::cout, args.color);
     indenting_ostream out(std::cout);
 
-    auto progress_log = make_progress_logger(out, args, args.no_fork);
-    log::summary logger(out, progress_log.get(), args.show_time);
+    auto progress_log = make_progress_logger(out, args);
+    log::summary logger(out, progress_log.get(), args.show_time,
+                        args.show_terminal);
 
     for(size_t i = 0; i != args.runs; i++)
       run_tests(detail::all_suites, logger, runner, args.filters);

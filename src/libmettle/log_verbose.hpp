@@ -10,8 +10,8 @@ namespace log {
 
   class verbose : public file_logger {
   public:
-    verbose(indenting_ostream &out, size_t runs, bool show_terminal,
-            bool show_time);
+    verbose(indenting_ostream &out, size_t runs, bool show_time,
+            bool show_terminal);
 
     void started_run();
     void ended_run();
@@ -31,12 +31,12 @@ namespace log {
 
     void failed_file(const std::string &file, const std::string &message);
   private:
-    void log_output(const test_output &output, bool extra_newline = false);
+    void log_output(const test_output &output, bool extra_newline) const;
 
     indenting_ostream &out_;
     indenter indent_, run_indent_;
     size_t total_runs_, run_ = 0;
-    bool first_ = true, show_terminal_, show_time_;
+    bool first_ = true, show_time_, show_terminal_;
   };
 
 }

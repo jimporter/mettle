@@ -15,8 +15,10 @@ namespace log {
 
   class summary : public file_logger {
   public:
-    summary(indenting_ostream &out, file_logger *log, bool show_time)
-      : out_(out), log_(log), show_time_(show_time) {}
+    summary(indenting_ostream &out, file_logger *log, bool show_time,
+            bool show_terminal)
+      : out_(out), log_(log), show_time_(show_time),
+        show_terminal_(show_terminal) {}
 
     void started_run() {
       if(log_) log_->started_run();
@@ -55,7 +57,9 @@ namespace log {
                      const test_output &output, test_duration duration) {
       if(log_) log_->failed_test(test, message, output, duration);
 
-      failures_[test].push_back({runs_, message});
+      failures_[test].push_back({
+        runs_, message, show_terminal_ ? output : log::test_output()
+      });
     }
 
     void skipped_test(const test_name &test, const std::string &message) {
@@ -77,7 +81,7 @@ namespace log {
     void failed_file(const std::string &file, const std::string &message) {
       if(log_) log_->failed_file(file, message);
 
-      failed_files_[{file_index_++, file}].push_back({runs_, message});
+      failed_files_[{file_index_++, file}].push_back({runs_, message, {}});
     }
 
     void summarize() const {
@@ -140,6 +144,7 @@ namespace log {
     struct failure {
       size_t run;
       std::string message;
+      log::test_output output;
     };
 
     void summarize_skip(const std::string &test,
@@ -174,6 +179,7 @@ namespace log {
         auto &&message = failures[0].message;
         if(!message.empty())
           out_ << message << std::endl;
+        log_output(failures[0].output, !message.empty());
       }
       else {
         int run_width = std::ceil(std::log10(runs_));
@@ -182,13 +188,33 @@ namespace log {
                << std::setw(run_width) << i.run << "]" << reset() << " ";
           scoped_indent si(out_, indent_style::visual, run_width + 4);
           out_ << i.message << std::endl;
+          log_output(i.output, true);
         }
+      }
+    }
+
+    void log_output(const test_output &output, bool extra_newline) const {
+      if(!show_terminal_)
+        return;
+
+      using namespace term;
+
+      if(extra_newline && (!output.stdout.empty() || !output.stderr.empty()))
+        out_ << std::endl;
+
+      if(!output.stdout.empty()) {
+        out_ << format(fg(color::yellow), sgr::underline) << "stdout" << reset()
+             << ":" << std::endl << output.stdout << std::endl;
+      }
+      if(!output.stderr.empty()) {
+        out_ << format(fg(color::yellow), sgr::underline) << "stderr" << reset()
+             << ":" << std::endl << output.stderr << std::endl;
       }
     }
 
     indenting_ostream &out_;
     file_logger *log_;
-    bool show_time_;
+    bool show_time_, show_terminal_;
     std::chrono::steady_clock::time_point start_time_;
     size_t total_ = 0, runs_ = 0, file_index_ = 0;
     std::map<test_name, std::vector<const failure>> failures_;

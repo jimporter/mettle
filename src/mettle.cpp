@@ -57,6 +57,11 @@ int main(int argc, const char *argv[]) {
     return 1;
   }
 
+  if(args.no_fork && args.show_terminal) {
+    std::cerr << "--show-terminal requires forking tests" << std::endl;
+    return 1;
+  }
+
   if(args.files.empty()) {
     std::cerr << "no inputs specified" << std::endl;
     return 1;
@@ -70,8 +75,9 @@ int main(int argc, const char *argv[]) {
   term::enable(std::cout, args.color);
   indenting_ostream out(std::cout);
 
-  auto progress_log = make_progress_logger(out, args, args.no_fork);
-  log::summary logger(out, progress_log.get(), args.show_time);
+  auto progress_log = make_progress_logger(out, args);
+  log::summary logger(out, progress_log.get(), args.show_time,
+                      args.show_terminal);
 
   for(size_t i = 0; i != args.runs; i++)
     run_test_files(args.files, logger, child_args);

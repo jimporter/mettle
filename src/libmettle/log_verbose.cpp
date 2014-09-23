@@ -8,10 +8,10 @@ namespace mettle {
 
 namespace log {
 
-  verbose::verbose(indenting_ostream &out, size_t runs, bool show_terminal,
-                   bool show_time)
+  verbose::verbose(indenting_ostream &out, size_t runs, bool show_time,
+                   bool show_terminal)
     : out_(out), indent_(out), run_indent_(out), total_runs_(runs),
-      show_terminal_(show_terminal), show_time_(show_time) {}
+      show_time_(show_time), show_terminal_(show_terminal) {}
 
   void verbose::started_run() {
     assert(run_ < total_runs_ && "tests were run too many times");
@@ -66,7 +66,7 @@ namespace log {
     out_ << std::endl;
 
     scoped_indent si(out_);
-    log_output(output);
+    log_output(output, false);
   }
 
   void verbose::failed_test(const test_name &, const std::string &message,
@@ -118,7 +118,8 @@ namespace log {
     out_ << message << std::endl;
   }
 
-  void verbose::log_output(const test_output &output, bool extra_newline) {
+  void verbose::log_output(const test_output &output,
+                           bool extra_newline) const {
     if(!show_terminal_)
       return;
 

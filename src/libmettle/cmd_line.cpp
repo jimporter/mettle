@@ -62,27 +62,16 @@ has_option(const boost::program_options::options_description &options,
 }
 
 std::unique_ptr<log::file_logger>
-make_progress_logger(indenting_ostream &out, const output_options &args,
-                     bool no_fork) {
-  std::unique_ptr<log::file_logger> log;
-  if(args.verbosity == 2) {
-    if(no_fork && args.show_terminal) {
-      std::cerr << "--show-terminal requires forking tests" << std::endl;
-      exit(1);
-    }
-    log = std::make_unique<log::verbose>(out, args.runs, args.show_terminal,
-                                         args.show_time);
+make_progress_logger(indenting_ostream &out, const output_options &args) {
+  switch(args.verbosity) {
+  case 1:
+    return std::make_unique<log::quiet>(out);
+  case 2:
+    return std::make_unique<log::verbose>(out, args.runs, args.show_time,
+                                          args.show_terminal);
+  default:
+    return {};
   }
-  else {
-    if(args.show_terminal) {
-      std::cerr << "--show-terminal requires verbosity of 2" << std::endl;
-      exit(1);
-    }
-
-    if(args.verbosity == 1)
-      log = std::make_unique<log::quiet>(out);
-  }
-  return log;
 }
 
 attr_filter parse_attr(const std::string &value) {
