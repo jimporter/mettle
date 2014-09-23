@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_LIBMETTLE_LOG_VERBOSE_HPP
-#define INC_METTLE_LIBMETTLE_LOG_VERBOSE_HPP
+#ifndef INC_METTLE_SRC_LIBMETTLE_LOG_VERBOSE_HPP
+#define INC_METTLE_SRC_LIBMETTLE_LOG_VERBOSE_HPP
 
 #include <mettle/log/core.hpp>
 #include <mettle/log/indent.hpp>

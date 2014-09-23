@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_CMD_PARSE_HPP
-#define INC_METTLE_CMD_PARSE_HPP
+#ifndef INC_METTLE_SRC_LIBMETTLE_CMD_PARSE_HPP
+#define INC_METTLE_SRC_LIBMETTLE_CMD_PARSE_HPP
 
 #include <chrono>
 #include <memory>

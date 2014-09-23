@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_TERM_HPP
-#define INC_METTLE_TERM_HPP
+#ifndef INC_METTLE_SRC_LIBMETTLE_LOG_TERM_HPP
+#define INC_METTLE_SRC_LIBMETTLE_LOG_TERM_HPP
 
 #include <sstream>
 #include <string>
