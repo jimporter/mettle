@@ -7,7 +7,7 @@
 
 #include "libmettle/cmd_line.hpp"
 #include "file_runner.hpp"
-#include <mettle/matchers/output.hpp>
+
 namespace mettle {
 
 namespace {
