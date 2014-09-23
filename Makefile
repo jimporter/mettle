@@ -9,7 +9,7 @@ TESTS := $(patsubst %.cpp,%,$(wildcard test/*.cpp))
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
 
 METTLE_SOURCES := $(wildcard src/*.cpp)
-LIBMETTLE_SOURCES := $(wildcard src/libmettle/*.cpp)
+LIBMETTLE_SOURCES := $(wildcard src/libmettle/*.cpp) $(wildcard src/libmettle/log/*.cpp)
 SOURCES := $(METTLE_SOURCES) $(LIBMETTLE_SOURCES)
 
 # Include all the existing dependency files for automatic #include dependency
@@ -17,6 +17,9 @@ SOURCES := $(METTLE_SOURCES) $(LIBMETTLE_SOURCES)
 -include $(TESTS:=.d)
 -include $(EXAMPLES:=.d)
 -include $(SOURCES:.cpp=.d)
+
+blah:
+	@echo $(LIBMETTLE_SOURCES)
 
 all: mettle libmettle.so
 
@@ -62,19 +65,23 @@ test: tests mettle
 	./mettle --verbose 2 --color $(TESTS)
 
 .PHONY: clean
-clean: clean-tests clean-examples clean-src
+clean: clean-tests clean-examples clean-bin clean-obj
 
 .PHONY: clean-tests
 clean-tests:
-	rm -f $(TESTS) test/*.[od]
+	rm -f $(TESTS)
 
 .PHONY: clean-examples
 clean-examples:
-	rm -f $(EXAMPLES) examples/*.[od]
+	rm -f $(EXAMPLES)
 
-.PHONY: clean-src
+.PHONY: clean-bin
 clean-src:
-	rm -f mettle libmettle.so src/*.[od] src/libmettle/*.[od]
+	rm -f mettle libmettle.so
+
+.PHONY: clean-obj
+clean-obj:
+	find . -name "*.[od]" -exec rm -f {} +
 
 .PHONY: gitignore
 gitignore:

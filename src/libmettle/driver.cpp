@@ -10,7 +10,7 @@
 
 #include "cmd_line.hpp"
 #include "forked_test_runner.hpp"
-#include "log_child.hpp"
+#include "log/child.hpp"
 
 namespace mettle {
 

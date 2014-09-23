@@ -1,4 +1,4 @@
-#include "log_quiet.hpp"
+#include "quiet.hpp"
 
 #include <mettle/log/term.hpp>
 

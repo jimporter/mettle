@@ -1,4 +1,4 @@
-#include "log_verbose.hpp"
+#include "verbose.hpp"
 
 #include <cassert>
 

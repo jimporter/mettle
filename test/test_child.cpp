@@ -3,7 +3,7 @@ using namespace mettle;
 
 #include "../src/file_runner.hpp"
 #include "../src/log_pipe.hpp"
-#include "../src/libmettle/log_child.hpp"
+#include "../src/libmettle/log/child.hpp"
 
 struct recording_logger : log::file_logger {
   void started_run() {

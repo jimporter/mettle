@@ -5,8 +5,8 @@
 
 #include <boost/program_options.hpp>
 
-#include "log_quiet.hpp"
-#include "log_verbose.hpp"
+#include "log/quiet.hpp"
+#include "log/verbose.hpp"
 
 namespace mettle {
 
