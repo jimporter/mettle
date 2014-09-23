@@ -10,34 +10,45 @@
 
 namespace mettle {
 
-std::unique_ptr<log::file_logger>
-make_progress_logger(indenting_ostream &out, unsigned int verbosity,
-                     size_t runs, bool show_terminal, bool show_time,
-                     bool fork_tests) {
-  std::unique_ptr<log::file_logger> log;
-  if(verbosity == 2) {
-    if(!fork_tests) {
-      if(show_terminal) {
-        std::cerr << "--show-terminal requires forking tests" << std::endl;
-        exit(1);
-      }
-    }
-    log = std::make_unique<log::verbose>(out, runs, show_terminal, show_time);
-  }
-  else {
-    if(show_terminal) {
-      std::cerr << "--show-terminal requires verbosity of 2" << std::endl;
-      exit(1);
-    }
-    if(show_time) {
-      std::cerr << "--show-time requires verbosity of 2" << std::endl;
-      exit(1);
-    }
+boost::program_options::options_description
+make_generic_options(generic_options &opts) {
+  using namespace boost::program_options;
+  options_description generic("Generic options");
+  generic.add_options()
+    ("help,h", value(&opts.show_help)->zero_tokens(), "show help")
+  ;
+  return generic;
+}
 
-    if(verbosity == 1)
-      log = std::make_unique<log::quiet>(out);
-  }
-  return log;
+boost::program_options::options_description
+make_output_options(output_options &opts) {
+  using namespace boost::program_options;
+  options_description output("Output options");
+  output.add_options()
+    ("verbose,v", value(&opts.verbosity)->implicit_value(2),
+     "show verbose output")
+    ("color,c", value(&opts.color)->zero_tokens(), "show colored output")
+    ("runs,n", value(&opts.runs), "number of test runs")
+    ("show-terminal", value(&opts.show_terminal)->zero_tokens(),
+     "show terminal output for each test")
+    ("show-time", value(&opts.show_time)->zero_tokens(),
+     "show the duration for each test")
+  ;
+  return output;
+}
+
+boost::program_options::options_description
+make_child_options(child_options &opts) {
+  using namespace boost::program_options;
+  options_description child("Child options");
+  child.add_options()
+    ("timeout,t", value(&opts.timeout), "timeout in ms")
+    ("no-fork", "don't fork for each test")
+    ("test,T", value(&opts.filters.by_name),
+     "regex matching names of tests to run")
+    ("attr,a", value(&opts.filters.by_attr), "attributes of tests to run")
+  ;
+  return child;
 }
 
 boost::program_options::option_description *
@@ -48,6 +59,34 @@ has_option(const boost::program_options::options_description &options,
       return i.get();
   }
   return nullptr;
+}
+
+std::unique_ptr<log::file_logger>
+make_progress_logger(indenting_ostream &out, const output_options &args,
+                     bool no_fork) {
+  std::unique_ptr<log::file_logger> log;
+  if(args.verbosity == 2) {
+    if(no_fork && args.show_terminal) {
+      std::cerr << "--show-terminal requires forking tests" << std::endl;
+      exit(1);
+    }
+    log = std::make_unique<log::verbose>(out, args.runs, args.show_terminal,
+                                         args.show_time);
+  }
+  else {
+    if(args.show_terminal) {
+      std::cerr << "--show-terminal requires verbosity of 2" << std::endl;
+      exit(1);
+    }
+    if(args.show_time) {
+      std::cerr << "--show-time requires verbosity of 2" << std::endl;
+      exit(1);
+    }
+
+    if(args.verbosity == 1)
+      log = std::make_unique<log::quiet>(out);
+  }
+  return log;
 }
 
 attr_filter parse_attr(const std::string &value) {
@@ -169,4 +208,4 @@ void validate(boost::any &v, const std::vector<std::string> &values,
   }
 }
 
-}
+} // namespace boost

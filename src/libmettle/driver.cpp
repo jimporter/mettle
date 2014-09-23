@@ -16,6 +16,12 @@ namespace mettle {
 
 using suites_list = std::vector<runnable_suite>;
 
+namespace {
+  struct all_options : generic_options, output_options, child_options {
+    METTLE_OPTIONAL_NS::optional<int> child_fd;
+  };
+}
+
 namespace detail {
   suites_list all_suites;
 
@@ -23,74 +29,49 @@ namespace detail {
     using namespace mettle;
     namespace opts = boost::program_options;
 
-    unsigned int verbosity = 1;
-    size_t runs = 1;
-    filter_set filters;
-    METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout;
-
-    opts::options_description generic("Generic options");
-    generic.add_options()
-      ("help,h", "show help")
-    ;
-
-    opts::options_description output("Output options");
-    output.add_options()
-      ("verbose,v", opts::value(&verbosity)->implicit_value(2),
-       "show verbose output")
-      ("color,c", "show colored output")
-      ("runs,n", opts::value(&runs), "number of test runs")
-      ("show-terminal", "show terminal output for each test")
-      ("show-time", "show the duration for each test")
-    ;
-
-    opts::options_description child("Child options");
-    child.add_options()
-      ("timeout,t", opts::value(&timeout), "timeout in ms")
-      ("no-fork", "don't fork for each test")
-      ("test,T", opts::value(&filters.by_name),
-       "regex matching names of tests to run")
-      ("attr,a", opts::value(&filters.by_attr), "attributes of tests to run")
-    ;
+    all_options args;
+    auto generic = make_generic_options(args);
+    auto output = make_output_options(args);
+    auto child = make_child_options(args);
 
     opts::options_description hidden("Hidden options");
     hidden.add_options()
-      ("child", opts::value<int>(), "run this file as a child process")
+      ("child", opts::value(&args.child_fd), "run this file as a child process")
     ;
 
-    opts::variables_map args;
+    opts::variables_map vm;
     try {
       opts::options_description all;
       all.add(generic).add(output).add(child).add(hidden);
 
-      opts::store(opts::parse_command_line(argc, argv, all), args);
-      opts::notify(args);
+      opts::store(opts::parse_command_line(argc, argv, all), vm);
+      opts::notify(vm);
     } catch(const std::exception &e) {
       std::cerr << e.what() << std::endl;
       return 1;
     }
 
-    if(args.count("help")) {
+    if(args.show_help) {
       opts::options_description displayed;
       displayed.add(generic).add(output).add(child);
       std::cout << displayed << std::endl;
       return 1;
     }
 
-    bool fork_tests = !args.count("no-fork");
     test_runner runner;
-    if(fork_tests) {
-      runner = forked_test_runner(timeout);
-    }
-    else {
-      if(timeout) {
+    if(args.no_fork) {
+      if(args.timeout) {
         std::cerr << "--timeout requires forking tests" << std::endl;
         return 1;
       }
       runner = inline_test_runner;
     }
+    else {
+      runner = forked_test_runner(args.timeout);
+    }
 
-    if(args.count("child")) {
-      if(auto output_opt = has_option(output, args)) {
+    if(args.child_fd) {
+      if(auto output_opt = has_option(output, vm)) {
         using namespace opts::command_line_style;
         std::cerr << output_opt->canonical_display_name(allow_long)
                   << " can't be used with --child" << std::endl;
@@ -99,29 +80,26 @@ namespace detail {
 
       namespace io = boost::iostreams;
       io::stream<io::file_descriptor_sink> fds(
-        args["child"].as<int>(), io::never_close_handle
+        *args.child_fd, io::never_close_handle
       );
       log::child logger(fds);
-      run_tests(detail::all_suites, logger, runner, filters);
+      run_tests(detail::all_suites, logger, runner, args.filters);
       return 0;
     }
 
-    if(runs == 0) {
+    if(args.runs == 0) {
       std::cerr << "no test runs, exiting" << std::endl;
       return 1;
     }
 
-    term::enable(std::cout, args.count("color"));
+    term::enable(std::cout, args.color);
     indenting_ostream out(std::cout);
 
-    auto progress_log = make_progress_logger(
-      out, verbosity, runs, args.count("show-terminal"),
-      args.count("show-time"), fork_tests
-    );
+    auto progress_log = make_progress_logger(out, args, args.no_fork);
     log::summary logger(out, progress_log.get());
 
-    for(size_t i = 0; i != runs; i++)
-      run_tests(detail::all_suites, logger, runner, filters);
+    for(size_t i = 0; i != args.runs; i++)
+      run_tests(detail::all_suites, logger, runner, args.filters);
 
     logger.summarize();
     return !logger.good();
