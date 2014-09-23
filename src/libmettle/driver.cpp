@@ -26,6 +26,7 @@ namespace detail {
     unsigned int verbosity = 1;
     size_t runs = 1;
     filter_set filters;
+    METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout;
 
     opts::options_description generic("Generic options");
     generic.add_options()
@@ -44,7 +45,7 @@ namespace detail {
 
     opts::options_description child("Child options");
     child.add_options()
-      ("timeout,t", opts::value<size_t>(), "timeout in ms")
+      ("timeout,t", opts::value(&timeout), "timeout in ms")
       ("no-fork", "don't fork for each test")
       ("test,T", opts::value(&filters.by_name),
        "regex matching names of tests to run")
@@ -78,13 +79,10 @@ namespace detail {
     bool fork_tests = !args.count("no-fork");
     test_runner runner;
     if(fork_tests) {
-      METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout;
-      if(args.count("timeout"))
-        timeout.emplace(args["timeout"].as<size_t>());
       runner = forked_test_runner(timeout);
     }
     else {
-      if(args.count("timeout")) {
+      if(timeout) {
         std::cerr << "--timeout requires forking tests" << std::endl;
         return 1;
       }

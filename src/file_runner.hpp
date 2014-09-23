@@ -5,8 +5,6 @@
 
 #include <mettle/log/core.hpp>
 
-#include "optional.hpp"
-
 namespace mettle {
 
 void run_test_files(

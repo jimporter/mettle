@@ -6,7 +6,7 @@
 #include <mettle/compiled_suite.hpp>
 #include <mettle/log/core.hpp>
 
-#include "../optional.hpp"
+#include "optional.hpp"
 
 namespace mettle {
 

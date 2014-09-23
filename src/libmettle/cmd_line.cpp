@@ -152,3 +152,21 @@ void validate(boost::any &v, const std::vector<std::string> &values,
 }
 
 } // namespace mettle
+
+namespace boost {
+
+void validate(boost::any &v, const std::vector<std::string> &values,
+              std::chrono::milliseconds*, int) {
+  using namespace boost::program_options;
+  validators::check_first_occurrence(v);
+  const std::string &val = validators::get_single_string(values);
+
+  try {
+    v = std::chrono::milliseconds(boost::lexical_cast<size_t>(val));
+  }
+  catch(...) {
+    boost::throw_exception(invalid_option_value(val));
+  }
+}
+
+}
