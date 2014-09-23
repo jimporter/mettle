@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-#include <mettle/log/term.hpp>
+#include "term.hpp"
 
 namespace mettle {
 

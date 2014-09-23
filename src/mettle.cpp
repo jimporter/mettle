@@ -3,10 +3,10 @@
 
 #include <boost/program_options.hpp>
 
-#include <mettle/log/summary.hpp>
-
-#include "libmettle/cmd_line.hpp"
 #include "file_runner.hpp"
+#include "libmettle/cmd_line.hpp"
+#include "libmettle/log/summary.hpp"
+#include "libmettle/log/term.hpp"
 
 namespace mettle {
 

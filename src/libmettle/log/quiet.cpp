@@ -1,6 +1,6 @@
 #include "quiet.hpp"
 
-#include <mettle/log/term.hpp>
+#include "term.hpp"
 
 namespace mettle {
 

@@ -6,11 +6,12 @@
 #include <boost/program_options.hpp>
 
 #include <mettle/runner.hpp>
-#include <mettle/log/summary.hpp>
 
 #include "cmd_line.hpp"
 #include "forked_test_runner.hpp"
 #include "log/child.hpp"
+#include "log/summary.hpp"
+#include "log/term.hpp"
 
 namespace mettle {
 
