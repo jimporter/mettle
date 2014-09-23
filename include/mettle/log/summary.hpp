@@ -19,7 +19,7 @@ namespace log {
       if(log_) log_->started_run();
 
       runs_++;
-      total_ = skips_ = file_index_ = 0;
+      total_ = file_index_ = 0;
     }
 
     void ended_run() {
@@ -55,7 +55,7 @@ namespace log {
     void skipped_test(const test_name &test, const std::string &message) {
       if(log_) log_->skipped_test(test, message);
 
-      skips_++;
+      skips_.emplace(test, message);
     }
 
     void started_file(const std::string &file) {
@@ -74,18 +74,18 @@ namespace log {
       failed_files_[{file_index_++, file}].push_back({runs_, message});
     }
 
-    void summarize() {
+    void summarize() const {
       assert(runs_ > 0 && "number of runs can't be zero");
 
       if(log_)
         out_ << std::endl;
 
       using namespace term;
-      size_t passes = total_ - skips_ - failures_.size();
+      size_t passes = total_ - skips_.size() - failures_.size();
 
       out_ << format(sgr::bold) << passes << "/" << total_ << " tests passed";
-      if(skips_)
-        out_ << " (" << skips_ << " skipped)";
+      if(!skips_.empty())
+        out_ << " (" << skips_.size() << " skipped)";
       if(!failed_files_.empty()) {
         std::string s = failed_files_.size() > 1 ? "s" : "";
         out_ << " [" << failed_files_.size() << " file" << s << " "
@@ -95,6 +95,9 @@ namespace log {
       out_ << reset() << std::endl;
 
       scoped_indent indent(out_);
+      // XXX: Interleave skips and failures in the appropriate order?
+      for(const auto &i : skips_)
+        summarize_skip(i.first.full_name(), i.second);
       for(const auto &i : failures_)
         summarize_failure(i.first.full_name(), i.second);
       for(const auto &i : failed_files_)
@@ -119,8 +122,20 @@ namespace log {
       std::string message;
     };
 
+    void summarize_skip(const std::string &test,
+                        const std::string &message) const {
+      using namespace term;
+
+      out_ << test << " " << format(sgr::bold, fg(color::blue)) << "SKIPPED"
+           << reset() << std::endl;
+      if(!message.empty()) {
+        scoped_indent si(out_);
+        out_ << message << std::endl;
+      }
+    }
+
     void summarize_failure(const std::string &where,
-                           const std::vector<const failure> &failures) {
+                           const std::vector<const failure> &failures) const {
       using namespace term;
 
       out_ << where << " " << format(sgr::bold, fg(color::red)) << "FAILED"
@@ -153,8 +168,9 @@ namespace log {
 
     indenting_ostream &out_;
     file_logger *log_;
-    size_t total_ = 0, skips_ = 0, runs_ = 0, file_index_ = 0;
+    size_t total_ = 0, runs_ = 0, file_index_ = 0;
     std::map<test_name, std::vector<const failure>> failures_;
+    std::map<test_name, std::string> skips_;
     std::map<file_info, std::vector<const failure>> failed_files_;
   };
 
