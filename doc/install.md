@@ -22,6 +22,20 @@ iostreams) and [bencode.hpp](https://github.com/jimporter/bencode.hpp). If
 you plan to use libc++, [this Gist](https://gist.github.com/jimporter/10442880)
 should help you build Boost to link to it.
 
+### Header-only version
+
+If you'd like to get started quickly, and don't want to install the above
+dependencies (namely Boost and bencode.hpp) or build the binaries for mettle,
+you can use this library in a header-only mode by using the following instead of
+the usual `#include <mettle.hpp>`:
+
+```c++
+#include <mettle/header_only.hpp>
+```
+
+However, the header-only version is quite limited and doesn't support any of the
+command-line arguments described in [Running Tests](running-tests.md).
+
 ## Building and installing
 
 Once you've installed all of mettle's dependencies, you can build mettle itself!

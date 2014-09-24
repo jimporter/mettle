@@ -1,19 +1,10 @@
-#ifndef INC_METTLE_DRIVER_HPP
-#define INC_METTLE_DRIVER_HPP
+#ifndef INC_METTLE_GLOBAL_SUITE_HPP
+#define INC_METTLE_GLOBAL_SUITE_HPP
 
-#include <vector>
-
+#include "all_suites.hpp"
 #include "glue.hpp"
 
 namespace mettle {
-
-using suites_list = std::vector<runnable_suite>;
-
-namespace detail {
-  extern suites_list all_suites;
-
-  int real_main(int argc, const char *argv[]);
-}
 
 template<typename Exception, typename ...Fixture>
 struct basic_suite {
@@ -33,7 +24,7 @@ struct basic_suite {
 
   template<typename ...Args>
   basic_suite(const std::string &name, const attributes &attrs, Args &&...args)
-    : basic_suite(detail::all_suites, name, attrs,
+    : basic_suite(detail::all_suites(), name, attrs,
                   std::forward<Args>(args)...) {}
 
   template<typename ...Args>
@@ -45,9 +36,5 @@ template<typename ...T>
 using suite = basic_suite<expectation_error, T...>;
 
 } // namespace mettle
-
-int main(int argc, const char *argv[]) {
-  return mettle::detail::real_main(argc, argv);
-}
 
 #endif

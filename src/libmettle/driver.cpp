@@ -5,6 +5,7 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/program_options.hpp>
 
+#include <mettle/all_suites.hpp>
 #include <mettle/runner.hpp>
 
 #include "cmd_line.hpp"
@@ -15,8 +16,6 @@
 
 namespace mettle {
 
-using suites_list = std::vector<runnable_suite>;
-
 namespace {
   struct all_options : generic_options, output_options, child_options {
     METTLE_OPTIONAL_NS::optional<int> child_fd;
@@ -24,7 +23,6 @@ namespace {
 }
 
 namespace detail {
-  suites_list all_suites;
 
   int real_main(int argc, const char *argv[]) {
     using namespace mettle;
@@ -84,7 +82,7 @@ namespace detail {
         *args.child_fd, io::never_close_handle
       );
       log::child logger(fds);
-      run_tests(detail::all_suites, logger, runner, args.filters);
+      run_tests(detail::all_suites(), logger, runner, args.filters);
       return 0;
     }
 
@@ -106,7 +104,7 @@ namespace detail {
                         args.show_terminal);
 
     for(size_t i = 0; i != args.runs; i++)
-      run_tests(detail::all_suites, logger, runner, args.filters);
+      run_tests(detail::all_suites(), logger, runner, args.filters);
 
     logger.summarize();
     return !logger.good();

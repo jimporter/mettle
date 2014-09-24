@@ -7,9 +7,10 @@ CXXFLAGS += -Wall -Wextra -pedantic -Werror
 
 TESTS := $(patsubst %.cpp,%,$(wildcard test/*.cpp))
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
+HEADER_ONLY_EXAMPLES := examples/test_header_only
 
 METTLE_SOURCES := $(wildcard src/*.cpp)
-LIBMETTLE_SOURCES := $(wildcard src/libmettle/*.cpp) $(wildcard src/libmettle/log/*.cpp)
+LIBMETTLE_SOURCES := $(shell find src/libmettle -type f -name "*.cpp")
 SOURCES := $(METTLE_SOURCES) $(LIBMETTLE_SOURCES)
 
 # Include all the existing dependency files for automatic #include dependency
@@ -17,9 +18,6 @@ SOURCES := $(METTLE_SOURCES) $(LIBMETTLE_SOURCES)
 -include $(TESTS:=.d)
 -include $(EXAMPLES:=.d)
 -include $(SOURCES:.cpp=.d)
-
-blah:
-	@echo $(LIBMETTLE_SOURCES)
 
 all: mettle libmettle.so
 
@@ -38,8 +36,11 @@ TEST_LDFLAGS := $(LDFLAGS)
 test/test_child: TEST_LDFLAGS += -lboost_iostreams
 test/test_child: src/file_runner.o
 
-$(TESTS) $(EXAMPLES): %: %.o libmettle.so
+$(TESTS) $(filter-out $(HEADER_ONLY_EXAMPLES),$(EXAMPLES)): %: %.o libmettle.so
 	$(CXX) $(CXXFLAGS) $(filter %.o,$^) -L. -lmettle $(TEST_LDFLAGS) -o $@
+
+$(HEADER_ONLY_EXAMPLES): %: %.o
+	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -o $@
 
 examples: $(EXAMPLES)
 

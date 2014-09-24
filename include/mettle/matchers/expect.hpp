@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 
+#include "core.hpp"
 #include "result.hpp"
 
 namespace mettle {
