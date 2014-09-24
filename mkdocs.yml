@@ -12,4 +12,5 @@ pages:
 - [running-tests.md, User Guide, Running Tests]
 - [writing-tests.md, User Guide, Writing Tests]
 - [matchers.md, User Guide, Expectations and Matchers]
+- [developer.md, Developer Guide]
 - [license.md, License]
