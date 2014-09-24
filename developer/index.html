@@ -9,7 +9,7 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
 
-        <title>License - mettle</title>
+        <title>Developer Guide - mettle</title>
 
         <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
@@ -76,14 +76,14 @@
             
             
             
-                <li >
-                    <a href="../developer/">Developer Guide</a>
+                <li class="active">
+                    <a href="./">Developer Guide</a>
                 </li>
             
             
             
-                <li class="active">
-                    <a href="./">License</a>
+                <li >
+                    <a href="../license/">License</a>
                 </li>
             
             
@@ -93,12 +93,12 @@
             <ul class="nav navbar-nav navbar-right">
                 
                 <li >
-                    <a rel="next" href="../developer/">
+                    <a rel="next" href="../matchers/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
-                <li class="disabled">
-                    <a rel="prev" >
+                <li >
+                    <a rel="prev" href="../license/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -121,45 +121,56 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="main active"><a href="#license">License</a></li>
+        <li class="main active"><a href="#developer-guide">Developer Guide</a></li>
+        
+            <li><a href="#basic-structure">Basic structure</a></li>
+        
+            <li><a href="#suites">Suites</a></li>
         
     
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-<h1 id="license">License</h1>
+<h1 id="developer-guide">Developer Guide</h1>
 <hr />
-<p>Copyright (c) 2014, Jim Porter
-All rights reserved.</p>
-<p>Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:</p>
-<ol>
-<li>
-<p>Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.</p>
-</li>
-<li>
-<p>Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.</p>
-</li>
-<li>
-<p>Neither the name of the copyright holder nor the names of its contributors
-may be used to endorse or promote products derived from this software without
-specific prior written permission.</p>
-</li>
-</ol>
-<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+<p>If you're looking to learn about how mettle actually works, you've come to the
+right place! This developer guide will describe mettle's internals and how
+everything fits together.</p>
+<h2 id="basic-structure">Basic structure</h2>
+<p>mettle's structure is a bit different from other test frameworks. First, like
+some other test frameworks, individual (user-written) test files link to a
+shared library (<code>libmettle.so</code>) to pull in common driver code.</p>
+<p>However, in addition, the <code>mettle</code> test driver can be used to aggregate the
+results of multiple test files. This lets you put your tests into multiple,
+separate binaries to reduce compilation time and allow different kinds of tests
+to be run all at once (e.g. normal unit tests and compilation-failure tests).</p>
+<h3 id="subprocesses">Subprocesses</h3>
+<p>When running tests, mettle makes extensive use of subprocesses to isolate tests
+as much as possible. First, the <code>mettle</code> driver forks/execs each individual test
+binary, and these in turn (by default) fork for each test in the file. This
+ensures that no one test can crash the entire framework.</p>
+<p>Additionally, if tests are set to time out after a certain period, two more
+subprocesses are forked for each test: a <em>monitor process</em> and a <em>timer
+process</em>. The monitor process forks both the timer process and the actual test
+process and waits for the first one to finish. The timer process automatically
+exits after the timeout expires, and if it exits before the test process, the
+monitor process kills the test and sends a message that it timed out.</p>
+<h2 id="suites">Suites</h2>
+<p>When creating a test suite, the most important argument to pass is the <em>creation
+function</em> (conventionally a generic lambda). This function takes a
+<code>suite_builder</code> (or a <code>subsuite_builder</code> for subsuites). These are both template
+classes that let the user add tests or subsuites to the given suite.</p>
+<p>Once the creation function returns, the suite is compiled into a
+<code>runnable_suite</code> (subsuites, however, are merely compiled into an intermediary
+form and stored in its parent's <code>(sub)suite_builder</code> instance). When the parent
+is compiled, the subsuite and all of its tests are compiled as well, until it
+gets to the root suite, at which point all tests and subsuites are
+fully-compiled.</p>
+<p>If using the global <code>suite</code> or <code>basic_suite</code> types, once the suite is
+fully-compiled, it gets added to a global list of suites, held in
+<code>detail::all_suites()</code> (subsuites, however, are contained within their parents).
+This list is then used by the test driver to run all the tests.</p>
 </div>
         </div>
 
