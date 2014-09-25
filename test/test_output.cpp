@@ -158,6 +158,13 @@ suite<> output("debug output", [](auto &_){
       expect(sample_function, stringified(type_name<void(void)>()));
     });
 
+    _.test("exceptions", []() {
+      std::runtime_error e("what");
+      expect(e, stringified(type_name<std::runtime_error>() + "(\"what\")"));
+      expect(static_cast<std::exception&>(e),
+             stringified(type_name<std::runtime_error>() + "(\"what\")"));
+    });
+
     _.test("custom types", []() {
       expect(my_type{}, stringified("{my_type}"));
       expect(my_namespace::another_type{}, stringified("{another_type}"));

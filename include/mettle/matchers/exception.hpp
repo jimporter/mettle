@@ -26,7 +26,7 @@ namespace detail {
       if(m.message.empty())
         ss << to_printable(e);
       else
-        ss << type_name<Exception>() << "(" << m.message << ")";
+        ss << type_name(e) << "(" << m.message << ")";
       return {m.matched, ss.str()};
     }
   private:

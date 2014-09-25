@@ -345,7 +345,7 @@ inline auto to_printable(const T &e) -> typename std::enable_if<
   !is_printable<T>::value && is_exception<T>::value, std::string
 >::type {
   std::ostringstream ss;
-  ss << type_name<T>() << "(" << to_printable(e.what()) << ")";
+  ss << type_name(e) << "(" << to_printable(e.what()) << ")";
   return ss.str();
 }
 
