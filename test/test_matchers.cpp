@@ -139,6 +139,12 @@ suite<> matcher_tests("matchers", [](auto &_) {
       expect(123, any(m));
 
       expect(any(1, 2, 3).desc(), equal_to("any of(1, 2, 3)"));
+
+      auto msg = make_matcher([](const auto &) -> match_result {
+        return {true, "message"};
+      }, "");
+      expect(any(1, msg)(2).message, equal_to("message"));
+      expect(any(1, is_not(msg))(2).message, equal_to(""));
     });
 
     _.test("all()", []() {
@@ -150,6 +156,12 @@ suite<> matcher_tests("matchers", [](auto &_) {
       expect(123, all(m));
 
       expect(all(1, 2, 3).desc(), equal_to("all of(1, 2, 3)"));
+
+      auto msg = make_matcher([](const auto &) -> match_result {
+        return {false, "message"};
+      }, "");
+      expect(all(1, msg)(1).message, equal_to("message"));
+      expect(all(1, is_not(msg))(1).message, equal_to(""));
     });
 
     _.test("none()", []() {
@@ -161,6 +173,12 @@ suite<> matcher_tests("matchers", [](auto &_) {
       expect(123, none(m));
 
       expect(none(1, 2, 3).desc(), equal_to("none of(1, 2, 3)"));
+
+      auto msg = make_matcher([](const auto &) -> match_result {
+        return {true, "message"};
+      }, "");
+      expect(none(1, msg)(2).message, equal_to("message"));
+      expect(none(1, is_not(msg))(2).message, equal_to(""));
     });
   });
 

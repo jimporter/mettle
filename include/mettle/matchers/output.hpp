@@ -10,6 +10,7 @@
 #include <typeinfo>
 
 #include "../type_name.hpp"
+#include "tuple_algorithm.hpp"
 
 // Try to use N4082's string_view class, or fall back to Boost's.
 #ifdef __has_include
@@ -28,48 +29,6 @@
 namespace mettle {
 
 namespace detail {
-  template<typename Tuple, typename Func, typename Val,
-           size_t N = std::tuple_size<Tuple>::value>
-  struct do_reduce {
-    auto operator ()(const Tuple &tuple, const Func &reducer,
-                     Val &&value) {
-      constexpr auto i = std::tuple_size<Tuple>::value - N;
-      bool early_exit = false;
-      auto result = reducer(
-        std::forward<Val>(value), std::get<i>(tuple), early_exit
-      );
-      if(early_exit)
-        return result;
-      return do_reduce<Tuple, Func, Val, N-1>()(
-        tuple, reducer, std::forward<Val>(result)
-      );
-    }
-  };
-
-  template<typename Tuple, typename Func, typename Val>
-  struct do_reduce<Tuple, Func, Val, 1> {
-    auto operator ()(const Tuple &tuple, const Func &reducer,
-                     Val &&value) {
-      constexpr auto i = std::tuple_size<Tuple>::value - 1;
-      bool early_exit = false;
-      return reducer(std::forward<Val>(value), std::get<i>(tuple), early_exit);
-    }
-  };
-
-  template<typename Tuple, typename Func, typename Val>
-  struct do_reduce<Tuple, Func, Val, 0> {
-    auto operator ()(const Tuple &, const Func &, Val &&value) {
-      return value;
-    }
-  };
-
-  template<typename Tuple, typename Func, typename Val>
-  auto reduce_tuple(const Tuple &tuple, const Func &reducer, Val &&initial) {
-    return do_reduce<Tuple, Func, Val>()(
-      tuple, reducer, std::forward<Val>(initial)
-    );
-  }
-
   template<typename T>
   std::string stringify_iterable(T begin, T end);
 
@@ -436,13 +395,14 @@ namespace detail {
   template<typename T>
   std::string stringify_tuple(const T &tuple) {
     std::ostringstream ss;
+    bool first = true;
     ss << "[";
-    reduce_tuple(tuple, [&ss](bool first, const auto &x, bool &) {
+    tuple_for_each(tuple, [&ss, &first](const auto &x) {
       if(!first)
         ss << ", ";
       ss << to_printable(x);
-      return false;
-    }, true);
+      first = false;
+    });
     ss << "]";
     return ss.str();
   }

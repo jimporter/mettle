@@ -5,6 +5,7 @@
 #include <tuple>
 
 #include "core.hpp"
+#include "tuple_algorithm.hpp"
 
 namespace mettle {
 
@@ -21,26 +22,28 @@ namespace detail {
         matchers_(ensure_matcher(std::forward<T>(matchers))...) {}
 
     template<typename U>
-    bool operator ()(const U &value) const {
-      return detail::reduce_tuple(
-        matchers_, [&value, this](bool a, auto &&b, bool &early_exit) {
-          bool result = reducer_(a, b(value));
-          early_exit = (result != initial_);
-          return result;
-        }, initial_
-      );
+    match_result operator ()(const U &value) const {
+      match_result result = initial_;
+      detail::tuple_for_until(matchers_, [&, this](const auto &matcher) {
+        auto m = matcher(value);
+        bool done = reducer_(initial_, m) != initial_;
+        if(done)
+          result = std::move(m);
+        return done;
+      });
+      return result;
     }
 
     std::string desc() const {
       std::ostringstream ss;
+      bool first = true;
       ss << desc_ << "(";
-      detail::reduce_tuple(matchers_, [&ss](bool first, const auto &matcher,
-                                            bool &) {
+      detail::tuple_for_each(matchers_, [&ss, &first](const auto &matcher) {
         if(!first)
           ss << ", ";
         ss << matcher.desc();
-        return false;
-      }, true);
+        first = false;
+      });
       ss << ")";
       return ss.str();
     }
