@@ -1,9 +1,9 @@
-#ifndef INC_METTLE_ALL_SUITES_HPP
-#define INC_METTLE_ALL_SUITES_HPP
+#ifndef INC_METTLE_DETAIL_ALL_SUITES_HPP
+#define INC_METTLE_DETAIL_ALL_SUITES_HPP
 
 #include <vector>
 
-#include "compiled_suite.hpp"
+#include "../compiled_suite.hpp"
 
 namespace mettle {
 

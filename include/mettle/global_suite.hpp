@@ -1,7 +1,7 @@
 #ifndef INC_METTLE_GLOBAL_SUITE_HPP
 #define INC_METTLE_GLOBAL_SUITE_HPP
 
-#include "all_suites.hpp"
+#include "detail/all_suites.hpp"
 #include "glue.hpp"
 
 namespace mettle {

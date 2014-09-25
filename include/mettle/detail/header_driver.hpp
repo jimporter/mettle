@@ -1,12 +1,12 @@
-#ifndef INC_METTLE_HEADER_DRIVER_HPP
-#define INC_METTLE_HEADER_DRIVER_HPP
+#ifndef INC_METTLE_DETAIL_HEADER_DRIVER_HPP
+#define INC_METTLE_DETAIL_HEADER_DRIVER_HPP
 
 #include <iostream>
 
 #include "all_suites.hpp"
-#include "runner.hpp"
-#include "log/indent.hpp"
-#include "log/simple_summary.hpp"
+#include "../runner.hpp"
+#include "../log/indent.hpp"
+#include "../log/simple_summary.hpp"
 
 int main() {
   using namespace mettle;

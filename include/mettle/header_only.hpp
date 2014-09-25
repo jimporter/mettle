@@ -3,6 +3,6 @@
 
 #include "global_suite.hpp"
 #include "matchers.hpp"
-#include "header_driver.hpp"
+#include "detail/header_driver.hpp"
 
 #endif

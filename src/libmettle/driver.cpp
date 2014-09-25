@@ -5,7 +5,7 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/program_options.hpp>
 
-#include <mettle/all_suites.hpp>
+#include <mettle/detail/all_suites.hpp>
 #include <mettle/runner.hpp>
 
 #include "cmd_line.hpp"
