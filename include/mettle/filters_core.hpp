@@ -22,7 +22,7 @@ namespace detail {
 struct filter_result {
   filter_result() = default;
   filter_result(test_action action, std::string message = "")
-    : action(action), message(message) {}
+    : action(action), message(std::move(message)) {}
 
   test_action action;
   std::string message;

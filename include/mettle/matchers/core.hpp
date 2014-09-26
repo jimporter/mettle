@@ -38,9 +38,9 @@ template<typename T, typename F>
 class basic_matcher : public matcher_tag {
 public:
   template<typename T2, typename F2>
-  basic_matcher(T2 &&thing, F2 &&f, const std::string &prefix)
+  basic_matcher(T2 &&thing, F2 &&f, std::string prefix)
     : thing_(std::forward<T2>(thing)), f_(std::forward<F2>(f)),
-      prefix_(prefix) {}
+      prefix_(std::move(prefix)) {}
 
   template<typename U>
   auto operator ()(U &&actual) const {
@@ -62,8 +62,8 @@ template<typename F>
 class basic_matcher<void, F> : public matcher_tag {
 public:
   template<typename F2>
-  basic_matcher(F2 &&f, const std::string &desc)
-    : f_(std::forward<F2>(f)), desc_(desc) {}
+  basic_matcher(F2 &&f, std::string desc)
+    : f_(std::forward<F2>(f)), desc_(std::move(desc)) {}
 
   template<typename U>
   auto operator ()(U &&actual) const {
@@ -78,18 +78,18 @@ private:
   std::string desc_;
 };
 
-template<typename T, typename F>
-inline auto make_matcher(T &&thing, F &&f, const std::string &prefix) {
+template<typename T, typename F, typename String>
+inline auto make_matcher(T &&thing, F &&f, String &&prefix) {
   return basic_matcher<
     std::remove_reference_t<T>, std::remove_reference_t<F>
-  >(std::forward<T>(thing), std::forward<F>(f), prefix);
+  >(std::forward<T>(thing), std::forward<F>(f), std::forward<String>(prefix));
 }
 
-template<typename F>
-inline auto make_matcher(F &&f, const std::string &desc) {
+template<typename F, typename String>
+inline auto make_matcher(F &&f, String &&desc) {
   return basic_matcher<
     void, std::remove_reference_t<F>
-  >(std::forward<F>(f), desc);
+  >(std::forward<F>(f), std::forward<String>(desc));
 }
 
 template<typename T>

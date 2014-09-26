@@ -52,29 +52,22 @@ struct attr_filter_item {
 };
 
 inline attr_filter_item
-has_attr(const std::string &name) {
-  return {name, [](const attr_instance *attr) -> bool {
+has_attr(std::string name) {
+  return {std::move(name), [](const attr_instance *attr) -> bool {
     return attr;
   }};
 }
 
 inline attr_filter_item
-has_attr(const std::string &name, const std::string &value) {
-  return {name, [value](const attr_instance *attr) -> bool {
+has_attr(std::string name, std::string value) {
+  auto f = [value = std::move(value)](const attr_instance *attr) -> bool {
     return attr && attr->value.count(value);
-  }};
-}
-
-inline attr_filter_item
-operator !(const attr_filter_item &filter) {
-  auto f = [func = filter.func](const attr_instance *attr) -> bool {
-    return !func(attr);
   };
-  return {filter.attribute, std::move(f)};
+  return {std::move(name), std::move(f)};
 }
 
 inline attr_filter_item
-operator !(attr_filter_item &&filter) {
+operator !(attr_filter_item filter) {
   auto f = [func = std::move(filter.func)](const attr_instance *attr) -> bool {
     return !func(attr);
   };

@@ -16,9 +16,9 @@ namespace detail {
     using reducer_type = std::function<bool(bool, bool)>;
     using tuple_type = std::tuple<typename ensure_matcher_type<T>::type...>;
 
-    reduce_impl(const std::string &desc, const reducer_type &reducer,
-                bool initial, T &&...matchers)
-      : desc_(desc), reducer_(reducer), initial_(initial),
+    reduce_impl(std::string desc, reducer_type reducer, bool initial,
+                T &&...matchers)
+      : desc_(std::move(desc)), reducer_(std::move(reducer)), initial_(initial),
         matchers_(ensure_matcher(std::forward<T>(matchers))...) {}
 
     template<typename U>

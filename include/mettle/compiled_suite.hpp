@@ -40,10 +40,9 @@ public:
   struct test_info {
     using function_type = std::function<Ret(T&...)>;
 
-    test_info(const std::string &name, const function_type &function,
-              const attributes &attrs)
-      : name(name), function(function), attrs(attrs),
-        id(detail::generate_id()) {}
+    test_info(std::string name, function_type function, attributes attrs)
+      : name(std::move(name)), function(std::move(function)),
+        attrs(std::move(attrs)), id(detail::generate_id()) {}
 
     std::string name;
     function_type function;

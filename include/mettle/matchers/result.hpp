@@ -7,8 +7,8 @@
 namespace mettle {
 
 struct match_result {
-  match_result(bool matched, const std::string &message = "")
-    : matched(matched), message(message) {}
+  match_result(bool matched, std::string message = "")
+    : matched(matched), message(std::move(message)) {}
 
   bool matched;
   std::string message;

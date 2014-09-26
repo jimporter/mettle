@@ -277,7 +277,7 @@ public:
     tests_.push_back({std::move(name), std::move(f), {}});
   }
 
-  void test(std::string name, attributes attrs, function_type &&f) {
+  void test(std::string name, attributes attrs, function_type f) {
     tests_.push_back({
       std::move(name), std::move(f), std::move(attrs)
     });
