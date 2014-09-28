@@ -3,7 +3,7 @@
 
 #include <boost/program_options.hpp>
 
-#include "file_runner.hpp"
+#include "run_test_files.hpp"
 #include "libmettle/cmd_line.hpp"
 #include "libmettle/log/summary.hpp"
 #include "libmettle/log/term.hpp"

@@ -6,7 +6,7 @@
 #include <boost/program_options.hpp>
 
 #include <mettle/detail/all_suites.hpp>
-#include <mettle/runner.hpp>
+#include <mettle/run_tests.hpp>
 
 #include "cmd_line.hpp"
 #include "forked_test_runner.hpp"

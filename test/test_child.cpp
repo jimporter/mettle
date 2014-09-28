@@ -1,7 +1,7 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-#include "../src/file_runner.hpp"
+#include "../src/run_test_files.hpp"
 #include "../src/log_pipe.hpp"
 #include "../src/libmettle/log/child.hpp"
 

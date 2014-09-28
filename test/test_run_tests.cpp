@@ -7,7 +7,7 @@ using namespace mettle;
 #include <iostream>
 #include <thread>
 
-#include <mettle/runner.hpp>
+#include <mettle/run_tests.hpp>
 #include <mettle/log/core.hpp>
 #include "../src/libmettle/forked_test_runner.hpp"
 

@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "all_suites.hpp"
-#include "../runner.hpp"
+#include "../run_tests.hpp"
 #include "../log/indent.hpp"
 #include "../log/simple_summary.hpp"
 

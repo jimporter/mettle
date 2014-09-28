@@ -1,4 +1,4 @@
-#include "file_runner.hpp"
+#include "run_test_files.hpp"
 
 #include <sys/resource.h>
 #include <sys/wait.h>

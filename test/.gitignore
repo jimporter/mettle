@@ -5,5 +5,5 @@ test_driver
 test_filters
 test_matchers
 test_output
-test_runner
+test_run_tests
 test_suite

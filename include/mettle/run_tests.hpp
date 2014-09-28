@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_RUNNER_HPP
-#define INC_METTLE_RUNNER_HPP
+#ifndef INC_METTLE_RUN_TESTS_HPP
+#define INC_METTLE_RUN_TESTS_HPP
 
 #include "compiled_suite.hpp"
 #include "log/core.hpp"
