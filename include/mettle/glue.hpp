@@ -11,7 +11,7 @@ inline runnable_suite
 make_suite(const std::string &name, const attributes &attrs,
            Factory &&factory, F &&f) {
   return make_basic_suite<expectation_error, Fixture...>(
-    name, attrs,  std::forward<Factory>(factory), std::forward<F>(f)
+    name, attrs, std::forward<Factory>(factory), std::forward<F>(f)
   );
 }
 
@@ -40,7 +40,7 @@ inline std::array<runnable_suite, std::max<size_t>(sizeof...(Fixture), 1)>
 make_suites(const std::string &name, const attributes &attrs,
            Factory &&factory, F &&f) {
   return make_basic_suites<expectation_error, Fixture...>(
-    name, attrs,  std::forward<Factory>(factory), std::forward<F>(f)
+    name, attrs, std::forward<Factory>(factory), std::forward<F>(f)
   );
 }
 
