@@ -1,6 +1,8 @@
 # License
 ---
 
+## BSD 3-clause license
+
 Copyright (c) 2014, Jim Porter
 All rights reserved.
 
