@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_TYPE_NAME_HPP
-#define INC_METTLE_TYPE_NAME_HPP
+#ifndef INC_METTLE_OUTPUT_TYPE_NAME_HPP
+#define INC_METTLE_OUTPUT_TYPE_NAME_HPP
 
 #include <string>
 #include <typeinfo>

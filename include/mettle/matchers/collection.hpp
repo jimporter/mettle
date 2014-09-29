@@ -5,7 +5,7 @@
 #include <tuple>
 
 #include "core.hpp"
-#include "tuple_algorithm.hpp"
+#include "../detail/tuple_algorithm.hpp"
 
 namespace mettle {
 

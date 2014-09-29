@@ -6,7 +6,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "output.hpp"
+#include "../output.hpp"
 #include "any_capture.hpp"
 
 namespace mettle {

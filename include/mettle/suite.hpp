@@ -11,7 +11,7 @@
 
 #include "attributes.hpp"
 #include "compiled_suite.hpp"
-#include "type_name.hpp"
+#include "output.hpp"
 
 namespace mettle {
 
@@ -419,7 +419,7 @@ private:
         message = e.what();
       }
       catch(const std::exception &e) {
-        message = std::string("Uncaught exception: ") + e.what();
+        message = std::string("Uncaught exception: ") + to_printable(e);
       }
       catch(...) {
         message = "Unknown exception";
