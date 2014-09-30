@@ -3,8 +3,6 @@ PREFIX := /usr
 
 -include config.mk
 
-CXXFLAGS += -Wall -Wextra -pedantic -Werror
-
 TESTS := $(patsubst %.cpp,%,$(wildcard test/*.cpp))
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
 HEADER_ONLY_EXAMPLES := examples/test_header_only
