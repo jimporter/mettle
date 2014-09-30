@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_ATTRIBUTES_HPP
 #define INC_METTLE_ATTRIBUTES_HPP
 
+#include <algorithm>
 #include <cassert>
 #include <set>
 #include <sstream>
