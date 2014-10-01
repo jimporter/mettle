@@ -137,7 +137,7 @@ namespace log {
   }
 
   void summary::summarize_failure(
-    const std::string &where, const std::vector<const failure> &failures
+    const std::string &where, const std::vector<failure> &failures
   ) const {
     using namespace term;
 

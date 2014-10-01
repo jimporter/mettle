@@ -59,7 +59,7 @@ namespace log {
     void summarize_skip(const std::string &test,
                         const std::string &message) const;
     void summarize_failure(const std::string &where,
-                           const std::vector<const failure> &failures) const;
+                           const std::vector<failure> &failures) const;
     void log_output(const test_output &output, bool extra_newline) const;
 
     indenting_ostream &out_;
@@ -68,9 +68,9 @@ namespace log {
     std::chrono::steady_clock::time_point start_time_;
 
     size_t total_ = 0, runs_ = 0, file_index_ = 0;
-    std::map<test_name, std::vector<const failure>> failures_;
+    std::map<test_name, std::vector<failure>> failures_;
     std::map<test_name, std::string> skips_;
-    std::map<file_info, std::vector<const failure>> failed_files_;
+    std::map<file_info, std::vector<failure>> failed_files_;
   };
 
 }

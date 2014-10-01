@@ -119,7 +119,7 @@ public:
   }
 };
 
-using attributes = std::set<const attr_instance, detail::attr_less>;
+using attributes = std::set<attr_instance, detail::attr_less>;
 
 namespace detail {
   template<typename Input1, typename Input2, typename Output, typename Compare,

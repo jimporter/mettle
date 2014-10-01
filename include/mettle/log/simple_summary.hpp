@@ -70,7 +70,7 @@ namespace log {
 
     indenting_ostream &out_;
     size_t total_ = 0;
-    std::vector<const test_details> failures_, skips_;
+    std::vector<test_details> failures_, skips_;
   };
 
 }
