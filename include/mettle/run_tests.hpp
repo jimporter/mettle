@@ -1,9 +1,9 @@
 #ifndef INC_METTLE_RUN_TESTS_HPP
 #define INC_METTLE_RUN_TESTS_HPP
 
-#include "compiled_suite.hpp"
-#include "log/core.hpp"
 #include "filters_core.hpp"
+#include "log/core.hpp"
+#include "suite/compiled_suite.hpp"
 
 namespace mettle {
 

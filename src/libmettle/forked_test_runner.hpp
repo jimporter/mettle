@@ -3,7 +3,7 @@
 
 #include <chrono>
 
-#include <mettle/compiled_suite.hpp>
+#include <mettle/suite/compiled_suite.hpp>
 #include <mettle/log/core.hpp>
 
 #include "optional.hpp"

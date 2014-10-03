@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_ATTRIBUTES_HPP
-#define INC_METTLE_ATTRIBUTES_HPP
+#ifndef INC_METTLE_SUITE_ATTRIBUTES_HPP
+#define INC_METTLE_SUITE_ATTRIBUTES_HPP
 
 #include <algorithm>
 #include <cassert>
@@ -8,9 +8,14 @@
 #include <stdexcept>
 #include <string>
 
-#include "test_info.hpp"
-
 namespace mettle {
+
+enum class test_action {
+  run,
+  skip,
+  hide,
+  indeterminate
+};
 
 class attr_base;
 

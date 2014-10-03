@@ -1,8 +1,8 @@
-#ifndef INC_METTLE_GLOBAL_SUITE_HPP
-#define INC_METTLE_GLOBAL_SUITE_HPP
+#ifndef INC_METTLE_SUITE_GLOBAL_SUITE_HPP
+#define INC_METTLE_SUITE_GLOBAL_SUITE_HPP
 
 #include "detail/all_suites.hpp"
-#include "glue.hpp"
+#include "make_suite.hpp"
 
 namespace mettle {
 
@@ -31,9 +31,6 @@ struct basic_suite {
   basic_suite(const std::string &name, Args &&...args)
     : basic_suite(name, {}, std::forward<Args>(args)...) {}
 };
-
-template<typename ...T>
-using suite = basic_suite<expectation_error, T...>;
 
 } // namespace mettle
 

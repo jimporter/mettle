@@ -1,7 +1,8 @@
 #ifndef INC_METTLE_FILTERS_CORE_HPP
 #define INC_METTLE_FILTERS_CORE_HPP
 
-#include "attributes.hpp"
+#include "suite/attributes.hpp"
+#include "test_name.hpp"
 
 namespace mettle {
 

@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "../test_info.hpp"
+#include "../test_name.hpp"
 
 namespace mettle {
 

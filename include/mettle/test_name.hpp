@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_TEST_INFO_HPP
-#define INC_METTLE_TEST_INFO_HPP
+#ifndef INC_METTLE_TEST_NAME_HPP
+#define INC_METTLE_TEST_NAME_HPP
 
 #include <cstdint>
 #include <sstream>
@@ -40,13 +40,6 @@ inline bool operator >(const test_name &lhs, const test_name &rhs) {
 inline bool operator >=(const test_name &lhs, const test_name &rhs) {
   return lhs.id >= rhs.id;
 }
-
-enum class test_action {
-  run,
-  skip,
-  hide,
-  indeterminate
-};
 
 } // namespace mettle
 
