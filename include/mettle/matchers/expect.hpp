@@ -42,6 +42,28 @@ void expect(const std::string &desc, const T &value, const Matcher &matcher) {
   }
 }
 
+#ifndef METTLE_NO_MACROS
+namespace detail {
+  template<typename T, typename Matcher>
+  void expect_line(const T &value, const Matcher &matcher, const char *file,
+                   int line) {
+    std::ostringstream ss;
+    ss << file << ":" << line;
+    expect(ss.str(), value, matcher);
+  }
+
+  template<typename T, typename Matcher>
+  void expect_line(const std::string &desc, const T &value,
+                   const Matcher &matcher, const char *file, int line) {
+    std::ostringstream ss;
+    ss << desc << " (" << file << ":" << line << ")";
+    expect(ss.str(), value, matcher);
+  }
+}
+
+#define METTLE_EXPECT(...) detail::expect_line(__VA_ARGS__, __FILE__, __LINE__)
+#endif
+
 } // namespace mettle
 
 #endif

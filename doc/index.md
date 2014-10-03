@@ -23,10 +23,10 @@ and let the suites set up and tear down your fixtures for you.
 Expectations (assertions) are created using composable matchers, allowing you to
 test complex things using a minimal set of core functions.
 
-#### No preprocessor abuse
+#### Aggregate all your tests
 
-Tests are defined using ordinary C++ without the use of the C preprocessor,
-resulting in clearer code and greater flexibility.
+Write multiple, independent test files and aggregate them into a single list of
+results with the `mettle` test runner.
 
 ---
 

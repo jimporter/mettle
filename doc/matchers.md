@@ -38,6 +38,18 @@ expected: 666
 actual:   123
 ```
 
+### Getting the file and line number
+
+If you'd like your expectation to print out its file and line number if it
+failed, you can replace `expect` in either example above with `METTLE_EXPECT`.
+In this case, you'll see output like:
+
+```
+is 'to mega therion'? (test_file.cpp:13)
+expected: 666
+actual:   123
+```
+
 ## Matchers
 
 Above, you may have noticed the second argument to the expectation:
