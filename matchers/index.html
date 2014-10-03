@@ -165,6 +165,15 @@ expected: 666
 actual:   123
 </code></pre>
 
+<h3 id="getting-the-file-and-line-number">Getting the file and line number</h3>
+<p>If you'd like your expectation to print out its file and line number if it
+failed, you can replace <code>expect</code> in either example above with <code>METTLE_EXPECT</code>.
+In this case, you'll see output like:</p>
+<pre class="prettyprint well"><code>is 'to mega therion'? (test_file.cpp:13)
+expected: 666
+actual:   123
+</code></pre>
+
 <h2 id="matchers">Matchers</h2>
 <p>Above, you may have noticed the second argument to the expectation:
 <code>equal_to(666)</code>. This is the expectation's <em>matcher</em>. Matchers are composable
