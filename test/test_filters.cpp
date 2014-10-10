@@ -1,8 +1,8 @@
 #include <mettle.hpp>
 using namespace mettle;
 
+#include <mettle/driver/filters.hpp>
 #include "helpers.hpp"
-#include "../src/libmettle/filters.hpp"
 
 auto name_filter_suite(bool negated) {
   auto filter = has_attr("attribute");

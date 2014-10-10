@@ -2,7 +2,7 @@
 #define INC_METTLE_TEST_HELPERS_HPP
 
 #include <mettle/suite/attributes.hpp>
-#include <mettle/filters_core.hpp>
+#include <mettle/driver/filters_core.hpp>
 
 namespace mettle {
 

@@ -1,9 +1,9 @@
-#include "summary.hpp"
+#include <mettle/driver/log/summary.hpp>
 
 #include <cassert>
 #include <cmath>
 
-#include "term.hpp"
+#include <mettle/driver/log/term.hpp>
 
 namespace mettle {
 

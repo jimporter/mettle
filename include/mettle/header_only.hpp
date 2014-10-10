@@ -4,6 +4,6 @@
 #include "suite.hpp"
 #include "matchers.hpp"
 #include "glue.hpp"
-#include "detail/header_driver.hpp"
+#include "driver/detail/header_driver.hpp"
 
 #endif

@@ -1,13 +1,13 @@
-#ifndef INC_METTLE_SRC_LIBMETTLE_LOG_SUMMARY_HPP
-#define INC_METTLE_SRC_LIBMETTLE_LOG_SUMMARY_HPP
+#ifndef INC_METTLE_DRIVER_LOG_SUMMARY_HPP
+#define INC_METTLE_DRIVER_LOG_SUMMARY_HPP
 
 #include <chrono>
 #include <iomanip>
 #include <map>
 #include <sstream>
 
-#include <mettle/log/core.hpp>
-#include <mettle/log/indent.hpp>
+#include "core.hpp"
+#include "indent.hpp"
 
 namespace mettle {
 

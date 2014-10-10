@@ -1,8 +1,8 @@
 #include <mettle.hpp>
 using namespace mettle;
 
+#include <mettle/driver/cmd_line.hpp>
 #include "helpers.hpp"
-#include "../src/libmettle/cmd_line.hpp"
 
 auto match_filter_item(const attr_instance &attr, bool matched) {
   std::ostringstream ss;

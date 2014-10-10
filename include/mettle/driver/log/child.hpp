@@ -1,12 +1,12 @@
-#ifndef INC_METTLE_SRC_LIBMETTLE_LOG_CHILD_HPP
-#define INC_METTLE_SRC_LIBMETTLE_LOG_CHILD_HPP
+#ifndef INC_METTLE_DRIVER_LOG_CHILD_HPP
+#define INC_METTLE_DRIVER_LOG_CHILD_HPP
 
 #include <cassert>
 #include <ostream>
 
 #include <bencode.hpp>
 
-#include <mettle/log/core.hpp>
+#include "core.hpp"
 
 namespace mettle {
 

@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_LOG_INDENT_HPP
-#define INC_METTLE_LOG_INDENT_HPP
+#ifndef INC_METTLE_DRIVER_LOG_INDENT_HPP
+#define INC_METTLE_DRIVER_LOG_INDENT_HPP
 
 #include <ostream>
 #include <stdexcept>

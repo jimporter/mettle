@@ -1,12 +1,12 @@
-#include "cmd_line.hpp"
+#include <mettle/driver/cmd_line.hpp>
 
 #include <regex>
 #include <stdexcept>
 
 #include <boost/program_options.hpp>
 
-#include "log/quiet.hpp"
-#include "log/verbose.hpp"
+#include <mettle/driver/log/quiet.hpp>
+#include <mettle/driver/log/verbose.hpp>
 
 namespace mettle {
 

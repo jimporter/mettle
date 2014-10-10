@@ -1,4 +1,4 @@
-#include "filters.hpp"
+#include <mettle/driver/filters.hpp>
 
 namespace mettle {
   filter_result attr_filter::operator ()(const test_name &,

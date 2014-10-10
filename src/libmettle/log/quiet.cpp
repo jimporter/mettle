@@ -1,6 +1,6 @@
-#include "quiet.hpp"
+#include <mettle/driver/log/quiet.hpp>
 
-#include "term.hpp"
+#include <mettle/driver/log/term.hpp>
 
 namespace mettle {
 

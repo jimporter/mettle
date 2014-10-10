@@ -8,8 +8,9 @@
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
 
+#include <mettle/driver/scoped_pipe.hpp>
+
 #include "log_pipe.hpp"
-#include "scoped_pipe.hpp"
 #include "utils.hpp"
 
 namespace mettle {

@@ -4,9 +4,8 @@
 #include <chrono>
 
 #include <mettle/suite/compiled_suite.hpp>
-#include <mettle/log/core.hpp>
-
-#include "optional.hpp"
+#include <mettle/driver/log/core.hpp>
+#include <mettle/driver/detail/optional.hpp>
 
 namespace mettle {
 

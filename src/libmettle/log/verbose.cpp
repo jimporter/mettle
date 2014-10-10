@@ -1,8 +1,8 @@
-#include "verbose.hpp"
+#include <mettle/driver/log/verbose.hpp>
 
 #include <cassert>
 
-#include "term.hpp"
+#include <mettle/driver/log/term.hpp>
 
 namespace mettle {
 

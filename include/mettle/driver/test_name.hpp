@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_TEST_NAME_HPP
-#define INC_METTLE_TEST_NAME_HPP
+#ifndef INC_METTLE_DRIVER_TEST_NAME_HPP
+#define INC_METTLE_DRIVER_TEST_NAME_HPP
 
 #include <cstdint>
 #include <sstream>

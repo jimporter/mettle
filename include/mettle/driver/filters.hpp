@@ -1,10 +1,10 @@
-#ifndef INC_METTLE_SRC_LIBMETTLE_FILTERS_HPP
-#define INC_METTLE_SRC_LIBMETTLE_FILTERS_HPP
+#ifndef INC_METTLE_DRIVER_FILTERS_HPP
+#define INC_METTLE_DRIVER_FILTERS_HPP
 
 #include <regex>
 #include <vector>
 
-#include <mettle/filters_core.hpp>
+#include "filters_core.hpp"
 
 namespace mettle {
 

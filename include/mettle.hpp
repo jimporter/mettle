@@ -4,6 +4,6 @@
 #include "mettle/suite.hpp"
 #include "mettle/matchers.hpp"
 #include "mettle/glue.hpp"
-#include "mettle/detail/lib_driver.hpp"
+#include "mettle/driver/detail/lib_driver.hpp"
 
 #endif

@@ -3,7 +3,7 @@
 
 #include <chrono>
 
-#include <mettle/log/core.hpp>
+#include <mettle/driver/log/core.hpp>
 
 namespace mettle {
 

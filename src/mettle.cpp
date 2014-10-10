@@ -3,10 +3,11 @@
 
 #include <boost/program_options.hpp>
 
+#include <mettle/driver/cmd_line.hpp>
+#include <mettle/driver/log/summary.hpp>
+#include <mettle/driver/log/term.hpp>
+
 #include "run_test_files.hpp"
-#include "libmettle/cmd_line.hpp"
-#include "libmettle/log/summary.hpp"
-#include "libmettle/log/term.hpp"
 
 namespace mettle {
 

@@ -1,16 +1,17 @@
-#ifndef INC_METTLE_SRC_LIBMETTLE_LOG_QUIET_HPP
-#define INC_METTLE_SRC_LIBMETTLE_LOG_QUIET_HPP
+#ifndef INC_METTLE_DRIVER_LOG_VERBOSE_HPP
+#define INC_METTLE_DRIVER_LOG_VERBOSE_HPP
 
-#include <mettle/log/core.hpp>
-#include <mettle/log/indent.hpp>
+#include "core.hpp"
+#include "indent.hpp"
 
 namespace mettle {
 
 namespace log {
 
-  class quiet : public file_logger {
+  class verbose : public file_logger {
   public:
-    quiet(indenting_ostream &out);
+    verbose(indenting_ostream &out, size_t runs, bool show_time,
+            bool show_terminal);
 
     void started_run();
     void ended_run();
@@ -30,7 +31,12 @@ namespace log {
 
     void failed_file(const std::string &file, const std::string &message);
   private:
+    void log_output(const test_output &output, bool extra_newline) const;
+
     indenting_ostream &out_;
+    indenter indent_, run_indent_;
+    size_t total_runs_, run_ = 0;
+    bool first_ = true, show_time_, show_terminal_;
   };
 
 }

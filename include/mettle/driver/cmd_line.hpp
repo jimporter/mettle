@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_SRC_LIBMETTLE_CMD_PARSE_HPP
-#define INC_METTLE_SRC_LIBMETTLE_CMD_PARSE_HPP
+#ifndef INC_METTLE_DRIVER_CMD_PARSE_HPP
+#define INC_METTLE_DRIVER_CMD_PARSE_HPP
 
 #include <chrono>
 #include <memory>
@@ -10,11 +10,10 @@
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 
-#include <mettle/log/core.hpp>
-#include <mettle/log/indent.hpp>
-
 #include "filters.hpp"
-#include "optional.hpp"
+#include "detail/optional.hpp"
+#include "log/core.hpp"
+#include "log/indent.hpp"
 
 namespace mettle {
 

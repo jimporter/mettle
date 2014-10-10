@@ -6,13 +6,13 @@
 #include <boost/program_options.hpp>
 
 #include <mettle/suite/detail/all_suites.hpp>
-#include <mettle/run_tests.hpp>
+#include <mettle/driver/run_tests.hpp>
+#include <mettle/driver/cmd_line.hpp>
+#include <mettle/driver/log/child.hpp>
+#include <mettle/driver/log/summary.hpp>
+#include <mettle/driver/log/term.hpp>
 
-#include "cmd_line.hpp"
 #include "forked_test_runner.hpp"
-#include "log/child.hpp"
-#include "log/summary.hpp"
-#include "log/term.hpp"
 
 namespace mettle {
 

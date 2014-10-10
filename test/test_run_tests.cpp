@@ -7,8 +7,8 @@ using namespace mettle;
 #include <iostream>
 #include <thread>
 
-#include <mettle/run_tests.hpp>
-#include <mettle/log/core.hpp>
+#include <mettle/driver/run_tests.hpp>
+#include <mettle/driver/log/core.hpp>
 #include "../src/libmettle/forked_test_runner.hpp"
 
 struct test_event_logger : log::test_logger {

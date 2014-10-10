@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_LOG_CORE_HPP
-#define INC_METTLE_LOG_CORE_HPP
+#ifndef INC_METTLE_DRIVER_LOG_CORE_HPP
+#define INC_METTLE_DRIVER_LOG_CORE_HPP
 
 #include <chrono>
 #include <string>
