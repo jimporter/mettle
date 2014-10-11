@@ -3,8 +3,6 @@
 #include <sys/resource.h>
 #include <sys/wait.h>
 
-#include <chrono>
-
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
 

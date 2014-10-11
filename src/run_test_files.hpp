@@ -1,8 +1,6 @@
 #ifndef INC_METTLE_SRC_RUN_TEST_FILES_HPP
 #define INC_METTLE_SRC_RUN_TEST_FILES_HPP
 
-#include <chrono>
-
 #include <mettle/driver/log/core.hpp>
 
 namespace mettle {
