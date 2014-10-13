@@ -22,27 +22,29 @@ namespace detail {
     return real_argv;
   }
 
-  inline void parent_failed(log::pipe &logger, const std::string &file) {
-    logger.failed_file(file, err_string(errno));
-  }
-
-  [[noreturn]] void
-  child_failed(int fd, const std::string &file) {
-    auto err = err_string(errno);
-
-    try {
-      namespace io = boost::iostreams;
-      io::stream<io::file_descriptor_sink> stream(fd, io::never_close_handle);
-      bencode::encode_dict(stream,
-        "event", "failed_file",
-        "file", file,
-        "message", err
-      );
-      stream.flush();
-      _exit(0);
+  namespace {
+    inline void parent_failed(log::pipe &logger, const std::string &file) {
+      logger.failed_file(file, err_string(errno));
     }
-    catch(...) {
-      _exit(128);
+
+    [[noreturn]] void
+    child_failed(int fd, const std::string &file) {
+      auto err = err_string(errno);
+
+      try {
+        namespace io = boost::iostreams;
+        io::stream<io::file_descriptor_sink> stream(fd, io::never_close_handle);
+        bencode::encode_dict(stream,
+                             "event", "failed_file",
+                             "file", file,
+                             "message", err
+        );
+        stream.flush();
+        _exit(0);
+      }
+      catch(...) {
+        _exit(128);
+      }
     }
   }
 

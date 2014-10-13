@@ -11,12 +11,14 @@
 
 namespace mettle {
 
-inline test_result parent_failed() {
-  return { false, err_string(errno) };
-}
+namespace {
+  inline test_result parent_failed() {
+    return { false, err_string(errno) };
+  }
 
-[[noreturn]] inline void child_failed() {
-  _exit(128);
+  [[noreturn]] inline void child_failed() {
+    _exit(128);
+  }
 }
 
 test_result forked_test_runner::operator ()(
