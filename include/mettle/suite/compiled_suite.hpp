@@ -12,7 +12,7 @@
 namespace mettle {
 
 namespace detail {
-  static inline uint64_t generate_id() {
+  inline uint64_t generate_id() {
     static std::atomic<uint64_t> id_(0);
     return id_++;
   }
