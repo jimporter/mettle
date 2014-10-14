@@ -43,7 +43,8 @@ make_child_options(child_options &opts) {
   options_description child("Child options");
   child.add_options()
     ("timeout,t", value(&opts.timeout), "timeout in ms")
-    ("no-fork", "don't fork for each test")
+    ("no-fork", value(&opts.no_fork)->zero_tokens(),
+     "don't fork for each test")
     ("test,T", value(&opts.filters.by_name),
      "regex matching names of tests to run")
     ("attr,a", value(&opts.filters.by_attr), "attributes of tests to run")
