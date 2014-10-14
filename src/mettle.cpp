@@ -35,7 +35,6 @@ int main(int argc, const char *argv[]) {
   opts::positional_options_description pos;
   pos.add("file", -1);
 
-  opts::variables_map vm;
   std::vector<std::string> child_args;
   try {
     opts::options_description all;
@@ -43,6 +42,7 @@ int main(int argc, const char *argv[]) {
     auto parsed = opts::command_line_parser(argc, argv)
       .options(all).positional(pos).run();
 
+    opts::variables_map vm;
     opts::store(parsed, vm);
     opts::notify(vm);
     child_args = filter_options(parsed, child);
