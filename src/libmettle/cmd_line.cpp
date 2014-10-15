@@ -13,18 +13,18 @@ namespace mettle {
 boost::program_options::options_description
 make_generic_options(generic_options &opts) {
   using namespace boost::program_options;
-  options_description generic("Generic options");
-  generic.add_options()
+  options_description desc("Generic options");
+  desc.add_options()
     ("help,h", value(&opts.show_help)->zero_tokens(), "show help")
   ;
-  return generic;
+  return desc;
 }
 
 boost::program_options::options_description
 make_output_options(output_options &opts) {
   using namespace boost::program_options;
-  options_description output("Output options");
-  output.add_options()
+  options_description desc("Output options");
+  desc.add_options()
     ("verbose,v", value(&opts.verbosity)->implicit_value(2),
      "show verbose output")
     ("color,c", value(&opts.color)->zero_tokens(), "show colored output")
@@ -34,14 +34,14 @@ make_output_options(output_options &opts) {
     ("show-time", value(&opts.show_time)->zero_tokens(),
      "show the duration for each test")
   ;
-  return output;
+  return desc;
 }
 
 boost::program_options::options_description
 make_child_options(child_options &opts) {
   using namespace boost::program_options;
-  options_description child("Child options");
-  child.add_options()
+  options_description desc("Child options");
+  desc.add_options()
     ("timeout,t", value(&opts.timeout), "timeout in ms")
     ("no-fork", value(&opts.no_fork)->zero_tokens(),
      "don't fork for each test")
@@ -49,7 +49,7 @@ make_child_options(child_options &opts) {
      "regex matching names of tests to run")
     ("attr,a", value(&opts.filters.by_attr), "attributes of tests to run")
   ;
-  return child;
+  return desc;
 }
 
 boost::program_options::option_description *
