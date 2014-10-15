@@ -41,9 +41,12 @@ namespace detail {
     opts::variables_map vm;
     try {
       opts::options_description all;
+      opts::positional_options_description pos;
       all.add(generic).add(output).add(child).add(hidden);
+      auto parsed = opts::command_line_parser(argc, argv)
+        .options(all).positional(pos).run();
 
-      opts::store(opts::parse_command_line(argc, argv, all), vm);
+      opts::store(parsed, vm);
       opts::notify(vm);
     } catch(const std::exception &e) {
       std::cerr << e.what() << std::endl;
