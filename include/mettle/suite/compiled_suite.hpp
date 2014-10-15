@@ -106,6 +106,7 @@ private:
 
 using runnable_suite = compiled_suite<test_result>;
 using test_function = std::function<test_result(void)>;
+using suites_list = std::vector<runnable_suite>;
 
 } // namespace mettle
 

@@ -5,12 +5,12 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/program_options.hpp>
 
-#include <mettle/suite/detail/all_suites.hpp>
 #include <mettle/driver/run_tests.hpp>
 #include <mettle/driver/cmd_line.hpp>
 #include <mettle/driver/log/child.hpp>
 #include <mettle/driver/log/summary.hpp>
 #include <mettle/driver/log/term.hpp>
+#include <mettle/suite/compiled_suite.hpp>
 
 #include "forked_test_runner.hpp"
 
@@ -24,7 +24,7 @@ namespace {
 
 namespace detail {
 
-  int real_main(int argc, const char *argv[]) {
+  int drive_tests(int argc, const char *argv[], const suites_list &suites) {
     using namespace mettle;
     namespace opts = boost::program_options;
 
@@ -82,7 +82,7 @@ namespace detail {
         *args.child_fd, io::never_close_handle
       );
       log::child logger(fds);
-      run_tests(detail::all_suites(), logger, runner, args.filters);
+      run_tests(suites, logger, runner, args.filters);
       return 0;
     }
 
@@ -104,7 +104,7 @@ namespace detail {
                         args.show_terminal);
 
     for(size_t i = 0; i != args.runs; i++)
-      run_tests(detail::all_suites(), logger, runner, args.filters);
+      run_tests(suites, logger, runner, args.filters);
 
     logger.summarize();
     return !logger.good();
