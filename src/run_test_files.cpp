@@ -35,9 +35,9 @@ namespace detail {
         namespace io = boost::iostreams;
         io::stream<io::file_descriptor_sink> stream(fd, io::never_close_handle);
         bencode::encode_dict(stream,
-                             "event", "failed_file",
-                             "file", file,
-                             "message", err
+          "event", "failed_file",
+          "file", file,
+          "message", err
         );
         stream.flush();
         _exit(0);
