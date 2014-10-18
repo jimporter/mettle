@@ -2,6 +2,7 @@
 #define INC_METTLE_DETAIL_LIB_DRIVER_HPP
 
 #include "../../suite/detail/all_suites.hpp"
+#include "../../suite/detail/built_in_attrs.hpp"
 
 namespace mettle {
 

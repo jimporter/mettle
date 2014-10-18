@@ -22,7 +22,7 @@ namespace mettle {
 
 suite<> test_parse_attr("parse attributes", [](auto &_) {
   _.test("attr", []() {
-    constexpr bool_attr attr("attr");
+    bool_attr attr("attr");
 
     auto filter = parse_attr("attr");
     expect(filter.size(), equal_to(1u));
@@ -32,7 +32,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
   });
 
   _.test("attr=value", []() {
-    constexpr string_attr attr("attr");
+    string_attr attr("attr");
 
     auto filter = parse_attr("attr=value");
     expect(filter.size(), equal_to(1u));
@@ -42,7 +42,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
   });
 
   _.test("attr=", []() {
-    constexpr string_attr attr("attr");
+    string_attr attr("attr");
 
     auto filter = parse_attr("attr=");
     expect(filter.size(), equal_to(1u));
@@ -52,7 +52,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
   });
 
   _.test("!attr", []() {
-    constexpr bool_attr attr("attr");
+    bool_attr attr("attr");
 
     auto filter = parse_attr("!attr");
     expect(filter.size(), equal_to(1u));
@@ -63,7 +63,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
   });
 
   _.test("!attr=value", []() {
-    constexpr string_attr attr("attr");
+    string_attr attr("attr");
 
     auto filter = parse_attr("!attr=value");
     expect(filter.size(), equal_to(1u));
@@ -74,7 +74,7 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
   });
 
   _.test("!attr=", []() {
-    constexpr string_attr attr("attr");
+    string_attr attr("attr");
 
     auto filter = parse_attr("!attr=");
     expect(filter.size(), equal_to(1u));
@@ -85,8 +85,8 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
   });
 
   _.test("attr1,attr2", []() {
-    constexpr bool_attr attr1("attr1");
-    constexpr bool_attr attr2("attr2");
+    bool_attr attr1("attr1");
+    bool_attr attr2("attr2");
 
     auto filter = parse_attr("attr1,attr2");
     expect(filter.size(), equal_to(2u));
@@ -98,8 +98,8 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
   });
 
   _.test("attr1=1,attr2=2", []() {
-    constexpr string_attr attr1("attr1");
-    constexpr string_attr attr2("attr2");
+    string_attr attr1("attr1");
+    string_attr attr2("attr2");
 
     auto filter = parse_attr("attr1=1,attr2=2");
     expect(filter.size(), equal_to(2u));
@@ -111,8 +111,8 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
   });
 
   _.test("attr1,!attr2", []() {
-    constexpr bool_attr attr1("attr1");
-    constexpr bool_attr attr2("attr2");
+    bool_attr attr1("attr1");
+    bool_attr attr2("attr2");
 
     auto filter = parse_attr("attr1,!attr2");
     expect(filter.size(), equal_to(2u));
@@ -125,8 +125,8 @@ suite<> test_parse_attr("parse attributes", [](auto &_) {
   });
 
   _.test("attr1=1,!attr2=2", []() {
-    constexpr string_attr attr1("attr1");
-    constexpr string_attr attr2("attr2");
+    string_attr attr1("attr1");
+    string_attr attr2("attr2");
 
     auto filter = parse_attr("attr1=1,!attr2=2");
     expect(filter.size(), equal_to(2u));

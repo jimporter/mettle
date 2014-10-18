@@ -6,7 +6,8 @@
 #include "../run_tests.hpp"
 #include "../log/indent.hpp"
 #include "../log/simple_summary.hpp"
-#include "../suite/detail/all_suites.hpp"
+#include "../../suite/detail/all_suites.hpp"
+#include "../../suite/detail/built_in_attrs.hpp"
 
 int main() {
   using namespace mettle;

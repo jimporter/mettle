@@ -254,7 +254,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
 
     _.test("suite with hidden subsuites", [](forked_test_runner &runner,
                                              test_event_logger &logger) {
-      constexpr bool_attr hide("hide");
+      bool_attr hide("hide");
       auto s = make_suites<>("inner", [&hide](auto &_){
         _.test("test 1", []() {});
         _.test("test 2", {hide}, []() {});

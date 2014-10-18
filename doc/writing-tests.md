@@ -229,13 +229,12 @@ you might be able to guess, the predefined `skip` attribute is just a
 `bool_attr` whose action is `attr_action::skip`.
 
 To define an attribute, you just need to create a global instance of one of the
-aforementioned attribute kinds (making them `constexpr` is recommended, but not
-required):
+aforementioned attribute kinds:
 
 ```c++
-constexpr bool_attr slow("slow");
-constexpr bool_attr busted("busted", attr_action::skip);
-constexpr list_attr tags("tags");
+bool_attr slow("slow");
+bool_attr busted("busted", attr_action::skip);
+list_attr tags("tags");
 ```
 
 ### Using attributes

@@ -28,17 +28,13 @@ struct attr_instance {
 
 class attr_base {
 protected:
-  constexpr attr_base(const char *name, test_action action = test_action::run)
-    : name_(name), action_(action) {
-    if(action != test_action::run && action != test_action::skip) {
-      throw std::invalid_argument(
-        "attribute's action must be \"run\" or \"skip\""
-      );
-    }
+  attr_base(std::string name, test_action action = test_action::run)
+    : name_(std::move(name)), action_(action) {
+    assert(action == test_action::run || action == test_action::skip);
   }
   ~attr_base() = default;
 public:
-  std::string name() const {
+  const std::string & name() const {
     return name_;
   }
 
@@ -53,7 +49,7 @@ public:
     return lhs;
   }
 private:
-  const char *name_;
+  std::string name_;
   test_action action_;
 };
 
@@ -77,8 +73,8 @@ namespace detail {
 
 class bool_attr : public attr_base {
 public:
-  constexpr bool_attr(const char *name, test_action action = test_action::run)
-    : attr_base(name, action) {}
+  bool_attr(std::string name, test_action action = test_action::run)
+    : attr_base(std::move(name), action) {}
 
   operator const attr_instance() const {
     return attr_instance{*this, {}};
@@ -92,8 +88,8 @@ public:
 
 class string_attr : public attr_base {
 public:
-  constexpr string_attr(const char *name)
-    : attr_base(name) {}
+  string_attr(std::string name)
+    : attr_base(std::move(name)) {}
 
   template<typename T>
   const attr_instance operator ()(T &&value) const {
@@ -103,8 +99,8 @@ public:
 
 class list_attr : public attr_base {
 public:
-  constexpr list_attr(const char *name)
-    : attr_base(name) {}
+  list_attr(std::string name)
+    : attr_base(std::move(name)) {}
 
   template<typename ...T>
   const attr_instance operator ()(T &&...args) const {
@@ -164,7 +160,7 @@ inline attributes unite(const attributes &lhs, const attributes &rhs) {
   return all_attrs;
 }
 
-constexpr bool_attr skip("skip", test_action::skip);
+extern bool_attr skip;
 
 } // namespace mettle
 

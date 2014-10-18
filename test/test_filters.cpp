@@ -19,7 +19,7 @@ auto name_filter_suite(bool negated) {
     });
 
     _.test("bool_attr", [=]() {
-      constexpr bool_attr attr("attribute");
+      bool_attr attr("attribute");
 
       attr_instance a1 = attr;
       expect(filter.func(&a1), equal_to(!negated));
@@ -29,14 +29,14 @@ auto name_filter_suite(bool negated) {
     });
 
     _.test("string_attr", [=]() {
-      constexpr string_attr attr("attribute");
+      string_attr attr("attribute");
 
       attr_instance a = attr("value");
       expect(filter.func(&a), equal_to(!negated));
     });
 
     _.test("list_attr", [=]() {
-      constexpr list_attr attr("attribute");
+      list_attr attr("attribute");
 
       attr_instance a = attr("value");
       expect(filter.func(&a), equal_to(!negated));
@@ -59,7 +59,7 @@ auto value_filter_suite(bool negated) {
     });
 
     _.test("bool_attr", [=]() {
-      constexpr bool_attr attr("attribute");
+      bool_attr attr("attribute");
 
       attr_instance a1 = attr;
       expect(filter.func(&a1), equal_to(negated));
@@ -71,7 +71,7 @@ auto value_filter_suite(bool negated) {
     });
 
     _.test("string_attr", [=]() {
-      constexpr string_attr attr("attribute");
+      string_attr attr("attribute");
 
       attr_instance a1 = attr("value");
       expect(filter.func(&a1), equal_to(!negated));
@@ -80,7 +80,7 @@ auto value_filter_suite(bool negated) {
     });
 
     _.test("list_attr", [=]() {
-      constexpr list_attr attr("attribute");
+      list_attr attr("attribute");
 
       attr_instance a1 = attr("value");
       expect(filter.func(&a1), equal_to(!negated));
@@ -102,7 +102,7 @@ suite<> test_core_filters("core filters", [](auto &_) {
     });
 
     _.test("regular attribute", []() {
-      constexpr bool_attr attr("bool");
+      bool_attr attr("bool");
       expect(
         default_filter{}(test_name(), {attr}),
         equal_to(filter_result{test_action::indeterminate, ""})
@@ -110,7 +110,7 @@ suite<> test_core_filters("core filters", [](auto &_) {
     });
 
     _.test("skipped attribute", []() {
-      constexpr bool_attr attr("bool", test_action::skip);
+      bool_attr attr("bool", test_action::skip);
       expect(
         default_filter{}(test_name(), {attr("message")}),
         equal_to(filter_result{test_action::indeterminate, ""})
@@ -127,7 +127,7 @@ suite<> test_core_filters("core filters", [](auto &_) {
     });
 
     _.test("regular attribute", []() {
-      constexpr bool_attr attr("bool");
+      bool_attr attr("bool");
       expect(
         filter_by_attr({attr}),
         equal_to(filter_result{test_action::run, ""})
@@ -135,7 +135,7 @@ suite<> test_core_filters("core filters", [](auto &_) {
     });
 
     _.test("skipped attribute", []() {
-      constexpr bool_attr attr("bool", test_action::skip);
+      bool_attr attr("bool", test_action::skip);
       expect(
         filter_by_attr({attr("message")}),
         equal_to(filter_result{test_action::skip, "message"})
@@ -211,7 +211,7 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
   subsuite<>(_, "attr_filter", [](auto &_) {
     subsuite<>(_, "matching filters", [](auto &_) {
       _.test("empty", []() {
-        constexpr bool_attr attr("bool");
+        bool_attr attr("bool");
         expect(
           attr_filter{}(test_name(), {}),
           equal_to(filter_result{test_action::run, ""})
@@ -223,8 +223,8 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
       });
 
       _.test("has_attr(name)", []() {
-        constexpr bool_attr attr1("first");
-        constexpr bool_attr attr2("second");
+        bool_attr attr1("first");
+        bool_attr attr2("second");
 
         expect(
           attr_filter{ has_attr("first") }(test_name(), {attr1}),
@@ -243,8 +243,8 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
       });
 
       _.test("has_attr(name, value)", []() {
-        constexpr string_attr attr1("first");
-        constexpr string_attr attr2("second");
+        string_attr attr1("first");
+        string_attr attr2("second");
 
         expect(
           attr_filter{ has_attr("first", "1") }(test_name(), {attr1("1")}),
@@ -265,7 +265,7 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
       });
 
       _.test("!has_attr(name)", []() {
-        constexpr bool_attr attr("bool");
+        bool_attr attr("bool");
 
         expect(
           attr_filter{ !has_attr("mismatch") }(test_name(), {}),
@@ -284,7 +284,7 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
       });
 
       _.test("!has_attr(name, value)", []() {
-        constexpr string_attr attr("string");
+        string_attr attr("string");
 
         expect(
           attr_filter{ !has_attr("mismatch", "value") }(test_name(), {}),
@@ -305,8 +305,8 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
       });
 
       _.test("skipped attr, explicit", []() {
-        constexpr bool_attr attr1("first", test_action::skip);
-        constexpr bool_attr attr2("second", test_action::skip);
+        bool_attr attr1("first", test_action::skip);
+        bool_attr attr2("second", test_action::skip);
 
         expect(
           attr_filter{ has_attr("first") }(test_name(), {attr1}),
@@ -321,9 +321,9 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
       });
 
       _.test("skipped attr, implicit", []() {
-        constexpr bool_attr attr1("first", test_action::skip);
-        constexpr bool_attr attr2("second");
-        constexpr bool_attr attr3("third");
+        bool_attr attr1("first", test_action::skip);
+        bool_attr attr2("second");
+        bool_attr attr3("third");
 
         attributes attrs = { attr1("message"), attr2, attr3 };
         expect(
@@ -345,7 +345,7 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
     subsuite<>(_, "non-matching filters", [](auto &_) {
       _.test("has_attr(name)", []() {
-        constexpr bool_attr attr("bool");
+        bool_attr attr("bool");
 
         expect(
           attr_filter{ has_attr("mismatch") }(test_name(), {}),
@@ -364,7 +364,7 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
       });
 
       _.test("has_attr(name, value)", []() {
-        constexpr string_attr attr("string");
+        string_attr attr("string");
 
         expect(
           attr_filter{ has_attr("mismatch", "value") }(test_name(), {}),
@@ -385,8 +385,8 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
       });
 
       _.test("!has_attr(name)", []() {
-        constexpr bool_attr attr1("first");
-        constexpr bool_attr attr2("second");
+        bool_attr attr1("first");
+        bool_attr attr2("second");
 
         attributes first_attr = { attr1("1") };
         attributes both_attrs = { attr1("1"), attr2("2") };
@@ -420,8 +420,8 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
       });
 
       _.test("!has_attr(name, value)", []() {
-        constexpr string_attr attr1("first");
-        constexpr string_attr attr2("second");
+        string_attr attr1("first");
+        string_attr attr2("second");
 
         attributes first_attr = { attr1("1") };
         attributes both_attrs = { attr1("1"), attr2("2") };
@@ -455,8 +455,8 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
       });
 
       _.test("skipped attr", []() {
-        constexpr bool_attr attr1("first", test_action::skip);
-        constexpr bool_attr attr2("second", test_action::skip);
+        bool_attr attr1("first", test_action::skip);
+        bool_attr attr2("second", test_action::skip);
 
         expect(
           attr_filter{ has_attr("mismatch") }(test_name(), {attr1}),
@@ -474,8 +474,8 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
   subsuite<>(_, "attr_filter_set", [](auto &_) {
     _.test("empty set", []() {
-      constexpr bool_attr attr1("first", test_action::skip);
-      constexpr bool_attr attr2("second");
+      bool_attr attr1("first", test_action::skip);
+      bool_attr attr2("second");
 
       expect(
         attr_filter_set{}(test_name(), {}),
@@ -492,8 +492,8 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
     });
 
     _.test("single filter", []() {
-      constexpr bool_attr attr1("first", test_action::skip);
-      constexpr bool_attr attr2("second");
+      bool_attr attr1("first", test_action::skip);
+      bool_attr attr2("second");
 
       expect(
         attr_filter_set{ {has_attr("first")} }(test_name(), {}),
@@ -519,8 +519,8 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
     });
 
     _.test("multiple filters", []() {
-      constexpr bool_attr attr1("first", test_action::skip);
-      constexpr bool_attr attr2("second");
+      bool_attr attr1("first", test_action::skip);
+      bool_attr attr2("second");
 
       attributes both_attrs = { attr1("1"), attr2("2") };
 
@@ -605,8 +605,8 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
   });
 
   _.test("attr filter only", []() {
-    constexpr bool_attr attr1("first", test_action::skip);
-    constexpr bool_attr attr2("second");
+    bool_attr attr1("first", test_action::skip);
+    bool_attr attr2("second");
 
     expect(
       filter_set{ {}, {{has_attr("first")}} }(
@@ -629,8 +629,8 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
   });
 
   _.test("name and attr filters", []() {
-    constexpr bool_attr attr1("first", test_action::skip);
-    constexpr bool_attr attr2("second");
+    bool_attr attr1("first", test_action::skip);
+    bool_attr attr2("second");
 
     // hide + hide => hide
     expect(
