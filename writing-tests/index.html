@@ -335,11 +335,10 @@ when they're encountered (either <code>attr_action::run</code> or <code>attr_act
 you might be able to guess, the predefined <code>skip</code> attribute is just a
 <code>bool_attr</code> whose action is <code>attr_action::skip</code>.</p>
 <p>To define an attribute, you just need to create a global instance of one of the
-aforementioned attribute kinds (making them <code>constexpr</code> is recommended, but not
-required):</p>
-<pre class="prettyprint well"><code class="c++">constexpr bool_attr slow(&quot;slow&quot;);
-constexpr bool_attr busted(&quot;busted&quot;, attr_action::skip);
-constexpr list_attr tags(&quot;tags&quot;);
+aforementioned attribute kinds:</p>
+<pre class="prettyprint well"><code class="c++">bool_attr slow(&quot;slow&quot;);
+bool_attr busted(&quot;busted&quot;, attr_action::skip);
+list_attr tags(&quot;tags&quot;);
 </code></pre>
 
 <h3 id="using-attributes">Using attributes</h3>
