@@ -108,7 +108,7 @@ test_result forked_test_runner::operator ()(
 
     if(WIFEXITED(status)) {
       int exit_code = WEXITSTATUS(status);
-      if(exit_code == detail::err_timeout) {
+      if(exit_code == err_timeout) {
         std::ostringstream ss;
         ss << "Timed out after " << timeout_->count() << " ms";
         return { false, ss.str() };
