@@ -10,10 +10,10 @@
 namespace mettle {
 
 class forked_test_runner {
-private:
-  using timeout_t = METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds>;
 public:
-  forked_test_runner(timeout_t timeout = timeout_t()) : timeout_(timeout) {}
+  using timeout_t = METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds>;
+
+  forked_test_runner(timeout_t timeout = {}) : timeout_(timeout) {}
 
   template<class Rep, class Period>
   forked_test_runner(std::chrono::duration<Rep, Period> timeout)
@@ -22,7 +22,7 @@ public:
   test_result
   operator ()(const test_function &test, log::test_output &output) const;
 private:
-  void fork_watcher(std::chrono::milliseconds timeout) const;
+  static void fork_watcher(std::chrono::milliseconds timeout);
 
   timeout_t timeout_;
 };

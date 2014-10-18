@@ -2,6 +2,7 @@
 
 #include <fcntl.h>
 #include <poll.h>
+#include <signal.h>
 #include <sys/wait.h>
 
 #include <thread>
@@ -123,7 +124,7 @@ test_result forked_test_runner::operator ()(
   }
 }
 
-void forked_test_runner::fork_watcher(std::chrono::milliseconds timeout) const {
+void forked_test_runner::fork_watcher(std::chrono::milliseconds timeout) {
   pid_t watcher_pid;
   if((watcher_pid = fork()) < 0)
     goto fail;
