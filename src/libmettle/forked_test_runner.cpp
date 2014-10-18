@@ -13,6 +13,8 @@
 namespace mettle {
 
 namespace {
+  static constexpr int err_timeout = 64;
+
   inline test_result parent_failed() {
     return { false, err_string(errno) };
   }
@@ -106,7 +108,7 @@ test_result forked_test_runner::operator ()(
 
     if(WIFEXITED(status)) {
       int exit_code = WEXITSTATUS(status);
-      if(exit_code == 2) {
+      if(exit_code == detail::err_timeout) {
         std::ostringstream ss;
         ss << "Timed out after " << timeout_->count() << " ms";
         return { false, ss.str() };
@@ -130,7 +132,7 @@ void forked_test_runner::fork_watcher(std::chrono::milliseconds timeout) {
     goto fail;
   if(watcher_pid == 0) {
     std::this_thread::sleep_for(timeout);
-    _exit(2);
+    _exit(err_timeout);
   }
 
   pid_t test_pid;
