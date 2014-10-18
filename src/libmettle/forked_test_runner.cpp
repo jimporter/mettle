@@ -13,7 +13,7 @@
 namespace mettle {
 
 namespace {
-  static constexpr int err_timeout = 64;
+  constexpr int err_timeout = 64;
 
   inline test_result parent_failed() {
     return { false, err_string(errno) };
