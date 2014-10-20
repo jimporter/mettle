@@ -32,8 +32,9 @@ protected:
     : name_(std::move(name)), action_(action) {
     assert(action == test_action::run || action == test_action::skip);
   }
-  ~attr_base() = default;
 public:
+  virtual ~attr_base() = default;
+
   const std::string & name() const {
     return name_;
   }
