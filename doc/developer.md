@@ -30,6 +30,11 @@ process and waits for the first one to finish. The timer process automatically
 exits after the timeout expires, and if it exits before the test process, the
 monitor process kills the test and sends a message that it timed out.
 
+You might be thinking, "why not just use `alarm(2)` or `setitimer(2)` instead of
+forking two extra times?" However, this would interact poorly with tests that
+rely on functions like `sleep(3)`. Hence, in the interest of maximum isolation
+of the test code, the timer is implemented as a subprocess.
+
 ## Suites
 
 When creating a test suite, the most important argument to pass is the *creation
