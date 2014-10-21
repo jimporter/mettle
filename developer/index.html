@@ -156,6 +156,10 @@ process</em>. The monitor process forks both the timer process and the actual te
 process and waits for the first one to finish. The timer process automatically
 exits after the timeout expires, and if it exits before the test process, the
 monitor process kills the test and sends a message that it timed out.</p>
+<p>You might be thinking, "why not just use <code>alarm(2)</code> or <code>setitimer(2)</code> instead of
+forking two extra times?" However, this would interact poorly with tests that
+rely on functions like <code>sleep(3)</code>. Hence, in the interest of maximum isolation
+of the test code, the timer is implemented as a subprocess.</p>
 <h2 id="suites">Suites</h2>
 <p>When creating a test suite, the most important argument to pass is the <em>creation
 function</em> (conventionally a generic lambda). This function takes a
