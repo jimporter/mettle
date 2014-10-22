@@ -121,7 +121,8 @@ test_result forked_test_runner::operator ()(
       return { false, strsignal(WTERMSIG(status)) };
     }
     else { // WIFSTOPPED
-      return { false, "Stopped" };
+      kill(pid, SIGKILL);
+      return { false, strsignal(WSTOPSIG(status)) };
     }
   }
 }
@@ -129,7 +130,7 @@ test_result forked_test_runner::operator ()(
 void forked_test_runner::fork_watcher(std::chrono::milliseconds timeout) {
   pid_t watcher_pid;
   if((watcher_pid = fork()) < 0)
-    goto fail;
+    child_failed();
   if(watcher_pid == 0) {
     std::this_thread::sleep_for(timeout);
     _exit(err_timeout);
@@ -138,7 +139,7 @@ void forked_test_runner::fork_watcher(std::chrono::milliseconds timeout) {
   pid_t test_pid;
   if((test_pid = fork()) < 0) {
     kill(watcher_pid, SIGKILL);
-    goto fail;
+    child_failed();
   }
   if(test_pid != 0) {
     // Wait for the first child process (the watcher or the test) to finish,
@@ -148,17 +149,17 @@ void forked_test_runner::fork_watcher(std::chrono::milliseconds timeout) {
     kill(exited_pid == test_pid ? watcher_pid : test_pid, SIGKILL);
     wait(nullptr);
 
-    if(WIFEXITED(status))
+    if(WIFEXITED(status)) {
       _exit(WEXITSTATUS(status));
-    else if(WIFSIGNALED(status))
+    }
+    else if(WIFSIGNALED(status)) {
       raise(WTERMSIG(status));
-    else // WIFSTOPPED
-      _exit(128); // XXX: not sure what to do here
+    }
+    else { // WIFSTOPPED
+      kill(exited_pid, SIGKILL);
+      raise(WSTOPSIG(status));
+    }
   }
-
-  return;
-fail:
-  _exit(128);
 }
 
 } // namespace mettle

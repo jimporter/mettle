@@ -128,7 +128,8 @@ namespace detail {
         logger.failed_file(file, strsignal(WTERMSIG(status)));
       }
       else { // WIFSTOPPED
-        logger.failed_file(file, "Stopped");
+        kill(pid, SIGKILL);
+        logger.failed_file(file, strsignal(WSTOPSIG(status)));
       }
 
       return;
