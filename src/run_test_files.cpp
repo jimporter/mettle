@@ -94,7 +94,7 @@ namespace detail {
         io::stream<io::file_descriptor_source> fds(
           message_pipe.read_fd, io::never_close_handle
         );
-        while(!fds.eof())
+        while(fds.peek() != EOF)
           logger(fds);
       }
       catch(...) {
@@ -131,8 +131,6 @@ namespace detail {
         kill(pid, SIGKILL);
         logger.failed_file(file, strsignal(WSTOPSIG(status)));
       }
-
-      return;
     }
   }
 }

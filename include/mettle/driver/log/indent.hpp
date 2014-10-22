@@ -40,6 +40,9 @@ protected:
     return buf_->sputc(ch);
   }
 
+  virtual int sync() {
+    return buf_->pubsync();
+  }
 private:
   std::basic_streambuf<Char, Traits> *buf_;
   size_t base_indent_;

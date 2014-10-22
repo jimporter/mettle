@@ -18,10 +18,7 @@ namespace log {
     void operator ()(std::istream &s) {
       using namespace BENCODE_ANY_NS;
 
-      auto tmp = bencode::decode(s);
-      if(tmp.empty())
-        return;
-
+      auto tmp = bencode::decode(s, bencode::no_check_eof);
       auto &data = any_cast<bencode::dict &>(tmp);
       auto &event = any_cast<bencode::string &>(data.at("event"));
 
