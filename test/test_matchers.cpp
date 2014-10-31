@@ -345,6 +345,44 @@ suite<> matcher_tests("matchers", [](auto &_) {
     });
   });
 
+  subsuite<>(_, "death", [](auto &_) {
+    _.test("killed()", []() {
+      auto aborter = []() { abort(); };
+      auto noop = []() {};
+
+      expect(aborter, killed());
+      expect(aborter, killed(SIGABRT));
+
+      expect(noop, is_not(killed()));
+      expect(noop, is_not(killed(SIGABRT)));
+
+      expect(killed().desc(), equal_to("killed"));
+      expect(killed(SIGABRT).desc(),
+             equal_to("killed with signal " + std::to_string(SIGABRT)));
+
+      expect(killed()(noop).message, equal_to("wasn't killed"));
+      expect(killed()(aborter).message,
+             equal_to("killed with signal " + std::to_string(SIGABRT)));
+    });
+
+    _.test("exited()", []() {
+      auto exiter = []() { _exit(0); };
+      auto noop = []() {};
+
+      expect(exiter, exited());
+      expect(exiter, exited(0));
+
+      expect(noop, is_not(exited()));
+      expect(noop, is_not(exited(0)));
+
+      expect(exited().desc(), equal_to("exited"));
+      expect(exited(0).desc(), equal_to("exited with status 0"));
+
+      expect(exited()(noop).message, equal_to("didn't exit"));
+      expect(exited()(exiter).message, equal_to("exited with status 0"));
+    });
+  });
+
 });
 
 suite<> test_expect("expect()", [](auto &_) {

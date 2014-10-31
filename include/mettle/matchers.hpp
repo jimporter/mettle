@@ -8,5 +8,6 @@
 #include "matchers/combinatoric.hpp"
 #include "matchers/collection.hpp"
 #include "matchers/exception.hpp"
+#include "matchers/death.hpp"
 
 #endif

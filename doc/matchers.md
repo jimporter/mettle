@@ -209,6 +209,30 @@ A matcher that returns `true` if an exception of *any* type `Type` is thrown.
 A matcher that returns `true` if an exception of type `Type` (or a subclass of
 `Type`) is thrown and whose value matches `matcher`.
 
+### Death matchers
+
+The most kvlt of all matchers, death matchers check that a function would cause
+the process to terminate, either by signalling or by exiting. (These matchers
+will fork a child process before calling the function so that the test
+framework doesn't terminate.) Like [exception matchers](#exception-matchers),
+death matchers require a function to be passed to the expectation:
+
+```c++
+expect([]() { abort(); }, killed(SIGABRT));
+```
+
+#### killed([*matcher*])
+
+A matcher that returns `true` if the function terminated the process via a
+signal. If `matcher` is specified, `killed` will only return `true` if the
+signal that was raised matches `matcher`.
+
+#### exited([*matcher*])
+
+A matcher that returns `true` if the function terminated the process by exiting
+(i.e. with `exit`, `_exit`, or `_Exit`). If `matcher` is specified, `exited`
+will only return `true` if the exit status matches `matcher`.
+
 ## Writing your own matchers
 
 mettle is designed to make it easy to write your own matchers to complement the
