@@ -43,6 +43,14 @@ test_result forked_test_runner::operator ()(
     if(timeout_)
       fork_watcher(*timeout_);
 
+    // Make a new process group so we can kill the test and all its children
+    // as a group.
+    pid_t old_pgid = getpgrp();
+    setpgid(0, 0);
+
+    if(timeout_)
+      kill(getppid(), SIGUSR1);
+
     if(stdout_pipe.close_read() < 0 ||
        stderr_pipe.close_read() < 0 ||
        log_pipe.close_read() < 0)
@@ -62,6 +70,10 @@ test_result forked_test_runner::operator ()(
       child_failed();
 
     fflush(nullptr);
+
+    // Leave our process group and kill any children. Don't worry about reaping.
+    setpgid(0, old_pgid);
+    kill(-getpid(), SIGKILL);
     _exit(!result.passed);
   }
   else {
@@ -136,23 +148,32 @@ void forked_test_runner::fork_watcher(std::chrono::milliseconds timeout) {
     _exit(err_timeout);
   }
 
+  // The test process will signal us when it's ok to proceed (i.e. once it's
+  // created a new process group). Set up a signal mask to wait for it.
+  sigset_t mask, oldmask;
+  sigemptyset(&mask);
+  sigaddset(&mask, SIGUSR1);
+  sigprocmask(SIG_BLOCK, &mask, &oldmask);
+
   pid_t test_pid;
   if((test_pid = fork()) < 0) {
     kill(watcher_pid, SIGKILL);
     child_failed();
   }
-  if(test_pid == 0) {
-    // Make a new process group so we can kill the test and all its children
-    // if necessary.
-    setpgid(0, 0);
-    return;
-  }
-  else {
+  if(test_pid != 0) {
     // Wait for the first child process (the watcher or the test) to finish,
     // then kill and wait for the other one.
     int status;
     pid_t exited_pid = wait(&status);
-    kill(exited_pid == test_pid ? watcher_pid : -test_pid, SIGKILL);
+    if(exited_pid == test_pid) {
+      kill(watcher_pid, SIGKILL);
+    }
+    else {
+      // Wait until the test process has created its process group.
+      int sig;
+      sigwait(&mask, &sig);
+      kill(-test_pid, SIGKILL);
+    }
     wait(nullptr);
 
     if(WIFEXITED(status)) {
@@ -165,6 +186,9 @@ void forked_test_runner::fork_watcher(std::chrono::milliseconds timeout) {
       kill(exited_pid, SIGKILL);
       raise(WSTOPSIG(status));
     }
+  }
+  else {
+    sigprocmask(SIG_SETMASK, &oldmask, nullptr);
   }
 }
 

@@ -49,7 +49,7 @@ struct test_event_logger : log::test_logger {
 struct ftr_factory {
   template<typename T>
   T make() {
-    return T(std::chrono::seconds(1));
+    return T(std::chrono::milliseconds(500));
   }
 };
 
@@ -124,9 +124,36 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       });
 
       for(const auto &t : s) {
+        auto then = std::chrono::steady_clock::now();
         auto result = runner(t.function, output);
+        auto now = std::chrono::steady_clock::now();
+
         expect(result.passed, equal_to(false));
-        expect(result.message, equal_to("Timed out after 1000 ms"));
+        expect(result.message, equal_to("Timed out after 500 ms"));
+        expect(now - then, less(std::chrono::seconds(1)));
+      }
+    });
+
+    _.test("test with timed out child", [](forked_test_runner &runner,
+                                           log::test_output &output) {
+      auto s = make_suite<>("inner", [](auto &_){
+        _.test("test", []() {
+          pid_t pid;
+          if((pid = fork()) < 0)
+            throw std::system_error(errno, std::system_category());
+          if(pid == 0) {
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+          }
+        });
+      });
+
+      for(const auto &t : s) {
+        auto then = std::chrono::steady_clock::now();
+        auto result = runner(t.function, output);
+        auto now = std::chrono::steady_clock::now();
+
+        expect(result.passed, equal_to(true));
+        expect(now - then, less(std::chrono::seconds(1)));
       }
     });
 
