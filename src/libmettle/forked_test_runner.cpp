@@ -141,12 +141,18 @@ void forked_test_runner::fork_watcher(std::chrono::milliseconds timeout) {
     kill(watcher_pid, SIGKILL);
     child_failed();
   }
-  if(test_pid != 0) {
+  if(test_pid == 0) {
+    // Make a new process group so we can kill the test and all its children
+    // if necessary.
+    setpgid(0, 0);
+    return;
+  }
+  else {
     // Wait for the first child process (the watcher or the test) to finish,
-    // and kill the other one.
+    // then kill and wait for the other one.
     int status;
     pid_t exited_pid = wait(&status);
-    kill(exited_pid == test_pid ? watcher_pid : test_pid, SIGKILL);
+    kill(exited_pid == test_pid ? watcher_pid : -test_pid, SIGKILL);
     wait(nullptr);
 
     if(WIFEXITED(status)) {
