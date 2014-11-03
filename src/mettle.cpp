@@ -15,6 +15,11 @@ namespace {
   struct all_options : generic_options, output_options, child_options {
     std::vector<std::string> files;
   };
+
+  const char program_name[] = "mettle";
+  void report_error(const std::string &message) {
+    std::cerr << program_name << ": " << message << std::endl;
+  }
 }
 
 } // namespace mettle
@@ -47,42 +52,48 @@ int main(int argc, const char *argv[]) {
     opts::notify(vm);
     child_args = filter_options(parsed, child);
   } catch(const std::exception &e) {
-    std::cerr << e.what() << std::endl;
-    return 1;
+    mettle::report_error(e.what());
+    return 2;
   }
 
   if(args.show_help) {
     opts::options_description displayed;
     displayed.add(generic).add(output).add(child);
     std::cout << displayed << std::endl;
-    return 1;
+    return 0;
   }
 
   if(args.no_fork && args.show_terminal) {
-    std::cerr << "--show-terminal requires forking tests" << std::endl;
-    return 1;
+    mettle::report_error("--show-terminal requires forking tests");
+    return 2;
   }
 
   if(args.files.empty()) {
-    std::cerr << "no inputs specified" << std::endl;
+    mettle::report_error("no inputs specified");
     return 1;
   }
 
   if(args.runs == 0) {
-    std::cerr << "no test runs, exiting" << std::endl;
+    mettle::report_error("no test runs, exiting");
     return 1;
   }
 
-  term::enable(std::cout, args.color);
-  indenting_ostream out(std::cout);
+  try {
+    term::enable(std::cout, args.color);
+    indenting_ostream out(std::cout);
 
-  auto progress_log = make_progress_logger(out, args);
-  log::summary logger(out, progress_log.get(), args.show_time,
-                      args.show_terminal);
+    auto progress_log = make_progress_logger(out, args);
+    log::summary logger(out, progress_log.get(), args.show_time,
+                        args.show_terminal);
 
-  for(size_t i = 0; i != args.runs; i++)
-    run_test_files(args.files, logger, child_args);
+    for(size_t i = 0; i != args.runs; i++)
+      run_test_files(args.files, logger, child_args);
 
-  logger.summarize();
-  return !logger.good();
+    logger.summarize();
+    return !logger.good();
+  }
+  catch(const std::exception &e) {
+    mettle::report_error(e.what());
+    return 3;
+  }
 }

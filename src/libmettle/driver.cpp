@@ -20,6 +20,11 @@ namespace {
   struct all_options : generic_options, output_options, child_options {
     METTLE_OPTIONAL_NS::optional<int> child_fd;
   };
+
+  void report_error(const std::string &program_name,
+                    const std::string &message) {
+    std::cerr << program_name << ": " << message << std::endl;
+  }
 }
 
 namespace detail {
@@ -49,22 +54,22 @@ namespace detail {
       opts::store(parsed, vm);
       opts::notify(vm);
     } catch(const std::exception &e) {
-      std::cerr << e.what() << std::endl;
-      return 1;
+      report_error(argv[0], e.what());
+      return 2;
     }
 
     if(args.show_help) {
       opts::options_description displayed;
       displayed.add(generic).add(output).add(child);
       std::cout << displayed << std::endl;
-      return 1;
+      return 0;
     }
 
     test_runner runner;
     if(args.no_fork) {
       if(args.timeout) {
-        std::cerr << "--timeout requires forking tests" << std::endl;
-        return 1;
+        report_error(argv[0], "--timeout requires forking tests");
+        return 2;
       }
       runner = inline_test_runner;
     }
@@ -75,9 +80,9 @@ namespace detail {
     if(args.child_fd) {
       if(auto output_opt = has_option(output, vm)) {
         using namespace opts::command_line_style;
-        std::cerr << output_opt->canonical_display_name(allow_long)
-                  << " can't be used with --child" << std::endl;
-        return 1;
+        report_error(argv[0], output_opt->canonical_display_name(allow_long) +
+                              " can't be used with --child");
+        return 2;
       }
 
       namespace io = boost::iostreams;
@@ -90,27 +95,33 @@ namespace detail {
     }
 
     if(args.no_fork && args.show_terminal) {
-      std::cerr << "--show-terminal requires forking tests" << std::endl;
-      return 1;
+      report_error(argv[0], "--show-terminal requires forking tests");
+      return 2;
     }
 
     if(args.runs == 0) {
-      std::cerr << "no test runs, exiting" << std::endl;
+      report_error(argv[0], "no test runs, exiting");
       return 1;
     }
 
-    term::enable(std::cout, args.color);
-    indenting_ostream out(std::cout);
+    try {
+      term::enable(std::cout, args.color);
+      indenting_ostream out(std::cout);
 
-    auto progress_log = make_progress_logger(out, args);
-    log::summary logger(out, progress_log.get(), args.show_time,
-                        args.show_terminal);
+      auto progress_log = make_progress_logger(out, args);
+      log::summary logger(out, progress_log.get(), args.show_time,
+                          args.show_terminal);
 
-    for(size_t i = 0; i != args.runs; i++)
-      run_tests(suites, logger, runner, args.filters);
+      for(size_t i = 0; i != args.runs; i++)
+        run_tests(suites, logger, runner, args.filters);
 
-    logger.summarize();
-    return !logger.good();
+      logger.summarize();
+      return !logger.good();
+    }
+    catch(const std::exception &e) {
+      report_error(argv[0], e.what());
+      return 3;
+    }
   }
 }
 
