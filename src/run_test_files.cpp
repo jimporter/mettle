@@ -123,7 +123,7 @@ namespace detail {
           child_failed(max_fd, file);
       }
 
-      execv(argv[0], argv.get());
+      execvp(argv[0], argv.get());
       child_failed(max_fd, file);
     }
     else {
