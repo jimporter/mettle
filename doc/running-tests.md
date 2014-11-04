@@ -150,4 +150,24 @@ When doing so, you can use the `mettle` executable to run all of your individual
 binaries at once. The interface is much like that of the individual binaries,
 and all of the command-line options above work with the `mettle` executable as
 well. To specify which of the test binaries to run, just pass their filenames to
-`mettle`.
+`mettle`:
+
+```sh
+mettle test_file1 test_file2
+```
+
+### Passing along arguments
+
+You can also pass along arguments to a test binary by quoting the binary:
+
+```sh
+mettle test_file1 "caliber test_foo.cpp test_bar.cpp"
+```
+
+This executes `test_file1` and then executes `caliber` with two arguments:
+`test_foo.cpp` and `test_bar.cpp`. You can also pass globs inside quoted
+arguments:
+
+```sh
+mettle test_file1 "caliber test_*.cpp"
+```

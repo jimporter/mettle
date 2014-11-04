@@ -167,3 +167,32 @@ suite<fixture> test_child("test child logger", [](auto &_) {
   });
 
 });
+
+suite<> file_expansion("test file expansion", [](auto &_) {
+
+  _.test("single word", []() {
+    expect(test_file("filename").args(), array("filename"));
+  });
+
+  _.test("multiple words", []() {
+    expect(test_file("file arg1 arg2").args(), array("file", "arg1", "arg2"));
+    expect(test_file("file\targ1\targ2").args(), array("file", "arg1", "arg2"));
+  });
+
+  _.test("quoting", []() {
+    expect(test_file("\"two words\"").args(), array("two words"));
+    expect(test_file("'two words'").args(), array("two words"));
+  });
+
+  _.test("escaping", []() {
+    expect(test_file("arg\\ 1 arg\\ 2").args(), array("arg 1", "arg 2"));
+    expect(test_file("o\\'toole").args(), array("o'toole"));
+    expect(test_file("\\\"quote\\\"").args(), array("\"quote\""));
+  });
+
+  _.test("invalid syntax", []() {
+    expect([]() { test_file("glob["); },
+           thrown<std::runtime_error>("invalid glob \"glob[\""));
+  });
+
+});

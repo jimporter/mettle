@@ -13,7 +13,7 @@ namespace mettle {
 
 namespace {
   struct all_options : generic_options, output_options, child_options {
-    std::vector<std::string> files;
+    std::vector<test_file> files;
   };
 
   const char program_name[] = "mettle";

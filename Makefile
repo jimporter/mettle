@@ -31,7 +31,7 @@ all: mettle libmettle.so
 	@rm -f $(TEMP)
 
 TEST_LDFLAGS := $(LDFLAGS)
-test/test_child: TEST_LDFLAGS += -lboost_iostreams
+test/test_child: TEST_LDFLAGS += -lboost_program_options -lboost_iostreams
 test/test_child: src/run_test_files.o
 
 $(TESTS) $(filter-out $(HEADER_ONLY_EXAMPLES),$(EXAMPLES)): %: %.o libmettle.so

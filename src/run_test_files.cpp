@@ -1,10 +1,15 @@
 #include "run_test_files.hpp"
 
+#include <glob.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
 
+#include <stdexcept>
+
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
+#include <boost/program_options.hpp>
+#include <boost/tokenizer.hpp>
 
 #include <mettle/driver/scoped_pipe.hpp>
 
@@ -12,6 +17,44 @@
 #include "utils.hpp"
 
 namespace mettle {
+
+test_file::test_file(std::string command) : command_(std::move(command)) {
+  using separator = boost::escaped_list_separator<char>;
+  boost::tokenizer<separator> tok(
+    command_.begin(), command_.end(), separator("\\", " \t", "'\"")
+  );
+
+  for(auto &&token : tok) {
+    if(token.empty())
+      continue;
+
+    if(token.find_first_of("?*[") != std::string::npos) {
+      glob_t g;
+      if(glob(token.c_str(), 0, nullptr, &g) != 0)
+        throw std::runtime_error("invalid glob \"" + token + "\"");
+      for(size_t i = 0; i != g.gl_pathc; i++)
+        args_.push_back(g.gl_pathv[i]);
+      globfree(&g);
+    }
+    else {
+      args_.push_back(token);
+    }
+  }
+}
+
+void validate(boost::any &v, const std::vector<std::string> &values,
+              test_file*, int) {
+  using namespace boost::program_options;
+  validators::check_first_occurrence(v);
+  const std::string &val = validators::get_single_string(values);
+
+  try {
+    v = test_file(val);
+  }
+  catch(...) {
+    boost::throw_exception(invalid_option_value(val));
+  }
+}
 
 namespace detail {
   std::unique_ptr<char *[]>
@@ -48,7 +91,7 @@ namespace detail {
     }
   }
 
-  void run_test_file(const std::string &file, log::pipe &logger,
+  void run_test_file(const test_file &file, log::pipe &logger,
                      const std::vector<std::string> &args) {
     logger.started_file(file);
     scoped_pipe message_pipe;
@@ -59,10 +102,9 @@ namespace detail {
       return parent_failed(logger, file);
     int max_fd = lim.rlim_cur - 1;
 
-    std::vector<std::string> final_args = {
-      file, "--child", std::to_string(max_fd)
-    };
+    std::vector<std::string> final_args = file.args();
     final_args.insert(final_args.end(), args.begin(), args.end());
+    final_args.insert(final_args.end(), {"--child", std::to_string(max_fd)});
     auto argv = make_argv(final_args);
 
     pid_t pid;
@@ -81,7 +123,7 @@ namespace detail {
           child_failed(max_fd, file);
       }
 
-      execv(file.c_str(), argv.get());
+      execv(argv[0], argv.get());
       child_failed(max_fd, file);
     }
     else {
@@ -136,7 +178,7 @@ namespace detail {
 }
 
 void run_test_files(
-  const std::vector<std::string> &files, log::file_logger &logger,
+  const std::vector<test_file> &files, log::file_logger &logger,
   const std::vector<std::string> &args
 ) {
   logger.started_run();
