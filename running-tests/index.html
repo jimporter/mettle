@@ -249,7 +249,21 @@ allows you to improve build times and to better isolate tests from each other.</
 binaries at once. The interface is much like that of the individual binaries,
 and all of the command-line options above work with the <code>mettle</code> executable as
 well. To specify which of the test binaries to run, just pass their filenames to
-<code>mettle</code>.</p>
+<code>mettle</code>:</p>
+<pre class="prettyprint well"><code class="sh">mettle test_file1 test_file2
+</code></pre>
+
+<h3 id="passing-along-arguments">Passing along arguments</h3>
+<p>You can also pass along arguments to a test binary by quoting the binary:</p>
+<pre class="prettyprint well"><code class="sh">mettle test_file1 &quot;caliber test_foo.cpp test_bar.cpp&quot;
+</code></pre>
+
+<p>This executes <code>test_file1</code> and then executes <code>caliber</code> with two arguments:
+<code>test_foo.cpp</code> and <code>test_bar.cpp</code>. You can also pass globs inside quoted
+arguments:</p>
+<pre class="prettyprint well"><code class="sh">mettle test_file1 &quot;caliber test_*.cpp&quot;
+</code></pre>
+
 </div>
         </div>
 
