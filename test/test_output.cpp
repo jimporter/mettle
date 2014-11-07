@@ -216,6 +216,9 @@ suite<> output("debug output", [](auto &_){
         const char cs[] = "text";
         expect(cs, stringified("\"text\""));
         expect(static_cast<const char*>(cs), stringified("\"text\""));
+
+        char *ns = nullptr;
+        expect(ns, stringified("(nil)"));
       });
 
       _.test("signed char", []() {
@@ -230,6 +233,9 @@ suite<> output("debug output", [](auto &_){
         const signed char cs[] = "text";
         expect(cs, stringified("\"text\""));
         expect(static_cast<const signed char*>(cs), stringified("\"text\""));
+
+        signed char *ns = nullptr;
+        expect(ns, stringified("(nil)"));
       });
 
       _.test("unsigned char", []() {
@@ -244,6 +250,9 @@ suite<> output("debug output", [](auto &_){
         const unsigned char cs[] = "text";
         expect(cs, stringified("\"text\""));
         expect(static_cast<const unsigned char*>(cs), stringified("\"text\""));
+
+        unsigned char *ns = nullptr;
+        expect(ns, stringified("(nil)"));
       });
 
       _.test("wchar_t", []() {
@@ -262,6 +271,9 @@ suite<> output("debug output", [](auto &_){
         const wchar_t cs[] = L"text";
         expect(cs, stringified("\"text\""));
         expect(static_cast<const wchar_t*>(cs), stringified("\"text\""));
+
+        wchar_t *ns = nullptr;
+        expect(ns, stringified("(nil)"));
       });
 
       _.test("char16_t", []() {
@@ -280,6 +292,9 @@ suite<> output("debug output", [](auto &_){
         const char16_t cs[] = u"text";
         expect(cs, stringified("\"text\""));
         expect(static_cast<const char16_t*>(cs), stringified("\"text\""));
+
+        char16_t *ns = nullptr;
+        expect(ns, stringified("(nil)"));
       });
 
       _.test("char32_t", []() {
@@ -298,6 +313,9 @@ suite<> output("debug output", [](auto &_){
         const char32_t cs[] = U"text";
         expect(cs, stringified("\"text\""));
         expect(static_cast<const char32_t*>(cs), stringified("\"text\""));
+
+        char32_t *ns = nullptr;
+        expect(ns, stringified("(nil)"));
       });
     });
   });

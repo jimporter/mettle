@@ -80,6 +80,14 @@ namespace detail {
   escape_str(const Char *s, Char delim = '"') {
     return escape_str(METTLE_STRING_VIEW<Char>(s), delim);
   }
+
+  template<typename Char = char>
+  std::basic_string<Char>
+  null_str() {
+    std::basic_ostringstream<Char> ss;
+    ss << static_cast<const void *>(nullptr);
+    return ss.str();
+  }
 }
 
 // The to_printable overloads below are rather complicated, to say the least; we
@@ -196,28 +204,34 @@ inline auto to_printable_boolish(Ret (*)(Args...)) {
 // XXX: These don't work for volatile strings.
 
 inline std::string to_printable_boolish(const char *s) {
+  if(!s) return detail::null_str();
   return detail::escape_str(s);
 }
 
 inline std::string to_printable_boolish(const unsigned char *s) {
+  if(!s) return detail::null_str();
   return detail::escape_str(reinterpret_cast<const char*>(s));
 }
 
 inline std::string to_printable_boolish(const signed char *s) {
+  if(!s) return detail::null_str();
   return detail::escape_str(reinterpret_cast<const char*>(s));
 }
 
 inline std::string to_printable_boolish(const wchar_t *s) {
+  if(!s) return detail::null_str();
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
   return detail::escape_str(conv.to_bytes(s));
 }
 
 inline std::string to_printable_boolish(const char16_t *s) {
+  if(!s) return detail::null_str();
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
   return detail::escape_str(conv.to_bytes(s));
 }
 
 inline std::string to_printable_boolish(const char32_t *s) {
+  if(!s) return detail::null_str();
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
   return detail::escape_str(conv.to_bytes(s));
 }
