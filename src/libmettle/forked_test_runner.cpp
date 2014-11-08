@@ -56,19 +56,9 @@ test_result forked_test_runner::operator ()(
        log_pipe.close_read() < 0)
       child_failed();
 
-    if(stdout_pipe.write_fd != STDOUT_FILENO) {
-      if(dup2(stdout_pipe.write_fd, STDOUT_FILENO) < 0)
-        child_failed();
-      if(stdout_pipe.close_write() < 0)
-        child_failed();
-    }
-
-    if(stderr_pipe.write_fd != STDERR_FILENO) {
-      if(dup2(stderr_pipe.write_fd, STDERR_FILENO) < 0)
-        child_failed();
-      if(stderr_pipe.close_write() < 0)
-        child_failed();
-    }
+    if(stdout_pipe.move_write(STDOUT_FILENO) < 0 ||
+       stderr_pipe.move_write(STDERR_FILENO) < 0)
+      child_failed();
 
     auto result = test();
     if(write(log_pipe.write_fd, result.message.c_str(),

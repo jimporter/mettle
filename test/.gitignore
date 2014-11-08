@@ -6,4 +6,5 @@ test_filters
 test_matchers
 test_output
 test_run_tests
+test_scoped_pipe
 test_suite
