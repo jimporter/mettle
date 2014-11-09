@@ -37,9 +37,9 @@ make_output_options(output_options &opts, const logger_factory &factory) {
 
   options_description desc("Output options");
   desc.add_options()
-    ("output,o", value(&opts.output), ss.str().c_str())
+    ("output,o", value(&opts.output)->value_name("FORMAT"), ss.str().c_str())
     ("color,c", value(&opts.color)->zero_tokens(), "show colored output")
-    ("runs,n", value(&opts.runs), "number of test runs")
+    ("runs,n", value(&opts.runs)->value_name("N"), "number of test runs")
     ("show-terminal", value(&opts.show_terminal)->zero_tokens(),
      "show terminal output for each test")
     ("show-time", value(&opts.show_time)->zero_tokens(),
@@ -53,12 +53,13 @@ make_child_options(child_options &opts) {
   using namespace boost::program_options;
   options_description desc("Child options");
   desc.add_options()
-    ("timeout,t", value(&opts.timeout), "timeout in ms")
+    ("timeout,t", value(&opts.timeout)->value_name("TIME"), "timeout in ms")
     ("no-fork", value(&opts.no_fork)->zero_tokens(),
      "don't fork for each test")
-    ("test,T", value(&opts.filters.by_name),
+    ("test,T", value(&opts.filters.by_name)->value_name("REGEX"),
      "regex matching names of tests to run")
-    ("attr,a", value(&opts.filters.by_attr), "attributes of tests to run")
+    ("attr,a", value(&opts.filters.by_attr)->value_name("ATTR"),
+     "attributes of tests to run")
   ;
   return desc;
 }
