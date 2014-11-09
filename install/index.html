@@ -50,7 +50,7 @@
             
             
                 <li class="active">
-                    <a href="./">Installation</a>
+                    <a href=".">Installation</a>
                 </li>
             
             
@@ -60,15 +60,15 @@
                     <ul class="dropdown-menu">
                     
                         <li >
-                            <a href="../running-tests/">Running Tests</a>
+                            <a href="../running-tests">Running Tests</a>
                         </li>
                     
                         <li >
-                            <a href="../writing-tests/">Writing Tests</a>
+                            <a href="../writing-tests">Writing Tests</a>
                         </li>
                     
                         <li >
-                            <a href="../matchers/">Expectations and Matchers</a>
+                            <a href="../matchers">Expectations and Matchers</a>
                         </li>
                     
                     </ul>
@@ -77,13 +77,13 @@
             
             
                 <li >
-                    <a href="../developer/">Developer Guide</a>
+                    <a href="../developer">Developer Guide</a>
                 </li>
             
             
             
                 <li >
-                    <a href="../license/">License</a>
+                    <a href="../license">License</a>
                 </li>
             
             
@@ -98,7 +98,7 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../running-tests/">
+                    <a rel="prev" href="../running-tests">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -164,23 +164,23 @@ should help you build Boost to link to it.</p>
 dependencies (namely Boost and bencode.hpp) or build the binaries for mettle,
 you can use this library in a header-only mode by using the following instead of
 the usual <code>#include &lt;mettle.hpp&gt;</code>:</p>
-<pre class="prettyprint well"><code class="c++">#include &lt;mettle/header_only.hpp&gt;
+<pre><code class="c++">#include &lt;mettle/header_only.hpp&gt;
 </code></pre>
 
 <p>However, the header-only version is quite limited and doesn't support any of the
-command-line arguments described in <a href="../running-tests/">Running Tests</a>.</p>
+command-line arguments described in <a href="../running-tests">Running Tests</a>.</p>
 <h2 id="building-and-installing">Building and installing</h2>
 <p>Once you've installed all of mettle's dependencies, you can build mettle itself!
 If you've already set up your environment variables to use clang (or whatever
 C++14-compliant compiler you like), you should be able to run</p>
-<pre class="prettyprint well"><code class="sh">make &amp;&amp; make install
+<pre><code class="sh">make &amp;&amp; make install
 </code></pre>
 
 <p>to build and install mettle. Otherwise, you can specify
 the appropriate environment variables on the command line or in <code>config.mk</code>. For
 example, you could use the following <code>config.mk</code> file to build against clang and
 a libsupc++-backed libc++:</p>
-<pre class="prettyprint well"><code class="Makefile">CXX := clang++
+<pre><code class="Makefile">CXX := clang++
 CXXFLAGS := -std=c++1y -stdlib=libc++
 LDFLAGS := -lsupc++
 </code></pre>
@@ -188,13 +188,13 @@ LDFLAGS := -lsupc++
 <p>You can also specify <code>PREFIX</code> to change where mettle is installed.</p>
 <h2 id="running-tests">Running tests</h2>
 <p>To build and run all the tests, just call:</p>
-<pre class="prettyprint well"><code class="sh">make test
+<pre><code class="sh">make test
 </code></pre>
 
 <p>If you'd rather build the tests <em>without</em> running them, you can call
 <code>make tests</code> or <code>make test/test_filename</code>, where <code>test_filename</code> is the name of
 the test you'd like to build. In that case, you can execute the tests as
-described later in <a href="../running-tests/">Running Tests</a>.</p>
+described later in <a href="../running-tests">Running Tests</a>.</p>
 <h2 id="building-the-examples">Building the examples</h2>
 <p>mettle comes with a series of examples to help show how to construct different
 kinds of tests. Similar to the above, you can build all of these with

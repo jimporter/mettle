@@ -50,7 +50,7 @@
             
             
                 <li >
-                    <a href="../install/">Installation</a>
+                    <a href="../install">Installation</a>
                 </li>
             
             
@@ -60,15 +60,15 @@
                     <ul class="dropdown-menu">
                     
                         <li >
-                            <a href="../running-tests/">Running Tests</a>
+                            <a href="../running-tests">Running Tests</a>
                         </li>
                     
                         <li >
-                            <a href="../writing-tests/">Writing Tests</a>
+                            <a href="../writing-tests">Writing Tests</a>
                         </li>
                     
                         <li class="active">
-                            <a href="./">Expectations and Matchers</a>
+                            <a href=".">Expectations and Matchers</a>
                         </li>
                     
                     </ul>
@@ -77,13 +77,13 @@
             
             
                 <li >
-                    <a href="../developer/">Developer Guide</a>
+                    <a href="../developer">Developer Guide</a>
                 </li>
             
             
             
                 <li >
-                    <a href="../license/">License</a>
+                    <a href="../license">License</a>
                 </li>
             
             
@@ -93,12 +93,12 @@
             <ul class="nav navbar-nav navbar-right">
                 
                 <li >
-                    <a rel="next" href="../writing-tests/">
+                    <a rel="next" href="../writing-tests">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../developer/">
+                    <a rel="prev" href="../developer">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -143,24 +143,24 @@
 expectation, similar to an <code>assert</code>. If the expectation is met, then everything
 proceeds as normal. Otherwise, it throws an exception and aborts the current
 test. Expectations are very simple to write:</p>
-<pre class="prettyprint well"><code class="c++">expect(the_beast, equal_to(666));
+<pre><code class="c++">expect(the_beast, equal_to(666));
 </code></pre>
 
 <p>If this expectation failed, you'd see something like the following logged to
 your console (with the name of the failing test preceding it):</p>
-<pre class="prettyprint well"><code>expected: 666
+<pre><code>expected: 666
 actual:   123
 </code></pre>
 
 <h3 id="describing-an-expectation">Describing an expectation</h3>
 <p>You can also provide an optional description for an expectation to make it
 easier to figure out what it was testing if you get a failure:</p>
-<pre class="prettyprint well"><code class="c++">expect(&quot;is 'to mega therion'?&quot;, the_beast, equal_to(666));
+<pre><code class="c++">expect(&quot;is 'to mega therion'?&quot;, the_beast, equal_to(666));
 </code></pre>
 
 <p>If this expectation fails, you'll see a message like the previous failure, but
 with the description shown as well:</p>
-<pre class="prettyprint well"><code>is 'to mega therion'?
+<pre><code>is 'to mega therion'?
 expected: 666
 actual:   123
 </code></pre>
@@ -169,7 +169,7 @@ actual:   123
 <p>If you'd like your expectation to print out its file and line number if it
 failed, you can replace <code>expect</code> in either example above with <code>METTLE_EXPECT</code>.
 In this case, you'll see output like:</p>
-<pre class="prettyprint well"><code>is 'to mega therion'? (test_file.cpp:13)
+<pre><code>is 'to mega therion'? (test_file.cpp:13)
 expected: 666
 actual:   123
 </code></pre>
@@ -222,7 +222,7 @@ according to the <code>&lt;</code> operator.</p>
 <h4 id="near_tovalue-epsilon">near_to(<em>value</em>[, <em>epsilon</em>])</h4>
 <p>A matcher that returns <code>true</code> when the expected value is approximately equal to
 <code>value</code>, specifically when:</p>
-<pre class="prettyprint well"><code class="c++">auto mag = std::max&lt;T&gt;(std::abs(expected), std::abs(actual));
+<pre><code class="c++">auto mag = std::max&lt;T&gt;(std::abs(expected), std::abs(actual));
 std::abs(actual - expected) &lt;= mag * epsilon;
 </code></pre>
 
@@ -259,7 +259,7 @@ supplied).</p>
 <p>Exception matchers work a bit differently from other matchers. Since we can't
 catch an exception after the fact, we have to pass a function to our
 expectation instead:</p>
-<pre class="prettyprint well"><code class="c++">expect([]() { throw std::runtime_error(&quot;uh oh&quot;); },
+<pre><code class="c++">expect([]() { throw std::runtime_error(&quot;uh oh&quot;); },
        thrown&lt;std::runtime_error&gt;(&quot;uh oh&quot;));
 </code></pre>
 
@@ -280,7 +280,7 @@ the process to terminate, either by signalling or by exiting. (These matchers
 will fork a child process before calling the function so that the test
 framework doesn't terminate.) Like <a href="#exception-matchers">exception matchers</a>,
 death matchers require a function to be passed to the expectation:</p>
-<pre class="prettyprint well"><code class="c++">expect([]() { abort(); }, killed(SIGABRT));
+<pre><code class="c++">expect([]() { abort(); }, killed(SIGABRT));
 </code></pre>
 
 <h4 id="killedmatcher">killed([<em>matcher</em>])</h4>
@@ -305,7 +305,7 @@ and second, a string describing the matcher.</p>
 <p><code>make_matcher</code> returns a <code>basic_matcher&lt;void, F&gt;</code>, where <code>F</code> is the type of the
 function, but it's easier to just deduce the return type. For instance, here's a
 simple matcher that returns <code>true</code> when the actual value is 4:</p>
-<pre class="prettyprint well"><code class="c++">auto match_four() {
+<pre><code class="c++">auto match_four() {
   return make_matcher([](const auto &amp;value) -&gt; bool {
     return value == 4;
   }, &quot;== 4&quot;);
@@ -323,7 +323,7 @@ prepended to the printed form of <code>capture</code>.</p>
 the type of the capture and <code>F</code> is the type of the function. Again, it's easier
 to just deduce the return type. Here's an example of a matcher that returns
 <code>true</code> when two numbers are off by one:</p>
-<pre class="prettyprint well"><code class="c++">template&lt;typename T&gt;
+<pre><code class="c++">template&lt;typename T&gt;
 auto off_by_one(T &amp;&amp;expected) {
   return make_matcher(
     expected,
@@ -343,7 +343,7 @@ shorthand to implicitly call the <code>equal_to</code> matcher. In this case, we
 <p><code>ensure_matcher</code> wraps an object with the <code>equal_to</code> matcher, or returns the
 passed-in matcher if the object is already a matcher. As an example, let's
 create a matcher that returns <code>true</code> if exactly one of its arguments is <code>true</code>:</p>
-<pre class="prettyprint well"><code class="c++">template&lt;typename T&gt;
+<pre><code class="c++">template&lt;typename T&gt;
 auto either(T &amp;&amp;a, T &amp;&amp;b) {
   auto a_matcher = ensure_matcher(std::forward&lt;T&gt;(a));
   auto b_matcher = ensure_matcher(std::forward&lt;T&gt;(b));
@@ -362,7 +362,7 @@ function, so printing that fact out doesn't help. Instead, you can define a
 matcher to print a mismatch message that describes the exception the function
 <em>actually</em> threw (if any). To do this, you can return a <code>match_result</code> object
 from the matcher instead of the customary <code>bool</code>:</p>
-<pre class="prettyprint well"><code class="c++">auto message_matcher() {
+<pre><code class="c++">auto message_matcher() {
   return make_matcher([](const auto &amp;) -&gt; match_result {
     return {true, &quot;message&quot;};
   }, &quot;&quot;);
@@ -387,7 +387,7 @@ ambiguity between actual matchers and types that just have a similar interface.<
 <p>A matcher made from scratch isn't much more complex than one made using the
 helper functions above; most of the complexity will come from the behaviors you
 define. Here's a simple example that <em>never</em> returns <code>true</code>:</p>
-<pre class="prettyprint well"><code class="c++">struct nothing : matcher_tag {
+<pre><code class="c++">struct nothing : matcher_tag {
   template&lt;typename T&gt;
   bool operator ()(const U &amp;value) const {
     return false;

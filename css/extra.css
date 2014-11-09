@@ -1,5 +1,5 @@
 /* Make the inline code blocks look like the paragraph-level ones. */
-*:not(.prettyprint) > code {
+*:not(pre) > code {
   color: #333;
   background-color: #FAFAFA;
   padding: 1px 3px;

@@ -50,7 +50,7 @@
             
             
                 <li >
-                    <a href="../install/">Installation</a>
+                    <a href="../install">Installation</a>
                 </li>
             
             
@@ -60,15 +60,15 @@
                     <ul class="dropdown-menu">
                     
                         <li >
-                            <a href="../running-tests/">Running Tests</a>
+                            <a href="../running-tests">Running Tests</a>
                         </li>
                     
                         <li class="active">
-                            <a href="./">Writing Tests</a>
+                            <a href=".">Writing Tests</a>
                         </li>
                     
                         <li >
-                            <a href="../matchers/">Expectations and Matchers</a>
+                            <a href="../matchers">Expectations and Matchers</a>
                         </li>
                     
                     </ul>
@@ -77,13 +77,13 @@
             
             
                 <li >
-                    <a href="../developer/">Developer Guide</a>
+                    <a href="../developer">Developer Guide</a>
                 </li>
             
             
             
                 <li >
-                    <a href="../license/">License</a>
+                    <a href="../license">License</a>
                 </li>
             
             
@@ -93,12 +93,12 @@
             <ul class="nav navbar-nav navbar-right">
                 
                 <li >
-                    <a rel="next" href="../running-tests/">
+                    <a rel="next" href="../running-tests">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../matchers/">
+                    <a rel="prev" href="../matchers">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -146,9 +146,9 @@
 <hr />
 <h2 id="your-first-test">Your first test</h2>
 <p>So, you want to write some unit tests? Let's get started by taking a look at the
-test file we used when <a href="../running-tests/">running tests</a>. We'll discuss each
+test file we used when <a href="../running-tests">running tests</a>. We'll discuss each
 part in detail below:</p>
-<pre class="prettyprint well"><code class="c++">#include &lt;mettle.hpp&gt;
+<pre><code class="c++">#include &lt;mettle.hpp&gt;
 using namespace mettle;
 
 suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
@@ -173,11 +173,11 @@ suite via the test builder. Like suites, tests have both a string name and a
 callback function, but this time the callback is the code to run when the test
 executes.</p>
 <p>Inside our test function, we need to write some test code:</p>
-<pre class="prettyprint well"><code class="c++">expect(true, equal_to(true));
+<pre><code class="c++">expect(true, equal_to(true));
 </code></pre>
 
 <p>This is an <em>expectation</em>. We'll discuss them in more detail
-<a href="../matchers/">later</a>, but in short, they define the things we actually want to
+<a href="../matchers">later</a>, but in short, they define the things we actually want to
 <em>test</em> in our tests. This expectation makes sure that <code>true</code> is equal to <code>true</code>.
 If it's not, the test will alert us to the fact so we can fix it (hopefully
 before the universe finishes crashing down around us).</p>
@@ -186,7 +186,7 @@ before the universe finishes crashing down around us).</p>
 teardown code. Test fixtures let you do this (mostly) automatically. If a test
 suite has a <code>setup</code> or <code>teardown</code> function set, they'll run before (or after)
 each test in the suite:</p>
-<pre class="prettyprint well"><code class="c++">suite&lt;&gt; with_setup(&quot;my suite&quot;, [](auto &amp;_) {
+<pre><code class="c++">suite&lt;&gt; with_setup(&quot;my suite&quot;, [](auto &amp;_) {
   _.setup([]() {
     /* ... */
   });
@@ -213,7 +213,7 @@ you to safely share data between tests. A fixture's lifetime is as follows:</p>
 </ol>
 <p>Declaring a fixture is simple. Just pass the type of your fixture in the
 template parameters of your <code>mettle::suite</code> object:</p>
-<pre class="prettyprint well"><code class="c++">struct my_fixture {
+<pre><code class="c++">struct my_fixture {
   int i;
 };
 
@@ -241,7 +241,7 @@ below.</p>
 <p>When testing something particularly complex, you might find it useful to group
 test suites together. You can do this by creating a subsuite inside a parent
 suite:</p>
-<pre class="prettyprint well"><code class="c++">suite&lt;&gt; with_subsuites(&quot;suite with subsuites&quot;, [](auto &amp;_) {
+<pre><code class="c++">suite&lt;&gt; with_subsuites(&quot;suite with subsuites&quot;, [](auto &amp;_) {
 
   _.template subsuite&lt;&gt;(&quot;subsuite&quot;, [](auto &amp;_) {
     _.test(&quot;my subtest&quot;, []() {
@@ -258,7 +258,7 @@ generic lambda, and so <code>_</code> is a <em>dependent type</em>. Template mem
 dependent type must be disambiguated with the <code>template</code> keyword. We could
 either redefine our lambda to no longer be generic, or just use the
 <code>mettle::subsuite</code> helper:</p>
-<pre class="prettyprint well"><code class="c++">suite&lt;&gt; with_subsuites(&quot;suite with subsuites&quot;, [](auto &amp;_) {
+<pre><code class="c++">suite&lt;&gt; with_subsuites(&quot;suite with subsuites&quot;, [](auto &amp;_) {
   subsuite&lt;&gt;(_, &quot;subsuite&quot;, [](auto &amp;_) {
     /* ... */
   });
@@ -285,7 +285,7 @@ subsuite:</p>
 <p>Like the nested setup and teardown functions, test fixtures are also
 inherited in subsuites. This allows a parent suite to handle common fixtures for
 a bunch of subsuites, reducing code duplication:</p>
-<pre class="prettyprint well"><code class="c++">suite&lt;int&gt; nested_fixtures(&quot;suite with subsuites&quot;, [](auto &amp;_) {
+<pre><code class="c++">suite&lt;int&gt; nested_fixtures(&quot;suite with subsuites&quot;, [](auto &amp;_) {
   _.setup([](int &amp;i) {
     i = 1;
   });
@@ -336,7 +336,7 @@ you might be able to guess, the predefined <code>skip</code> attribute is just a
 <code>bool_attr</code> whose action is <code>attr_action::skip</code>.</p>
 <p>To define an attribute, you just need to create a global instance of one of the
 aforementioned attribute kinds:</p>
-<pre class="prettyprint well"><code class="c++">bool_attr slow(&quot;slow&quot;);
+<pre><code class="c++">bool_attr slow(&quot;slow&quot;);
 bool_attr busted(&quot;busted&quot;, attr_action::skip);
 list_attr tags(&quot;tags&quot;);
 </code></pre>
@@ -345,7 +345,7 @@ list_attr tags(&quot;tags&quot;);
 <p>It's easy to apply attributes to your tests: simply create instances of each
 kind of attribute you want, and pass them to the test creation function
 immediately after the test name:</p>
-<pre class="prettyprint well"><code class="c++">_.test(&quot;my test&quot;, {skip, slow(&quot;takes too long&quot;), tags(&quot;cat&quot;, &quot;goat&quot;)},
+<pre><code class="c++">_.test(&quot;my test&quot;, {skip, slow(&quot;takes too long&quot;), tags(&quot;cat&quot;, &quot;goat&quot;)},
        [](auto &amp;fixture) { /* ... */ });
 </code></pre>
 
@@ -359,7 +359,7 @@ be inherited by any descendent tests. For <code>bool_attr</code>s and <code>stri
 means that children with the same attributes as their parents will override
 the parent attributes, but for <code>list_attr</code>s, the values of the parent and child
 will be merged:</p>
-<pre class="prettyprint well"><code class="c++">suite&lt;&gt; attr_test(&quot;suite with attributes&quot;, {skip(&quot;broken&quot;), tags(&quot;cat&quot;)},
+<pre><code class="c++">suite&lt;&gt; attr_test(&quot;suite with attributes&quot;, {skip(&quot;broken&quot;), tags(&quot;cat&quot;)},
                   [](auto &amp;_) {
   _.test(&quot;my test&quot;, {slow, skip(&quot;fixme&quot;), tags(&quot;dog&quot;)}, [](auto &amp;fixture) {
     /* This test has the following attributes: slow, skip(&quot;fixme&quot;), and
@@ -374,7 +374,7 @@ run the <em>same</em> tests on several different types of objects. In this case,
 you need to do is specify <em>multiple</em> fixtures when defining a test suite. The
 example below creates two test suites, one with a fixture of <code>int</code> and one with
 a fixture of <code>float</code>:</p>
-<pre class="prettyprint well"><code class="c++">suite&lt;int, float&gt; param_test(&quot;parameterized suite&quot;, [](auto &amp;_) {
+<pre><code class="c++">suite&lt;int, float&gt; param_test(&quot;parameterized suite&quot;, [](auto &amp;_) {
   _.test(&quot;my test&quot;, [](auto &amp;fixture) {
     /* ... */
   });
@@ -382,7 +382,7 @@ a fixture of <code>float</code>:</p>
 </code></pre>
 
 <p>This works just the same for subsuites as well:</p>
-<pre class="prettyprint well"><code class="c++">suite&lt;&gt; param_sub_test(&quot;parameterized subsuites&quot;, [](auto &amp;_) {
+<pre><code class="c++">suite&lt;&gt; param_sub_test(&quot;parameterized subsuites&quot;, [](auto &amp;_) {
   subsuite&lt;int, float&gt;(_, &quot;parameterized suite 1&quot;, [](auto &amp;_) {
     /* ... */
   });
@@ -404,7 +404,7 @@ base type.</p>
 <p>In some cases, you may want to know the parameterized type, e.g. if you'd like
 to create your own instances of the object. You can retrieve this via the
 <code>fixture_type</code> trait (or the <code>fixture_type_t</code> alias) like so:</p>
-<pre class="prettyprint well"><code class="c++">suite&lt;int, float&gt; param_type_test(&quot;parameterized suite&quot;, [](auto &amp;_) {
+<pre><code class="c++">suite&lt;int, float&gt; param_type_test(&quot;parameterized suite&quot;, [](auto &amp;_) {
   using Fixture = fixture_type_t&lt;decltype(_)&gt;;
 
   _.test(&quot;my test&quot;, [](auto &amp;) {
@@ -418,7 +418,7 @@ to create your own instances of the object. You can retrieve this via the
 default-constructible. In these cases, you can use a <em>fixture factory</em> to create
 your fixture object with any parameters you like. A fixture factory is simply an
 object with a templated <code>make&lt;T&gt;()</code> function:</p>
-<pre class="prettyprint well"><code class="c++">struct my_factory {
+<pre><code class="c++">struct my_factory {
   template&lt;typename T&gt;
   T make() {
     return T(12);
@@ -432,7 +432,7 @@ suite&lt;my_fixture&gt; with_fixture_factory(&quot;suite&quot;, my_factory{}, []
 
 <p>In fact, ordinary fixtures use their own factory: <code>auto_factory</code>. The following
 code snippets are equivalent:</p>
-<pre class="prettyprint well"><code class="c++">suite&lt;my_fixture&gt; without_auto_factory(&quot;suite&quot;, [](auto &amp;_) {
+<pre><code class="c++">suite&lt;my_fixture&gt; without_auto_factory(&quot;suite&quot;, [](auto &amp;_) {
   /* ... */
 });
 
@@ -445,7 +445,7 @@ suite&lt;my_fixture&gt; with_auto_factory(&quot;suite&quot;, auto_factory, [](au
 <p>In addition, a fixture factory's <code>make&lt;T&gt;()</code> can return <em>any</em> type (including
 <code>void</code>!), not just <code>T</code>. This can be useful for more complex tests, like testing
 a container type with several different element types:</p>
-<pre class="prettyprint well"><code class="c++">struct vector_factory {
+<pre><code class="c++">struct vector_factory {
   template&lt;typename T&gt;
   std::vector&lt;T&gt; make() {
     return {};
@@ -465,7 +465,7 @@ case, the suite has no fixture whatsoever. This is primarily useful when you
 want to parameterize on a list of types, but you don't want to automatically
 instantiate the fixture object. The built-in fixture factory <code>type_only</code> handles
 this for you. In particular, note the parameter-less test function:</p>
-<pre class="prettyprint well"><code class="c++">suite&lt;int, float&gt; type_only_suite(&quot;suite&quot;, type_only, [](auto &amp;_) {
+<pre><code class="c++">suite&lt;int, float&gt; type_only_suite(&quot;suite&quot;, type_only, [](auto &amp;_) {
   _.test(&quot;empty()&quot;, []() {
     /* ... */
   });

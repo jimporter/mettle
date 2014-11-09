@@ -50,7 +50,7 @@
             
             
                 <li >
-                    <a href="../install/">Installation</a>
+                    <a href="../install">Installation</a>
                 </li>
             
             
@@ -60,15 +60,15 @@
                     <ul class="dropdown-menu">
                     
                         <li class="active">
-                            <a href="./">Running Tests</a>
+                            <a href=".">Running Tests</a>
                         </li>
                     
                         <li >
-                            <a href="../writing-tests/">Writing Tests</a>
+                            <a href="../writing-tests">Writing Tests</a>
                         </li>
                     
                         <li >
-                            <a href="../matchers/">Expectations and Matchers</a>
+                            <a href="../matchers">Expectations and Matchers</a>
                         </li>
                     
                     </ul>
@@ -77,13 +77,13 @@
             
             
                 <li >
-                    <a href="../developer/">Developer Guide</a>
+                    <a href="../developer">Developer Guide</a>
                 </li>
             
             
             
                 <li >
-                    <a href="../license/">License</a>
+                    <a href="../license">License</a>
                 </li>
             
             
@@ -93,12 +93,12 @@
             <ul class="nav navbar-nav navbar-right">
                 
                 <li >
-                    <a rel="next" href="../install/">
+                    <a rel="next" href="../install">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../writing-tests/">
+                    <a rel="prev" href="../writing-tests">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -142,9 +142,9 @@
 one to make sure everything's set up correctly.</p>
 <h2 id="a-sample-test">A sample test</h2>
 <p>First up, here's a minimalist test suite so that we have something to run. We'll
-cover the syntax of this test later when we learn about <a href="../writing-tests/">writing
+cover the syntax of this test later when we learn about <a href="../writing-tests">writing
 tests</a>.</p>
-<pre class="prettyprint well"><code class="c++">#include &lt;mettle.hpp&gt;
+<pre><code class="c++">#include &lt;mettle.hpp&gt;
 using namespace mettle;
 
 suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
@@ -160,7 +160,7 @@ with a <code>main()</code> function, the above source code is all you need for a
 fully-operational test. Just compile the test like so. Note that we compile in
 C++1y (aka C++14) mode, since mettle relies on some C++14 features to make test
 writing simpler:</p>
-<pre class="prettyprint well"><code class="sh">clang++ -std=c++1y -lmettle -o test_first test_first.cpp
+<pre><code class="sh">clang++ -std=c++1y -lmettle -o test_first test_first.cpp
 </code></pre>
 
 <p>Once it's built, just run the binary and check the test results.</p>
@@ -169,18 +169,16 @@ writing simpler:</p>
 <h4 id="-help-h">--help (-h)</h4>
 <p>Show help and usage information.</p>
 <h3 id="output-options">Output options</h3>
-<h4 id="-verbose-n2-v">--verbose <em>N=2</em> (-v)</h4>
-<p>Show output of tests as they're being run. If <code>--verbose</code> isn't passed, the
-verbosity is set to 1; if no value for <em>N</em> is specified, then the verbosity is
-set to 2.</p>
-<h5 id="verbosity-0">Verbosity 0</h5>
-<p>Don't show any output during the test run; only a summary after the fact will
-be shown.</p>
-<h5 id="verbosity-1">Verbosity 1</h5>
-<p>A single character for each test will be shown. <code>.</code> means a passed test, <code>!</code> a
-failed test, and <code>_</code> a skipped test.</p>
-<h5 id="verbosity-2">Verbosity 2</h5>
-<p>Show the full name of tests and suites as they're being run.</p>
+<h4 id="-output-format-o">--output <em>FORMAT</em> (-o)</h4>
+<p>Set the output format for the test results. If <code>--output</code> isn't passed, the
+format is set to <em>brief</em>. The available formats are:</p>
+<ul>
+<li><code>silent</code>: Don't show any output during the test run; only a summary after the
+  fact will be shown.</li>
+<li><code>brief</code>: A single character for each test will be shown. <code>.</code> means a passed
+  test, <code>!</code> a failed test, and <code>_</code> a skipped test.</li>
+<li><code>verbose</code>: Show the full name of tests and suites as they're being run.</li>
+</ul>
 <h4 id="-color-c">--color (-c)</h4>
 <p>Print test results in color. This is good if your terminal supports colors,
 since it makes the results much easier to read!</p>
@@ -208,7 +206,7 @@ crashes during the execution of a test. To disable this, you can pass
 specified multiple times, tests that match <em>any</em> of the regexes will be run.</p>
 <h4 id="-attr-attrvalue-a">--attr <em>ATTR[=VALUE],...</em> (-a)</h4>
 <p>Filter the tests that will be run based on the tests'
-<a href="../writing-tests/#test-attributes">attributes</a>. Tests matching each of the
+<a href="../writing-tests#test-attributes">attributes</a>. Tests matching each of the
 attributes (and, optionally, values) will be run by the test driver. If <code>--attr</code>
 is specified multiple times, tests that match <em>any</em> of the filters will be run.
 You can also prepend <em>ATTR</em> with <code>!</code> to negate that test. Let's look at some
@@ -250,18 +248,18 @@ binaries at once. The interface is much like that of the individual binaries,
 and all of the command-line options above work with the <code>mettle</code> executable as
 well. To specify which of the test binaries to run, just pass their filenames to
 <code>mettle</code>:</p>
-<pre class="prettyprint well"><code class="sh">mettle test_file1 test_file2
+<pre><code class="sh">mettle test_file1 test_file2
 </code></pre>
 
 <h3 id="passing-along-arguments">Passing along arguments</h3>
 <p>You can also pass along arguments to a test binary by quoting the binary:</p>
-<pre class="prettyprint well"><code class="sh">mettle test_file1 &quot;caliber test_foo.cpp test_bar.cpp&quot;
+<pre><code class="sh">mettle test_file1 &quot;caliber test_foo.cpp test_bar.cpp&quot;
 </code></pre>
 
 <p>This executes <code>test_file1</code> and then executes <code>caliber</code> with two arguments:
 <code>test_foo.cpp</code> and <code>test_bar.cpp</code>. You can also pass globs inside quoted
 arguments:</p>
-<pre class="prettyprint well"><code class="sh">mettle test_file1 &quot;caliber test_*.cpp&quot;
+<pre><code class="sh">mettle test_file1 &quot;caliber test_*.cpp&quot;
 </code></pre>
 
 </div>
