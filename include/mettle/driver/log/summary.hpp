@@ -15,8 +15,8 @@ namespace log {
 
   class summary : public file_logger {
   public:
-    summary(indenting_ostream &out, file_logger *log, bool show_time,
-            bool show_terminal);
+    summary(indenting_ostream &out, std::unique_ptr<file_logger> &&log,
+            bool show_time, bool show_terminal);
 
     void started_run();
     void ended_run();
@@ -63,7 +63,7 @@ namespace log {
     void log_output(const test_output &output, bool extra_newline) const;
 
     indenting_ostream &out_;
-    file_logger *log_;
+    std::unique_ptr<file_logger> log_;
     bool show_time_, show_terminal_;
     std::chrono::steady_clock::time_point start_time_;
 

@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_DRIVER_LOG_QUIET_HPP
-#define INC_METTLE_DRIVER_LOG_QUIET_HPP
+#ifndef INC_METTLE_DRIVER_LOG_BRIEF_HPP
+#define INC_METTLE_DRIVER_LOG_BRIEF_HPP
 
 #include "core.hpp"
 #include "indent.hpp"
@@ -8,9 +8,9 @@ namespace mettle {
 
 namespace log {
 
-  class quiet : public file_logger {
+  class brief : public file_logger {
   public:
-    quiet(indenting_ostream &out);
+    brief(indenting_ostream &out);
 
     void started_run();
     void ended_run();

@@ -28,9 +28,11 @@ int main(int argc, const char *argv[]) {
   using namespace mettle;
   namespace opts = boost::program_options;
 
+  auto factory = make_logger_factory();
+
   all_options args;
   auto generic = make_generic_options(args);
-  auto output = make_output_options(args);
+  auto output = make_output_options(args, factory);
   auto child = make_child_options(args);
 
   opts::options_description hidden("Hidden options");
@@ -82,10 +84,10 @@ int main(int argc, const char *argv[]) {
     term::enable(std::cout, args.color);
     indenting_ostream out(std::cout);
 
-    auto progress_log = make_progress_logger(out, args);
-    log::summary logger(out, progress_log.get(), args.show_time,
-                        args.show_terminal);
-
+    log::summary logger(
+      out, factory.make(args.output, out, args), args.show_time,
+      args.show_terminal
+    );
     for(size_t i = 0; i != args.runs; i++)
       run_test_files(args.files, logger, child_args);
 

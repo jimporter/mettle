@@ -1,11 +1,12 @@
 #include <mettle/driver/cmd_line.hpp>
 
 #include <regex>
+#include <sstream>
 #include <stdexcept>
 
 #include <boost/program_options.hpp>
 
-#include <mettle/driver/log/quiet.hpp>
+#include <mettle/driver/log/brief.hpp>
 #include <mettle/driver/log/verbose.hpp>
 
 namespace mettle {
@@ -21,12 +22,22 @@ make_generic_options(generic_options &opts) {
 }
 
 boost::program_options::options_description
-make_output_options(output_options &opts) {
+make_output_options(output_options &opts, const logger_factory &factory) {
   using namespace boost::program_options;
+
+  std::ostringstream ss;
+  ss << "set output format (one of: ";
+  auto begin = factory.begin(), end = factory.end();
+  if(begin != end) {
+    ss << begin->first;
+    for(++begin; begin != end; ++begin)
+      ss << ", " << begin->first;
+  }
+  ss << ")";
+
   options_description desc("Output options");
   desc.add_options()
-    ("verbose,v", value(&opts.verbosity)->implicit_value(2),
-     "show verbose output")
+    ("output,o", value(&opts.output), ss.str().c_str())
     ("color,c", value(&opts.color)->zero_tokens(), "show colored output")
     ("runs,n", value(&opts.runs), "number of test runs")
     ("show-terminal", value(&opts.show_terminal)->zero_tokens(),
@@ -62,17 +73,23 @@ has_option(const boost::program_options::options_description &options,
   return nullptr;
 }
 
-std::unique_ptr<log::file_logger>
-make_progress_logger(indenting_ostream &out, const output_options &args) {
-  switch(args.verbosity) {
-  case 1:
-    return std::make_unique<log::quiet>(out);
-  case 2:
-    return std::make_unique<log::verbose>(out, args.runs, args.show_time,
-                                          args.show_terminal);
-  default:
-    return {};
-  }
+logger_factory make_logger_factory() {
+  logger_factory f("output format");
+
+  f.add("silent", [](indenting_ostream &, const output_options &) {
+    return std::unique_ptr<log::file_logger>();
+  });
+  f.add("brief", [](indenting_ostream &out, const output_options &) {
+    return std::make_unique<log::brief>(out);
+  });
+  f.add("verbose", [](indenting_ostream &out, const output_options &args) {
+    return std::make_unique<log::verbose>(
+      out, args.runs, args.show_time, args.show_terminal
+    );
+  });
+  f.set_default("brief");
+
+  return f;
 }
 
 attr_filter parse_attr(const std::string &value) {

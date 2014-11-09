@@ -61,7 +61,7 @@ install: all
 
 .PHONY: test
 test: tests mettle
-	./mettle --verbose 2 --color $(TESTS)
+	./mettle --output=verbose --color $(TESTS)
 
 .PHONY: clean
 clean: clean-tests clean-examples clean-bin clean-obj

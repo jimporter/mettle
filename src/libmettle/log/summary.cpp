@@ -9,9 +9,9 @@ namespace mettle {
 
 namespace log {
 
-  summary::summary(indenting_ostream &out, file_logger *log, bool show_time,
-                   bool show_terminal)
-    : out_(out), log_(log), show_time_(show_time),
+  summary::summary(indenting_ostream &out, std::unique_ptr<file_logger> &&log,
+                   bool show_time, bool show_terminal)
+    : out_(out), log_(std::move(log)), show_time_(show_time),
       show_terminal_(show_terminal) {}
 
   void summary::started_run() {

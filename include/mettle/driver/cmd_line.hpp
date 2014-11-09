@@ -11,6 +11,7 @@
 #include <boost/program_options/variables_map.hpp>
 
 #include "filters.hpp"
+#include "object_factory.hpp"
 #include "detail/optional.hpp"
 #include "log/core.hpp"
 #include "log/indent.hpp"
@@ -25,15 +26,20 @@ boost::program_options::options_description
 make_generic_options(generic_options &opts);
 
 struct output_options {
-  unsigned int verbosity = 1;
+  std::string output;
   bool color = false;
   size_t runs = 1;
   bool show_terminal = false;
   bool show_time = false;
 };
 
+using logger_factory = object_factory<
+  log::file_logger, indenting_ostream &, const output_options &
+>;
+logger_factory make_logger_factory();
+
 boost::program_options::options_description
-make_output_options(output_options &opts);
+make_output_options(output_options &opts, const logger_factory &factory);
 
 struct child_options {
   METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout;
@@ -62,9 +68,6 @@ std::vector<std::basic_string<Char>> filter_options(
   }
   return filtered;
 }
-
-std::unique_ptr<log::file_logger>
-make_progress_logger(indenting_ostream &out, const output_options &args);
 
 attr_filter parse_attr(const std::string &value);
 

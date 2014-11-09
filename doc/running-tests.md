@@ -45,25 +45,16 @@ Show help and usage information.
 
 ### Output options
 
-#### --verbose *N=2* (-v)
+#### --output *FORMAT* (-o)
 
-Show output of tests as they're being run. If `--verbose` isn't passed, the
-verbosity is set to 1; if no value for *N* is specified, then the verbosity is
-set to 2.
+Set the output format for the test results. If `--output` isn't passed, the
+format is set to *brief*. The available formats are:
 
-##### Verbosity 0
-
-Don't show any output during the test run; only a summary after the fact will
-be shown.
-
-##### Verbosity 1
-
-A single character for each test will be shown. `.` means a passed test, `!` a
-failed test, and `_` a skipped test.
-
-##### Verbosity 2
-
-Show the full name of tests and suites as they're being run.
+* `silent`: Don't show any output during the test run; only a summary after the
+  fact will be shown.
+* `brief`: A single character for each test will be shown. `.` means a passed
+  test, `!` a failed test, and `_` a skipped test.
+* `verbose`: Show the full name of tests and suites as they're being run.
 
 #### --color (-c)
 
