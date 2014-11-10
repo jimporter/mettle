@@ -56,7 +56,7 @@ void validate(boost::any &v, const std::vector<std::string> &values,
   }
 }
 
-namespace detail {
+namespace {
   std::unique_ptr<char *[]>
   make_argv(const std::vector<std::string> &argv) {
     auto real_argv = std::make_unique<char *[]>(argv.size() + 1);
@@ -184,7 +184,7 @@ void run_test_files(
   logger.started_run();
   log::pipe pipe(logger);
   for(const auto &file : files)
-    detail::run_test_file(file, pipe, args);
+    run_test_file(file, pipe, args);
   logger.ended_run();
 }
 
