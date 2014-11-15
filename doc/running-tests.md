@@ -43,7 +43,7 @@ Once it's built, just run the binary and check the test results.
 
 Show help and usage information.
 
-### Child options
+### Driver options
 
 #### --timeout *N* (-t)
 
