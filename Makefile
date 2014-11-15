@@ -3,6 +3,12 @@ PREFIX := /usr
 
 -include config.mk
 
+ifdef MKDOCS_VENV
+  MKDOCS := . $(MKDOCS_VENV)/bin/activate && mkdocs
+else
+  MKDOCS := mkdocs
+endif
+
 TESTS := $(patsubst %.cpp,%,$(wildcard test/*.cpp))
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
 HEADER_ONLY_EXAMPLES := examples/test_header_only
@@ -62,6 +68,18 @@ install: all
 .PHONY: test
 test: tests mettle
 	./mettle --output=verbose --color $(TESTS)
+
+.PHONY: doc
+doc:
+	$(MKDOCS) build --clean
+
+.PHONY: serve-doc
+serve-doc:
+	$(MKDOCS) serve --dev-addr=0.0.0.0:8000
+
+.PHONY: deploy-doc
+deploy-doc:
+	$(MKDOCS) gh-deploy
 
 .PHONY: clean
 clean: clean-tests clean-examples clean-bin clean-obj
