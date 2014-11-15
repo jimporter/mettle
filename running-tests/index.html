@@ -168,39 +168,10 @@ writing simpler:</p>
 <h3 id="generic-options">Generic options</h3>
 <h4 id="-help-h">--help (-h)</h4>
 <p>Show help and usage information.</p>
-<h3 id="output-options">Output options</h3>
-<h4 id="-output-format-o">--output <em>FORMAT</em> (-o)</h4>
-<p>Set the output format for the test results. If <code>--output</code> isn't passed, the
-format is set to <em>brief</em>. The available formats are:</p>
-<ul>
-<li><code>silent</code>: Don't show any output during the test run; only a summary after the
-  fact will be shown.</li>
-<li><code>brief</code>: A single character for each test will be shown. <code>.</code> means a passed
-  test, <code>!</code> a failed test, and <code>_</code> a skipped test.</li>
-<li><code>verbose</code>: Show the full name of tests and suites as they're being run.</li>
-</ul>
-<h4 id="-color-c">--color (-c)</h4>
-<p>Print test results in color. This is good if your terminal supports colors,
-since it makes the results much easier to read!</p>
-<h4 id="-runs-n-n">--runs <em>N</em> (-n)</h4>
-<p>Run the tests a total of <em>N</em> times. This is useful for catching intermittent
-failures. At the end, the summary will show the output of each failure for every
-test.</p>
-<h4 id="-show-terminal">--show-terminal</h4>
-<p>Show the terminal output (stdout and stderr) of each test after it finishes. To
-enable this, <code>--no-fork</code> can't be specified (if <code>--no-fork</code> <em>is</em> specified, the
-terminal output will just appear in-line with the tests).</p>
-<h4 id="-show-time">--show-time</h4>
-<p>Show the duration (in milliseconds) of each test as it runs, as well as the
-total time of the entire job.</p>
 <h3 id="child-options">Child options</h3>
 <h4 id="-timeout-n-t">--timeout <em>N</em> (-t)</h4>
 <p>Time out and fail any tests that take longer than <em>N</em> milliseconds to execute.
 <code>--no-fork</code> can't be specified while using this option.</p>
-<h4 id="-no-fork">--no-fork</h4>
-<p>By default, mettle forks its process to run each test, in order to detect
-crashes during the execution of a test. To disable this, you can pass
-<code>--no-fork</code>, and all the tests will run in the same process.</p>
 <h4 id="-test-regex-t">--test <em>REGEX</em> (-T)</h4>
 <p>Filter the tests that will be run to those matching a regex. If <code>--test</code> is
 specified multiple times, tests that match <em>any</em> of the regexes will be run.</p>
@@ -239,6 +210,37 @@ set to something other than <code>http</code>.</p>
 <p>Run tests that match either attribute.</p>
 </li>
 </ul>
+<h4 id="-no-fork">--no-fork</h4>
+<p>By default, mettle forks its process to run each test, in order to detect
+crashes during the execution of a test. To disable this, you can pass
+<code>--no-fork</code>, and all the tests will run in the same process. This option can
+only be specified for the individual test binaries, <em>not</em> for the <code>mettle</code>
+driver.</p>
+<h3 id="output-options">Output options</h3>
+<h4 id="-output-format-o">--output <em>FORMAT</em> (-o)</h4>
+<p>Set the output format for the test results. If <code>--output</code> isn't passed, the
+format is set to <em>brief</em>. The available formats are:</p>
+<ul>
+<li><code>silent</code>: Don't show any output during the test run; only a summary after the
+  fact will be shown.</li>
+<li><code>brief</code>: A single character for each test will be shown. <code>.</code> means a passed
+  test, <code>!</code> a failed test, and <code>_</code> a skipped test.</li>
+<li><code>verbose</code>: Show the full name of tests and suites as they're being run.</li>
+</ul>
+<h4 id="-color-c">--color (-c)</h4>
+<p>Print test results in color. This is good if your terminal supports colors,
+since it makes the results much easier to read!</p>
+<h4 id="-runs-n-n">--runs <em>N</em> (-n)</h4>
+<p>Run the tests a total of <em>N</em> times. This is useful for catching intermittent
+failures. At the end, the summary will show the output of each failure for every
+test.</p>
+<h4 id="-show-terminal">--show-terminal</h4>
+<p>Show the terminal output (stdout and stderr) of each test after it finishes. To
+enable this, <code>--no-fork</code> can't be specified (if <code>--no-fork</code> <em>is</em> specified, the
+terminal output will just appear in-line with the tests).</p>
+<h4 id="-show-time">--show-time</h4>
+<p>Show the duration (in milliseconds) of each test as it runs, as well as the
+total time of the entire job.</p>
 <h2 id="using-the-mettle-executable">Using the <em>mettle</em> executable</h2>
 <p>For testing larger projects, it's generally recommended to divide your test
 suites into multiple <code>.cpp</code> files and compile them into separate binaries. This
