@@ -1,12 +1,10 @@
+**Documentation for mettle is available at http://jimporter.github.io/mettle**
+
 # mettle
 
 **mettle** is a unit testing framework for C++14. It aims to maximize
 readability and clarity, allowing you to focus on writing tests instead of
 wrestling with the API.
-
-## Documentation
-
-Documentation for mettle is available at http://jimporter.github.io/mettle
 
 ## Features
 
@@ -15,15 +13,15 @@ Documentation for mettle is available at http://jimporter.github.io/mettle
 Tests can be parameterized by value and by type, allowing you to reuse the same
 tests with different preconditions.
 
-#### Nested suites
-
-Test suites can be nested arbitrarily deep. Group your tests however you like,
-and let the suites set up and tear down your fixtures for you.
-
 #### Declarative, matcher-based expectations
 
 Expectations (assertions) are created using composable matchers, allowing you to
 test complex things using a minimal set of core functions.
+
+#### Nested suites
+
+Test suites can be nested arbitrarily deep. Group your tests however you like,
+and let the suites set up and tear down your fixtures for you.
 
 #### Aggregate all your tests
 
