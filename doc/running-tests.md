@@ -43,53 +43,12 @@ Once it's built, just run the binary and check the test results.
 
 Show help and usage information.
 
-### Output options
-
-#### --output *FORMAT* (-o)
-
-Set the output format for the test results. If `--output` isn't passed, the
-format is set to *brief*. The available formats are:
-
-* `silent`: Don't show any output during the test run; only a summary after the
-  fact will be shown.
-* `brief`: A single character for each test will be shown. `.` means a passed
-  test, `!` a failed test, and `_` a skipped test.
-* `verbose`: Show the full name of tests and suites as they're being run.
-
-#### --color (-c)
-
-Print test results in color. This is good if your terminal supports colors,
-since it makes the results much easier to read!
-
-#### --runs *N* (-n)
-
-Run the tests a total of *N* times. This is useful for catching intermittent
-failures. At the end, the summary will show the output of each failure for every
-test.
-
-#### --show-terminal
-
-Show the terminal output (stdout and stderr) of each test after it finishes. To
-enable this, `--no-fork` can't be specified (if `--no-fork` *is* specified, the
-terminal output will just appear in-line with the tests).
-
-#### --show-time
-
-Show the duration (in milliseconds) of each test as it runs, as well as the
-total time of the entire job.
-
 ### Child options
 
 #### --timeout *N* (-t)
 
 Time out and fail any tests that take longer than *N* milliseconds to execute.
 `--no-fork` can't be specified while using this option.
-
-#### --no-fork
-
-By default, mettle forks its process to run each test, in order to detect
-crashes during the execution of a test. To disable this, you can pass
-`--no-fork`, and all the tests will run in the same process.
 
 #### --test *REGEX* (-T)
 
@@ -130,6 +89,49 @@ examples to get a better sense of how this works:
 *   `--attr slow --attr protocol=http`
 
     Run tests that match either attribute.
+
+#### --no-fork
+
+By default, mettle forks its process to run each test, in order to detect
+crashes during the execution of a test. To disable this, you can pass
+`--no-fork`, and all the tests will run in the same process. This option can
+only be specified for the individual test binaries, *not* for the `mettle`
+driver.
+
+### Output options
+
+#### --output *FORMAT* (-o)
+
+Set the output format for the test results. If `--output` isn't passed, the
+format is set to *brief*. The available formats are:
+
+* `silent`: Don't show any output during the test run; only a summary after the
+  fact will be shown.
+* `brief`: A single character for each test will be shown. `.` means a passed
+  test, `!` a failed test, and `_` a skipped test.
+* `verbose`: Show the full name of tests and suites as they're being run.
+
+#### --color (-c)
+
+Print test results in color. This is good if your terminal supports colors,
+since it makes the results much easier to read!
+
+#### --runs *N* (-n)
+
+Run the tests a total of *N* times. This is useful for catching intermittent
+failures. At the end, the summary will show the output of each failure for every
+test.
+
+#### --show-terminal
+
+Show the terminal output (stdout and stderr) of each test after it finishes. To
+enable this, `--no-fork` can't be specified (if `--no-fork` *is* specified, the
+terminal output will just appear in-line with the tests).
+
+#### --show-time
+
+Show the duration (in milliseconds) of each test as it runs, as well as the
+total time of the entire job.
 
 ## Using the *mettle* executable
 

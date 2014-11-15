@@ -25,6 +25,14 @@ struct generic_options {
 boost::program_options::options_description
 make_generic_options(generic_options &opts);
 
+struct driver_options {
+  METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout;
+  filter_set filters;
+};
+
+boost::program_options::options_description
+make_driver_options(driver_options &opts);
+
 struct output_options {
   std::string output;
   bool color = false;
@@ -40,15 +48,6 @@ logger_factory make_logger_factory();
 
 boost::program_options::options_description
 make_output_options(output_options &opts, const logger_factory &factory);
-
-struct child_options {
-  METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout;
-  bool no_fork = false;
-  filter_set filters;
-};
-
-boost::program_options::options_description
-make_child_options(child_options &opts);
 
 boost::program_options::option_description *
 has_option(const boost::program_options::options_description &options,

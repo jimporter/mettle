@@ -22,6 +22,20 @@ make_generic_options(generic_options &opts) {
 }
 
 boost::program_options::options_description
+make_driver_options(driver_options &opts) {
+  using namespace boost::program_options;
+  options_description desc("Driver options");
+  desc.add_options()
+    ("timeout,t", value(&opts.timeout)->value_name("TIME"), "timeout in ms")
+    ("test,T", value(&opts.filters.by_name)->value_name("REGEX"),
+     "regex matching names of tests to run")
+    ("attr,a", value(&opts.filters.by_attr)->value_name("ATTR"),
+     "attributes of tests to run")
+  ;
+  return desc;
+}
+
+boost::program_options::options_description
 make_output_options(output_options &opts, const logger_factory &factory) {
   using namespace boost::program_options;
 
@@ -44,22 +58,6 @@ make_output_options(output_options &opts, const logger_factory &factory) {
      "show terminal output for each test")
     ("show-time", value(&opts.show_time)->zero_tokens(),
      "show the duration for each test")
-  ;
-  return desc;
-}
-
-boost::program_options::options_description
-make_child_options(child_options &opts) {
-  using namespace boost::program_options;
-  options_description desc("Child options");
-  desc.add_options()
-    ("timeout,t", value(&opts.timeout)->value_name("TIME"), "timeout in ms")
-    ("no-fork", value(&opts.no_fork)->zero_tokens(),
-     "don't fork for each test")
-    ("test,T", value(&opts.filters.by_name)->value_name("REGEX"),
-     "regex matching names of tests to run")
-    ("attr,a", value(&opts.filters.by_attr)->value_name("ATTR"),
-     "attributes of tests to run")
   ;
   return desc;
 }

@@ -17,8 +17,9 @@
 namespace mettle {
 
 namespace {
-  struct all_options : generic_options, output_options, child_options {
+  struct all_options : generic_options, driver_options, output_options {
     METTLE_OPTIONAL_NS::optional<int> child_fd;
+    bool no_fork = false;
   };
 
   void report_error(const std::string &program_name,
@@ -37,8 +38,13 @@ namespace detail {
 
     all_options args;
     auto generic = make_generic_options(args);
+    auto driver = make_driver_options(args);
     auto output = make_output_options(args, factory);
-    auto child = make_child_options(args);
+
+    driver.add_options()
+      ("no-fork", opts::value(&args.no_fork)->zero_tokens(),
+       "don't fork for each test")
+    ;
 
     opts::options_description hidden("Hidden options");
     hidden.add_options()
@@ -49,7 +55,7 @@ namespace detail {
     try {
       opts::options_description all;
       opts::positional_options_description pos;
-      all.add(generic).add(output).add(child).add(hidden);
+      all.add(generic).add(driver).add(output).add(hidden);
       auto parsed = opts::command_line_parser(argc, argv)
         .options(all).positional(pos).run();
 
@@ -62,7 +68,7 @@ namespace detail {
 
     if(args.show_help) {
       opts::options_description displayed;
-      displayed.add(generic).add(output).add(child);
+      displayed.add(generic).add(driver).add(output);
       std::cout << displayed << std::endl;
       return 0;
     }
