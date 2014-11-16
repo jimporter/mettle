@@ -9,6 +9,10 @@ else
   MKDOCS := mkdocs
 endif
 
+ifndef TMPDIR
+  TMPDIR := /tmp
+endif
+
 TESTS := $(patsubst %.cpp,%,$(wildcard test/*.cpp))
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
 HEADER_ONLY_EXAMPLES := examples/test_header_only
@@ -29,7 +33,7 @@ all: mettle libmettle.so
 # <http://scottmcpeak.com/autodepend/autodepend.html>.
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -Iinclude -c $< -o $@
-	$(eval TEMP := $(shell mktemp))
+	$(eval TEMP := $(shell mktemp $(TMPDIR)/mettle-XXXXXX))
 	@$(CXX) $(CXXFLAGS) -MM -Iinclude $< > $(TEMP)
 	@sed -e 's|.*:|$*.o:|' < $(TEMP) > $*.d
 	@sed -e 's/.*://' -e 's/\\$$//' < $(TEMP) | fmt -1 | \
