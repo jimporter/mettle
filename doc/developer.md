@@ -21,7 +21,9 @@ to be run all at once (e.g. normal unit tests and compilation-failure tests).
 When running tests, mettle makes extensive use of subprocesses to isolate tests
 as much as possible. First, the `mettle` driver forks/execs each individual test
 binary, and these in turn (by default) fork for each test in the file. This
-ensures that no one test can crash the entire framework.
+ensures that no one test can crash the entire framework. The *test process* is
+also set as the process group leader for a new process group in order to ensure
+that any subprocesses of it are killed, if necessary.
 
 Additionally, if tests are set to time out after a certain period, two more
 subprocesses are forked for each test: a *monitor process* and a *timer
