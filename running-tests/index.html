@@ -157,13 +157,16 @@ suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
 <h2 id="building-the-test">Building the test</h2>
 <p>Building a test is straightforward. Since mettle provides its own test runner
 with a <code>main()</code> function, the above source code is all you need for a
-fully-operational test. Just compile the test like so. Note that we compile in
-C++1y (aka C++14) mode, since mettle relies on some C++14 features to make test
-writing simpler:</p>
+fully-operational test. Just compile the test like so:</p>
 <pre><code class="sh">clang++ -std=c++1y -lmettle -o test_first test_first.cpp
 </code></pre>
 
 <p>Once it's built, just run the binary and check the test results.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We need to compile in C++1y (aka C++14) mode, since mettle relies on some
+C++14 features to make test writing simpler.</p>
+</div>
 <h2 id="command-line-options">Command-line options</h2>
 <h3 id="generic-options">Generic options</h3>
 <h4 id="-help-h">--help (-h)</h4>

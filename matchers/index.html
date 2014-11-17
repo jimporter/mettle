@@ -199,10 +199,13 @@ description is unclear or overly-verbose.</p>
 <h4 id="equal_tovalue">equal_to(<em>value</em>)</h4>
 <p>A matcher that returns <code>true</code> when the expected value is equal to <code>value</code>
 according to the <code>==</code> operator.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p><code>equal_to</code> is also the <em>implicit matcher</em>. Any time a matcher takes another
 matcher as an argument, you can pass in a value, and it will be implicitly
-converted to <code>equal_to(value)</code>. (Note that this doesn't work for the root
-matcher; you need to explicitly say <code>equal_to(value)</code> in that case.</p>
+converted to <code>equal_to(value)</code>. This doesn't work for the root matcher; you
+need to explicitly say <code>equal_to(value)</code> in that case.</p>
+</div>
 <h4 id="not_equal_tovalue">not_equal_to(<em>value</em>)</h4>
 <p>A matcher that returns <code>true</code> when the expected value is not equal to <code>value</code>
 according to the <code>!=</code> operator.</p>
@@ -227,9 +230,13 @@ std::abs(actual - expected) &lt;= mag * epsilon;
 </code></pre>
 
 <p>If <code>epsilon</code> is not specified, it defaults to
-<code>std::numeric_limits&lt;T&gt;::epsilon() * 10</code>. Note well: as with most functions that
-check if two floating point numbers are approximately equal, this matcher will
-likely fail if one of the values is zero. In that case, use <code>near_to_abs</code>.</p>
+<code>std::numeric_limits&lt;T&gt;::epsilon() * 10</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As with most functions that check if two floating point numbers are
+approximately equal, this matcher will likely fail if one of the values is
+zero. In that case, use <code>near_to_abs</code>.</p>
+</div>
 <h4 id="near_to_absvalue-tolerance">near_to_abs(<em>value</em>, <em>tolerance</em>)</h4>
 <p>A matcher that returns <code>true</code> when the expected value is approximately equal to
 <code>value</code>, specifically when <code>std::abs(actual - expected) &lt;= tolerance</code>.</p>
@@ -373,9 +380,12 @@ from the matcher instead of the customary <code>bool</code>:</p>
 return <code>match_result</code>s can easily be mixed with ones that return <code>bool</code>s. You
 can also use the <code>!</code> operator to invert a <code>match_result</code> and preserve its
 message.</p>
-<p>Note that, despite the name "mismatch message", it's useful to provide a message
-even on success, since a successful match can easily become a mismatch simply by
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Despite the name "mismatch message", it's useful to provide a message even
+on success, since a successful match can easily become a mismatch simply by
 using the <code>is_not</code> matcher.</p>
+</div>
 <h3 id="starting-from-scratch">Starting from scratch</h3>
 <p>For particularly complex matchers, <code>make_matcher</code> may not provide much value. In
 these cases, you can instead build your own matcher from scratch. First, and
