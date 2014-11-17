@@ -89,10 +89,11 @@ description is unclear or overly-verbose.
 A matcher that returns `true` when the expected value is equal to `value`
 according to the `==` operator.
 
-`equal_to` is also the *implicit matcher*. Any time a matcher takes another
-matcher as an argument, you can pass in a value, and it will be implicitly
-converted to `equal_to(value)`. (Note that this doesn't work for the root
-matcher; you need to explicitly say `equal_to(value)` in that case.
+!!! note
+    `equal_to` is also the *implicit matcher*. Any time a matcher takes another
+    matcher as an argument, you can pass in a value, and it will be implicitly
+    converted to `equal_to(value)`. This doesn't work for the root matcher; you
+    need to explicitly say `equal_to(value)` in that case.
 
 #### not_equal_to(*value*)
 
@@ -132,9 +133,12 @@ std::abs(actual - expected) <= mag * epsilon;
 ```
 
 If `epsilon` is not specified, it defaults to
-`std::numeric_limits<T>::epsilon() * 10`. Note well: as with most functions that
-check if two floating point numbers are approximately equal, this matcher will
-likely fail if one of the values is zero. In that case, use `near_to_abs`.
+`std::numeric_limits<T>::epsilon() * 10`.
+
+!!! note
+    As with most functions that check if two floating point numbers are
+    approximately equal, this matcher will likely fail if one of the values is
+    zero. In that case, use `near_to_abs`.
 
 #### near_to_abs(*value*, *tolerance*)
 
@@ -334,9 +338,10 @@ return `match_result`s can easily be mixed with ones that return `bool`s. You
 can also use the `!` operator to invert a `match_result` and preserve its
 message.
 
-Note that, despite the name "mismatch message", it's useful to provide a message
-even on success, since a successful match can easily become a mismatch simply by
-using the `is_not` matcher.
+!!! note
+    Despite the name "mismatch message", it's useful to provide a message even
+    on success, since a successful match can easily become a mismatch simply by
+    using the `is_not` matcher.
 
 ### Starting from scratch
 

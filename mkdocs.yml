@@ -3,6 +3,8 @@ docs_dir: doc
 theme: yeti
 extra_css:
 - css/extra.css
+markdown_extensions:
+- admonition
 
 repo_url: https://github.com/jimporter/mettle/
 
