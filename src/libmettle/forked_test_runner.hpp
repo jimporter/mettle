@@ -22,7 +22,7 @@ public:
   test_result
   operator ()(const test_function &test, log::test_output &output) const;
 private:
-  static void fork_watcher(std::chrono::milliseconds timeout);
+  static void fork_monitor(std::chrono::milliseconds timeout);
 
   timeout_t timeout_;
 };

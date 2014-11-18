@@ -41,7 +41,7 @@ test_result forked_test_runner::operator ()(
 
   if(pid == 0) {
     if(timeout_)
-      fork_watcher(*timeout_);
+      fork_monitor(*timeout_);
 
     // Make a new process group so we can kill the test and all its children
     // as a group.
@@ -135,11 +135,11 @@ test_result forked_test_runner::operator ()(
   }
 }
 
-void forked_test_runner::fork_watcher(std::chrono::milliseconds timeout) {
-  pid_t watcher_pid;
-  if((watcher_pid = fork()) < 0)
+void forked_test_runner::fork_monitor(std::chrono::milliseconds timeout) {
+  pid_t timer_pid;
+  if((timer_pid = fork()) < 0)
     child_failed();
-  if(watcher_pid == 0) {
+  if(timer_pid == 0) {
     std::this_thread::sleep_for(timeout);
     _exit(err_timeout);
   }
@@ -153,16 +153,16 @@ void forked_test_runner::fork_watcher(std::chrono::milliseconds timeout) {
 
   pid_t test_pid;
   if((test_pid = fork()) < 0) {
-    kill(watcher_pid, SIGKILL);
+    kill(timer_pid, SIGKILL);
     child_failed();
   }
   if(test_pid != 0) {
-    // Wait for the first child process (the watcher or the test) to finish,
+    // Wait for the first child process (the timer or the test) to finish,
     // then kill and wait for the other one.
     int status;
     pid_t exited_pid = wait(&status);
     if(exited_pid == test_pid) {
-      kill(watcher_pid, SIGKILL);
+      kill(timer_pid, SIGKILL);
     }
     else {
       // Wait until the test process has created its process group.
