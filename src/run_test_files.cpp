@@ -166,12 +166,8 @@ namespace {
           logger.ended_file(file);
         }
       }
-      else if(WIFSIGNALED(status)) {
+      else { // WIFSIGNALED
         logger.failed_file(file, strsignal(WTERMSIG(status)));
-      }
-      else { // WIFSTOPPED
-        kill(pid, SIGKILL);
-        logger.failed_file(file, strsignal(WSTOPSIG(status)));
       }
     }
   }

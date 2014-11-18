@@ -8,7 +8,6 @@ namespace mettle {
 constexpr int err_timeout = 64;
 
 void fork_monitor(std::chrono::milliseconds timeout);
-void notify_monitor();
 
 } // namespace mettle
 

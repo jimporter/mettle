@@ -37,16 +37,14 @@ test_result forked_test_runner::operator ()(
     return parent_failed();
 
   if(pid == 0) {
-    if(timeout_)
-      fork_monitor(*timeout_);
-
     // Make a new process group so we can kill the test and all its children
     // as a group.
-    pid_t old_pgid = getpgrp();
+    pid_t old_pgid = getpgid(0);
     setpgid(0, 0);
+    pid_t new_pgid = getpgid(0);
 
     if(timeout_)
-      notify_monitor();
+      fork_monitor(*timeout_);
 
     if(stdout_pipe.close_read() < 0 ||
        stderr_pipe.close_read() < 0 ||
@@ -66,7 +64,7 @@ test_result forked_test_runner::operator ()(
 
     // Leave our process group and kill any children. Don't worry about reaping.
     setpgid(0, old_pgid);
-    kill(-getpid(), SIGKILL);
+    kill(-new_pgid, SIGKILL);
     _exit(!result.passed);
   }
   else {
@@ -122,12 +120,8 @@ test_result forked_test_runner::operator ()(
         return { exit_code == 0, message };
       }
     }
-    else if(WIFSIGNALED(status)) {
+    else { // WIFSIGNALED
       return { false, strsignal(WTERMSIG(status)) };
-    }
-    else { // WIFSTOPPED
-      kill(pid, SIGKILL);
-      return { false, strsignal(WSTOPSIG(status)) };
     }
   }
 }

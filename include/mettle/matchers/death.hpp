@@ -29,9 +29,6 @@ namespace detail {
       int status;
       if(waitpid(pid, &status, 0) < 0)
         throw std::system_error(errno, std::system_category());
-      // Make sure the child is dead.
-      if(WIFSTOPPED(status))
-        kill(pid, SIGKILL);
       return status;
     }
   }
