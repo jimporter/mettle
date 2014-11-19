@@ -142,6 +142,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
           if((pid = fork()) < 0)
             throw std::system_error(errno, std::system_category());
           if(pid == 0) {
+            setpgid(0, 0);
             std::this_thread::sleep_for(std::chrono::seconds(2));
           }
         });

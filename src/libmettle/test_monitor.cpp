@@ -1,6 +1,7 @@
 #include <mettle/driver/test_monitor.hpp>
 
 #include <signal.h>
+#include <sys/select.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -77,6 +78,41 @@ void fork_monitor(std::chrono::milliseconds timeout) {
     if(sigwait(&mask, &sig) < 0)
       monitor_failed();
     sigprocmask(SIG_SETMASK, &oldmask, nullptr);
+  }
+}
+
+int read_into(std::vector<readfd> &dests, const timespec *timeout,
+              const sigset_t *sigmask) {
+  while(true) {
+    int maxfd = -1;
+    fd_set fds;
+    FD_ZERO(&fds);
+    for(const auto &i : dests) {
+      if(i.fd >= 0) {
+        maxfd = std::max(maxfd, i.fd);
+        FD_SET(i.fd, &fds);
+      }
+    }
+    if(maxfd < 0)
+      return 0;
+
+    int rv = pselect(maxfd + 1, &fds, nullptr, nullptr, timeout, sigmask);
+    if(rv <= 0)
+      return rv;
+
+    for(auto &i : dests) {
+      if(i.fd >= 0 && FD_ISSET(i.fd, &fds)) {
+        ssize_t size;
+        char buf[BUFSIZ];
+
+        if((size = read(i.fd, buf, sizeof(buf))) < 0)
+          return size;
+        if(size == 0)
+          i.fd = -i.fd;
+        else
+          i.dest->append(buf, size);
+      }
+    }
   }
 }
 

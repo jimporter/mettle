@@ -20,6 +20,7 @@ HEADER_ONLY_EXAMPLES := examples/test_header_only
 METTLE_SOURCES := $(wildcard src/*.cpp)
 LIBMETTLE_SOURCES := $(shell find src/libmettle -type f -name "*.cpp")
 SOURCES := $(METTLE_SOURCES) $(LIBMETTLE_SOURCES)
+LIBS := -lboost_program_options -lboost_iostreams -pthread
 
 # Include all the existing dependency files for automatic #include dependency
 # handling.
@@ -59,7 +60,7 @@ mettle: $(METTLE_SOURCES:.cpp=.o) libmettle.so
 	$(CXX) $(CXXFLAGS) $^ -L. -lmettle $(MY_LDFLAGS) -o $@
 
 libmettle.so: CXXFLAGS += -fPIC
-libmettle.so: MY_LDFLAGS := $(LDFLAGS) -lboost_program_options -lboost_iostreams
+libmettle.so: MY_LDFLAGS := $(LDFLAGS) $(LIBS)
 libmettle.so: $(LIBMETTLE_SOURCES:.cpp=.o)
 	$(CXX) -shared $(CXXFLAGS) $^ -L. $(MY_LDFLAGS) -o $@
 
@@ -97,7 +98,7 @@ clean-examples:
 	rm -f $(EXAMPLES)
 
 .PHONY: clean-bin
-clean-src:
+clean-bin:
 	rm -f mettle libmettle.so
 
 .PHONY: clean-obj

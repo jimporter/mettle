@@ -3,17 +3,20 @@
 
 #include <unistd.h>
 
+#include <cassert>
+
 namespace mettle {
 
 class scoped_pipe {
 public:
-  int open(int flags = 0) {
-    return pipe2(&read_fd, flags);
-  }
-
   ~scoped_pipe() {
     close_read();
     close_write();
+  }
+
+  int open(int flags = 0) {
+    assert(read_fd == -1 && write_fd == -1);
+    return pipe2(&read_fd, flags);
   }
 
   int close_read() {
@@ -54,7 +57,7 @@ private:
     if(old_fd == new_fd)
       return 0;
 
-    int err = 0;
+    int err;
     if((err = dup2(old_fd, new_fd)) < 0)
       return err;
     return do_close(old_fd);

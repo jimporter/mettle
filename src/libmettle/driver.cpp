@@ -14,6 +14,9 @@
 
 #include "forked_test_runner.hpp"
 
+#include <pthread.h>
+#include <unistd.h>
+
 namespace mettle {
 
 namespace {
@@ -25,6 +28,11 @@ namespace {
   void report_error(const std::string &program_name,
                     const std::string &message) {
     std::cerr << program_name << ": " << message << std::endl;
+  }
+
+  int child_fd;
+  void atfork_child() {
+    close(child_fd);
   }
 }
 
@@ -93,6 +101,8 @@ namespace detail {
         return 2;
       }
 
+      child_fd = *args.child_fd;
+      pthread_atfork(nullptr, nullptr, atfork_child);
       namespace io = boost::iostreams;
       io::stream<io::file_descriptor_sink> fds(
         *args.child_fd, io::never_close_handle
