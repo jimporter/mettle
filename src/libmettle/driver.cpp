@@ -1,3 +1,6 @@
+#include <pthread.h>
+#include <unistd.h>
+
 #include <iostream>
 #include <vector>
 
@@ -13,9 +16,6 @@
 #include <mettle/suite/compiled_suite.hpp>
 
 #include "forked_test_runner.hpp"
-
-#include <pthread.h>
-#include <unistd.h>
 
 namespace mettle {
 
