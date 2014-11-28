@@ -57,7 +57,7 @@ tests: $(TESTS)
 
 mettle: MY_LDFLAGS := $(LDFLAGS) -lboost_program_options -lboost_iostreams
 mettle: $(METTLE_SOURCES:.cpp=.o) libmettle.so
-	$(CXX) $(CXXFLAGS) $^ -L. -lmettle $(MY_LDFLAGS) -o $@
+	$(CXX) $(CXXFLAGS) $(filter %.o,$^) -L. -lmettle $(MY_LDFLAGS) -o $@
 
 libmettle.so: CXXFLAGS += -fPIC
 libmettle.so: MY_LDFLAGS := $(LDFLAGS) $(LIBS)
