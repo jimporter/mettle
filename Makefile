@@ -22,13 +22,13 @@ LIBMETTLE_SOURCES := $(shell find src/libmettle -type f -name "*.cpp")
 SOURCES := $(METTLE_SOURCES) $(LIBMETTLE_SOURCES)
 LIBS := -lboost_program_options -lboost_iostreams -pthread
 
+all: mettle libmettle.so
+
 # Include all the existing dependency files for automatic #include dependency
 # handling.
 -include $(TESTS:=.d)
 -include $(EXAMPLES:=.d)
 -include $(SOURCES:.cpp=.d)
-
-all: mettle libmettle.so
 
 # Build .o files and the corresponding .d (dependency) files. For more info, see
 # <http://scottmcpeak.com/autodepend/autodepend.html>.
