@@ -4,6 +4,7 @@
 #include <chrono>
 #include <iomanip>
 #include <map>
+#include <memory>
 #include <sstream>
 
 #include "core.hpp"
