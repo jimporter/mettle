@@ -255,7 +255,12 @@ suite<> output("debug output", [](auto &_){
         expect(ns, stringified("(nil)"));
       });
 
-      _.test("wchar_t", []() {
+      attributes skip_if_no_codecvt;
+#ifndef METTLE_HAS_CODECVT
+      skip_if_no_codecvt.insert(skip("<codecvt> header not found"));
+#endif
+
+      _.test("wchar_t", skip_if_no_codecvt, []() {
         expect(L'x', stringified("'x'"));
         expect(L'\n', stringified("'\\n'"));
         expect(L'\x1f', stringified("'\\x1f'"));
@@ -276,7 +281,7 @@ suite<> output("debug output", [](auto &_){
         expect(ns, stringified("(nil)"));
       });
 
-      _.test("char16_t", []() {
+      _.test("char16_t", skip_if_no_codecvt, []() {
         expect(u'x', stringified("'x'"));
         expect(u'\n', stringified("'\\n'"));
         expect(u'\x1f', stringified("'\\x1f'"));
@@ -297,7 +302,7 @@ suite<> output("debug output", [](auto &_){
         expect(ns, stringified("(nil)"));
       });
 
-      _.test("char32_t", []() {
+      _.test("char32_t", skip_if_no_codecvt, []() {
         expect(U'x', stringified("'x'"));
         expect(U'\n', stringified("'\\n'"));
         expect(U'\x1f', stringified("'\\x1f'"));

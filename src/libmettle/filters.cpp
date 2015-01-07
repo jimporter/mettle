@@ -12,6 +12,7 @@ namespace mettle {
 #else
       bool_attr tmp_attr(f.attribute);
       auto i = attrs.find({tmp_attr, {}});
+      #error "fuck"
 #endif
       const attr_instance *attr = i == attrs.end() ? nullptr: &*i;
 

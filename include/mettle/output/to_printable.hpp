@@ -1,8 +1,11 @@
 #ifndef INC_METTLE_OUTPUT_TO_PRINTABLE_HPP
 #define INC_METTLE_OUTPUT_TO_PRINTABLE_HPP
 
-#ifndef __GLIBCXX__
-#  include <codecvt>
+#ifdef __has_include
+#  if __has_include(<codecvt>)
+#    define METTLE_HAS_CODECVT
+#    include <codecvt>
+#  endif
 #endif
 
 #include <locale>
@@ -133,7 +136,7 @@ inline std::string to_printable(const std::string &s) {
   return detail::escape_str(s);
 }
 
-#ifndef __GLIBCXX__
+#ifdef METTLE_HAS_CODECVT
 
 inline std::string to_printable(const std::wstring &s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
@@ -164,7 +167,7 @@ inline std::string to_printable(signed char c) {
   return detail::escape_str(std::string(1, c), '\'');
 }
 
-#ifndef __GLIBCXX__
+#ifdef METTLE_HAS_CODECVT
 
 inline std::string to_printable(wchar_t c) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
@@ -229,7 +232,7 @@ inline std::string to_printable_boolish(const signed char *s) {
   return detail::escape_str(reinterpret_cast<const char*>(s));
 }
 
-#ifndef __GLIBCXX__
+#ifdef METTLE_HAS_CODECVT
 
 inline std::string to_printable_boolish(const wchar_t *s) {
   if(!s) return detail::null_str();
