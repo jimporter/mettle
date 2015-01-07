@@ -1,9 +1,9 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-constexpr bool_attr slow("slow");
-constexpr string_attr status("status");
-constexpr list_attr tags("tags");
+bool_attr slow("slow");
+string_attr status("status");
+list_attr tags("tags");
 
 suite<> regular_suite("a regular suite", [](auto &_) {
 

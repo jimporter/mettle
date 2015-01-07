@@ -9,7 +9,7 @@
 
 namespace mettle {
 
-constexpr int err_timeout = 64;
+constexpr const int err_timeout = 64;
 
 struct readfd {
   int fd;

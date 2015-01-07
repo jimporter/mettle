@@ -8,14 +8,14 @@ start using mettle, we'll need to build and install it.
 ## Dependencies
 
 First, and most importantly, mettle requires a C++14-compliant compiler (for
-generic lambdas and generalized `constexpr`) and a POSIX environment (mainly
-for `fork`; this dependency will be eliminated once Visual Studio has more
-complete C++14 support). It's been tested against clang 3.4 (if you're using
-Ubuntu 13.10, make sure get clang from
+generic lambdas and various standard library features) and a POSIX environment
+(mainly for `fork`; this dependency will be eliminated once Visual Studio has
+more complete C++14 support). It's been tested against
+[clang](http://clang.llvm.org/) 3.4 with [libc++](http://libcxx.llvm.org/) (if
+you're using Ubuntu 13.10, make sure get clang from
 [http://llvm.org/apt/](http://llvm.org/apt/), since Ubuntu's version won't
-work!). You may also need to use [libc++](http://libcxx.llvm.org/), since at the
-time of this writing, libstdc++ lacked some necessary library features for
-mettle.
+work). It should also work with
+[GCC](https://gcc.gnu.org/)/[libstdc++](https://gcc.gnu.org/libstdc++/) 5.0.
 
 In addition, you'll need [Boost](http://www.boost.org/) (for program_options and
 iostreams) and [bencode.hpp](https://github.com/jimporter/bencode.hpp). If
