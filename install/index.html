@@ -147,14 +147,14 @@ library (<code>libmettle.so</code>), and a universal test driver (<code>mettle</
 start using mettle, we'll need to build and install it.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>First, and most importantly, mettle requires a C++14-compliant compiler (for
-generic lambdas and generalized <code>constexpr</code>) and a POSIX environment (mainly
-for <code>fork</code>; this dependency will be eliminated once Visual Studio has more
-complete C++14 support). It's been tested against clang 3.4 (if you're using
-Ubuntu 13.10, make sure get clang from
+generic lambdas and various standard library features) and a POSIX environment
+(mainly for <code>fork</code>; this dependency will be eliminated once Visual Studio has
+more complete C++14 support). It's been tested against
+<a href="http://clang.llvm.org/">clang</a> 3.4 with <a href="http://libcxx.llvm.org/">libc++</a> (if
+you're using Ubuntu 13.10, make sure get clang from
 <a href="http://llvm.org/apt/">http://llvm.org/apt/</a>, since Ubuntu's version won't
-work!). You may also need to use <a href="http://libcxx.llvm.org/">libc++</a>, since at the
-time of this writing, libstdc++ lacked some necessary library features for
-mettle.</p>
+work). It should also work with
+<a href="https://gcc.gnu.org/">GCC</a>/<a href="https://gcc.gnu.org/libstdc++/">libstdc++</a> 5.0.</p>
 <p>In addition, you'll need <a href="http://www.boost.org/">Boost</a> (for program_options and
 iostreams) and <a href="https://github.com/jimporter/bencode.hpp">bencode.hpp</a>. If
 you plan to use libc++, <a href="https://gist.github.com/jimporter/10442880">this Gist</a>
