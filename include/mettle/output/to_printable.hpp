@@ -1,7 +1,10 @@
 #ifndef INC_METTLE_OUTPUT_TO_PRINTABLE_HPP
 #define INC_METTLE_OUTPUT_TO_PRINTABLE_HPP
 
-#include <codecvt>
+#ifndef __GLIBCXX__
+#  include <codecvt>
+#endif
+
 #include <locale>
 #include <iomanip>
 #include <sstream>
@@ -130,6 +133,8 @@ inline std::string to_printable(const std::string &s) {
   return detail::escape_str(s);
 }
 
+#ifndef __GLIBCXX__
+
 inline std::string to_printable(const std::wstring &s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
   return detail::escape_str(conv.to_bytes(s));
@@ -145,6 +150,8 @@ inline std::string to_printable(const std::u32string &s) {
   return detail::escape_str(conv.to_bytes(s));
 }
 
+#endif
+
 inline std::string to_printable(char c) {
   return detail::escape_str(std::string(1, c), '\'');
 }
@@ -156,6 +163,8 @@ inline std::string to_printable(unsigned char c) {
 inline std::string to_printable(signed char c) {
   return detail::escape_str(std::string(1, c), '\'');
 }
+
+#ifndef __GLIBCXX__
 
 inline std::string to_printable(wchar_t c) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
@@ -171,6 +180,8 @@ inline std::string to_printable(char32_t c) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
   return detail::escape_str(conv.to_bytes(std::u32string(1, c)), '\'');
 }
+
+#endif
 
 // Helper for bool-ish types
 
@@ -218,6 +229,8 @@ inline std::string to_printable_boolish(const signed char *s) {
   return detail::escape_str(reinterpret_cast<const char*>(s));
 }
 
+#ifndef __GLIBCXX__
+
 inline std::string to_printable_boolish(const wchar_t *s) {
   if(!s) return detail::null_str();
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
@@ -235,6 +248,8 @@ inline std::string to_printable_boolish(const char32_t *s) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
   return detail::escape_str(conv.to_bytes(s));
 }
+
+#endif
 
 template<typename T>
 auto to_printable_boolish(const T &t) -> typename std::enable_if<
