@@ -60,9 +60,10 @@ LDFLAGS := -lsupc++
 
 You can also specify `PREFIX` to change where mettle is installed.
 
-## Running tests
+## Testing mettle
 
-To build and run all the tests, just call:
+Mettle's own tests are written entirely in mettle. (It wouldn't be a very good
+test framework otherwise!) To build and run all the tests, just call:
 
 ```sh
 make test
@@ -82,8 +83,9 @@ kinds of tests. Similar to the above, you can build all of these with
 ## Building the documentation
 
 mettle uses [MkDocs](http://www.mkdocs.org/) for its documentation. To build the
-documentation, first install MkDocs, and then run `mkdocs build`. You can also
-run `mkdocs serve` to run a test webserver with a preview of the documentation.
+documentation, first install MkDocs, and then run `make build-doc`. You can also
+run `make serve-doc` to run a test webserver with a preview of the
+documentation.
 
 ## Cleaning the tree
 
