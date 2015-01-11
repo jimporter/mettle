@@ -127,7 +127,7 @@
         
             <li><a href="#building-and-installing">Building and installing</a></li>
         
-            <li><a href="#running-tests">Running tests</a></li>
+            <li><a href="#testing-mettle">Testing mettle</a></li>
         
             <li><a href="#building-the-examples">Building the examples</a></li>
         
@@ -192,8 +192,9 @@ LDFLAGS := -lsupc++
 </code></pre>
 
 <p>You can also specify <code>PREFIX</code> to change where mettle is installed.</p>
-<h2 id="running-tests">Running tests</h2>
-<p>To build and run all the tests, just call:</p>
+<h2 id="testing-mettle">Testing mettle</h2>
+<p>Mettle's own tests are written entirely in mettle. (It wouldn't be a very good
+test framework otherwise!) To build and run all the tests, just call:</p>
 <pre><code class="sh">make test
 </code></pre>
 
@@ -207,8 +208,9 @@ kinds of tests. Similar to the above, you can build all of these with
 <code>make examples</code>, or build a single file with <code>make examples/test_filename</code>.</p>
 <h2 id="building-the-documentation">Building the documentation</h2>
 <p>mettle uses <a href="http://www.mkdocs.org/">MkDocs</a> for its documentation. To build the
-documentation, first install MkDocs, and then run <code>mkdocs build</code>. You can also
-run <code>mkdocs serve</code> to run a test webserver with a preview of the documentation.</p>
+documentation, first install MkDocs, and then run <code>make build-doc</code>. You can also
+run <code>make serve-doc</code> to run a test webserver with a preview of the
+documentation.</p>
 <h2 id="cleaning-the-tree">Cleaning the tree</h2>
 <p>As you might expect, you can also call <code>make clean</code> to clean the source tree of
 generated files.</p>
