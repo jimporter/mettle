@@ -146,21 +146,27 @@
 library (<code>libmettle.so</code>), and a universal test driver (<code>mettle</code>). Before we can
 start using mettle, we'll need to build and install it.</p>
 <h2 id="dependencies">Dependencies</h2>
-<p>First, and most importantly, mettle requires a C++14-compliant compiler (for
-generic lambdas and various standard library features) and a POSIX environment
-(mainly for <code>fork</code>; this dependency will be eliminated once Visual Studio has
-more complete C++14 support). It's been tested against
-<a href="http://clang.llvm.org/">clang</a> 3.4 with <a href="http://libcxx.llvm.org/">libc++</a> (if
-you're using Ubuntu 13.10, make sure get clang from
-<a href="http://llvm.org/apt/">http://llvm.org/apt/</a>, since Ubuntu's version won't
-work). It should also work with
-<a href="https://gcc.gnu.org/">GCC</a>/<a href="https://gcc.gnu.org/libstdc++/">libstdc++</a> 5.0.</p>
-<p>In addition, you'll need <a href="http://www.boost.org/">Boost</a> (for program_options and
-iostreams) and <a href="https://github.com/jimporter/bencode.hpp">bencode.hpp</a>. If
-you plan to use libc++, <a href="https://gist.github.com/jimporter/10442880">this Gist</a>
-should help you build Boost to link to it.</p>
+<p>Before you get started with mettle, you'll need to install its dependencies:</p>
+<ul>
+<li>A POSIX environment (this dependency will be eliminated prior to v1.0)</li>
+<li>A C++14-compliant compiler (for generic lambdas and various standard library
+  features)<ul>
+<li><a href="http://clang.llvm.org/">clang</a> 3.4 <em>or</em> <a href="https://gcc.gnu.org/">GCC</a> 5.0</li>
+<li><a href="http://libcxx.llvm.org/">libc++</a> 3.5 <em>or</em>
+   <a href="https://gcc.gnu.org/libstdc++/">libstdc++</a> 5.0</li>
+</ul>
+</li>
+<li><a href="http://www.boost.org/">Boost</a> (for <code>program_options</code> and <code>iostreams</code>)</li>
+<li><a href="https://github.com/jimporter/bencode.hpp">bencode.hpp</a></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you plan to use libc++,
+<a href="https://gist.github.com/jimporter/10442880">this Gist</a> should help you
+build Boost to link to it.</p>
+</div>
 <h3 id="header-only-version">Header-only version</h3>
-<p>If you'd like to get started quickly, and don't want to install the above
+<p>If you'd like to get started quickly, and don't want to install all of the above
 dependencies (namely Boost and bencode.hpp) or build the binaries for mettle,
 you can use this library in a header-only mode by using the following instead of
 the usual <code>#include &lt;mettle.hpp&gt;</code>:</p>
@@ -176,10 +182,10 @@ C++14-compliant compiler you like), you should be able to run</p>
 <pre><code class="sh">make &amp;&amp; make install
 </code></pre>
 
-<p>to build and install mettle. Otherwise, you can specify
-the appropriate environment variables on the command line or in <code>config.mk</code>. For
-example, you could use the following <code>config.mk</code> file to build against clang and
-a libsupc++-backed libc++:</p>
+<p>to build and install mettle. Otherwise, you can specify the appropriate
+environment variables on the command line or in <code>config.mk</code>. For example, you
+could use the following <code>config.mk</code> file to build against clang and a
+libsupc++-backed libc++:</p>
 <pre><code class="Makefile">CXX := clang++
 CXXFLAGS := -std=c++1y -stdlib=libc++
 LDFLAGS := -lsupc++
