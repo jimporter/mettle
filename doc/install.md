@@ -7,24 +7,25 @@ start using mettle, we'll need to build and install it.
 
 ## Dependencies
 
-First, and most importantly, mettle requires a C++14-compliant compiler (for
-generic lambdas and various standard library features) and a POSIX environment
-(mainly for `fork`; this dependency will be eliminated once Visual Studio has
-more complete C++14 support). It's been tested against
-[clang](http://clang.llvm.org/) 3.4 with [libc++](http://libcxx.llvm.org/) (if
-you're using Ubuntu 13.10, make sure get clang from
-[http://llvm.org/apt/](http://llvm.org/apt/), since Ubuntu's version won't
-work). It should also work with
-[GCC](https://gcc.gnu.org/)/[libstdc++](https://gcc.gnu.org/libstdc++/) 5.0.
+Before you get started with mettle, you'll need to install its dependencies:
 
-In addition, you'll need [Boost](http://www.boost.org/) (for program_options and
-iostreams) and [bencode.hpp](https://github.com/jimporter/bencode.hpp). If
-you plan to use libc++, [this Gist](https://gist.github.com/jimporter/10442880)
-should help you build Boost to link to it.
+* A POSIX environment (this dependency will be eliminated prior to v1.0)
+* A C++14-compliant compiler (for generic lambdas and various standard library
+  features)
+     * [clang](http://clang.llvm.org/) 3.4 *or* [GCC](https://gcc.gnu.org/) 5.0
+     * [libc++](http://libcxx.llvm.org/) 3.5 *or*
+       [libstdc++](https://gcc.gnu.org/libstdc++/) 5.0
+* [Boost](http://www.boost.org/) (for `program_options` and `iostreams`)
+* [bencode.hpp](https://github.com/jimporter/bencode.hpp)
+
+!!! note
+    If you plan to use libc++,
+    [this Gist](https://gist.github.com/jimporter/10442880) should help you
+    build Boost to link to it.
 
 ### Header-only version
 
-If you'd like to get started quickly, and don't want to install the above
+If you'd like to get started quickly, and don't want to install all of the above
 dependencies (namely Boost and bencode.hpp) or build the binaries for mettle,
 you can use this library in a header-only mode by using the following instead of
 the usual `#include <mettle.hpp>`:
@@ -46,10 +47,10 @@ C++14-compliant compiler you like), you should be able to run
 make && make install
 ```
 
-to build and install mettle. Otherwise, you can specify
-the appropriate environment variables on the command line or in `config.mk`. For
-example, you could use the following `config.mk` file to build against clang and
-a libsupc++-backed libc++:
+to build and install mettle. Otherwise, you can specify the appropriate
+environment variables on the command line or in `config.mk`. For example, you
+could use the following `config.mk` file to build against clang and a
+libsupc++-backed libc++:
 
 ```Makefile
 CXX := clang++
