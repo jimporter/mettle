@@ -91,4 +91,3 @@ documentation.
 
 As you might expect, you can also call `make clean` to clean the source tree of
 generated files.
-
