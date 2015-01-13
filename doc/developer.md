@@ -5,7 +5,7 @@ If you're looking to learn about how mettle actually works, you've come to the
 right place! This developer guide will describe mettle's internals and how
 everything fits together.
 
-## Basic structure
+## Runner
 
 mettle's structure is a bit different from other test frameworks. First, like
 some other test frameworks, individual (user-written) test files link to a

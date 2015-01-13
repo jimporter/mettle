@@ -1,12 +1,13 @@
 site_name: mettle
 docs_dir: doc
+repo_url: https://github.com/jimporter/mettle/
 theme: yeti
+
 extra_css:
 - css/extra.css
+
 markdown_extensions:
 - admonition
-
-repo_url: https://github.com/jimporter/mettle/
 
 pages:
 - [index.md, Home]
