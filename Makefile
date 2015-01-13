@@ -78,13 +78,13 @@ test: tests mettle
 doc:
 	$(MKDOCS) build --clean
 
-.PHONY: serve-doc
-serve-doc:
+.PHONY: doc-serve
+doc-serve:
 	$(MKDOCS) serve --dev-addr=0.0.0.0:8000
 
-.PHONY: deploy-doc
-deploy-doc:
-	$(MKDOCS) gh-deploy
+.PHONY: doc-deploy
+doc-deploy:
+	$(MKDOCS) gh-deploy --clean
 
 .PHONY: clean
 clean: clean-tests clean-examples clean-bin clean-obj
