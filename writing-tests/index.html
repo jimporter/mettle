@@ -127,15 +127,13 @@
         
             <li><a href="#setup-and-teardown">Setup and teardown</a></li>
         
-            <li><a href="#fixtures">Fixtures</a></li>
-        
             <li><a href="#subsuites">Subsuites</a></li>
         
-            <li><a href="#test-attributes">Test attributes</a></li>
+            <li><a href="#fixtures">Fixtures</a></li>
         
             <li><a href="#parameterizing-tests">Parameterizing tests</a></li>
         
-            <li><a href="#fixture-factories">Fixture factories</a></li>
+            <li><a href="#test-attributes">Test attributes</a></li>
         
     
     </ul>
@@ -163,15 +161,19 @@ suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
 need to build and run simple tests: test suites, matchers, and a test runner.
 With that out of the way, we can start defining our tests.</p>
 <p>Suites are created as global variables with the type <code>mettle::suite&lt;&gt;</code>, and take
-a string name and a callback. You can optionally add some template type
-parameters to specify <a href="#fixtures">test fixtures</a>. The callback lets us define
-our tests for the suite. It takes a reference to a
-<code>mettle::suite_builder&lt;mettle::expectation_failure&gt;</code> but we can just say
-<code>auto &amp;</code> and use a generic lambda instead.</p>
-<p>With the suite defined, now we just need to write our tests and add them to the
-suite via the test builder. Like suites, tests have both a string name and a
-callback function, but this time the callback is the code to run when the test
-executes.</p>
+a string name and a callback function (typically a lambda). The callback lets us
+define our tests for the suite. It takes a single argument, a reference to a
+<code>mettle::suite_builder&lt;mettle::expectation_failure&gt;</code>, but since that's pretty
+long, we conventionally just say <code>auto &amp;</code> and use a generic lambda instead.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There are lots of other options you can pass to the suite's constructor,
+like <a href="#fixtures">fixtures</a> or <a href="#test-attributes">test attributes</a>, but we'll
+get to those later.</p>
+</div>
+<p>With the suite defined, now we just need to write our tests and add them via
+the suite builder. Like suites, tests have both a string name and a callback
+function, but this time the callback is the code to run when the test executes.</p>
 <p>Inside our test function, we need to write some test code:</p>
 <pre><code class="c++">expect(true, equal_to(true));
 </code></pre>
@@ -201,42 +203,6 @@ each test in the suite:</p>
 });
 </code></pre>
 
-<h2 id="fixtures">Fixtures</h2>
-<p>Setup and teardown functions are of limited use without fixtures. Fixtures allow
-you to safely share data between tests. A fixture's lifetime is as follows:</p>
-<ol>
-<li>Construct the fixture.</li>
-<li>Pass the fixture by reference to the setup function (if defined).</li>
-<li>Pass the fixture by reference to the test function.</li>
-<li>Pass the fixture by reference to the teardown function (if defined).</li>
-<li>Destruct the fixture.</li>
-</ol>
-<p>Declaring a fixture is simple. Just pass the type of your fixture in the
-template parameters of your <code>mettle::suite</code> object:</p>
-<pre><code class="c++">struct my_fixture {
-  int i;
-};
-
-suite&lt;my_fixture&gt; with_fixture(&quot;suite with a fixture&quot;, [](auto &amp;_) {
-  _.setup([](my_fixture &amp;f) {
-    f.i = 1;
-  });
-
-  _.test(&quot;test my fixture&quot;, [](my_fixture &amp;f) {
-    expect(f.i, equal_to(1));
-  });
-});
-</code></pre>
-
-<p>Astute readers will notice that a test fixture could easily be used to replace
-the <code>setup</code> and <code>teardown</code> functions by using RAII. However, both options are
-supported, since it's often simpler to write a setup/teardown code than to write
-a less-flexible helper class. For instance, your fixture might be a database
-object from your production code that you want to add some test records to for
-testing. Rather than wrapping the database in a helper, you can just add the
-test records in <code>setup</code>.</p>
-<p>For more advanced uses of fixtures, see <a href="#fixture-factories">Fixture factories</a>
-below.</p>
 <h2 id="subsuites">Subsuites</h2>
 <p>When testing something particularly complex, you might find it useful to group
 test suites together. You can do this by creating a subsuite inside a parent
@@ -281,6 +247,44 @@ subsuite:</p>
 <li>Call the subsuite's teardown function (if defined).</li>
 <li>Call the parent suite's teardown function (if defined).</li>
 </ol>
+<h2 id="fixtures">Fixtures</h2>
+<p>Setup and teardown functions are of limited use without fixtures. Fixtures allow
+you to safely write multiple, independent tests that test the same object. Each
+test gets its own instance of the fixture, preventing it from affecting any of
+the other tests. A fixture's lifetime is as follows:</p>
+<ol>
+<li>Constructor the fixture using the default constructor.</li>
+<li>Pass the fixture by reference to the setup function (if defined).</li>
+<li>Pass the fixture by reference to the test function.</li>
+<li>Pass the fixture by reference to the teardown function (if defined).</li>
+<li>Destruct the fixture.</li>
+</ol>
+<p>Declaring a fixture is simple. Just pass the type of your fixture in the
+template parameters of your <code>mettle::suite</code> object:</p>
+<pre><code class="c++">struct my_fixture {
+  int i;
+};
+
+suite&lt;my_fixture&gt; with_fixture(&quot;suite with a fixture&quot;, [](auto &amp;_) {
+  _.setup([](my_fixture &amp;f) {
+    f.i = 1;
+  });
+
+  _.test(&quot;test my fixture&quot;, [](my_fixture &amp;f) {
+    expect(f.i, equal_to(1));
+  });
+});
+</code></pre>
+
+<p>Astute readers will notice that a test fixture could easily be used to replace
+the <code>setup</code> and <code>teardown</code> functions by using RAII. However, both options are
+supported, since it's often simpler to write a setup/teardown code than to write
+a less-flexible helper class. For instance, your fixture might be a database
+object from your production code that you want to add some test records to for
+testing. Rather than wrapping the database in a helper, you can just add the
+test records in <code>setup</code>.</p>
+<p>Sometimes, the default constructor for a fixture isn't appropriate. In these
+cases, you can use <a href="#fixture-factories">fixture factories</a>, discussed below.</p>
 <h3 id="nested-fixtures">Nested fixtures</h3>
 <p>Like the nested setup and teardown functions, test fixtures are also
 inherited in subsuites. This allows a parent suite to handle common fixtures for
@@ -310,6 +314,114 @@ a bunch of subsuites, reducing code duplication:</p>
 
 <p>As you can see above, subsuites inherit their parents' fixtures, much like they
 inherit their parents' setup and teardown functions.</p>
+<h3 id="fixture-factories">Fixture factories</h3>
+<p>Sometimes, a fixture can't be constructed as is, e.g if the fixture isn't
+default-constructible. In these cases, you can use a <em>fixture factory</em> to create
+your fixture object with any parameters you like. A fixture factory is simply an
+object with a templated <code>make&lt;T&gt;()</code> function:</p>
+<pre><code class="c++">struct my_factory {
+  template&lt;typename T&gt;
+  T make() {
+    return T(12);
+  }
+};
+
+suite&lt;my_fixture&gt; with_fixture_factory(&quot;suite&quot;, my_factory{}, [](auto &amp;_) {
+  /* ... */
+});
+</code></pre>
+
+<p>In fact, "ordinary "fixtures use their own factory: <code>auto_factory</code>. The
+following code snippets are equivalent:</p>
+<pre><code class="c++">suite&lt;my_fixture&gt; without_auto_factory(&quot;suite&quot;, [](auto &amp;_) {
+  /* ... */
+});
+
+suite&lt;my_fixture&gt; with_auto_factory(&quot;suite&quot;, auto_factory, [](auto &amp;_) {
+  /* ... */
+});
+</code></pre>
+
+<p>Later, we'll learn more about fixture factories and how to
+<a href="#transforming-fixture-types">transform</a> their types.</p>
+<h2 id="parameterizing-tests">Parameterizing tests</h2>
+<p>While suites are a good way to group your tests together, sometimes you want to
+run the <em>same</em> tests on several different types of objects. In this case, all
+you need to do is specify <em>multiple</em> fixtures when defining a test suite. The
+example below creates two test suites, one with a fixture of <code>int</code> and one with
+a fixture of <code>float</code>:</p>
+<pre><code class="c++">suite&lt;int, float&gt; param_test(&quot;parameterized suite&quot;, [](auto &amp;_) {
+  _.test(&quot;my test&quot;, [](auto &amp;fixture) {
+    /* ... */
+  });
+});
+</code></pre>
+
+<p>This works just the same for subsuites as well:</p>
+<pre><code class="c++">suite&lt;&gt; param_sub_test(&quot;parameterized subsuites&quot;, [](auto &amp;_) {
+  subsuite&lt;int, float&gt;(_, &quot;parameterized suite 1&quot;, [](auto &amp;_) {
+    /* ... */
+  });
+
+  _.template subsuite&lt;int, float&gt;(_, &quot;parameterized suite 2&quot;, [](auto &amp;_) {
+    /* ... */
+  });
+});
+</code></pre>
+
+<p>One subtle difference you may have noticed is that now, our test definitions
+use a generic lambda: <code>[](auto &amp;fixture) { /* ... */ }</code>. As you might imagine,
+this allows the test function to accept a fixture of either an <code>int</code> or a
+<code>float</code> and to do the usual thing when a template is instantiated. Of course,
+you don't <em>always</em> need to use <code>auto</code> here; if all of your fixtures inherit from
+a common base type, you can use an ordinary lambda that takes a reference to the
+base type.</p>
+<h3 id="transforming-fixture-types">Transforming fixture types</h3>
+<p>Earlier, we learned about <a href="#fixture-factories">fixture factories</a>. We can do
+even more with them, though: a fixture factory's <code>make&lt;T&gt;()</code> can actually return
+<em>any</em> type (including <code>void</code>!), not just <code>T</code>. This can be useful for more
+complex tests, like testing a container type with several different element
+types:</p>
+<pre><code class="c++">struct vector_factory {
+  template&lt;typename T&gt;
+  std::vector&lt;T&gt; make() {
+    return {};
+  }
+};
+
+suite&lt;int, float&gt; vector_suite(&quot;suite&quot;, vector_factory{}, [](auto &amp;_) {
+  _.test(&quot;empty()&quot;, [](auto &amp;vec) {
+    expect(vec.empty(), equal_to(true));
+  });
+});
+</code></pre>
+
+<h3 id="type-only-fixtures">Type-only fixtures</h3>
+<p>As mentioned above, a fixture factory's <code>make&lt;T&gt;()</code> can return <code>void</code>. In this
+case, the suite has no fixture whatsoever. This is primarily useful when you
+want to parameterize on a list of types, but you don't want to automatically
+instantiate the fixture object. The built-in fixture factory <code>type_only</code> handles
+this for you. In particular, note the parameter-less test function:</p>
+<pre><code class="c++">suite&lt;int, float&gt; type_only_suite(&quot;suite&quot;, type_only, [](auto &amp;_) {
+  _.test(&quot;empty()&quot;, []() {
+    /* ... */
+  });
+});
+</code></pre>
+
+<h3 id="getting-the-parameterized-type">Getting the parameterized type</h3>
+<p>In some cases, you may want to know the parameterized type, e.g. if you'd like
+to create your own instances of the object. You can retrieve this via the
+<code>fixture_type</code> trait (or the <code>fixture_type_t</code> alias) like so:</p>
+<pre><code class="c++">suite&lt;int, float&gt; param_type_test(&quot;parameterized suite&quot;, type_only, [](auto &amp;_) {
+  using Fixture = fixture_type_t&lt;decltype(_)&gt;;
+
+  _.test(&quot;my test&quot;, []() {
+    /* use Fixture here */
+  });
+});
+</code></pre>
+
 <h2 id="test-attributes">Test attributes</h2>
 <p>For large projects with many tests, it can be useful to run only a subset of
 them, instead of the entire collection. While splitting up tests by file can
@@ -355,10 +467,12 @@ but other types require you to call them to list their values.</p>
 <h4 id="suite-attributes">Suite attributes</h4>
 <p>Like tests, whole suites can have attributes associated with them; these are
 applied the same way as for tests, and the list of attributes will automatically
-be inherited by any descendent tests. For <code>bool_attr</code>s and <code>string_attr</code>s, this
-means that children with the same attributes as their parents will override
-the parent attributes, but for <code>list_attr</code>s, the values of the parent and child
-will be merged:</p>
+be inherited by any children (tests or subsuites). The children can set their
+own attributes, and all the attributes in the hierarchy will be combined
+together for each test.</p>
+<p>For <code>bool_attr</code>s and <code>string_attr</code>s, children with the same attribute as their
+parents will <em>override</em> the parent's attribute, but for <code>list_attr</code>s, the
+values from the parent and child will be merged:</p>
 <pre><code class="c++">suite&lt;&gt; attr_test(&quot;suite with attributes&quot;, {skip(&quot;broken&quot;), tags(&quot;cat&quot;)},
                   [](auto &amp;_) {
   _.test(&quot;my test&quot;, {slow, skip(&quot;fixme&quot;), tags(&quot;dog&quot;)}, [](auto &amp;fixture) {
@@ -368,112 +482,6 @@ will be merged:</p>
 });
 </code></pre>
 
-<h2 id="parameterizing-tests">Parameterizing tests</h2>
-<p>While suites are a good way to group your tests together, sometimes you want to
-run the <em>same</em> tests on several different types of objects. In this case, all
-you need to do is specify <em>multiple</em> fixtures when defining a test suite. The
-example below creates two test suites, one with a fixture of <code>int</code> and one with
-a fixture of <code>float</code>:</p>
-<pre><code class="c++">suite&lt;int, float&gt; param_test(&quot;parameterized suite&quot;, [](auto &amp;_) {
-  _.test(&quot;my test&quot;, [](auto &amp;fixture) {
-    /* ... */
-  });
-});
-</code></pre>
-
-<p>This works just the same for subsuites as well:</p>
-<pre><code class="c++">suite&lt;&gt; param_sub_test(&quot;parameterized subsuites&quot;, [](auto &amp;_) {
-  subsuite&lt;int, float&gt;(_, &quot;parameterized suite 1&quot;, [](auto &amp;_) {
-    /* ... */
-  });
-
-  _.template subsuite&lt;int, float&gt;(_, &quot;parameterized suite 2&quot;, [](auto &amp;_) {
-    /* ... */
-  });
-});
-</code></pre>
-
-<p>One subtle difference you may have noticed is that now, our test definitions
-use a generic lambda: <code>[](auto &amp;fixture) { /* ... */ }</code>. As you might imagine,
-this allows the test function to accept a fixture of either an <code>int</code> or a
-<code>float</code> and to do the usual thing when a template is instantiated. Of course,
-you don't <em>always</em> need to use <code>auto</code> here; if all of your fixtures inherit from
-a common base type, you can use an ordinary lambda that takes a reference to the
-base type.</p>
-<h3 id="getting-the-parameterized-type">Getting the parameterized type</h3>
-<p>In some cases, you may want to know the parameterized type, e.g. if you'd like
-to create your own instances of the object. You can retrieve this via the
-<code>fixture_type</code> trait (or the <code>fixture_type_t</code> alias) like so:</p>
-<pre><code class="c++">suite&lt;int, float&gt; param_type_test(&quot;parameterized suite&quot;, [](auto &amp;_) {
-  using Fixture = fixture_type_t&lt;decltype(_)&gt;;
-
-  _.test(&quot;my test&quot;, [](auto &amp;) {
-    /* use Fixture here */
-  });
-});
-</code></pre>
-
-<h2 id="fixture-factories">Fixture factories</h2>
-<p>Sometimes, a fixture can't be constructed as is, e.g if the fixture isn't
-default-constructible. In these cases, you can use a <em>fixture factory</em> to create
-your fixture object with any parameters you like. A fixture factory is simply an
-object with a templated <code>make&lt;T&gt;()</code> function:</p>
-<pre><code class="c++">struct my_factory {
-  template&lt;typename T&gt;
-  T make() {
-    return T(12);
-  }
-};
-
-suite&lt;my_fixture&gt; with_fixture_factory(&quot;suite&quot;, my_factory{}, [](auto &amp;_) {
-  /* ... */
-});
-</code></pre>
-
-<p>In fact, ordinary fixtures use their own factory: <code>auto_factory</code>. The following
-code snippets are equivalent:</p>
-<pre><code class="c++">suite&lt;my_fixture&gt; without_auto_factory(&quot;suite&quot;, [](auto &amp;_) {
-  /* ... */
-});
-
-suite&lt;my_fixture&gt; with_auto_factory(&quot;suite&quot;, auto_factory, [](auto &amp;_) {
-  /* ... */
-});
-</code></pre>
-
-<h3 id="transforming-fixture-types">Transforming fixture types</h3>
-<p>In addition, a fixture factory's <code>make&lt;T&gt;()</code> can return <em>any</em> type (including
-<code>void</code>!), not just <code>T</code>. This can be useful for more complex tests, like testing
-a container type with several different element types:</p>
-<pre><code class="c++">struct vector_factory {
-  template&lt;typename T&gt;
-  std::vector&lt;T&gt; make() {
-    return {};
-  }
-};
-
-suite&lt;int, float&gt; vector_suite(&quot;suite&quot;, vector_factory{}, [](auto &amp;_) {
-  _.test(&quot;empty()&quot;, [](auto &amp;vec) {
-    expect(vec.empty(), equal_to(true));
-  });
-});
-</code></pre>
-
-<h3 id="type-only-fixtures">Type-only fixtures</h3>
-<p>As mentioned above, a fixture factory's <code>make&lt;T&gt;()</code> can return <code>void</code>. In this
-case, the suite has no fixture whatsoever. This is primarily useful when you
-want to parameterize on a list of types, but you don't want to automatically
-instantiate the fixture object. The built-in fixture factory <code>type_only</code> handles
-this for you. In particular, note the parameter-less test function:</p>
-<pre><code class="c++">suite&lt;int, float&gt; type_only_suite(&quot;suite&quot;, type_only, [](auto &amp;_) {
-  _.test(&quot;empty()&quot;, []() {
-    /* ... */
-  });
-});
-</code></pre>
-
-<p>Remember, of course, that you can use <code>fixture_type_t</code> to get the type of the
-fixture if you wish to use it inside your tests.</p>
 </div>
         </div>
 
