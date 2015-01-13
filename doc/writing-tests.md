@@ -321,7 +321,7 @@ to create your own instances of the object. You can retrieve this via the
 `fixture_type` trait (or the `fixture_type_t` alias) like so:
 
 ```c++
-suite<int, float> param_type_test("parameterized suite", type_only, [](auto &_) {
+suite<int, float> param_type_test("suite", type_only, [](auto &_) {
   using Fixture = fixture_type_t<decltype(_)>;
 
   _.test("my test", []() {
