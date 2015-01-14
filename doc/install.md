@@ -1,5 +1,4 @@
 # Installation
----
 
 Broadly, mettle is composed of three parts: a set of header files, a shared
 library (`libmettle.so`), and a universal test driver (`mettle`). Before we can

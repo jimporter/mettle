@@ -1,5 +1,4 @@
 # mettle
----
 
 **mettle** is a unit testing framework for C++14. It aims to maximize
 readability and clarity, allowing you to focus on writing tests instead of

@@ -1,5 +1,4 @@
 # Running Tests
----
 
 Before we start looking at how to write tests, let's build and run an existing
 one to make sure everything's set up correctly.

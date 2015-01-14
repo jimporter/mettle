@@ -1,5 +1,4 @@
 # Developer Guide
----
 
 If you're looking to learn about how mettle actually works, you've come to the
 right place! This developer guide will describe mettle's internals and how

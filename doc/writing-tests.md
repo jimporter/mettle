@@ -1,5 +1,4 @@
 # Writing Tests
----
 
 ## Your first test
 

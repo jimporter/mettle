@@ -1,5 +1,4 @@
 # Expectations and Matchers
----
 
 ## Expectations
 

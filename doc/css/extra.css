@@ -1,3 +1,9 @@
+h1 {
+  padding-bottom: 21px;
+  margin-bottom: 21px;
+  border-bottom: 1px solid #DDD;
+}
+
 /* Make the inline code blocks look like the paragraph-level ones. */
 *:not(pre) > code {
   color: #333;
