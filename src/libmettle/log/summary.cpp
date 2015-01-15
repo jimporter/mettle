@@ -88,8 +88,10 @@ namespace log {
 
     using namespace term;
     size_t passes = total_ - skips_.size() - failures_.size();
+    std::string test_str = total_ == 1 ? "test" : "tests";
 
-    out_ << format(sgr::bold) << passes << "/" << total_ << " tests passed";
+    out_ << format(sgr::bold) << passes << "/" << total_ << " "
+         << (passes == 1 && total_ == 1 ? "test" : "tests") << " passed";
 
     if(!skips_.empty())
       out_ << " (" << skips_.size() << " skipped)";
