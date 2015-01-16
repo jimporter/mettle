@@ -11,6 +11,7 @@
 #include <locale>
 #include <iomanip>
 #include <sstream>
+#include <string>
 
 #include "traits.hpp"
 #include "type_name.hpp"

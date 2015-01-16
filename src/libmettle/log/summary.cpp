@@ -180,16 +180,17 @@ namespace log {
 
     using namespace term;
 
-    if(extra_newline && (!output.stdout.empty() || !output.stderr.empty()))
+    bool has_output = !output.stdout_log.empty() || !output.stderr_log.empty();
+    if(extra_newline && has_output)
       out_ << std::endl;
 
-    if(!output.stdout.empty()) {
+    if(!output.stdout_log.empty()) {
       out_ << format(fg(color::yellow), sgr::underline) << "stdout" << reset()
-           << ":" << std::endl << output.stdout << std::endl;
+           << ":" << std::endl << output.stdout_log << std::endl;
     }
-    if(!output.stderr.empty()) {
+    if(!output.stderr_log.empty()) {
       out_ << format(fg(color::yellow), sgr::underline) << "stderr" << reset()
-           << ":" << std::endl << output.stderr << std::endl;
+           << ":" << std::endl << output.stderr_log << std::endl;
     }
   }
 

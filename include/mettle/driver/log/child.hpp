@@ -22,8 +22,8 @@ namespace log {
 
   inline void encode(std::ostream &os, const test_output &output) {
     bencode::encode_dict(os,
-      "stderr", output.stderr,
-      "stdout", output.stdout
+      "stderr_log", output.stderr_log,
+      "stdout_log", output.stdout_log
     );
   }
 

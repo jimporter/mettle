@@ -94,8 +94,8 @@ namespace log {
       using namespace BENCODE_ANY_NS;
       auto &data = any_cast<bencode::dict &>(output);
       return log::test_output{
-        std::move(any_cast<bencode::string &>( data.at("stdout") )),
-        std::move(any_cast<bencode::string &>( data.at("stderr") ))
+        std::move(any_cast<bencode::string &>( data.at("stdout_log") )),
+        std::move(any_cast<bencode::string &>( data.at("stderr_log") ))
       };
     }
 

@@ -168,7 +168,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
 
       for(const auto &t : s) {
         auto result = runner(t.function, output);
-        expect(output.stdout, equal_to("stdout"));
+        expect(output.stdout_log, equal_to("stdout"));
       }
     });
 
@@ -183,8 +183,8 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
 
       for(const auto &t : s) {
         auto result = runner(t.function, output);
-        expect(output.stdout, equal_to("stdout"));
-        expect(output.stderr, equal_to("stderr"));
+        expect(output.stdout_log, equal_to("stdout"));
+        expect(output.stderr_log, equal_to("stderr"));
       }
     });
 

@@ -133,8 +133,8 @@ suite<fixture> test_child("test child logger", [](auto &_) {
 
     expect(f.parent.called, equal_to("passed_test"));
     expect(f.parent.test, equal_to(test));
-    expect(f.parent.output.stdout, equal_to(output.stdout));
-    expect(f.parent.output.stderr, equal_to(output.stderr));
+    expect(f.parent.output.stdout_log, equal_to(output.stdout_log));
+    expect(f.parent.output.stderr_log, equal_to(output.stderr_log));
     expect(f.parent.duration, equal_to(duration));
   });
 
@@ -150,8 +150,8 @@ suite<fixture> test_child("test child logger", [](auto &_) {
     expect(f.parent.called, equal_to("failed_test"));
     expect(f.parent.test, equal_to(test));
     expect(f.parent.message, equal_to(message));
-    expect(f.parent.output.stdout, equal_to(output.stdout));
-    expect(f.parent.output.stderr, equal_to(output.stderr));
+    expect(f.parent.output.stdout_log, equal_to(output.stdout_log));
+    expect(f.parent.output.stderr_log, equal_to(output.stderr_log));
     expect(f.parent.duration, equal_to(duration));
   });
 

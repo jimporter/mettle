@@ -110,8 +110,8 @@ test_result forked_test_runner::operator ()(
 
     std::string message;
     std::vector<readfd> dests = {
-      {stdout_pipe.read_fd, &output.stdout},
-      {stderr_pipe.read_fd, &output.stderr},
+      {stdout_pipe.read_fd, &output.stdout_log},
+      {stderr_pipe.read_fd, &output.stderr_log},
       {log_pipe.read_fd,    &message}
     };
 

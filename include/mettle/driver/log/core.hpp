@@ -12,7 +12,7 @@ namespace mettle {
 namespace log {
 
   struct test_output {
-    std::string stdout, stderr;
+    std::string stdout_log, stderr_log;
   };
 
   using test_duration = std::chrono::milliseconds;
