@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iterator>
 #include <set>
 #include <sstream>
 #include <stdexcept>
