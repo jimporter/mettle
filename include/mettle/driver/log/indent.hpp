@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_DRIVER_LOG_INDENT_HPP
 #define INC_METTLE_DRIVER_LOG_INDENT_HPP
 
+#include <cassert>
 #include <ostream>
 #include <stdexcept>
 #include <string>
@@ -21,7 +22,7 @@ public:
   basic_indenting_streambuf(base_type *buf, size_t base_indent = 2)
     : buf_(buf), base_indent_(base_indent) {}
 
-  void indent(ssize_t offset, indent_style style) {
+  void indent(ptrdiff_t offset, indent_style style) {
     if(style == indent_style::logical)
       offset *= base_indent_;
 
@@ -64,7 +65,7 @@ public:
     this->clear(os.rdstate());
   }
 
-  void indent(ssize_t offset, indent_style style) {
+  void indent(ptrdiff_t offset, indent_style style) {
     buf.indent(offset, style);
   }
 private:
@@ -79,8 +80,9 @@ public:
   using stream_type = basic_indenting_ostream<Char, Traits>;
   basic_scoped_indent(
     stream_type &os, indent_style style = indent_style::logical,
-    size_t depth = 1
+    ptrdiff_t depth = 1
   ) : os_(os), style_(style), depth_(depth) {
+    assert(depth_ >= 0);
     os_.indent(depth_, style_);
   }
 
@@ -90,7 +92,7 @@ public:
 private:
   stream_type &os_;
   indent_style style_;
-  size_t depth_;
+  ptrdiff_t depth_;
 };
 
 using scoped_indent = basic_scoped_indent<char>;
@@ -101,8 +103,9 @@ public:
   using stream_type = basic_indenting_ostream<Char, Traits>;
   basic_indenter(
     stream_type &os, indent_style style = indent_style::logical,
-    size_t depth = 0
+    ptrdiff_t depth = 0
   ) : os_(os), style_(style), depth_(depth) {
+    assert(depth_ >= 0);
     os_.indent(depth_, style_);
   }
 
@@ -135,7 +138,7 @@ public:
 private:
   stream_type &os_;
   indent_style style_;
-  size_t depth_;
+  ptrdiff_t depth_;
 };
 
 using indenter = basic_indenter<char>;
