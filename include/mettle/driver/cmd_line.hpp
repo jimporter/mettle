@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_DRIVER_CMD_PARSE_HPP
-#define INC_METTLE_DRIVER_CMD_PARSE_HPP
+#ifndef INC_METTLE_DRIVER_CMD_LINE_HPP
+#define INC_METTLE_DRIVER_CMD_LINE_HPP
 
 #include <chrono>
 #include <memory>

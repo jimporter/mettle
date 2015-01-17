@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_SRC_LIBMETTLE_OPTIONAL_HPP
-#define INC_METTLE_SRC_LIBMETTLE_OPTIONAL_HPP
+#ifndef INC_METTLE_DRIVER_DETAIL_OPTIONAL_HPP
+#define INC_METTLE_DRIVER_DETAIL_OPTIONAL_HPP
 
 // Try to use N4082's optional class, or fall back to Boost's.
 #ifdef __has_include
