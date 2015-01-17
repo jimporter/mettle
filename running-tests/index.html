@@ -65,6 +65,10 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                     
+                        <li >
+                            <a href="../tutorial">Tutorial</a>
+                        </li>
+                    
                         <li class="active">
                             <a href=".">Running Tests</a>
                         </li>
@@ -99,7 +103,7 @@
             <ul class="nav navbar-nav navbar-right">
                 
                 <li >
-                    <a rel="next" href="../install">
+                    <a rel="next" href="../tutorial">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
@@ -129,13 +133,11 @@
     
         <li class="main active"><a href="#running-tests">Running Tests</a></li>
         
-            <li><a href="#a-sample-test">A sample test</a></li>
+            <li><a href="#running-the-test-executable-directly">Running the test executable directly</a></li>
         
-            <li><a href="#building-the-test">Building the test</a></li>
+            <li><a href="#using-the-mettle-universal-test-driver">Using the mettle universal test driver</a></li>
         
             <li><a href="#command-line-options">Command-line options</a></li>
-        
-            <li><a href="#using-the-mettle-executable">Using the mettle executable</a></li>
         
     
     </ul>
@@ -143,43 +145,53 @@
             <div class="col-md-9" role="main">
 
 <h1 id="running-tests">Running Tests</h1>
-<p>Before we start looking at how to write tests, let's build and run an existing
-one to make sure everything's set up correctly.</p>
-<h2 id="a-sample-test">A sample test</h2>
-<p>First up, here's a minimalist test suite so that we have something to run. We'll
-cover the syntax of this test later when we learn about <a href="../writing-tests">writing
-tests</a>.</p>
-<pre><code class="c++">#include &lt;mettle.hpp&gt;
-using namespace mettle;
-
-suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
-  _.test(&quot;my first test&quot;, []() {
-    expect(true, equal_to(true));
-  });
-});
+<p>Once you've built an executable test (if you haven't built one, be sure to read
+the <a href="../tutorial">tutorial</a> first), you'll find that there are a bunch of
+options for running it. There are two main ways to run a test executable.</p>
+<h2 id="running-the-test-executable-directly">Running the test executable directly</h2>
+<p>For small projects, you may have only a single test executable. In this case,
+you can simply run the file directly:</p>
+<pre><code class="sh">$ ./test_my_code
 </code></pre>
 
-<h2 id="building-the-test">Building the test</h2>
-<p>Building a test is straightforward. Since mettle provides its own test runner
-with a <code>main()</code> function, the above source code is all you need for a
-fully-operational test. Just compile the test like so:</p>
-<pre><code class="sh">clang++ -std=c++1y -lmettle -o test_first test_first.cpp
+<p><a href="#command-line-options">Below</a>, we'll see a list of the options we can pass to
+the text executable, letting you tailor the output or how the tests are run.</p>
+<h2 id="using-the-mettle-universal-test-driver">Using the <em>mettle</em> universal test driver</h2>
+<p>For testing larger projects, it's generally recommended to divide your test
+suites into multiple <code>.cpp</code> files and compile them into separate binaries. This
+allows you to improve build times and to better isolate tests from each other.</p>
+<p>When doing so, you can use the <code>mettle</code> executable to run all of your individual
+binaries at once. The interface is much like that of the individual binaries,
+and all of the command-line options above work with the <code>mettle</code> executable as
+well. To specify which of the test binaries to run, just pass their filenames to
+<code>mettle</code>:</p>
+<pre><code class="sh">$ mettle test_file1 test_file2
 </code></pre>
 
-<p>Once it's built, just run the binary and check the test results.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>We need to compile in C++1y (aka C++14) mode, since mettle relies on some
-C++14 features to make test writing simpler.</p>
-</div>
+<p>Like the individual test executables, the <code>mettle</code> driver accepts several
+<a href="#command-line-options">options</a> to modify its behavior and output.</p>
+<h3 id="forwarding-arguments">Forwarding arguments</h3>
+<p>You can also pass along arguments to a test binary by quoting the binary:</p>
+<pre><code class="sh">$ mettle test_file1 &quot;caliber test_foo.cpp test_bar.cpp&quot;
+</code></pre>
+
+<p>This executes <code>test_file1</code> and then executes <code>caliber</code> with two arguments:
+<code>test_foo.cpp</code> and <code>test_bar.cpp</code>. You can also pass wildcards (globs) inside
+quoted arguments:</p>
+<pre><code class="sh">$ mettle test_file1 &quot;caliber test_*.cpp&quot;
+</code></pre>
+
 <h2 id="command-line-options">Command-line options</h2>
 <h3 id="generic-options">Generic options</h3>
 <h4 id="-help-h">--help (-h)</h4>
 <p>Show help and usage information.</p>
 <h3 id="driver-options">Driver options</h3>
 <h4 id="-timeout-n-t">--timeout <em>N</em> (-t)</h4>
-<p>Time out and fail any tests that take longer than <em>N</em> milliseconds to execute.
-<code>--no-fork</code> can't be specified while using this option.</p>
+<p>Time out and fail any tests that take longer than <em>N</em> milliseconds to execute.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>--no-fork</code> can't be specified while using this option.</p>
+</div>
 <h4 id="-test-regex-t">--test <em>REGEX</em> (-T)</h4>
 <p>Filter the tests that will be run to those matching a regex. If <code>--test</code> is
 specified multiple times, tests that match <em>any</em> of the regexes will be run.</p>
@@ -249,29 +261,6 @@ terminal output will just appear in-line with the tests).</p>
 <h4 id="-show-time">--show-time</h4>
 <p>Show the duration (in milliseconds) of each test as it runs, as well as the
 total time of the entire job.</p>
-<h2 id="using-the-mettle-executable">Using the <em>mettle</em> executable</h2>
-<p>For testing larger projects, it's generally recommended to divide your test
-suites into multiple <code>.cpp</code> files and compile them into separate binaries. This
-allows you to improve build times and to better isolate tests from each other.</p>
-<p>When doing so, you can use the <code>mettle</code> executable to run all of your individual
-binaries at once. The interface is much like that of the individual binaries,
-and all of the command-line options above work with the <code>mettle</code> executable as
-well. To specify which of the test binaries to run, just pass their filenames to
-<code>mettle</code>:</p>
-<pre><code class="sh">mettle test_file1 test_file2
-</code></pre>
-
-<h3 id="passing-along-arguments">Passing along arguments</h3>
-<p>You can also pass along arguments to a test binary by quoting the binary:</p>
-<pre><code class="sh">mettle test_file1 &quot;caliber test_foo.cpp test_bar.cpp&quot;
-</code></pre>
-
-<p>This executes <code>test_file1</code> and then executes <code>caliber</code> with two arguments:
-<code>test_foo.cpp</code> and <code>test_bar.cpp</code>. You can also pass globs inside quoted
-arguments:</p>
-<pre><code class="sh">mettle test_file1 &quot;caliber test_*.cpp&quot;
-</code></pre>
-
 </div>
         </div>
 

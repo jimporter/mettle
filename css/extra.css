@@ -1,3 +1,4 @@
+/* Give the main header an underline. */
 h1 {
   padding-bottom: 21px;
   margin-bottom: 21px;
@@ -11,6 +12,13 @@ h1 {
   padding: 1px 3px;
   border: 1px solid #E8E8E8;
   box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05) inset;
+}
+
+/* Don't double up on the border for inline code inside admonitions. */
+.admonition code {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 /* Fix links containing inline code. */
