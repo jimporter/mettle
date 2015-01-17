@@ -55,7 +55,7 @@ public:
   template<typename String, typename Tests, typename Subsuites, typename Func>
   compiled_suite(
     String &&name, Tests &&tests, Subsuites &&subsuites,
-    const attributes &attrs, const Func &f
+    const attributes &attrs, Func &&f
   ) : name_(std::forward<String>(name)) {
     for(auto &&test : tests) {
       tests_.emplace_back(
@@ -70,14 +70,16 @@ public:
 
   template<typename Ret2, typename ...T2, typename Func>
   compiled_suite(const compiled_suite<Ret2, T2...> &suite,
-                 const attributes &attrs, const Func &f)
-    : compiled_suite(suite.name_, suite.tests_, suite.subsuites_, attrs, f) {}
+                 const attributes &attrs, Func &&f)
+    : compiled_suite(suite.name_, suite.tests_, suite.subsuites_, attrs,
+                     std::forward<Func>(f)) {}
 
   template<typename Ret2, typename ...T2, typename Func>
   compiled_suite(compiled_suite<Ret2, T2...> &&suite,
-                 const attributes &attrs, const Func &f)
+                 const attributes &attrs, Func &&f)
     : compiled_suite(std::move(suite.name_), std::move(suite.tests_),
-                     std::move(suite.subsuites_), attrs, f) {}
+                     std::move(suite.subsuites_), attrs,
+                     std::forward<Func>(f)) {}
 
   const std::string & name() const {
     return name_;
