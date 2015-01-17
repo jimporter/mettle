@@ -1,54 +1,70 @@
 # Writing Tests
 
-## Your first test
-
-So, you want to write some unit tests? Let's get started by taking a look at the
-test file we used when [running tests](running-tests.md). We'll discuss each
-part in detail below:
+Below, we'll look at how test files are structured, how to create the tests
+themselves, and how to group them together to perform higher-level operations on
+them. Throughout this page, we'll assume that the following appears at the
+beginning of our examples:
 
 ```c++
 #include <mettle.hpp>
-using namespace mettle;
+```
 
-suite<> first("my first suite", [](auto &_) {
-  _.test("my first test", []() {
-    expect(true, equal_to(true));
+This includes *all* the headers necessary to use mettle. Alternately, you can
+`#include <mettle/header_only.hpp>` if you prefer to use mettle without
+compiling `libmettle.so` and the `mettle` universal driver.
+
+If you'd rather include a smaller subset of headers, e.g. to improve compilation
+speeds, you'll need the following to define tests and suites:
+
+```c++
+#include <mettle/suite.hpp> // The core of suite definition
+#include <mettle/glue.hpp>  // Hooks up the suites with the expectations
+
+// Choose only one of these:
+#include <mettle/driver/lib_driver.hpp>    // The driver to go with libmettle.so
+#include <mettle/driver/header_driver.hpp> // The header-only driver
+```
+
+## Defining suites
+
+In mettle, all tests are grouped by suites. Suites are generally defined as
+global variables (we'll see more ways to define suites later), and take two
+arguments in the constructor: a string name, and a callback function taking a
+reference to a `mettle::suite_builder<mettle::expectation_failure>`. Generally,
+we just define the callback as a generic lambda:
+
+```c++
+mettle::suite<> my_suite("my suite", [](auto &_) {
+  /* ... */
+});
+```
+
+If you don't plan to use mettle's [expectations](matchers.md) for checking
+program state, you can replace `mettle::suite<>` with
+`mettle::basic_suite<my_exception>` to create a test suite using your own
+exception type as the "canonical" exception.
+
+### Tests
+
+While we have a suite now, we still need to define some tests. Tests are,
+without a doubt, the most important part of a *test* suite. We define our tests
+inside our suite's callback function, using the `suite_builder` passed into it.
+Like our suite, each test takes two arguments: a string name, and a callback
+function defining the test. However, the test's callback takes no arguments:
+
+```c++
+mettle::suite<> my_suite("my suite", [](auto &_) {
+  _.test("my test", []() {
+    /* ... */
   });
 });
 ```
 
-### Dissecting the test file
-
-First up, the obvious: we `#include <mettle.hpp>`, which imports all the code we
-need to build and run simple tests: test suites, matchers, and a test runner.
-With that out of the way, we can start defining our tests.
-
-Suites are created as global variables with the type `mettle::suite<>`, and take
-a string name and a callback function (typically a lambda). The callback lets us
-define our tests for the suite. It takes a single argument, a reference to a
-`mettle::suite_builder<mettle::expectation_failure>`, but since that's pretty
-long, we conventionally just say `auto &` and use a generic lambda instead.
-
-!!! note
-    There are lots of other options you can pass to the suite's constructor,
-    like [fixtures](#fixtures) or [test attributes](#test-attributes), but we'll
-    get to those later.
-
-With the suite defined, now we just need to write our tests and add them via
-the suite builder. Like suites, tests have both a string name and a callback
-function, but this time the callback is the code to run when the test executes.
-
-Inside our test function, we need to write some test code:
-
-```c++
-expect(true, equal_to(true));
-```
-
-This is an *expectation*. We'll discuss them in more detail
-[later](matchers.md), but in short, they define the things we actually want to
-*test* in our tests. This expectation makes sure that `true` is equal to `true`.
-If it's not, the test will alert us to the fact so we can fix it (hopefully
-before the universe finishes crashing down around us).
+Inside the test's callback function, we can write our actual test. If our code
+throws an exception, the test will fail; otherwise, it passes. Most of your
+tests should use *[expectations](matchers.md)* (similar to assertions) to
+perform the actual tests. Expectations provide informative error messages if any
+part of your test fails.
 
 ## Setup and teardown
 
@@ -58,7 +74,7 @@ suite has a `setup` or `teardown` function set, they'll run before (or after)
 each test in the suite:
 
 ```c++
-suite<> with_setup("my suite", [](auto &_) {
+mettle::suite<> with_setup("my suite", [](auto &_) {
   _.setup([]() {
     /* ... */
   });
@@ -80,7 +96,7 @@ test suites together. You can do this by creating a subsuite inside a parent
 suite:
 
 ```c++
-suite<> with_subsuites("suite with subsuites", [](auto &_) {
+mettle::suite<> with_subsuites("suite with subsuites", [](auto &_) {
 
   _.template subsuite<>("subsuite", [](auto &_) {
     _.test("my subtest", []() {
@@ -99,8 +115,8 @@ either redefine our lambda to no longer be generic, or just use the
 `mettle::subsuite` helper:
 
 ```c++
-suite<> with_subsuites("suite with subsuites", [](auto &_) {
-  subsuite<>(_, "subsuite", [](auto &_) {
+mettle::suite<> with_subsuites("suite with subsuites", [](auto &_) {
+  mettle::subsuite<>(_, "subsuite", [](auto &_) {
     /* ... */
   });
 });
@@ -145,13 +161,13 @@ struct my_fixture {
   int i;
 };
 
-suite<my_fixture> with_fixture("suite with a fixture", [](auto &_) {
+mettle::suite<my_fixture> with_fixture("suite with a fixture", [](auto &_) {
   _.setup([](my_fixture &f) {
     f.i = 1;
   });
 
   _.test("test my fixture", [](my_fixture &f) {
-    expect(f.i, equal_to(1));
+    mettle::expect(f.i, equal_to(1));
   });
 });
 ```
@@ -174,24 +190,24 @@ inherited in subsuites. This allows a parent suite to handle common fixtures for
 a bunch of subsuites, reducing code duplication:
 
 ```c++
-suite<int> nested_fixtures("suite with subsuites", [](auto &_) {
+mettle::suite<int> nested_fixtures("suite with subsuites", [](auto &_) {
   _.setup([](int &i) {
     i = 1;
   });
 
   _.test("my parent test", [](int &i) {
-    expect(i, equal_to(1));
+    mettle::expect(i, equal_to(1));
   });
 
-  subsuite<std::string>(_, "subsuite", [](auto &_) {
+  mettle::subsuite<std::string>(_, "subsuite", [](auto &_) {
     _.setup([](int &i, std::string &s) {
       i++;
       s = "foo";
     });
 
     _.test("my subtest", [](int &i, std::string &s) {
-      expect(i, equal_to(2));
-      expect(s, equal_to("foo"));
+      mettle::expect(i, equal_to(2));
+      mettle::expect(s, equal_to("foo"));
     });
   });
 });
@@ -215,7 +231,7 @@ struct my_factory {
   }
 };
 
-suite<my_fixture> with_fixture_factory("suite", my_factory{}, [](auto &_) {
+mettle::suite<my_fixture> with_factory("suite", my_factory{}, [](auto &_) {
   /* ... */
 });
 ```
@@ -224,11 +240,13 @@ In fact, "ordinary "fixtures use their own factory: `auto_factory`. The
 following code snippets are equivalent:
 
 ```c++
-suite<my_fixture> without_auto_factory("suite", [](auto &_) {
+mettle::suite<my_fixture>
+without_auto_factory("suite", [](auto &_) {
   /* ... */
 });
 
-suite<my_fixture> with_auto_factory("suite", auto_factory, [](auto &_) {
+mettle::suite<my_fixture>
+with_auto_factory("suite", mettle::auto_factory, [](auto &_) {
   /* ... */
 });
 ```
@@ -245,7 +263,7 @@ example below creates two test suites, one with a fixture of `int` and one with
 a fixture of `float`:
 
 ```c++
-suite<int, float> param_test("parameterized suite", [](auto &_) {
+mettle::suite<int, float> param_test("parameterized suite", [](auto &_) {
   _.test("my test", [](auto &fixture) {
     /* ... */
   });
@@ -255,8 +273,8 @@ suite<int, float> param_test("parameterized suite", [](auto &_) {
 This works just the same for subsuites as well:
 
 ```c++
-suite<> param_sub_test("parameterized subsuites", [](auto &_) {
-  subsuite<int, float>(_, "parameterized suite 1", [](auto &_) {
+mettle::suite<> param_sub_test("parameterized subsuites", [](auto &_) {
+  mettle::subsuite<int, float>(_, "parameterized suite 1", [](auto &_) {
     /* ... */
   });
 
@@ -290,9 +308,9 @@ struct vector_factory {
   }
 };
 
-suite<int, float> vector_suite("suite", vector_factory{}, [](auto &_) {
+mettle::suite<int, float> vector_suite("suite", vector_factory{}, [](auto &_) {
   _.test("empty()", [](auto &vec) {
-    expect(vec.empty(), equal_to(true));
+    mettle::expect(vec.empty(), equal_to(true));
   });
 });
 ```
@@ -306,7 +324,7 @@ instantiate the fixture object. The built-in fixture factory `type_only` handles
 this for you. In particular, note the parameter-less test function:
 
 ```c++
-suite<int, float> type_only_suite("suite", type_only, [](auto &_) {
+mettle::suite<int, float> type_only("suite", mettle::type_only, [](auto &_) {
   _.test("empty()", []() {
     /* ... */
   });
@@ -320,8 +338,8 @@ to create your own instances of the object. You can retrieve this via the
 `fixture_type` trait (or the `fixture_type_t` alias) like so:
 
 ```c++
-suite<int, float> param_type_test("suite", type_only, [](auto &_) {
-  using Fixture = fixture_type_t<decltype(_)>;
+mettle::suite<int, float> param_type("suite", mettle::type_only, [](auto &_) {
+  using Fixture = mettle::fixture_type_t<decltype(_)>;
 
   _.test("my test", []() {
     /* use Fixture here */
@@ -338,9 +356,9 @@ you can apply attributes to your tests (or whole suites!) and filter on them.
 
 ### The *skip* attribute
 
-mettle provides one built-in attribute: `skip`. As the name implies, this
-attribute causes a test to be skipped by default. This can be useful when a test
-is broken, since the test runner will keep track of the skipped tests as a
+mettle provides one built-in attribute: `mettle::skip`. As the name implies,
+this attribute causes a test to be skipped by default. This can be useful when a
+test is broken, since the test runner will keep track of the skipped tests as a
 reminder that you need to go back and fix the test. You can also provide a
 comment for the skipped test that will be shown in the test logs explaining why
 it was skipped.
@@ -352,22 +370,22 @@ Attributes](#using-attributes) below.
 
 In addition to the built-in `skip` attribute, you can define your own
 attributes. There are three basic kinds of attributes, differentiated by the
-number of values each can hold: `bool_attr`, which holds 0 or 1 values;
-`string_attr`, which holds exactly 1 value; and `list_attr`, which holds 1 or
-more distinct values.
+number of values each can hold: `mettle::bool_attr`, which holds 0 or 1 values;
+`mettle::string_attr`, which holds exactly 1 value; and `mettle::list_attr`,
+which holds 1 or more distinct values.
 
 `bool_attr`s are somewhat special and can be given a default action
-when they're encountered (either `attr_action::run` or `attr_action::skip`). As
-you might be able to guess, the predefined `skip` attribute is just a
-`bool_attr` whose action is `attr_action::skip`.
+when they're encountered (either `mettle::attr_action::run` or
+`mettle::attr_action::skip`). As you might be able to guess, the predefined
+`skip` attribute is just a `bool_attr` whose action is `attr_action::skip`.
 
 To define an attribute, you just need to create a global instance of one of the
 aforementioned attribute kinds:
 
 ```c++
-bool_attr slow("slow");
-bool_attr busted("busted", attr_action::skip);
-list_attr tags("tags");
+mettle::bool_attr slow("slow");
+mettle::bool_attr busted("busted", attr_action::skip);
+mettle::list_attr tags("tags");
 ```
 
 ### Using attributes
@@ -377,13 +395,13 @@ kind of attribute you want, and pass them to the test creation function
 immediately after the test name:
 
 ```c++
-_.test("my test", {skip, slow("takes too long"), tags("cat", "goat")},
+_.test("my test", {mettle::skip, slow("takes too long"), tags("cat", "goat")},
        [](auto &fixture) { /* ... */ });
 ```
 
-This creates an `attributes` object that gets stored alongside the test. As you
-might notice, `bool_attrs` can be implicitly converted to an attribute instance,
-but other types require you to call them to list their values.
+This creates a `mettle::attributes` object that gets stored alongside the test.
+As you might notice, `bool_attrs` can be implicitly converted to an attribute
+instance, but other types require you to call them to list their values.
 
 #### Suite attributes
 
@@ -398,9 +416,9 @@ parents will *override* the parent's attribute, but for `list_attr`s, the
 values from the parent and child will be merged:
 
 ```c++
-suite<> attr_test("suite with attributes", {skip("broken"), tags("cat")},
-                  [](auto &_) {
-  _.test("my test", {slow, skip("fixme"), tags("dog")}, [](auto &fixture) {
+mettle::suite<>
+attr_suite("my suite", {mettle::skip("broken"), tags("cat")}, [](auto &_) {
+  _.test("my test", {slow, mettle::skip("fixme"), tags("dog")}, []() {
     /* This test has the following attributes: slow, skip("fixme"), and
        tags("cat", "dog"). */
   });

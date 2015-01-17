@@ -11,10 +11,10 @@ Before you get started with mettle, you'll need to install its dependencies:
 * A POSIX environment (this dependency will be eliminated prior to v1.0)
 * A C++14-compliant compiler (for generic lambdas and various standard library
   features)
-     * [clang](http://clang.llvm.org/) 3.4 *or* [GCC](https://gcc.gnu.org/) 5.0
-     * [libc++](http://libcxx.llvm.org/) 3.5 *or*
-       [libstdc++](https://gcc.gnu.org/libstdc++/) 5.0
-* [Boost](http://www.boost.org/) (for `program_options` and `iostreams`)
+     * [clang](http://clang.llvm.org/) + [libc++](http://libcxx.llvm.org/) 3.5
+     * [GCC](https://gcc.gnu.org/) + [libstdc++](https://gcc.gnu.org/libstdc++/)
+       5.0
+* [Boost](http://www.boost.org/)
 * [bencode.hpp](https://github.com/jimporter/bencode.hpp)
 
 !!! note
@@ -43,7 +43,7 @@ If you've already set up your environment variables to use clang (or whatever
 C++14-compliant compiler you like), you should be able to run
 
 ```sh
-make && make install
+$ make && make install
 ```
 
 to build and install mettle. Otherwise, you can specify the appropriate
@@ -65,7 +65,7 @@ Mettle's own tests are written entirely in mettle. (It wouldn't be a very good
 test framework otherwise!) To build and run all the tests, just call:
 
 ```sh
-make test
+$ make test
 ```
 
 If you'd rather build the tests *without* running them, you can call

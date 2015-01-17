@@ -1,40 +1,55 @@
 # Running Tests
 
-Before we start looking at how to write tests, let's build and run an existing
-one to make sure everything's set up correctly.
+Once you've built an executable test (if you haven't built one, be sure to read
+the [tutorial](tutorial.md) first), you'll find that there are a bunch of
+options for running it. There are two main ways to run a test executable.
 
-## A sample test
+## Running the test executable directly
 
-First up, here's a minimalist test suite so that we have something to run. We'll
-cover the syntax of this test later when we learn about [writing
-tests](writing-tests.md).
-
-```c++
-#include <mettle.hpp>
-using namespace mettle;
-
-suite<> first("my first suite", [](auto &_) {
-  _.test("my first test", []() {
-    expect(true, equal_to(true));
-  });
-});
-```
-
-## Building the test
-
-Building a test is straightforward. Since mettle provides its own test runner
-with a `main()` function, the above source code is all you need for a
-fully-operational test. Just compile the test like so:
+For small projects, you may have only a single test executable. In this case,
+you can simply run the file directly:
 
 ```sh
-clang++ -std=c++1y -lmettle -o test_first test_first.cpp
+$ ./test_my_code
 ```
 
-Once it's built, just run the binary and check the test results.
+[Below](#command-line-options), we'll see a list of the options we can pass to
+the text executable, letting you tailor the output or how the tests are run.
 
-!!! note
-    We need to compile in C++1y (aka C++14) mode, since mettle relies on some
-    C++14 features to make test writing simpler.
+## Using the *mettle* universal test driver
+
+For testing larger projects, it's generally recommended to divide your test
+suites into multiple `.cpp` files and compile them into separate binaries. This
+allows you to improve build times and to better isolate tests from each other.
+
+When doing so, you can use the `mettle` executable to run all of your individual
+binaries at once. The interface is much like that of the individual binaries,
+and all of the command-line options above work with the `mettle` executable as
+well. To specify which of the test binaries to run, just pass their filenames to
+`mettle`:
+
+```sh
+$ mettle test_file1 test_file2
+```
+
+Like the individual test executables, the `mettle` driver accepts several
+[options](#command-line-options) to modify its behavior and output.
+
+### Forwarding arguments
+
+You can also pass along arguments to a test binary by quoting the binary:
+
+```sh
+$ mettle test_file1 "caliber test_foo.cpp test_bar.cpp"
+```
+
+This executes `test_file1` and then executes `caliber` with two arguments:
+`test_foo.cpp` and `test_bar.cpp`. You can also pass wildcards (globs) inside
+quoted arguments:
+
+```sh
+$ mettle test_file1 "caliber test_*.cpp"
+```
 
 ## Command-line options
 
@@ -49,7 +64,9 @@ Show help and usage information.
 #### --timeout *N* (-t)
 
 Time out and fail any tests that take longer than *N* milliseconds to execute.
-`--no-fork` can't be specified while using this option.
+
+!!! note
+    `--no-fork` can't be specified while using this option.
 
 #### --test *REGEX* (-T)
 
@@ -133,35 +150,3 @@ terminal output will just appear in-line with the tests).
 
 Show the duration (in milliseconds) of each test as it runs, as well as the
 total time of the entire job.
-
-## Using the *mettle* executable
-
-For testing larger projects, it's generally recommended to divide your test
-suites into multiple `.cpp` files and compile them into separate binaries. This
-allows you to improve build times and to better isolate tests from each other.
-
-When doing so, you can use the `mettle` executable to run all of your individual
-binaries at once. The interface is much like that of the individual binaries,
-and all of the command-line options above work with the `mettle` executable as
-well. To specify which of the test binaries to run, just pass their filenames to
-`mettle`:
-
-```sh
-mettle test_file1 test_file2
-```
-
-### Passing along arguments
-
-You can also pass along arguments to a test binary by quoting the binary:
-
-```sh
-mettle test_file1 "caliber test_foo.cpp test_bar.cpp"
-```
-
-This executes `test_file1` and then executes `caliber` with two arguments:
-`test_foo.cpp` and `test_bar.cpp`. You can also pass globs inside quoted
-arguments:
-
-```sh
-mettle test_file1 "caliber test_*.cpp"
-```
