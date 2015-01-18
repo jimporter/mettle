@@ -48,7 +48,7 @@ std::string mettle::type_name(const T &t) {
 }
 #else
 template<typename T>
-std::string type_name(const T &t) {
+std::string mettle::type_name(const T &t) {
   return typeid(t).name();
 }
 #endif
