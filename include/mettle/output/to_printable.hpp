@@ -1,13 +1,6 @@
 #ifndef INC_METTLE_OUTPUT_TO_PRINTABLE_HPP
 #define INC_METTLE_OUTPUT_TO_PRINTABLE_HPP
 
-#ifdef __has_include
-#  if __has_include(<codecvt>)
-#    define METTLE_HAS_CODECVT
-#    include <codecvt>
-#  endif
-#endif
-
 #include <locale>
 #include <iomanip>
 #include <sstream>
@@ -29,6 +22,24 @@
 #else
 #  include <boost/utility/string_ref.hpp>
 #  define METTLE_STRING_VIEW boost::basic_string_ref
+#endif
+
+// Check if we have the <codecvt> header (GCC currently doesn't).
+#ifdef __has_include
+#  if __has_include(<codecvt>)
+#    define METTLE_HAS_CODECVT
+#    include <codecvt>
+#  endif
+#elif defined _MSC_VER
+#  define METTLE_HAS_CODECVT
+#  include <codecvt>
+#endif
+
+// XXX: Remove this when MSVC supports "optional" constexpr on templates.
+#if defined(_MSC_VER) && !defined(__clang__)
+#  define METTLE_CONSTEXPR constexpr
+#else
+#  define METTLE_CONSTEXPR
 #endif
 
 namespace mettle {
@@ -206,7 +217,7 @@ auto to_printable_boolish(T t) -> typename std::enable_if<
 }
 
 template<typename T>
-constexpr inline auto to_printable_boolish(const T *t) ->
+METTLE_CONSTEXPR inline auto to_printable_boolish(const T *t) ->
 typename std::enable_if<!std::is_function<T>::value, const T *>::type {
   return t;
 }
@@ -265,7 +276,7 @@ auto to_printable_boolish(const T &t) -> typename std::enable_if<
 // Pass-through
 
 template<typename T>
-constexpr auto to_printable(const T &t) -> typename std::enable_if<
+METTLE_CONSTEXPR auto to_printable(const T &t) -> typename std::enable_if<
   is_printable<T>::value && !is_boolish<T>::value, const T &
 >::type {
   return t;
@@ -274,7 +285,8 @@ constexpr auto to_printable(const T &t) -> typename std::enable_if<
 // Bool-ish types
 
 template<typename T>
-constexpr inline auto to_printable(const T &t) -> typename std::enable_if<
+METTLE_CONSTEXPR inline auto
+to_printable(const T &t) -> typename std::enable_if<
   is_printable<T>::value && is_boolish<T>::value,
   decltype(to_printable_boolish(t))
 >::type {
@@ -295,7 +307,7 @@ auto to_printable(const T &t) -> typename std::enable_if<
 // Enum classes
 
 template<typename T>
-constexpr inline auto to_printable(T t) -> typename std::enable_if<
+METTLE_CONSTEXPR inline auto to_printable(T t) -> typename std::enable_if<
   !is_printable<T>::value && std::is_enum<T>::value, std::string
 >::type {
   return to_printable_boolish(t);
