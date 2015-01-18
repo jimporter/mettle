@@ -36,7 +36,7 @@
 #endif
 
 // XXX: Remove this when MSVC supports "optional" constexpr on templates.
-#if defined(_MSC_VER) && !defined(__clang__)
+#if !defined(_MSC_VER) || defined(__clang__)
 #  define METTLE_CONSTEXPR constexpr
 #else
 #  define METTLE_CONSTEXPR
