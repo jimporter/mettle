@@ -1,6 +1,8 @@
 #ifndef INC_METTLE_MATCHERS_DEATH_HPP
 #define INC_METTLE_MATCHERS_DEATH_HPP
 
+#ifndef _WIN32
+
 #include "core.hpp"
 #include "result.hpp"
 
@@ -123,5 +125,7 @@ inline auto exited(T &&thing) {
 }
 
 } // namespace mettle
+
+#endif
 
 #endif
