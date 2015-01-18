@@ -52,6 +52,13 @@ namespace detail {
 
   template<typename Function>
   struct test_caller_sub_base {
+#if defined(_MSC_VER) && !defined(__clang__)
+    template<typename Setup, typename Teardown, typename Test>
+    test_caller_sub_base(Setup &&setup, Teardown &&teardown, Test &&test)
+      : setup(std::forward<Setup>(setup)),
+        teardown(std::forward<Teardown>(teardown)),
+        test(std::forward<Test>(test)) {}
+#endif
     template<typename ...Args>
     void call_test(Args &...args) {
       if(setup)
