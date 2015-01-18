@@ -5,23 +5,19 @@
 
 namespace mettle {
 
-template<typename T>
-class is_printable {
-  template<typename U> struct always_bool { typedef bool type; };
+namespace detail {
+  template<typename>
+  auto check_printable(...) -> std::false_type;
 
-  template<typename U>
-  static constexpr typename always_bool<
-    decltype( std::declval<std::ostream&>() << std::declval<U>() )
-  >::type check_(int) {
-    return true;
-  }
-  template<typename U>
-  static constexpr bool check_(...) {
-    return false;
-  }
-public:
-  static const bool value = check_<T>(0);
-};
+  // XXX: Use std::declval here when Visual Studio gets with the program.
+  template<typename T>
+  auto check_printable(int) -> decltype(
+    *(std::ostream*)0 << *(T*)0, std::true_type()
+  );
+}
+
+template<typename T>
+struct is_printable : decltype(detail::check_printable<T>(0)) {};
 
 template<typename T>
 struct is_boolish : std::integral_constant<bool,
@@ -52,23 +48,19 @@ struct is_any_char : is_any_char_helper<typename std::remove_cv<T>::type> {};
 template<typename T>
 using is_exception = std::is_base_of<std::exception, T>;
 
-template<typename T>
-class is_iterable {
-  template<typename U> struct always_bool { typedef bool type; };
+namespace detail {
+  template<typename>
+  auto check_iterable(...) -> std::false_type;
 
-  template<typename U>
-  static constexpr typename always_bool<
-    decltype( std::begin(std::declval<U>()), std::end(std::declval<U>()) )
-  >::type check_(int) {
-    return true;
-  }
-  template<typename U>
-  static constexpr bool check_(...) {
-    return false;
-  }
-public:
-  static const bool value = check_<T>(0);
-};
+  // XXX: Use std::declval here when Visual Studio gets with the program.
+  template<typename T>
+  auto check_iterable(int) -> decltype(
+    std::begin(*(T*)0), std::end(*(T*)0), std::true_type()
+  );
+}
+
+template<typename T>
+struct is_iterable : decltype(detail::check_iterable<T>(0)) {};
 
 template<typename T, size_t N>
 class is_iterable<T[N]> : public std::true_type {};
