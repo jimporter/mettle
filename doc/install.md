@@ -8,12 +8,15 @@ start using mettle, we'll need to build and install it.
 
 Before you get started with mettle, you'll need to install its dependencies:
 
-* A POSIX environment (this dependency will be eliminated prior to v1.0)
 * A C++14-compliant compiler (for generic lambdas and various standard library
   features)
      * [clang](http://clang.llvm.org/) + [libc++](http://libcxx.llvm.org/) 3.5
      * [GCC](https://gcc.gnu.org/) + [libstdc++](https://gcc.gnu.org/libstdc++/)
        5.0
+     * [MSVC](http://www.visualstudio.com/) 2015 Preview *(for header-only
+       mode)*
+* A POSIX environment *(for full build; this dependency will be eliminated prior
+  to v1.0)*
 * [Boost](http://www.boost.org/)
 * [bencode.hpp](https://github.com/jimporter/bencode.hpp)
 
@@ -24,10 +27,10 @@ Before you get started with mettle, you'll need to install its dependencies:
 
 ### Header-only version
 
-If you'd like to get started quickly, and don't want to install all of the above
-dependencies (namely Boost and bencode.hpp) or build the binaries for mettle,
-you can use this library in a header-only mode by using the following instead of
-the usual `#include <mettle.hpp>`:
+If you're on Windows, or you don't want to install all of the above dependencies
+(namely bencode.hpp and the non-header-only parts of Boost) and build the
+binaries for mettle, you can use this library in a header-only mode by using the
+following instead of the usual `#include <mettle.hpp>`:
 
 ```c++
 #include <mettle/header_only.hpp>
