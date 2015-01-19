@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_DRIVER_FILTERS_HPP
 #define INC_METTLE_DRIVER_FILTERS_HPP
 
+#include <functional>
 #include <regex>
 #include <vector>
 

@@ -162,11 +162,11 @@ namespace log {
       log_output(failures[0].output, !message.empty());
     }
     else {
-      int run_width = std::ceil(std::log10(runs_));
+      int run_width = static_cast<int>( std::ceil(std::log10(runs_)) );
       for(const auto &i : failures) {
         out_ << format(sgr::bold, fg(color::yellow)) << "[#"
              << std::setw(run_width) << i.run << "]" << reset() << " ";
-        scoped_indent si(out_, indent_style::visual, run_width + 4);
+        scoped_indent sii(out_, indent_style::visual, run_width + 4);
         out_ << i.message << std::endl;
         log_output(i.output, true);
       }
