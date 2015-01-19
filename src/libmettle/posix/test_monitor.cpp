@@ -1,12 +1,12 @@
-#include <mettle/driver/test_monitor.hpp>
+#include <mettle/driver/posix/test_monitor.hpp>
+
+#include <cassert>
+#include <thread>
 
 #include <signal.h>
 #include <sys/select.h>
 #include <sys/wait.h>
 #include <unistd.h>
-
-#include <cassert>
-#include <thread>
 
 namespace mettle {
 

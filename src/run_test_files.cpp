@@ -1,17 +1,17 @@
 #include "run_test_files.hpp"
 
+#include <stdexcept>
+
 #include <glob.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
-
-#include <stdexcept>
 
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/program_options.hpp>
 #include <boost/tokenizer.hpp>
 
-#include <mettle/driver/scoped_pipe.hpp>
+#include <mettle/driver/posix/scoped_pipe.hpp>
 
 #include "log_pipe.hpp"
 #include "utils.hpp"

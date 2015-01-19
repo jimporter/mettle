@@ -1,15 +1,15 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-#include <signal.h>
-
 #include <chrono>
 #include <iostream>
 #include <thread>
 
+#include <signal.h>
+
 #include <mettle/driver/run_tests.hpp>
 #include <mettle/driver/log/core.hpp>
-#include "../src/libmettle/forked_test_runner.hpp"
+#include "../src/libmettle/posix/forked_test_runner.hpp"
 
 struct test_event_logger : log::test_logger {
   test_event_logger() {}

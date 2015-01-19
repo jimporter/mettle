@@ -1,8 +1,8 @@
-#include <pthread.h>
-#include <unistd.h>
-
 #include <iostream>
 #include <vector>
+
+#include <pthread.h>
+#include <unistd.h>
 
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
@@ -15,7 +15,7 @@
 #include <mettle/driver/log/term.hpp>
 #include <mettle/suite/compiled_suite.hpp>
 
-#include "forked_test_runner.hpp"
+#include "posix/forked_test_runner.hpp"
 
 namespace mettle {
 

@@ -3,7 +3,7 @@ using namespace mettle;
 
 #include <iostream>
 
-#include <mettle/driver/scoped_pipe.hpp>
+#include <mettle/driver/posix/scoped_pipe.hpp>
 
 suite<scoped_pipe> test_scoped_pipe("scoped_pipe", [](auto &_) {
   _.setup([](scoped_pipe &pipe) {

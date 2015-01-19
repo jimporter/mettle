@@ -5,10 +5,10 @@
 #include <signal.h>
 #include <sys/wait.h>
 
-#include <mettle/driver/scoped_pipe.hpp>
-#include <mettle/driver/scoped_signal.hpp>
-#include <mettle/driver/test_monitor.hpp>
-#include "../utils.hpp"
+#include <mettle/driver/posix/scoped_pipe.hpp>
+#include <mettle/driver/posix/scoped_signal.hpp>
+#include <mettle/driver/posix/test_monitor.hpp>
+#include "../../utils.hpp"
 
 namespace mettle {
 

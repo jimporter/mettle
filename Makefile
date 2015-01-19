@@ -18,7 +18,8 @@ EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
 HEADER_ONLY_EXAMPLES := examples/test_header_only
 
 METTLE_SOURCES := $(wildcard src/*.cpp)
-LIBMETTLE_SOURCES := $(shell find src/libmettle -type f -name "*.cpp")
+LIBMETTLE_DIRS := src/libmettle src/libmettle/log src/libmettle/posix
+LIBMETTLE_SOURCES := $(foreach dir,$(LIBMETTLE_DIRS),$(wildcard $(dir)/*.cpp))
 SOURCES := $(METTLE_SOURCES) $(LIBMETTLE_SOURCES)
 LIBS := -lboost_program_options -lboost_iostreams -pthread
 
