@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_SRC_LIBMETTLE_POSIX_FORKED_TEST_RUNNER_HPP
-#define INC_METTLE_SRC_LIBMETTLE_POSIX_FORKED_TEST_RUNNER_HPP
+#ifndef INC_METTLE_SRC_LIBMETTLE_POSIX_SUBPROCESS_TEST_RUNNER_HPP
+#define INC_METTLE_SRC_LIBMETTLE_POSIX_SUBPROCESS_TEST_RUNNER_HPP
 
 #include <chrono>
 
@@ -9,14 +9,14 @@
 
 namespace mettle {
 
-class forked_test_runner {
+class subprocess_test_runner {
 public:
   using timeout_t = METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds>;
 
-  forked_test_runner(timeout_t timeout = {}) : timeout_(timeout) {}
+  subprocess_test_runner(timeout_t timeout = {}) : timeout_(timeout) {}
 
   template<class Rep, class Period>
-  forked_test_runner(std::chrono::duration<Rep, Period> timeout)
+  subprocess_test_runner(std::chrono::duration<Rep, Period> timeout)
     : timeout_(timeout) {}
 
   test_result

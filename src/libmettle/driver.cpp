@@ -15,7 +15,7 @@
 #include <mettle/driver/log/term.hpp>
 #include <mettle/suite/compiled_suite.hpp>
 
-#include "posix/forked_test_runner.hpp"
+#include "posix/subprocess_test_runner.hpp"
 
 namespace mettle {
 
@@ -50,8 +50,8 @@ namespace detail {
     auto output = make_output_options(args, factory);
 
     driver.add_options()
-      ("no-fork", opts::value(&args.no_fork)->zero_tokens(),
-       "don't fork for each test")
+      ("no-subproc", opts::value(&args.no_fork)->zero_tokens(),
+       "don't create a subprocess for each test")
     ;
 
     opts::options_description hidden("Hidden options");
@@ -90,7 +90,7 @@ namespace detail {
       runner = inline_test_runner;
     }
     else {
-      runner = forked_test_runner(args.timeout);
+      runner = subprocess_test_runner(args.timeout);
     }
 
     if(args.child_fd) {

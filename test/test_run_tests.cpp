@@ -9,7 +9,7 @@ using namespace mettle;
 
 #include <mettle/driver/run_tests.hpp>
 #include <mettle/driver/log/core.hpp>
-#include "../src/libmettle/posix/forked_test_runner.hpp"
+#include "../src/libmettle/posix/subprocess_test_runner.hpp"
 
 struct test_event_logger : log::test_logger {
   test_event_logger() {}
@@ -53,12 +53,12 @@ struct ftr_factory {
   }
 };
 
-suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
-                                    [](auto &_) {
+suite<subprocess_test_runner>
+test_fork("subprocess_test_runner", ftr_factory{}, [](auto &_) {
 
   subsuite<log::test_output>(_, "run one test", [](auto &_) {
 
-    _.test("passing test", [](forked_test_runner &runner,
+    _.test("passing test", [](subprocess_test_runner &runner,
                               log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {});
@@ -71,7 +71,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       }
     });
 
-    _.test("failing test", [](forked_test_runner &runner,
+    _.test("failing test", [](subprocess_test_runner &runner,
                               log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
@@ -85,7 +85,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       }
     });
 
-    _.test("aborting test", [](forked_test_runner &runner,
+    _.test("aborting test", [](subprocess_test_runner &runner,
                                log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
@@ -100,7 +100,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       }
     });
 
-    _.test("segfaulting test", [](forked_test_runner &runner,
+    _.test("segfaulting test", [](subprocess_test_runner &runner,
                                   log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
@@ -115,7 +115,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       }
     });
 
-    _.test("timed out test", [](forked_test_runner &runner,
+    _.test("timed out test", [](subprocess_test_runner &runner,
                                 log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
@@ -134,7 +134,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       }
     });
 
-    _.test("test with timed out child", [](forked_test_runner &runner,
+    _.test("test with timed out child", [](subprocess_test_runner &runner,
                                            log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
@@ -158,7 +158,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       }
     });
 
-    _.test("test with stdout", [](forked_test_runner &runner,
+    _.test("test with stdout", [](subprocess_test_runner &runner,
                                   log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
@@ -172,7 +172,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       }
     });
 
-    _.test("test with stdout/stderr", [](forked_test_runner &runner,
+    _.test("test with stdout/stderr", [](subprocess_test_runner &runner,
                                          log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
@@ -192,7 +192,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
 
   subsuite<test_event_logger>(_, "run_tests()", [](auto &_) {
 
-    _.test("single suite", [](forked_test_runner &runner,
+    _.test("single suite", [](subprocess_test_runner &runner,
                               test_event_logger &logger) {
       auto s = make_suites<>("inner", [](auto &_){
         _.test("test 1", []() {});
@@ -217,7 +217,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       expect(logger.events, equal_to(expected));
     });
 
-    _.test("multiple suites", [](forked_test_runner &runner,
+    _.test("multiple suites", [](subprocess_test_runner &runner,
                                  test_event_logger &logger) {
       auto s = make_suites<int, float>("inner", [](auto &_){
         _.test("test 1", [](const auto &) {});
@@ -240,7 +240,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       expect(logger.events, equal_to(expected));
     });
 
-    _.test("suite with subsuites", [](forked_test_runner &runner,
+    _.test("suite with subsuites", [](subprocess_test_runner &runner,
                                       test_event_logger &logger) {
       auto s = make_suites<>("inner", [](auto &_){
         _.test("test 1", []() {});
@@ -280,7 +280,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       expect(logger.events, equal_to(expected));
     });
 
-    _.test("suite with hidden subsuites", [](forked_test_runner &runner,
+    _.test("suite with hidden subsuites", [](subprocess_test_runner &runner,
                                              test_event_logger &logger) {
       bool_attr hide("hide");
       auto s = make_suites<>("inner", [&hide](auto &_){
@@ -324,7 +324,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
     });
 
     _.test("crashing tests don't crash framework", [](
-      forked_test_runner &runner, test_event_logger &logger
+      subprocess_test_runner &runner, test_event_logger &logger
     ) {
       auto s = make_suites<>("inner", [](auto &_){
         _.test("test 1", []() {});

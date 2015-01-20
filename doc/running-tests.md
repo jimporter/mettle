@@ -66,7 +66,7 @@ Show help and usage information.
 Time out and fail any tests that take longer than *N* milliseconds to execute.
 
 !!! note
-    `--no-fork` can't be specified while using this option.
+    `--no-subproc` can't be specified while using this option.
 
 #### --test *REGEX* (-T)
 
@@ -108,11 +108,11 @@ examples to get a better sense of how this works:
 
     Run tests that match either attribute.
 
-#### --no-fork
+#### --no-subproc
 
-By default, mettle forks its process to run each test, in order to detect
+By default, mettle creates a subprocess for each test, in order to detect
 crashes during the execution of a test. To disable this, you can pass
-`--no-fork`, and all the tests will run in the same process. This option can
+`--no-subproc`, and all the tests will run in the same process. This option can
 only be specified for the individual test binaries, *not* for the `mettle`
 driver.
 
@@ -143,8 +143,8 @@ test.
 #### --show-terminal
 
 Show the terminal output (stdout and stderr) of each test after it finishes. To
-enable this, `--no-fork` can't be specified (if `--no-fork` *is* specified, the
-terminal output will just appear in-line with the tests).
+enable this, `--no-subproc` can't be specified (if `--no-subproc` *is*
+specified, the terminal output will just appear in-line with the tests).
 
 #### --show-time
 

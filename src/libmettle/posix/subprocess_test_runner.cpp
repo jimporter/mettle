@@ -1,4 +1,4 @@
-#include "forked_test_runner.hpp"
+#include "subprocess_test_runner.hpp"
 
 #include <fcntl.h>
 #include <poll.h>
@@ -38,7 +38,7 @@ namespace {
   }
 }
 
-test_result forked_test_runner::operator ()(
+test_result subprocess_test_runner::operator ()(
   const test_info &test, log::test_output &output
 ) const {
   scoped_pipe stdout_pipe, stderr_pipe, log_pipe;
