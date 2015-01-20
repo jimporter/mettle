@@ -18,7 +18,7 @@ namespace {
 
   void sig_handler(int signum) {
     assert(test_pgid != 0);
-    kill(-test_pgid, signum);
+    killpg(test_pgid, signum);
 
     // Restore the previous signal action and re-raise the signal.
     struct sigaction *old_act = signum == SIGINT ? &old_sigint : &old_sigquit;
@@ -29,6 +29,8 @@ namespace {
   void sig_chld(int) {}
 
   inline test_result parent_failed() {
+    if(test_pgid)
+      killpg(test_pgid, SIGKILL);
     test_pgid = 0;
     return { false, err_string(errno) };
   }
@@ -134,7 +136,7 @@ test_result subprocess_test_runner::operator ()(
 
     // Make sure everything in the test's process group is dead. Don't worry
     // about reaping.
-    kill(-pid, SIGKILL);
+    killpg(test_pgid, SIGKILL);
     test_pgid = 0;
 
     if(WIFEXITED(status)) {

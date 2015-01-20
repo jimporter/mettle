@@ -127,8 +127,10 @@ namespace {
       child_failed(max_fd, file);
     }
     else {
-      if(message_pipe.close_write() < 0)
+      if(message_pipe.close_write() < 0) {
+        kill(pid, SIGKILL);
         return parent_failed(logger, file);
+      }
 
       std::exception_ptr except;
       try {
@@ -144,8 +146,10 @@ namespace {
       }
 
       int status;
-      if(waitpid(pid, &status, 0) < 0)
+      if(waitpid(pid, &status, 0) < 0) {
+        kill(pid, SIGKILL);
         return parent_failed(logger, file);
+      }
 
       if(WIFEXITED(status)) {
         int exit_code = WEXITSTATUS(status);
