@@ -11,16 +11,27 @@
 #include <mettle/driver/log/child.hpp>
 #include <mettle/driver/log/summary.hpp>
 #include <mettle/driver/log/term.hpp>
-#include <mettle/driver/posix/subprocess.hpp>
 #include <mettle/suite/compiled_suite.hpp>
 
-#include "posix/subprocess_test_runner.hpp"
+#ifndef _WIN32
+#  include <mettle/driver/posix/subprocess.hpp>
+#  include "posix/subprocess_test_runner.hpp"
+namespace platform = mettle::posix;
+#else
+#  include "windows/subprocess_test_runner.hpp"
+namespace platform = mettle::windows;
+#endif
 
 namespace mettle {
 
 namespace {
   struct all_options : generic_options, driver_options, output_options {
+#ifndef _WIN32
     METTLE_OPTIONAL_NS::optional<int> output_fd;
+#else
+    METTLE_OPTIONAL_NS::optional<test_uid> test_id;
+    METTLE_OPTIONAL_NS::optional<HANDLE> log_fd;
+#endif
     bool no_subproc = false;
   };
 
@@ -34,7 +45,7 @@ namespace detail {
 
   int drive_tests(int argc, const char *argv[], const suites_list &suites) {
     using namespace mettle;
-    using namespace mettle::posix;
+    using namespace platform;
     namespace opts = boost::program_options;
 
     auto factory = make_logger_factory();
@@ -51,8 +62,13 @@ namespace detail {
 
     opts::options_description hidden("Hidden options");
     hidden.add_options()
+#ifndef _WIN32
       ("output-fd", opts::value(&args.output_fd),
        "pipe the results to this file descriptor")
+#else
+      ("test-id", opts::value(&args.test_id), "internal id of a test to run")
+      ("log-fd", opts::value(&args.log_fd), "HANDLE to log pipe")
+#endif
     ;
 
     opts::variables_map vm;
@@ -77,6 +93,23 @@ namespace detail {
       return 0;
     }
 
+#ifdef _WIN32
+    if(args.test_id || args.log_fd) {
+      if(!args.test_id || !args.log_fd) {
+        report_error(
+          argv[0], "--test-id and --log-fd must be specified together"
+        );
+        return 3;
+      }
+      auto test = find_test(suites, *args.test_id);
+      if(!test) {
+        report_error(argv[0], "unable to find test");
+        return 3;
+      }
+      return run_single_test(*test, *args.log_fd) ? 0 : 1;
+    }
+#endif
+
     test_runner runner;
     if(args.no_subproc) {
       if(args.timeout) {
@@ -91,6 +124,7 @@ namespace detail {
       runner = subprocess_test_runner(args.timeout);
     }
 
+#ifndef _WIN32
     if(args.output_fd) {
       if(auto output_opt = has_option(output, vm)) {
         using namespace opts::command_line_style;
@@ -108,6 +142,7 @@ namespace detail {
       run_tests(suites, logger, runner, args.filters);
       return 0;
     }
+#endif
 
     if(args.no_subproc && args.show_terminal) {
       report_error(

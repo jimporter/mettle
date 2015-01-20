@@ -17,6 +17,10 @@
 #include "log/core.hpp"
 #include "log/indent.hpp"
 
+#ifdef _WIN32
+#  include <wtypes.h>
+#endif
+
 namespace mettle {
 
 struct generic_options {
@@ -85,6 +89,11 @@ namespace boost {
 
 void validate(boost::any &v, const std::vector<std::string> &values,
               std::chrono::milliseconds*, int);
+
+#ifdef _WIN32
+void validate(boost::any &v, const std::vector<std::string> &values,
+              HANDLE*, int);
+#endif
 
 template<typename T>
 void validate(boost::any &v, const std::vector<std::string> &values,

@@ -211,4 +211,23 @@ void validate(boost::any &v, const std::vector<std::string> &values,
   }
 }
 
+#ifdef _WIN32
+void validate(boost::any &v, const std::vector<std::string> &values,
+              HANDLE*, int) {
+  using namespace boost::program_options;
+  validators::check_first_occurrence(v);
+  const std::string &val = validators::get_single_string(values);
+
+  try {
+    HANDLE h;
+    std::istringstream is(val);
+    is >> h;
+    v = h;
+  }
+  catch (...) {
+    boost::throw_exception(invalid_option_value(val));
+  }
+}
+#endif
+
 } // namespace boost
