@@ -39,7 +39,7 @@ namespace {
 }
 
 test_result forked_test_runner::operator ()(
-  const test_function &test, log::test_output &output
+  const test_info &test, log::test_output &output
 ) const {
   scoped_pipe stdout_pipe, stderr_pipe, log_pipe;
   if(stdout_pipe.open() < 0 ||
@@ -78,7 +78,7 @@ test_result forked_test_runner::operator ()(
        stderr_pipe.move_write(STDERR_FILENO) < 0)
       child_failed();
 
-    auto result = test();
+    auto result = test.function();
     if(write(log_pipe.write_fd, result.message.c_str(),
              result.message.length()) < 0)
       child_failed();

@@ -20,7 +20,7 @@ public:
     : timeout_(timeout) {}
 
   test_result
-  operator ()(const test_function &test, log::test_output &output) const;
+  operator ()(const test_info &test, log::test_output &output) const;
 private:
   timeout_t timeout_;
 };

@@ -8,7 +8,7 @@
 namespace mettle {
 
 using test_runner = std::function<
-  test_result(const test_function &, log::test_output &)
+  test_result(const test_info &, log::test_output &)
 >;
 
 namespace detail {
@@ -87,7 +87,7 @@ namespace detail {
 
         using namespace std::chrono;
         auto then = steady_clock::now();
-        auto result = runner(test.function, output);
+        auto result = runner(test, output);
         auto now = steady_clock::now();
         auto duration = duration_cast<log::test_duration>(now - then);
 
@@ -107,8 +107,8 @@ namespace detail {
 }
 
 inline test_result
-inline_test_runner(const test_function &test, log::test_output &) {
-  return test();
+inline_test_runner(const test_info &test, log::test_output &) {
+  return test.function();
 }
 
 template<typename Suites, typename Filter>

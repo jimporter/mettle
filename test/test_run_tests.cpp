@@ -65,7 +65,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       });
 
       for(const auto &t : s) {
-        auto result = runner(t.function, output);
+        auto result = runner(t, output);
         expect(result.passed, equal_to(true));
         expect(result.message, equal_to(""));
       }
@@ -80,7 +80,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       });
 
       for(const auto &t : s) {
-        auto result = runner(t.function, output);
+        auto result = runner(t, output);
         expect(result.passed, equal_to(false));
       }
     });
@@ -94,7 +94,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       });
 
       for(const auto &t : s) {
-        auto result = runner(t.function, output);
+        auto result = runner(t, output);
         expect(result.passed, equal_to(false));
         expect(result.message, equal_to(strsignal(SIGABRT)));
       }
@@ -109,7 +109,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       });
 
       for(const auto &t : s) {
-        auto result = runner(t.function, output);
+        auto result = runner(t, output);
         expect(result.passed, equal_to(false));
         expect(result.message, equal_to(strsignal(SIGSEGV)));
       }
@@ -125,7 +125,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
 
       for(const auto &t : s) {
         auto then = std::chrono::steady_clock::now();
-        auto result = runner(t.function, output);
+        auto result = runner(t, output);
         auto now = std::chrono::steady_clock::now();
 
         expect(result.passed, equal_to(false));
@@ -150,7 +150,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
 
       for(const auto &t : s) {
         auto then = std::chrono::steady_clock::now();
-        auto result = runner(t.function, output);
+        auto result = runner(t, output);
         auto now = std::chrono::steady_clock::now();
 
         expect(result.passed, equal_to(true));
@@ -167,7 +167,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       });
 
       for(const auto &t : s) {
-        auto result = runner(t.function, output);
+        auto result = runner(t, output);
         expect(output.stdout_log, equal_to("stdout"));
       }
     });
@@ -182,7 +182,7 @@ suite<forked_test_runner> test_fork("forked_test_runner", ftr_factory{},
       });
 
       for(const auto &t : s) {
-        auto result = runner(t.function, output);
+        auto result = runner(t, output);
         expect(output.stdout_log, equal_to("stdout"));
         expect(output.stderr_log, equal_to("stderr"));
       }

@@ -107,8 +107,8 @@ private:
 };
 
 using runnable_suite = compiled_suite<test_result>;
-using test_function = std::function<test_result(void)>;
 using suites_list = std::vector<runnable_suite>;
+using test_info = runnable_suite::test_info;
 
 } // namespace mettle
 
