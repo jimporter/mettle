@@ -55,7 +55,7 @@ struct attr_filter_item {
 inline attr_filter_item
 has_attr(std::string name) {
   return {std::move(name), [](const attr_instance *attr) -> bool {
-    return attr;
+    return attr != nullptr;
   }};
 }
 
