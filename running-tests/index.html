@@ -190,7 +190,7 @@ quoted arguments:</p>
 <p>Time out and fail any tests that take longer than <em>N</em> milliseconds to execute.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code>--no-fork</code> can't be specified while using this option.</p>
+<p><code>--no-subproc</code> can't be specified while using this option.</p>
 </div>
 <h4 id="-test-regex-t">--test <em>REGEX</em> (-T)</h4>
 <p>Filter the tests that will be run to those matching a regex. If <code>--test</code> is
@@ -230,10 +230,10 @@ set to something other than <code>http</code>.</p>
 <p>Run tests that match either attribute.</p>
 </li>
 </ul>
-<h4 id="-no-fork">--no-fork</h4>
-<p>By default, mettle forks its process to run each test, in order to detect
+<h4 id="-no-subproc">--no-subproc</h4>
+<p>By default, mettle creates a subprocess for each test, in order to detect
 crashes during the execution of a test. To disable this, you can pass
-<code>--no-fork</code>, and all the tests will run in the same process. This option can
+<code>--no-subproc</code>, and all the tests will run in the same process. This option can
 only be specified for the individual test binaries, <em>not</em> for the <code>mettle</code>
 driver.</p>
 <h3 id="output-options">Output options</h3>
@@ -256,8 +256,8 @@ failures. At the end, the summary will show the output of each failure for every
 test.</p>
 <h4 id="-show-terminal">--show-terminal</h4>
 <p>Show the terminal output (stdout and stderr) of each test after it finishes. To
-enable this, <code>--no-fork</code> can't be specified (if <code>--no-fork</code> <em>is</em> specified, the
-terminal output will just appear in-line with the tests).</p>
+enable this, <code>--no-subproc</code> can't be specified (if <code>--no-subproc</code> <em>is</em>
+specified, the terminal output will just appear in-line with the tests).</p>
 <h4 id="-show-time">--show-time</h4>
 <p>Show the duration (in milliseconds) of each test as it runs, as well as the
 total time of the entire job.</p>
