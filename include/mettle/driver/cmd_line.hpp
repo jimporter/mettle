@@ -13,6 +13,7 @@
 
 #include "filters.hpp"
 #include "object_factory.hpp"
+#include "detail/export.hpp"
 #include "detail/optional.hpp"
 #include "log/core.hpp"
 #include "log/indent.hpp"
@@ -27,7 +28,7 @@ struct generic_options {
   bool show_help = false;
 };
 
-boost::program_options::options_description
+METTLE_PUBLIC boost::program_options::options_description
 make_generic_options(generic_options &opts);
 
 struct driver_options {
@@ -35,7 +36,7 @@ struct driver_options {
   filter_set filters;
 };
 
-boost::program_options::options_description
+METTLE_PUBLIC boost::program_options::options_description
 make_driver_options(driver_options &opts);
 
 struct output_options {
@@ -49,12 +50,12 @@ struct output_options {
 using logger_factory = object_factory<
   log::file_logger, indenting_ostream &, const output_options &
 >;
-logger_factory make_logger_factory();
+METTLE_PUBLIC logger_factory make_logger_factory();
 
-boost::program_options::options_description
+METTLE_PUBLIC boost::program_options::options_description
 make_output_options(output_options &opts, const logger_factory &factory);
 
-boost::program_options::option_description *
+METTLE_PUBLIC boost::program_options::option_description *
 has_option(const boost::program_options::options_description &options,
            const boost::program_options::variables_map &args);
 
@@ -73,13 +74,15 @@ std::vector<std::basic_string<Char>> filter_options(
   return filtered;
 }
 
-attr_filter parse_attr(const std::string &value);
+METTLE_PUBLIC attr_filter parse_attr(const std::string &value);
 
-void validate(boost::any &v, const std::vector<std::string> &values,
-              attr_filter_set*, int);
+METTLE_PUBLIC void
+validate(boost::any &v, const std::vector<std::string> &values,
+         attr_filter_set*, int);
 
-void validate(boost::any &v, const std::vector<std::string> &values,
-              name_filter_set*, int);
+METTLE_PUBLIC void
+validate(boost::any &v, const std::vector<std::string> &values,
+         name_filter_set*, int);
 
 } // namespace mettle
 
@@ -87,12 +90,13 @@ void validate(boost::any &v, const std::vector<std::string> &values,
 // boost::any parameter).
 namespace boost {
 
-void validate(boost::any &v, const std::vector<std::string> &values,
-              std::chrono::milliseconds*, int);
+METTLE_PUBLIC void
+validate(boost::any &v, const std::vector<std::string> &values,
+         std::chrono::milliseconds*, int);
 
 #ifdef _WIN32
-void validate(boost::any &v, const std::vector<std::string> &values,
-              HANDLE*, int);
+METTLE_PUBLIC void
+validate(boost::any &v, const std::vector<std::string> &values, HANDLE*, int);
 #endif
 
 template<typename T>
@@ -112,6 +116,5 @@ void validate(boost::any &v, const std::vector<std::string> &values,
 }
 
 } // namespace boost
-
 
 #endif

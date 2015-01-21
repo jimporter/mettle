@@ -1,13 +1,15 @@
 #ifndef INC_METTLE_DRIVER_LIB_DRIVER_HPP
 #define INC_METTLE_DRIVER_LIB_DRIVER_HPP
 
+#include "detail/export.hpp"
 #include "../suite/detail/all_suites.hpp"
 #include "../suite/detail/built_in_attrs.hpp"
 
 namespace mettle {
 
 namespace detail {
-  int drive_tests(int argc, const char *argv[], const suites_list &suites);
+  METTLE_PUBLIC int
+  drive_tests(int argc, const char *argv[], const suites_list &suites);
 }
 
 } // namespace mettle

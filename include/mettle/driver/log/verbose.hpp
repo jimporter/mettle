@@ -5,12 +5,18 @@
 
 #include "core.hpp"
 #include "indent.hpp"
+#include "../detail/export.hpp"
+
+#ifdef _MSC_VER
+#  pragma warning(push)
+#  pragma warning(disable:4251)
+#endif
 
 namespace mettle {
 
 namespace log {
 
-  class verbose : public file_logger {
+  class METTLE_PUBLIC verbose : public file_logger {
   public:
     verbose(indenting_ostream &out, std::size_t runs, bool show_time,
             bool show_terminal);
@@ -44,5 +50,9 @@ namespace log {
 }
 
 } // namespace mettle
+
+#ifdef _MSC_VER
+#   pragma warning(pop)
+#endif
 
 #endif

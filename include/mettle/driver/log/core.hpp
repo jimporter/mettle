@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../test_name.hpp"
+#include "../detail/export.hpp"
 
 namespace mettle {
 
@@ -17,7 +18,7 @@ namespace log {
 
   using test_duration = std::chrono::milliseconds;
 
-  class test_logger {
+  class METTLE_PUBLIC test_logger {
   public:
     virtual ~test_logger() {}
 
@@ -43,7 +44,7 @@ namespace log {
     skipped_test(const test_name &test, const std::string &message) = 0;
   };
 
-  class file_logger : public test_logger {
+  class METTLE_PUBLIC file_logger : public test_logger {
   public:
     virtual ~file_logger() {}
 

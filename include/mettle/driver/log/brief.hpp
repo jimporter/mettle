@@ -3,12 +3,13 @@
 
 #include "core.hpp"
 #include "indent.hpp"
+#include "../detail/export.hpp"
 
 namespace mettle {
 
 namespace log {
 
-  class brief : public file_logger {
+  class METTLE_PUBLIC brief : public file_logger {
   public:
     brief(indenting_ostream &out);
 

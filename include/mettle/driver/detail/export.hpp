@@ -1,0 +1,14 @@
+#ifndef INC_METTLE_DRIVER_DETAIL_EXPORT_HPP
+#define INC_METTLE_DRIVER_DETAIL_EXPORT_HPP
+
+#if defined(_WIN32) && !defined(METTLE_STATIC)
+#  ifdef METTLE_EXPORTS
+#    define METTLE_PUBLIC __declspec(dllexport)
+#  else
+#    define METTLE_PUBLIC __declspec(dllimport)
+#  endif
+#else
+#  define METTLE_PUBLIC
+#endif
+
+#endif

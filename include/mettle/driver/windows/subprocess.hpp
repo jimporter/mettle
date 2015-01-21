@@ -6,6 +6,8 @@
 
 #include <wtypes.h>
 
+#include "../detail/export.hpp"
+
 namespace mettle {
 
 namespace windows {
@@ -15,8 +17,9 @@ namespace windows {
     std::string *dest;
   };
 
-  HANDLE read_into(std::vector<readhandle> &dests,
-                   const std::vector<HANDLE> &interrupts);
+  METTLE_PUBLIC HANDLE
+  read_into(std::vector<readhandle> &dests,
+            const std::vector<HANDLE> &interrupts);
 
 }
 

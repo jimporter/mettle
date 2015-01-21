@@ -138,7 +138,6 @@ inline void run_tests(const Suites &suites, log::test_logger &&logger,
   run_tests(suites, logger, runner, default_filter());
 }
 
-
 } // namespace mettle
 
 #endif

@@ -10,12 +10,18 @@
 
 #include "core.hpp"
 #include "indent.hpp"
+#include "../detail/export.hpp"
+
+#ifdef _MSC_VER
+#  pragma warning(push)
+#  pragma warning(disable:4251)
+#endif
 
 namespace mettle {
 
 namespace log {
 
-  class summary : public file_logger {
+  class METTLE_PUBLIC summary : public file_logger {
   public:
     summary(indenting_ostream &out, std::unique_ptr<file_logger> &&log,
             bool show_time, bool show_terminal);
@@ -78,5 +84,9 @@ namespace log {
 }
 
 } // namespace mettle
+
+#ifdef _MSC_VER
+#   pragma warning(pop)
+#endif
 
 #endif

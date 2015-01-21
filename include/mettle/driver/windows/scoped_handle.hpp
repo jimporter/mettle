@@ -5,11 +5,13 @@
 
 #include <wtypes.h>
 
+#include "../detail/export.hpp"
+
 namespace mettle {
 
 namespace windows {
 
-  class scoped_handle {
+  class METTLE_PUBLIC scoped_handle {
   public:
     scoped_handle(HANDLE handle = nullptr) : handle_(handle) {}
     scoped_handle(const scoped_handle &) = delete;

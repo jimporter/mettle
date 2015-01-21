@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "filters_core.hpp"
+#include "detail/export.hpp"
 
 namespace mettle {
 
@@ -19,7 +20,8 @@ public:
   name_filter_set() = default;
   name_filter_set(const std::initializer_list<value_type> &i) : filters_(i) {}
 
-  filter_result operator ()(const test_name &name, const attributes &) const;
+  METTLE_PUBLIC filter_result
+  operator ()(const test_name &name, const attributes &) const;
 
   void insert(const value_type &item) {
     filters_.push_back(item);
@@ -85,7 +87,8 @@ public:
   attr_filter() = default;
   attr_filter(const std::initializer_list<value_type> &i) : filters_(i) {}
 
-  filter_result operator ()(const test_name &, const attributes &attrs) const;
+  METTLE_PUBLIC filter_result
+  operator ()(const test_name &, const attributes &attrs) const;
 
   void insert(const value_type &item) {
     filters_.push_back(item);
@@ -123,7 +126,8 @@ public:
   attr_filter_set() = default;
   attr_filter_set(const std::initializer_list<value_type> &i) : filters_(i) {}
 
-  filter_result operator ()(const test_name &, const attributes &attrs) const;
+  METTLE_PUBLIC filter_result
+  operator ()(const test_name &, const attributes &attrs) const;
 
   void insert(const value_type &item) {
     filters_.push_back(item);

@@ -11,6 +11,7 @@
 #include <mettle/driver/log/child.hpp>
 #include <mettle/driver/log/summary.hpp>
 #include <mettle/driver/log/term.hpp>
+#include <mettle/driver/detail/export.hpp>
 #include <mettle/suite/compiled_suite.hpp>
 
 #ifndef _WIN32
@@ -43,7 +44,8 @@ namespace {
 
 namespace detail {
 
-  int drive_tests(int argc, const char *argv[], const suites_list &suites) {
+  METTLE_PUBLIC int
+  drive_tests(int argc, const char *argv[], const suites_list &suites) {
     using namespace mettle;
     using namespace platform;
     namespace opts = boost::program_options;

@@ -4,12 +4,13 @@
 #include <utility>
 
 #include "scoped_handle.hpp"
+#include "../detail/export.hpp"
 
 namespace mettle {
 
 namespace windows {
 
-  class scoped_pipe {
+  class METTLE_PUBLIC scoped_pipe {
   public:
     scoped_pipe() = default;
     scoped_pipe(const scoped_pipe &) = delete;
