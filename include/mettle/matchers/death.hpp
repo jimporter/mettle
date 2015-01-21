@@ -56,7 +56,7 @@ namespace detail {
     std::string desc() const {
       std::ostringstream ss;
       ss << "killed";
-      if (verbose_)
+      if(verbose_)
         ss << " with signal " << matcher_.desc();
       return ss.str();
     }
@@ -90,7 +90,7 @@ namespace detail {
     std::string desc() const {
       std::ostringstream ss;
       ss << "exited";
-      if (verbose_)
+      if(verbose_)
         ss << " with status " << matcher_.desc();
       return ss.str();
     }
