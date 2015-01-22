@@ -21,9 +21,7 @@ namespace windows {
     }
   }
 
-  // XXX: I'm not entirely sure this function is correct, but it's pretty
-  // close...
-  HANDLE read_into(std::vector<readhandle> &dests,
+  HANDLE read_into(std::vector<readhandle> &dests, DWORD timeout,
                    const std::vector<HANDLE> &interrupts) {
     assert(!interrupts.empty());
 
@@ -45,7 +43,8 @@ namespace windows {
     for(std::size_t i = 0; i != dests.size(); i++) {
       if(!ReadFile(dests[i].handle, bufs[i], sizeof(bufs[i]), &nread,
                    &overlapped[i])) {
-        if(GetLastError() != ERROR_IO_PENDING) {
+        auto err = GetLastError();
+        if(err != ERROR_IO_PENDING && err != ERROR_BROKEN_PIPE) {
           cancel_io(dests);
           return nullptr;
         }
@@ -53,15 +52,15 @@ namespace windows {
     }
 
     while(true) {
-      DWORD result = WaitForMultipleObjects(
-        total_size, events.get(), false, INFINITE
+      auto result = WaitForMultipleObjects(
+        total_size, events.get(), false, timeout
       );
       if(result == WAIT_FAILED) {
         cancel_io(dests);
         return nullptr;
       }
 
-      DWORD i = result - WAIT_OBJECT_0;
+      auto i = result - WAIT_OBJECT_0;
       assert(i < total_size);
       if(i >= dests.size()) {
         cancel_io(dests);
@@ -85,7 +84,8 @@ namespace windows {
       dests[i].dest->append(bufs[i], nread);
       if(!ReadFile(dests[i].handle, bufs[i], sizeof(bufs[i]), &nread,
                    &overlapped[i])) {
-        if(GetLastError() != ERROR_IO_PENDING) {
+        auto err = GetLastError();
+        if(err != ERROR_IO_PENDING && err != ERROR_BROKEN_PIPE) {
           cancel_io(dests);
           return nullptr;
         }

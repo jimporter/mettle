@@ -104,9 +104,11 @@ namespace windows {
     if(timeout_)
       interrupts.push_back(timeout_event);
 
-    HANDLE finished = read_into(dests, interrupts);
+    HANDLE finished = read_into(dests, INFINITE, interrupts);
     if(!finished)
       return failed();
+    // Do one last non-blocking read to get any data we might have missed.
+    read_into(dests, 0, interrupts);
 
     // By now, the child process's main thread has returned, so kill any stray
     // processes in the job.

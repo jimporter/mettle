@@ -18,7 +18,7 @@ namespace windows {
   };
 
   METTLE_PUBLIC HANDLE
-  read_into(std::vector<readhandle> &dests,
+  read_into(std::vector<readhandle> &dests, DWORD timeout,
             const std::vector<HANDLE> &interrupts);
 
 }
