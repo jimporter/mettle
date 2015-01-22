@@ -67,7 +67,7 @@ libmettle.so: $(LIBMETTLE_SOURCES:.cpp=.o)
 
 .PHONY: install
 install: all
-	cp -R include $(PREFIX)/include
+	cp -R include $(PREFIX)
 	cp mettle $(PREFIX)/bin/mettle
 	cp libmettle.so $(PREFIX)/lib/libmettle.so
 
