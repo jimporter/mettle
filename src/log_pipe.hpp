@@ -80,7 +80,7 @@ namespace log {
 
       // Make sure every test has a unique ID, even if some files have
       // overlapping IDs.
-      uint64_t id = (file_index_ << 32) + static_cast<uint64_t>(
+      test_uid id = (file_index_ << 32) + static_cast<test_uid>(
         any_cast<bencode::integer>(data.at("id"))
       );
       return {
@@ -110,7 +110,7 @@ namespace log {
     }
 
     log::file_logger &logger_;
-    uint64_t file_index_ = 0;
+    test_uid file_index_ = 0;
   };
 
 }

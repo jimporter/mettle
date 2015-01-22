@@ -1,17 +1,18 @@
 #ifndef INC_METTLE_DRIVER_TEST_NAME_HPP
 #define INC_METTLE_DRIVER_TEST_NAME_HPP
 
-#include <cstdint>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "../test_uid.hpp"
 
 namespace mettle {
 
 struct test_name {
   std::vector<std::string> suites;
   std::string test;
-  uint64_t id;
+  test_uid id;
 
   std::string full_name() const {
     std::ostringstream ss;

@@ -1,24 +1,17 @@
 #ifndef INC_METTLE_SUITE_COMPILED_SUITE_HPP
 #define INC_METTLE_SUITE_COMPILED_SUITE_HPP
 
-#include <atomic>
 #include <cstdint>
 #include <functional>
 #include <string>
 #include <vector>
 
 #include "attributes.hpp"
+#include "../test_uid.hpp"
 
 namespace mettle {
 
-using test_uid = std::uint64_t;
-
 namespace detail {
-  inline test_uid generate_id() {
-    static std::atomic<test_uid> id_(0);
-    return id_++;
-  }
-
   template<typename Container, typename Element>
   inline decltype(auto) move_if(Element &&value) {
     using Value = typename std::remove_reference<Element>::type;
@@ -44,7 +37,7 @@ public:
 
     test_info(std::string name, function_type function, attributes attrs)
       : name(std::move(name)), function(std::move(function)),
-        attrs(std::move(attrs)), id(detail::generate_id()) {}
+        attrs(std::move(attrs)), id(detail::make_test_uid()) {}
 
     std::string name;
     function_type function;
