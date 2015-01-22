@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_DRIVER_FILTERS_HPP
 #define INC_METTLE_DRIVER_FILTERS_HPP
 
+#include <cstdint>
 #include <functional>
 #include <regex>
 #include <vector>
@@ -32,7 +33,7 @@ public:
     return filters_.empty();
   }
 
-  size_t size() const {
+  std::size_t size() const {
     return filters_.size();
   }
 
@@ -98,7 +99,7 @@ public:
     return filters_.empty();
   }
 
-  size_t size() const {
+  std::size_t size() const {
     return filters_.size();
   }
 
@@ -136,7 +137,7 @@ public:
     return filters_.empty();
   }
 
-  size_t size() const {
+  std::size_t size() const {
     return filters_.size();
   }
 

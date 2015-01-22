@@ -1,5 +1,6 @@
 #include <mettle/driver/cmd_line.hpp>
 
+#include <cstdint>
 #include <regex>
 #include <sstream>
 #include <stdexcept>
@@ -203,7 +204,7 @@ void validate(boost::any &v, const std::vector<std::string> &values,
   const std::string &val = validators::get_single_string(values);
 
   try {
-    v = std::chrono::milliseconds(boost::lexical_cast<size_t>(val));
+    v = std::chrono::milliseconds(boost::lexical_cast<std::size_t>(val));
   }
   catch(...) {
     boost::throw_exception(invalid_option_value(val));

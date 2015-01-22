@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <iostream>
 #include <vector>
 
@@ -83,7 +84,7 @@ int main(int argc, const char *argv[]) {
       out, factory.make(args.output, out, args), args.show_time,
       args.show_terminal
     );
-    for(size_t i = 0; i != args.runs; i++)
+    for(std::size_t i = 0; i != args.runs; i++)
       run_test_files(args.files, logger, child_args);
 
     logger.summarize();

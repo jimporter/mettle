@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_OUTPUT_TO_PRINTABLE_HPP
 #define INC_METTLE_OUTPUT_TO_PRINTABLE_HPP
 
+#include <cstdint>
 #include <locale>
 #include <iomanip>
 #include <sstream>
@@ -334,7 +335,7 @@ auto to_printable(const T &v) -> typename std::enable_if<
   return detail::stringify_iterable(std::begin(v), std::end(v));
 }
 
-template<typename T, size_t N>
+template<typename T, std::size_t N>
 auto to_printable(const T (&v)[N]) -> typename std::enable_if<
   !is_any_char<T>::value, std::string
 >::type {

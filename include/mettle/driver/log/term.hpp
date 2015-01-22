@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_DRIVER_LOG_TERM_HPP
 #define INC_METTLE_DRIVER_LOG_TERM_HPP
 
+#include <cstdint>
 #include <sstream>
 #include <string>
 
@@ -29,12 +30,12 @@ enum class color {
   normal  = 9
 };
 
-inline size_t fg(const color &c) {
-  return 30 + static_cast<size_t>(c);
+inline std::size_t fg(const color &c) {
+  return 30 + static_cast<std::size_t>(c);
 }
 
-inline size_t bg(const color &c) {
-  return 40 + static_cast<size_t>(c);
+inline std::size_t bg(const color &c) {
+  return 40 + static_cast<std::size_t>(c);
 }
 
 enum class sgr {
@@ -56,11 +57,13 @@ public:
   template<typename ...Args>
   explicit format(Args &&...args) {
     static_assert(sizeof...(Args) > 0, "format must have at >=1 argument");
-    size_t values[] = {static_cast<size_t>(std::forward<Args>(args))...};
+    std::size_t values[] = {
+      static_cast<std::size_t>(std::forward<Args>(args))...
+    };
 
     std::ostringstream ss;
     ss << "\033[" << values[0];
-    for(size_t i = 1; i != sizeof...(Args); i++)
+    for(std::size_t i = 1; i != sizeof...(Args); i++)
       ss << ";" << values[i];
     ss << "m";
     string_ = ss.str();

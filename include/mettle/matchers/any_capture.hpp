@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_MATCHERS_ANY_CAPTURE_HPP
 #define INC_METTLE_MATCHERS_ANY_CAPTURE_HPP
 
+#include <cstdint>
 #include <utility>
 
 // XXX: Remove this when MSVC supports "optional" constexpr on templates.
@@ -21,7 +22,7 @@ public:
   T value;
 };
 
-template<typename T, size_t N>
+template<typename T, std::size_t N>
 class any_capture<T[N]> {
 public:
   METTLE_CONSTEXPR any_capture(const T (&t)[N])
@@ -31,11 +32,11 @@ public:
 
   T value[N];
 private:
-  template<size_t ...I>
+  template<std::size_t ...I>
   METTLE_CONSTEXPR any_capture(const T (&t)[N], std::index_sequence<I...>)
     : value{t[I]...} {}
 
-  template<size_t ...I>
+  template<std::size_t ...I>
   METTLE_CONSTEXPR any_capture(T (&&t)[N], std::index_sequence<I...>)
     : value{std::move(t[I])...} {}
 };

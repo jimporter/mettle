@@ -1,6 +1,7 @@
 #include <mettle.hpp>
 using namespace mettle;
 
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
@@ -26,7 +27,7 @@ template<typename ...T>
 class run_counter {
 public:
   run_counter(const std::function<void(T...)> &f = nullptr)
-    : f_(f), runs_(std::make_shared<size_t>(0)) {}
+    : f_(f), runs_(std::make_shared<std::size_t>(0)) {}
 
   void operator ()(T &...t) {
     (*runs_)++;
@@ -34,12 +35,12 @@ public:
       f_(t...);
   }
 
-  size_t runs() const {
+  std::size_t runs() const {
     return *runs_;
   }
 private:
   std::function<void(T...)> f_;
-  std::shared_ptr<size_t> runs_;
+  std::shared_ptr<std::size_t> runs_;
 };
 
 struct basic_fixture {
@@ -63,7 +64,7 @@ suite<> test_suite("suite creation", [](auto &_) {
 
   auto check_suite = [](const runnable_suite &s) {
     expect(s.name(), equal_to("inner test suite"));
-    expect(s.size(), equal_to<size_t>(2));
+    expect(s.size(), equal_to(2));
     expect(s, array(
       match_test("inner test", false), match_test("skipped test", true)
     ));
@@ -134,14 +135,14 @@ suite<> test_suite("suite creation", [](auto &_) {
       _.test("skipped test", {skip}, [](auto &) {});
     });
 
-    expect(suites.size(), equal_to<size_t>(2));
+    expect(suites.size(), equal_to(2));
 
     std::string names[] = {
       "inner test suite (int)", "inner test suite (float)"
     };
-    for(size_t i = 0; i < 2; i++) {
+    for(int i = 0; i < 2; i++) {
       expect(suites[i].name(), equal_to( names[i] ));
-      expect(suites[i].size(), equal_to<size_t>(2));
+      expect(suites[i].size(), equal_to(2));
       expect(suites[i], array(
         match_test("inner test", false), match_test("skipped test", true)
       ));
@@ -157,14 +158,14 @@ suite<> test_suite("suite creation", [](auto &_) {
       _.test("skipped test", {skip}, []() {});
     });
 
-    expect(suites.size(), equal_to<size_t>(2));
+    expect(suites.size(), equal_to(2));
 
     std::string names[] = {
       "inner test suite (int)", "inner test suite (float)"
     };
-    for(size_t i = 0; i < 2; i++) {
+    for(int i = 0; i < 2; i++) {
       expect(suites[i].name(), equal_to( names[i] ));
-      expect(suites[i].size(), equal_to<size_t>(2));
+      expect(suites[i].size(), equal_to(2));
       expect(suites[i], array(
         match_test("inner test", false), match_test("skipped test", true)
       ));
@@ -177,7 +178,7 @@ suite<> test_suite("suite creation", [](auto &_) {
       _.test("skipped test", {skip}, []() {});
     });
 
-    expect(suites.size(), equal_to<size_t>(1));
+    expect(suites.size(), equal_to(1));
     check_suite(suites[0]);
   });
 
@@ -187,7 +188,7 @@ suite<> test_suite("suite creation", [](auto &_) {
       _.test("skipped test", {skip}, [](int &) {});
     });
 
-    expect(suites.size(), equal_to<size_t>(1));
+    expect(suites.size(), equal_to(1));
     check_suite(suites[0]);
   });
 
@@ -198,7 +199,7 @@ suite<> test_suite("suite creation", [](auto &_) {
       _.test("skipped test", {skip}, []() {});
     });
 
-    expect(suites.size(), equal_to<size_t>(1));
+    expect(suites.size(), equal_to(1));
     check_suite(suites[0]);
   });
 
@@ -216,26 +217,26 @@ suite<> test_suite("suite creation", [](auto &_) {
 
     auto check_subsuites = [](const runnable_suite &suite) {
       expect(suite.name(), equal_to("inner test suite"));
-      expect(suite.size(), equal_to<size_t>(0));
+      expect(suite.size(), equal_to(0));
       expect(suite, array());
-      expect(suite.subsuites().size(), equal_to<size_t>(1));
+      expect(suite.subsuites().size(), equal_to(1));
 
       auto &sub = suite.subsuites()[0];
       expect(sub.name(), equal_to("subsuite"));
-      expect(sub.size(), equal_to<size_t>(2));
+      expect(sub.size(), equal_to(2));
       expect(sub, array(
         match_test("subtest", false), match_test("skipped subtest", true)
       ));
-      expect(sub.subsuites().size(), equal_to<size_t>(1));
+      expect(sub.subsuites().size(), equal_to(1));
 
       auto &subsub = sub.subsuites()[0];
       expect(subsub.name(), equal_to("sub-subsuite"));
-      expect(subsub.size(), equal_to<size_t>(2));
+      expect(subsub.size(), equal_to(2));
       expect(subsub, array(
         match_test("sub-subtest", false),
         match_test("skipped sub-subtest", true)
       ));
-      expect(subsub.subsuites().size(), equal_to<size_t>(0));
+      expect(subsub.subsuites().size(), equal_to(0));
     };
 
     _.test("create subsuites", [&check_subsuites]() {
@@ -288,21 +289,21 @@ suite<> test_suite("suite creation", [](auto &_) {
 
     auto check_param_subsuites = [](const runnable_suite &suite) {
       expect(suite.name(), equal_to("inner test suite"));
-      expect(suite.size(), equal_to<size_t>(0));
+      expect(suite.size(), equal_to(0));
       expect(suite, array());
-      expect(suite.subsuites().size(), equal_to<size_t>(2));
+      expect(suite.subsuites().size(), equal_to(2));
 
       std::string names[] = {
         "subsuite (int)", "subsuite (float)"
       };
-      for(size_t i = 0; i < 2; i++) {
+      for(int i = 0; i < 2; i++) {
         auto &sub = suite.subsuites()[i];
         expect(sub.name(), equal_to( names[i] ));
-        expect(sub.size(), equal_to<size_t>(2));
+        expect(sub.size(), equal_to(2));
         expect(sub, array(
           match_test("subtest", false), match_test("skipped subtest", true)
         ));
-        expect(sub.subsuites().size(), equal_to<size_t>(0));
+        expect(sub.subsuites().size(), equal_to(0));
       }
     };
 
@@ -384,7 +385,7 @@ suite<> test_suite("suite creation", [](auto &_) {
         _.test("skipped test", {skip}, [](auto &) {});
       });
 
-      for(size_t i = 0; i < 2; i++)
+      for(int i = 0; i < 2; i++)
         check_suite(suites[i]);
     });
 
@@ -478,7 +479,7 @@ suite<> test_calling("test calling", [](auto &_) {
       expect(result.passed, equal_to(true));
     }
 
-    expect(test.runs(), equal_to<size_t>(1));
+    expect(test.runs(), equal_to(1));
   });
 
   _.test("failing test called", []() {
@@ -494,7 +495,7 @@ suite<> test_calling("test calling", [](auto &_) {
       expect(result.passed, equal_to(false));
     }
 
-    expect(test.runs(), equal_to<size_t>(1));
+    expect(test.runs(), equal_to(1));
   });
 
   _.test("setup and teardown called", []() {
@@ -510,9 +511,9 @@ suite<> test_calling("test calling", [](auto &_) {
       expect(result.passed, equal_to(true));
     }
 
-    expect(setup.runs(), equal_to<size_t>(1));
-    expect(test.runs(), equal_to<size_t>(1));
-    expect(teardown.runs(), equal_to<size_t>(1));
+    expect(setup.runs(), equal_to(1));
+    expect(test.runs(), equal_to(1));
+    expect(teardown.runs(), equal_to(1));
   });
 
   _.test("teardown called when test fails", []() {
@@ -531,9 +532,9 @@ suite<> test_calling("test calling", [](auto &_) {
       expect(result.passed, equal_to(false));
     }
 
-    expect(setup.runs(), equal_to<size_t>(1));
-    expect(test.runs(), equal_to<size_t>(1));
-    expect(teardown.runs(), equal_to<size_t>(1));
+    expect(setup.runs(), equal_to(1));
+    expect(test.runs(), equal_to(1));
+    expect(teardown.runs(), equal_to(1));
   });
 
   _.test("teardown not called when setup fails", []() {
@@ -552,9 +553,9 @@ suite<> test_calling("test calling", [](auto &_) {
       expect(result.passed, equal_to(false));
     }
 
-    expect(setup.runs(), equal_to<size_t>(1));
-    expect(test.runs(), equal_to<size_t>(0));
-    expect(teardown.runs(), equal_to<size_t>(0));
+    expect(setup.runs(), equal_to(1));
+    expect(test.runs(), equal_to(0));
+    expect(teardown.runs(), equal_to(0));
   });
 
   _.test("test fails when teardown fails", []() {
@@ -573,9 +574,9 @@ suite<> test_calling("test calling", [](auto &_) {
       expect(result.passed, equal_to(false));
     }
 
-    expect(setup.runs(), equal_to<size_t>(1));
-    expect(test.runs(), equal_to<size_t>(1));
-    expect(teardown.runs(), equal_to<size_t>(1));
+    expect(setup.runs(), equal_to(1));
+    expect(test.runs(), equal_to(1));
+    expect(teardown.runs(), equal_to(1));
   });
 
 });

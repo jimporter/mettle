@@ -1,5 +1,6 @@
 #include "run_test_files.hpp"
 
+#include <cstdint>
 #include <stdexcept>
 
 #include <glob.h>
@@ -32,7 +33,7 @@ test_file::test_file(std::string command) : command_(std::move(command)) {
       glob_t g;
       if(glob(token.c_str(), 0, nullptr, &g) != 0)
         throw std::runtime_error("invalid glob \"" + token + "\"");
-      for(size_t i = 0; i != g.gl_pathc; i++)
+      for(std::size_t i = 0; i != g.gl_pathc; i++)
         args_.push_back(g.gl_pathv[i]);
       globfree(&g);
     }
@@ -60,7 +61,7 @@ namespace {
   std::unique_ptr<char *[]>
   make_argv(const std::vector<std::string> &argv) {
     auto real_argv = std::make_unique<char *[]>(argv.size() + 1);
-    for(size_t i = 0; i != argv.size(); i++)
+    for(std::size_t i = 0; i != argv.size(); i++)
       real_argv[i] = const_cast<char*>(argv[i].c_str());
     return real_argv;
   }

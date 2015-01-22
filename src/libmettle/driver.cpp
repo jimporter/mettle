@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <iostream>
 #include <vector>
 
@@ -128,7 +129,7 @@ namespace detail {
         out, factory.make(args.output, out, args), args.show_time,
         args.show_terminal
       );
-      for(size_t i = 0; i != args.runs; i++)
+      for(std::size_t i = 0; i != args.runs; i++)
         run_tests(suites, logger, runner, args.filters);
 
       logger.summarize();

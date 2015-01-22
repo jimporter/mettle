@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_OUTPUT_TRAITS_HPP
 #define INC_METTLE_OUTPUT_TRAITS_HPP
 
+#include <cstdint>
 #include <type_traits>
 
 namespace mettle {
@@ -62,7 +63,7 @@ namespace detail {
 template<typename T>
 struct is_iterable : decltype(detail::check_iterable<T>(0)) {};
 
-template<typename T, size_t N>
+template<typename T, std::size_t N>
 class is_iterable<T[N]> : public std::true_type {};
 
 } // namespace mettle

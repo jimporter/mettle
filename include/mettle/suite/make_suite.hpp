@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <string>
@@ -160,7 +161,7 @@ namespace detail {
   };
 
   // XXX: Remove this when MSVC's std::max is constexpr.
-  constexpr inline size_t max_(size_t a, size_t b) {
+  constexpr inline std::size_t max_(std::size_t a, std::size_t b) {
     return a < b ? b : a;
   }
 }

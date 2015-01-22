@@ -1,10 +1,11 @@
 #ifndef INC_METTLE_DRIVER_LOG_SIMPLE_SUMMARY_HPP
 #define INC_METTLE_DRIVER_LOG_SIMPLE_SUMMARY_HPP
 
+#include <cstdint>
+#include <vector>
+
 #include "core.hpp"
 #include "indent.hpp"
-
-#include <vector>
 
 namespace mettle {
 
@@ -36,7 +37,7 @@ namespace log {
     }
 
     void summarize() const {
-      size_t passes = total_ - skips_.size() - failures_.size();
+      std::size_t passes = total_ - skips_.size() - failures_.size();
 
       out_ << passes << "/" << total_ << " tests passed";
       if(!skips_.empty())
@@ -69,7 +70,7 @@ namespace log {
     }
 
     indenting_ostream &out_;
-    size_t total_ = 0;
+    std::size_t total_ = 0;
     std::vector<test_details> failures_, skips_;
   };
 

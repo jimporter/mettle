@@ -11,9 +11,11 @@
 
 namespace mettle {
 
+using test_uid = std::uint64_t;
+
 namespace detail {
-  inline uint64_t generate_id() {
-    static std::atomic<uint64_t> id_(0);
+  inline test_uid generate_id() {
+    static std::atomic<test_uid> id_(0);
     return id_++;
   }
 
@@ -47,7 +49,7 @@ public:
     std::string name;
     function_type function;
     attributes attrs;
-    uint64_t id;
+    test_uid id;
   };
 
   using iterator = typename std::vector<test_info>::const_iterator;
@@ -93,7 +95,7 @@ public:
     return tests_.end();
   }
 
-  size_t size() const {
+  std::size_t size() const {
     return tests_.size();
   }
 

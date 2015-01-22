@@ -87,7 +87,7 @@ namespace log {
       out_ << std::endl;
 
     using namespace term;
-    size_t passes = total_ - skips_.size() - failures_.size();
+    std::size_t passes = total_ - skips_.size() - failures_.size();
     std::string test_str = total_ == 1 ? "test" : "tests";
 
     out_ << format(sgr::bold) << passes << "/" << total_ << " "

@@ -2,6 +2,7 @@
 #define INC_METTLE_DRIVER_LOG_INDENT_HPP
 
 #include <cassert>
+#include <cstdint>
 #include <ostream>
 #include <stdexcept>
 #include <string>
@@ -19,14 +20,14 @@ public:
   using base_type = std::basic_streambuf<Char, Traits>;
   using int_type = typename base_type::int_type;
 
-  basic_indenting_streambuf(base_type *buf, size_t base_indent = 2)
+  basic_indenting_streambuf(base_type *buf, std::size_t base_indent = 2)
     : buf_(buf), base_indent_(base_indent) {}
 
-  void indent(ptrdiff_t offset, indent_style style) {
+  void indent(std::ptrdiff_t offset, indent_style style) {
     if(style == indent_style::logical)
       offset *= base_indent_;
 
-    if(offset < 0 && indent_ < static_cast<size_t>(-offset))
+    if(offset < 0 && indent_ < static_cast<std::size_t>(-offset))
       indent_ = 0;
     else
       indent_ += offset;
@@ -34,7 +35,7 @@ public:
 protected:
   virtual int_type overflow(int_type ch) {
     if(new_line_ && ch != '\n') {
-      for(size_t i = 0; i != indent_; i++)
+      for(std::size_t i = 0; i != indent_; i++)
         buf_->sputc(' ');
     }
     new_line_ = ch == '\n';
@@ -46,8 +47,8 @@ protected:
   }
 private:
   std::basic_streambuf<Char, Traits> *buf_;
-  size_t base_indent_;
-  size_t indent_ = 0;
+  std::size_t base_indent_;
+  std::size_t indent_ = 0;
   bool new_line_ = true;
 };
 
@@ -59,13 +60,13 @@ public:
   using base_type = std::basic_ostream<Char, Traits>;
   using streambuf_type = basic_indenting_streambuf<Char, Traits>;
 
-  basic_indenting_ostream(base_type &os, size_t base_indent = 2)
+  basic_indenting_ostream(base_type &os, std::size_t base_indent = 2)
     : base_type(&buf), buf(os.rdbuf(), base_indent) {
     this->copyfmt(os);
     this->clear(os.rdstate());
   }
 
-  void indent(ptrdiff_t offset, indent_style style) {
+  void indent(std::ptrdiff_t offset, indent_style style) {
     buf.indent(offset, style);
   }
 private:
@@ -80,7 +81,7 @@ public:
   using stream_type = basic_indenting_ostream<Char, Traits>;
   basic_scoped_indent(
     stream_type &os, indent_style style = indent_style::logical,
-    ptrdiff_t depth = 1
+    std::ptrdiff_t depth = 1
   ) : os_(os), style_(style), depth_(depth) {
     assert(depth_ >= 0);
     os_.indent(depth_, style_);
@@ -92,7 +93,7 @@ public:
 private:
   stream_type &os_;
   indent_style style_;
-  ptrdiff_t depth_;
+  std::ptrdiff_t depth_;
 };
 
 using scoped_indent = basic_scoped_indent<char>;
@@ -103,7 +104,7 @@ public:
   using stream_type = basic_indenting_ostream<Char, Traits>;
   basic_indenter(
     stream_type &os, indent_style style = indent_style::logical,
-    ptrdiff_t depth = 0
+    std::ptrdiff_t depth = 0
   ) : os_(os), style_(style), depth_(depth) {
     assert(depth_ >= 0);
     os_.indent(depth_, style_);
@@ -138,7 +139,7 @@ public:
 private:
   stream_type &os_;
   indent_style style_;
-  ptrdiff_t depth_;
+  std::ptrdiff_t depth_;
 };
 
 using indenter = basic_indenter<char>;

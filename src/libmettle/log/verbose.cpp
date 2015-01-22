@@ -8,7 +8,7 @@ namespace mettle {
 
 namespace log {
 
-  verbose::verbose(indenting_ostream &out, size_t runs, bool show_time,
+  verbose::verbose(indenting_ostream &out, std::size_t runs, bool show_time,
                    bool show_terminal)
     : out_(out), indent_(out), run_indent_(out), total_runs_(runs),
       show_time_(show_time), show_terminal_(show_terminal) {}

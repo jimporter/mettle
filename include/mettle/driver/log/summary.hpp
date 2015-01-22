@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_DRIVER_LOG_SUMMARY_HPP
 #define INC_METTLE_DRIVER_LOG_SUMMARY_HPP
 
+#include <cstdint>
 #include <chrono>
 #include <iomanip>
 #include <map>
@@ -43,7 +44,7 @@ namespace log {
     }
   private:
     struct file_info {
-      size_t index;
+      std::size_t index;
       std::string name;
 
       bool operator <(const file_info &rhs) const {
@@ -52,7 +53,7 @@ namespace log {
     };
 
     struct failure {
-      size_t run;
+      std::size_t run;
       std::string message;
       log::test_output output;
     };
@@ -68,7 +69,7 @@ namespace log {
     bool show_time_, show_terminal_;
     std::chrono::steady_clock::time_point start_time_;
 
-    size_t total_ = 0, runs_ = 0, file_index_ = 0;
+    std::size_t total_ = 0, runs_ = 0, file_index_ = 0;
     std::map<test_name, std::vector<failure>> failures_;
     std::map<test_name, std::string> skips_;
     std::map<file_info, std::vector<failure>> failed_files_;

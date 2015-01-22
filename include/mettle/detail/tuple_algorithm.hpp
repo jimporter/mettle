@@ -1,13 +1,14 @@
 #ifndef INC_METTLE_DETAIL_TUPLE_ALGORITHM_HPP
 #define INC_METTLE_DETAIL_TUPLE_ALGORITHM_HPP
 
+#include <cstdint>
 #include <tuple>
 
 namespace mettle {
 
 namespace detail {
 
-  template<size_t N>
+  template<std::size_t N>
   struct do_until {
     template<typename Tuple, typename Func>
     do_until(Tuple &&tuple, Func &&f) {
@@ -32,7 +33,7 @@ namespace detail {
     );
   }
 
-  template<size_t N>
+  template<std::size_t N>
   struct do_each {
     template<typename Tuple, typename Func>
     do_each(Tuple &&tuple, Func &&f) {

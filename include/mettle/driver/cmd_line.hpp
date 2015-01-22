@@ -2,6 +2,7 @@
 #define INC_METTLE_DRIVER_CMD_LINE_HPP
 
 #include <chrono>
+#include <cstdint>
 #include <memory>
 #include <vector>
 #include <string>
@@ -36,7 +37,7 @@ make_driver_options(driver_options &opts);
 struct output_options {
   std::string output;
   bool color = false;
-  size_t runs = 1;
+  std::size_t runs = 1;
   bool show_terminal = false;
   bool show_time = false;
 };
