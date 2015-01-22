@@ -11,6 +11,9 @@ namespace posix {
 
   class scoped_pipe {
   public:
+    scoped_pipe() = default;
+    scoped_pipe(const scoped_pipe &) = delete;
+
     ~scoped_pipe() {
       close_read();
       close_write();
