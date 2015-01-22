@@ -18,7 +18,7 @@ namespace detail {
   }
 
   template<typename Container, typename Element>
-  inline auto move_if(Element &&value) {
+  inline decltype(auto) move_if(Element &&value) {
     using Value = typename std::remove_reference<Element>::type;
     using ReturnType = typename std::conditional<
       std::is_lvalue_reference<Container>::value, Value &, Value &&
