@@ -53,21 +53,15 @@ enum class sgr {
 class format {
   friend std::ostream & operator <<(std::ostream &, const format &);
 public:
-  template<typename First>
-  explicit format(First &&first) {
-    std::ostringstream ss;
-    ss << "\033[" << static_cast<size_t>(std::forward<First>(first)) << "m";
-    string_ = ss.str();
-  }
+  template<typename ...Args>
+  explicit format(Args &&...args) {
+    static_assert(sizeof...(Args) > 0, "format must have at >=1 argument");
+    size_t values[] = {static_cast<size_t>(std::forward<Args>(args))...};
 
-  template<typename First, typename ...Rest>
-  explicit format(First &&first, Rest &&...rest) {
     std::ostringstream ss;
-    ss << "\033[" << static_cast<size_t>(std::forward<First>(first));
-
-    size_t args[] = {static_cast<size_t>(std::forward<Rest>(rest))...};
-    for(const auto &i : args)
-      ss << ";" << i;
+    ss << "\033[" << values[0];
+    for(size_t i = 1; i != sizeof...(Args); i++)
+      ss << ";" << values[i];
     ss << "m";
     string_ = ss.str();
   }
