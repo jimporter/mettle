@@ -63,7 +63,17 @@ namespace windows {
     if(!(job = CreateJobObject(nullptr, nullptr)))
       return failed();
 
-    // XXX: Support timeouts.
+    scoped_handle timeout_event;
+    if(timeout_) {
+      if(!(timeout_event = CreateWaitableTimer(nullptr, true, nullptr)))
+        return failed();
+      LARGE_INTEGER t;
+      // Convert from ms to 100s-of-nanoseconds (negative for relative time).
+      t.QuadPart = -timeout_->count() * 10000;
+      if(!SetWaitableTimer(timeout_event, &t, 0, nullptr, nullptr, false))
+        return failed();
+    }
+
     if(!CreateProcessA(
          file, const_cast<char*>(args.str().c_str()), nullptr, nullptr, true,
          CREATE_SUSPENDED, nullptr, nullptr, &startup_info, &proc_info
@@ -90,19 +100,29 @@ namespace windows {
       {stderr_pipe.read_handle, &output.stderr_log},
       {log_pipe.read_handle,    &message}
     };
+    std::vector<HANDLE> interrupts = {proc_info.hProcess};
+    if(timeout_)
+      interrupts.push_back(timeout_event);
 
-    if(!read_into(dests, {proc_info.hProcess}))
+    HANDLE finished = read_into(dests, interrupts);
+    if(!finished)
       return failed();
 
     // By now, the child process's main thread has returned, so kill any stray
     // processes in the job.
     TerminateJobObject(job, 1);
 
-    DWORD exit_code;
-    if(!GetExitCodeProcess(proc_info.hProcess, &exit_code))
-      return failed();
-
-    return {exit_code == 0, message};
+    if(finished == timeout_event) {
+      std::ostringstream ss;
+      ss << "Timed out after " << timeout_->count() << " ms";
+      return { false, ss.str() };
+    }
+    else {
+      DWORD exit_code;
+      if(!GetExitCodeProcess(proc_info.hProcess, &exit_code))
+        return failed();
+      return {exit_code == 0, message};
+    }
   }
 
   const test_info *
