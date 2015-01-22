@@ -10,6 +10,7 @@ using namespace mettle;
 #include <mettle/driver/run_tests.hpp>
 #include <mettle/driver/log/core.hpp>
 #include "../src/libmettle/posix/subprocess_test_runner.hpp"
+using namespace mettle::posix;
 
 struct test_event_logger : log::test_logger {
   test_event_logger() {}

@@ -9,21 +9,25 @@
 
 namespace mettle {
 
-class subprocess_test_runner {
-public:
-  using timeout_t = METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds>;
+namespace posix {
 
-  subprocess_test_runner(timeout_t timeout = {}) : timeout_(timeout) {}
+  class subprocess_test_runner {
+  public:
+    using timeout_t = METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds>;
 
-  template<class Rep, class Period>
-  subprocess_test_runner(std::chrono::duration<Rep, Period> timeout)
-    : timeout_(timeout) {}
+    subprocess_test_runner(timeout_t timeout = {}) : timeout_(timeout) {}
 
-  test_result
-  operator ()(const test_info &test, log::test_output &output) const;
-private:
-  timeout_t timeout_;
-};
+    template<class Rep, class Period>
+    subprocess_test_runner(std::chrono::duration<Rep, Period> timeout)
+      : timeout_(timeout) {}
+
+    test_result
+    operator ()(const test_info &test, log::test_output &output) const;
+  private:
+    timeout_t timeout_;
+  };
+
+}
 
 } // namespace mettle
 

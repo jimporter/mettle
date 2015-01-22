@@ -8,6 +8,8 @@
 
 namespace mettle {
 
+namespace posix {
+
 class scoped_sigprocmask {
 public:
   ~scoped_sigprocmask() {
@@ -105,6 +107,8 @@ private:
   int signum = 0;
   struct sigaction act, old_act;
 };
+
+}
 
 } // namespace mettle
 

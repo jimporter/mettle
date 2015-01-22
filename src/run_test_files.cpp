@@ -94,7 +94,7 @@ namespace {
   void run_test_file(const test_file &file, log::pipe &logger,
                      const std::vector<std::string> &args) {
     logger.started_file(file);
-    scoped_pipe message_pipe;
+    posix::scoped_pipe message_pipe;
     message_pipe.open();
 
     rlimit lim;

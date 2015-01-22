@@ -1,9 +1,6 @@
 #include <iostream>
 #include <vector>
 
-#include <pthread.h>
-#include <unistd.h>
-
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/program_options.hpp>
@@ -13,6 +10,7 @@
 #include <mettle/driver/log/child.hpp>
 #include <mettle/driver/log/summary.hpp>
 #include <mettle/driver/log/term.hpp>
+#include <mettle/driver/posix/subprocess.hpp>
 #include <mettle/suite/compiled_suite.hpp>
 
 #include "posix/subprocess_test_runner.hpp"
@@ -29,17 +27,13 @@ namespace {
                     const std::string &message) {
     std::cerr << program_name << ": " << message << std::endl;
   }
-
-  int child_fd;
-  void atfork_child() {
-    close(child_fd);
-  }
 }
 
 namespace detail {
 
   int drive_tests(int argc, const char *argv[], const suites_list &suites) {
     using namespace mettle;
+    using namespace mettle::posix;
     namespace opts = boost::program_options;
 
     auto factory = make_logger_factory();
@@ -101,8 +95,7 @@ namespace detail {
         return 2;
       }
 
-      child_fd = *args.child_fd;
-      pthread_atfork(nullptr, nullptr, atfork_child);
+      close_fd_on_fork(*args.child_fd);
       namespace io = boost::iostreams;
       io::stream<io::file_descriptor_sink> fds(
         *args.child_fd, io::never_close_handle

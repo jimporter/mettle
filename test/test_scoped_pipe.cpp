@@ -4,6 +4,7 @@ using namespace mettle;
 #include <iostream>
 
 #include <mettle/driver/posix/scoped_pipe.hpp>
+using namespace mettle::posix;
 
 suite<scoped_pipe> test_scoped_pipe("scoped_pipe", [](auto &_) {
   _.setup([](scoped_pipe &pipe) {
