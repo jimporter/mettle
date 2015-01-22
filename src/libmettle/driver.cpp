@@ -19,8 +19,8 @@ namespace mettle {
 
 namespace {
   struct all_options : generic_options, driver_options, output_options {
-    METTLE_OPTIONAL_NS::optional<int> child_fd;
-    bool no_fork = false;
+    METTLE_OPTIONAL_NS::optional<int> output_fd;
+    bool no_subproc = false;
   };
 
   void report_error(const std::string &program_name,
@@ -44,13 +44,14 @@ namespace detail {
     auto output = make_output_options(args, factory);
 
     driver.add_options()
-      ("no-subproc", opts::value(&args.no_fork)->zero_tokens(),
+      ("no-subproc", opts::value(&args.no_subproc)->zero_tokens(),
        "don't create a subprocess for each test")
     ;
 
     opts::options_description hidden("Hidden options");
     hidden.add_options()
-      ("child", opts::value(&args.child_fd), "run this file as a child process")
+      ("output-fd", opts::value(&args.output_fd),
+       "pipe the results to this file descriptor")
     ;
 
     opts::variables_map vm;
@@ -76,9 +77,11 @@ namespace detail {
     }
 
     test_runner runner;
-    if(args.no_fork) {
+    if(args.no_subproc) {
       if(args.timeout) {
-        report_error(argv[0], "--timeout requires forking tests");
+        report_error(
+          argv[0], "--timeout requires running tests in subprocesses"
+        );
         return 2;
       }
       runner = inline_test_runner;
@@ -87,26 +90,28 @@ namespace detail {
       runner = subprocess_test_runner(args.timeout);
     }
 
-    if(args.child_fd) {
+    if(args.output_fd) {
       if(auto output_opt = has_option(output, vm)) {
         using namespace opts::command_line_style;
         report_error(argv[0], output_opt->canonical_display_name(allow_long) +
-                              " can't be used with --child");
+                              " can't be used with --output-fd");
         return 2;
       }
 
-      close_fd_on_fork(*args.child_fd);
+      close_fd_on_fork(*args.output_fd);
       namespace io = boost::iostreams;
       io::stream<io::file_descriptor_sink> fds(
-        *args.child_fd, io::never_close_handle
+        *args.output_fd, io::never_close_handle
       );
       log::child logger(fds);
       run_tests(suites, logger, runner, args.filters);
       return 0;
     }
 
-    if(args.no_fork && args.show_terminal) {
-      report_error(argv[0], "--show-terminal requires forking tests");
+    if(args.no_subproc && args.show_terminal) {
+      report_error(
+        argv[0], "--show-terminal requires running tests in subprocesses"
+      );
       return 2;
     }
 

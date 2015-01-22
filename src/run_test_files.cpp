@@ -104,7 +104,9 @@ namespace {
 
     std::vector<std::string> final_args = file.args();
     final_args.insert(final_args.end(), args.begin(), args.end());
-    final_args.insert(final_args.end(), {"--child", std::to_string(max_fd)});
+    final_args.insert(final_args.end(), {
+      "--output-fd", std::to_string(max_fd)
+    });
     auto argv = make_argv(final_args);
 
     pid_t pid;
