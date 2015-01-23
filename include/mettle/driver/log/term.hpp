@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
+#include <type_traits>
 
 namespace term {
 
@@ -12,30 +13,18 @@ namespace detail {
     static int flag = std::ios_base::xalloc();
     return flag;
   }
+
+  template<typename T, typename ...>
+  struct are_same : std::true_type {};
+
+  template<typename T, typename First, typename ...Rest>
+  struct are_same<T, First, Rest...> : std::integral_constant<
+    bool, std::is_same<T, First>::value && are_same<T, Rest...>::value
+  > {};
 }
 
 inline void enable(std::ios_base &ios, bool enabled) {
   ios.iword(detail::stream_flag()) = enabled;
-}
-
-enum class color {
-  black   = 0,
-  red     = 1,
-  green   = 2,
-  yellow  = 3,
-  blue    = 4,
-  magenta = 5,
-  cyan    = 6,
-  white   = 7,
-  normal  = 9
-};
-
-inline std::size_t fg(const color &c) {
-  return 30 + static_cast<std::size_t>(c);
-}
-
-inline std::size_t bg(const color &c) {
-  return 40 + static_cast<std::size_t>(c);
 }
 
 enum class sgr {
@@ -51,15 +40,36 @@ enum class sgr {
   crossed_out = 9
 };
 
+enum class color {
+  black   = 0,
+  red     = 1,
+  green   = 2,
+  yellow  = 3,
+  blue    = 4,
+  magenta = 5,
+  cyan    = 6,
+  white   = 7,
+  normal  = 9
+};
+
+inline sgr fg(color c) {
+  return static_cast<sgr>(30 + static_cast<std::size_t>(c));
+}
+
+inline sgr bg(color c) {
+  return static_cast<sgr>(40 + static_cast<std::size_t>(c));
+}
+
 class format {
   friend std::ostream & operator <<(std::ostream &, const format &);
 public:
   template<typename ...Args>
   explicit format(Args &&...args) {
-    static_assert(sizeof...(Args) > 0, "format must have at >=1 argument");
-    std::size_t values[] = {
-      static_cast<std::size_t>(std::forward<Args>(args))...
-    };
+    static_assert(sizeof...(Args) > 0,
+                  "term::format must have at least one argument");
+    static_assert(detail::are_same<sgr, Args...>::value,
+                  "term::format's arguments must be of type term::sgr");
+    int values[] = {static_cast<int>(std::forward<Args>(args))...};
 
     std::ostringstream ss;
     ss << "\033[" << values[0];
