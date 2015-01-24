@@ -59,14 +59,25 @@ namespace windows {
 
     PROCESS_INFORMATION proc_info;
 
+    scoped_handle job;
+    if(!(job = CreateJobObject(nullptr, nullptr)))
+      return failed();
+
     // XXX: Support timeouts.
     if(!CreateProcessA(
-         file, const_cast<char*>(args.str().c_str()), nullptr, nullptr, true, 0,
-         nullptr, nullptr, &startup_info, &proc_info
+         file, const_cast<char*>(args.str().c_str()), nullptr, nullptr, true,
+         CREATE_SUSPENDED, nullptr, nullptr, &startup_info, &proc_info
        )) {
       return failed();
     }
     scoped_handle subproc_handles[] = {proc_info.hProcess, proc_info.hThread};
+
+    // Assign a job object to the child process (so we can kill the job later)
+    // and then let it start running.
+    if(!AssignProcessToJobObject(job, proc_info.hProcess))
+      return failed();
+    if(!ResumeThread(proc_info.hThread))
+      return failed();
 
     if(!stdout_pipe.close_write() ||
        !stderr_pipe.close_write() ||
@@ -83,8 +94,13 @@ namespace windows {
     if(!read_into(dests, {proc_info.hProcess}))
       return failed();
 
+    // By now, the child process's main thread has returned, so kill any stray
+    // processes in the job.
+    TerminateJobObject(job, 1);
+
     DWORD exit_code;
-    GetExitCodeProcess(proc_info.hProcess, &exit_code);
+    if(!GetExitCodeProcess(proc_info.hProcess, &exit_code))
+      return failed();
 
     return {exit_code == 0, message};
   }
