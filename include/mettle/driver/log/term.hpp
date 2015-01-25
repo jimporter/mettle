@@ -123,6 +123,13 @@ namespace term {
       return ios.iword(detail::console_flag()) & 0xf0;
     }
 
+// MSVC doesn't understand the [[noreturn]] attribute, so it thinks these can
+// exit without returning.
+#ifdef _MSC_VER
+#  pragma warning(push)
+#  pragma warning(disable:4715)
+#endif
+
     inline int ansi_to_win_fg(int val) {
       switch(val) {
       case 30: return 0;
@@ -150,6 +157,10 @@ namespace term {
       default: assert(false && "disallowed color value");
       }
     }
+
+#ifdef _MSC_VER
+#  pragma warning(pop)
+#endif
 
     inline HANDLE dup(HANDLE h) {
       HANDLE proc = GetCurrentProcess();
