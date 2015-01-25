@@ -4,7 +4,6 @@
 #include <istream>
 
 #include <bencode.hpp>
-
 #include <mettle/driver/log/core.hpp>
 
 namespace mettle {
@@ -13,7 +12,8 @@ namespace log {
 
   class pipe {
   public:
-    explicit pipe(log::file_logger &logger) : logger_(logger) {}
+    explicit pipe(log::file_logger &logger)
+      : logger_(logger), file_uid_(detail::make_test_uid()) {}
 
     void operator ()(std::istream &s) {
       using namespace BENCODE_ANY_NS;
@@ -51,20 +51,6 @@ namespace log {
                             read_string(data.at("message")));
       }
     }
-
-    void started_file(const std::string &file) {
-      logger_.started_file(file);
-    }
-
-    void ended_file(const std::string &file) {
-      logger_.ended_file(file);
-      file_index_++;
-    }
-
-    void failed_file(const std::string &file, const std::string &message) {
-      logger_.failed_file(file, message);
-      file_index_++;
-    }
   private:
     std::vector<std::string> read_suites(BENCODE_ANY_NS::any &suites) {
       using namespace BENCODE_ANY_NS;
@@ -80,7 +66,7 @@ namespace log {
 
       // Make sure every test has a unique ID, even if some files have
       // overlapping IDs.
-      test_uid id = (file_index_ << 32) + static_cast<test_uid>(
+      test_uid id = (file_uid_ << 32) + static_cast<test_uid>(
         any_cast<bencode::integer>(data.at("id"))
       );
       return {
@@ -110,7 +96,7 @@ namespace log {
     }
 
     log::file_logger &logger_;
-    test_uid file_index_ = 0;
+    test_uid file_uid_;
   };
 
 }

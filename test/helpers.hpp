@@ -3,6 +3,7 @@
 
 #include <mettle/suite/attributes.hpp>
 #include <mettle/driver/filters_core.hpp>
+#include <mettle/driver/test_name.hpp>
 
 namespace mettle {
 
@@ -50,6 +51,10 @@ std::string to_printable(const filter_result &result) {
   ss << "filter_result(" << to_printable(result.action) << ", "
      << to_printable(result.message) << ")";
   return ss.str();
+}
+
+std::string to_printable(const test_name &test) {
+  return test.full_name() + " (id=" + std::to_string(test.id) + ")";
 }
 
 bool operator ==(const attr_instance &lhs, const attr_instance &rhs) {
