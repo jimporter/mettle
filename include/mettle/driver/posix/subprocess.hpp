@@ -20,7 +20,7 @@ namespace posix {
   void make_timeout_monitor(std::chrono::milliseconds timeout);
   int read_into(std::vector<readfd> &dests, const timespec *timeout,
                 const sigset_t *sigmask);
-  int close_fd_on_fork(int fd);
+  int make_fd_private(int fd);
 }
 
 } // namespace mettle

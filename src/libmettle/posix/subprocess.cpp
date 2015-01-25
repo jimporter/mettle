@@ -124,7 +124,7 @@ namespace posix {
     }
   }
 
-  int close_fd_on_fork(int fd) {
+  int make_fd_private(int fd) {
     fd_to_close = fd;
     return pthread_atfork(nullptr, nullptr, atfork_close_fd);
   }
