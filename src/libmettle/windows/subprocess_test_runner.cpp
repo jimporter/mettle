@@ -44,7 +44,6 @@ namespace windows {
          << log_pipe.write_handle.handle();
 
     STARTUPINFOA startup_info = { sizeof(STARTUPINFOA) };
-    memset(&startup_info, 0, sizeof(STARTUPINFO));
     startup_info.dwFlags = STARTF_USESTDHANDLES;
     startup_info.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
     startup_info.hStdOutput = stdout_pipe.write_handle;
