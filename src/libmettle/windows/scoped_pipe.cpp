@@ -13,24 +13,25 @@ namespace windows {
     const std::size_t BUFSIZE = 4096;
     static std::uint64_t pipe_id = 0;
 
-    std::ostringstream os;
-    os << "\\\\.\\pipe\\anonpipe." << GetCurrentProcessId() << "." << pipe_id++;
-    const char *name = os.str().c_str();
+    std::ostringstream ss;
+    ss << "\\\\.\\pipe\\anonpipe." << GetCurrentProcessId() << "." << pipe_id++;
+    std::string name = ss.str();
 
     DWORD read_flags = PIPE_ACCESS_INBOUND;
     if(overlapped.first)
       read_flags |= FILE_FLAG_OVERLAPPED;
     read_handle = CreateNamedPipeA(
-      name, read_flags, 0, 1, BUFSIZE, BUFSIZE, 0, nullptr
+      name.c_str(), read_flags, 0, 1, BUFSIZE, BUFSIZE, 0, nullptr
     );
-    if(!read_handle)
+    if(read_handle == INVALID_HANDLE_VALUE)
       return false;
 
     DWORD write_flags = FILE_ATTRIBUTE_NORMAL;
     if(overlapped.first)
       write_flags |= FILE_FLAG_OVERLAPPED;
     write_handle = CreateFileA(
-      name, GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, write_flags, nullptr
+      name.c_str(), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, write_flags,
+      nullptr
     );
     if(write_handle == INVALID_HANDLE_VALUE) {
       auto last_err = GetLastError();

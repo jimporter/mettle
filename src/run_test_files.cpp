@@ -1,7 +1,14 @@
 #include "run_test_files.hpp"
 
 #include "log_pipe.hpp"
-#include "posix/run_test_file.hpp"
+
+#ifndef _WIN32
+#  include "posix/run_test_file.hpp"
+namespace platform = mettle::posix;
+#else
+#  include "windows/run_test_file.hpp"
+namespace platform = mettle::windows;
+#endif
 
 namespace mettle {
 
@@ -9,7 +16,7 @@ void run_test_files(
   const std::vector<test_file> &files, log::file_logger &logger,
   const std::vector<std::string> &args
 ) {
-  using namespace posix;
+  using namespace platform;
   logger.started_run();
 
   for(const auto &file : files) {

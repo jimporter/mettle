@@ -19,6 +19,7 @@
 #  include "posix/subprocess_test_runner.hpp"
 namespace platform = mettle::posix;
 #else
+#  include <mettle/driver/windows/subprocess.hpp>
 #  include "windows/subprocess_test_runner.hpp"
 namespace platform = mettle::windows;
 #endif
@@ -30,6 +31,7 @@ namespace {
 #ifndef _WIN32
     METTLE_OPTIONAL_NS::optional<int> output_fd;
 #else
+    METTLE_OPTIONAL_NS::optional<HANDLE> output_fd;
     METTLE_OPTIONAL_NS::optional<test_uid> test_id;
     METTLE_OPTIONAL_NS::optional<HANDLE> log_fd;
 #endif
@@ -64,10 +66,9 @@ namespace detail {
 
     opts::options_description hidden("Hidden options");
     hidden.add_options()
-#ifndef _WIN32
       ("output-fd", opts::value(&args.output_fd),
        "pipe the results to this file descriptor")
-#else
+#ifdef _WIN32
       ("test-id", opts::value(&args.test_id), "internal id of a test to run")
       ("log-fd", opts::value(&args.log_fd), "HANDLE to log pipe")
 #endif
@@ -126,7 +127,6 @@ namespace detail {
       runner = subprocess_test_runner(args.timeout);
     }
 
-#ifndef _WIN32
     if(args.output_fd) {
       if(auto output_opt = has_option(output, vm)) {
         using namespace opts::command_line_style;
@@ -144,7 +144,6 @@ namespace detail {
       run_tests(suites, logger, runner, args.filters);
       return 0;
     }
-#endif
 
     if(args.no_subproc && args.show_terminal) {
       report_error(

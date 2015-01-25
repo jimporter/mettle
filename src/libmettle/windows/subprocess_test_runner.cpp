@@ -9,22 +9,15 @@
 #include <mettle/driver/windows/scoped_pipe.hpp>
 #include <mettle/driver/windows/subprocess.hpp>
 
+#include "err_string.hpp"
+
 namespace mettle {
 
 namespace windows {
 
   namespace {
-    test_result failed() {
-      char *tmp;
-      FormatMessageA(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER |
-        FORMAT_MESSAGE_FROM_SYSTEM |
-        FORMAT_MESSAGE_IGNORE_INSERTS,
-        nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        reinterpret_cast<char*>(&tmp), 0, nullptr
-      );
-      std::unique_ptr<char, HLOCAL (__stdcall*)(HLOCAL)> msg(tmp, LocalFree);
-      return { false, msg.get() };
+    inline test_result failed() {
+      return { false, err_string(GetLastError()) };
     }
   }
 
