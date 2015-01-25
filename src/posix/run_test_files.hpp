@@ -1,6 +1,9 @@
 #ifndef INC_METTLE_SRC_POSIX_RUN_TEST_FILES_HPP
 #define INC_METTLE_SRC_POSIX_RUN_TEST_FILES_HPP
 
+#include <string>
+#include <vector>
+
 #include <mettle/driver/log/core.hpp>
 
 #include "../test_file.hpp"
