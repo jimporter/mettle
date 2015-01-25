@@ -32,9 +32,6 @@ private:
 void validate(boost::any &v, const std::vector<std::string> &values,
               test_file*, int);
 
-std::unique_ptr<char *[]>
-make_argv(const std::vector<std::string> &argv);
-
 } // namespace mettle
 
 #endif

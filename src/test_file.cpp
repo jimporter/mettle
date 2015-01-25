@@ -48,12 +48,4 @@ void validate(boost::any &v, const std::vector<std::string> &values,
   }
 }
 
-std::unique_ptr<char *[]>
-make_argv(const std::vector<std::string> &argv) {
-  auto real_argv = std::make_unique<char *[]>(argv.size() + 1);
-  for(std::size_t i = 0; i != argv.size(); i++)
-    real_argv[i] = const_cast<char*>(argv[i].c_str());
-  return real_argv;
-}
-
 } // namespace mettle

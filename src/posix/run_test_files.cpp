@@ -18,32 +18,38 @@ namespace mettle {
 namespace posix {
 
   namespace {
-    namespace {
-      inline void parent_failed(log::pipe &logger, const std::string &file) {
-        logger.failed_file(file, err_string(errno));
-      }
+    inline void parent_failed(log::pipe &logger, const std::string &file) {
+      logger.failed_file(file, err_string(errno));
+    }
 
-      [[noreturn]] void
-      child_failed(int fd, const std::string &file) {
-        auto err = err_string(errno);
+    [[noreturn]] void
+    child_failed(int fd, const std::string &file) {
+      auto err = err_string(errno);
 
-        try {
-          namespace io = boost::iostreams;
-          io::stream<io::file_descriptor_sink> stream(
-            fd, io::never_close_handle
-          );
-          bencode::encode_dict(stream,
-            "event", "failed_file",
-            "file", file,
-            "message", err
-          );
-          stream.flush();
-          _exit(0);
-        }
-        catch(...) {
-          _exit(128);
-        }
+      try {
+        namespace io = boost::iostreams;
+        io::stream<io::file_descriptor_sink> stream(
+          fd, io::never_close_handle
+        );
+        bencode::encode_dict(stream,
+          "event", "failed_file",
+          "file", file,
+          "message", err
+        );
+        stream.flush();
+        _exit(0);
       }
+      catch(...) {
+        _exit(128);
+      }
+    }
+
+    std::unique_ptr<char *[]>
+    make_argv(const std::vector<std::string> &argv) {
+      auto real_argv = std::make_unique<char *[]>(argv.size() + 1);
+      for(std::size_t i = 0; i != argv.size(); i++)
+        real_argv[i] = const_cast<char*>(argv[i].c_str());
+      return real_argv;
     }
 
     void run_test_file(const test_file &file, log::pipe &logger,
