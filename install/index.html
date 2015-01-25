@@ -152,8 +152,9 @@
 
 <h1 id="installation">Installation</h1>
 <p>Broadly, mettle is composed of three parts: a set of header files, a shared
-library (<code>libmettle.so</code>), and a universal test driver (<code>mettle</code>). Before we can
-start using mettle, we'll need to build and install it.</p>
+library (<code>libmettle.so</code> or <code>mettle.dll</code>), and a universal test driver
+(<code>mettle</code>). Before we can start using mettle, we'll need to build and install
+it.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>Before you get started with mettle, you'll need to install its dependencies:</p>
 <ul>
@@ -162,12 +163,9 @@ start using mettle, we'll need to build and install it.</p>
 <li><a href="http://clang.llvm.org/">clang</a> + <a href="http://libcxx.llvm.org/">libc++</a> 3.5</li>
 <li><a href="https://gcc.gnu.org/">GCC</a> + <a href="https://gcc.gnu.org/libstdc++/">libstdc++</a>
    5.0</li>
-<li><a href="http://www.visualstudio.com/">MSVC</a> 2015 Preview <em>(for header-only
-   mode)</em></li>
+<li><a href="http://www.visualstudio.com/">MSVC</a> 2015 Preview</li>
 </ul>
 </li>
-<li>A POSIX environment <em>(for full build; this dependency will be eliminated prior
-  to v1.0)</em></li>
 <li><a href="http://www.boost.org/">Boost</a></li>
 <li><a href="https://github.com/jimporter/bencode.hpp">bencode.hpp</a></li>
 </ul>
@@ -188,6 +186,12 @@ following instead of the usual <code>#include &lt;mettle.hpp&gt;</code>:</p>
 <p>However, the header-only version is quite limited and doesn't support any of the
 command-line arguments described in <a href="../running-tests">Running Tests</a>.</p>
 <h2 id="building-and-installing">Building and installing</h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently, the build system requires <code>make</code> and only works with compilers
+with <code>cc</code>-like arguments, so Visual Studio users are currently on their own
+for building. This will be fixed before 1.0 is released. Until then, sorry!</p>
+</div>
 <p>Once you've installed all of mettle's dependencies, you can build mettle itself!
 If you've already set up your environment variables to use clang (or whatever
 C++14-compliant compiler you like), you should be able to run</p>

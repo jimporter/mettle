@@ -291,6 +291,10 @@ expectation instead:</p>
 <p>A matcher that returns <code>true</code> if an exception of type <code>Type</code> (or a subclass of
 <code>Type</code>) is thrown and whose value matches <code>matcher</code>.</p>
 <h3 id="death-matchers">Death matchers</h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These matchers are currently unusable on Windows. Sorry about that!</p>
+</div>
 <p>The most kvlt of all matchers, death matchers check that a function would cause
 the process to terminate, either by signalling or by exiting. (These matchers
 will fork a child process before calling the function so that the test
