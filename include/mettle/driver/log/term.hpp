@@ -6,6 +6,8 @@
 #include <string>
 #include <type_traits>
 
+#include "../detail/export.hpp"
+
 #ifdef _WIN32
 #  include <cassert>
 #  include <vector>
@@ -17,7 +19,7 @@ namespace mettle {
 namespace term {
 
   namespace detail {
-    inline int enabled_flag() {
+    METTLE_PUBLIC inline int enabled_flag() {
       static int flag = std::ios_base::xalloc();
       return flag;
     }
@@ -98,7 +100,7 @@ namespace term {
 #else
 
   namespace detail {
-    inline int console_flag() {
+    METTLE_PUBLIC inline int console_flag() {
       static int flag = std::ios_base::xalloc();
       return flag;
     }
@@ -148,27 +150,50 @@ namespace term {
       default: assert(false && "disallowed color value");
       }
     }
+
+    inline HANDLE dup(HANDLE h) {
+      HANDLE proc = GetCurrentProcess();
+      HANDLE result;
+      if(!DuplicateHandle(proc, h, proc, &result, 0, true,
+                          DUPLICATE_SAME_ACCESS)) {
+        return nullptr;
+      }
+      return result;
+    }
   }
 
   inline void enable(std::ios_base &ios, bool enabled) {
-    // XXX: Make sure we're actually talking on CONOUT$.
-    HANDLE handle = CreateFileA(
-      "CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, nullptr,
-      OPEN_EXISTING, 0, nullptr
-    );
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    GetConsoleScreenBufferInfo(handle, &info);
-
+    int enabled_flag = detail::enabled_flag();
     int console_flag = detail::console_flag();
-    ios.iword(console_flag) = info.wAttributes;
-    ios.pword(console_flag) = handle;
-    ios.register_callback([](std::ios_base::event type, std::ios_base &ios,
-                             int flag) {
-      if(type == std::ios_base::erase_event)
-        CloseHandle(ios.pword(flag));
-    }, console_flag);
 
-    ios.iword(detail::enabled_flag()) = enabled;
+    if((ios.iword(enabled_flag) != 0) == enabled)
+      return;
+
+    if(enabled) {
+      // XXX: Make sure we're actually talking on CONOUT$.
+      HANDLE handle = detail::dup(GetStdHandle(STD_OUTPUT_HANDLE));
+      CONSOLE_SCREEN_BUFFER_INFO info;
+      GetConsoleScreenBufferInfo(handle, &info);
+
+      ios.iword(console_flag) = info.wAttributes;
+      ios.pword(console_flag) = handle;
+      ios.register_callback([](std::ios_base::event type, std::ios_base &ios,
+                               int flag) {
+        switch(type) {
+        case std::ios_base::copyfmt_event:
+          ios.pword(flag) = detail::dup(GetStdHandle(STD_OUTPUT_HANDLE));
+          break;
+        case std::ios_base::erase_event:
+          CloseHandle(ios.pword(flag));
+          break;
+        }
+      }, console_flag);
+    }
+    else {
+      CloseHandle(ios.pword(console_flag));
+    }
+
+    ios.iword(enabled_flag) = enabled;
   }
 
   class format {
