@@ -1,8 +1,6 @@
 #ifndef INC_METTLE_SRC_POSIX_RUN_TEST_FILES_HPP
 #define INC_METTLE_SRC_POSIX_RUN_TEST_FILES_HPP
 
-#include <boost/any.hpp>
-
 #include <mettle/driver/log/core.hpp>
 
 #include "../test_file.hpp"
