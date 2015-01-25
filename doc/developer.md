@@ -8,7 +8,7 @@ everything fits together.
 
 mettle's structure is a bit different from other test frameworks. First, like
 some other test frameworks, individual (user-written) test files link to a
-shared library (`libmettle.so`) to pull in common driver code.
+shared library (`libmettle.so` / `mettle.dll`) to pull in common driver code.
 
 However, in addition, the `mettle` test driver can be used to aggregate the
 results of multiple test files. This lets you put your tests into multiple,
@@ -18,11 +18,16 @@ to be run all at once (e.g. normal unit tests and compilation-failure tests).
 ### Subprocesses
 
 When running tests, mettle makes extensive use of subprocesses to isolate tests
-as much as possible. First, the `mettle` driver forks/execs each individual test
-binary, and these in turn (by default) fork for each test in the file. This
-ensures that no one test can crash the entire framework. The *test process* is
-also set as the process group leader for a new process group in order to ensure
-that any subprocesses of it are killed, if necessary.
+as much as possible. First, the `mettle` driver creates a subprocess for each
+individual test binary, and these in turn (by default) create a subprocess for
+each test in the file. This ensures that no one test can crash the entire
+framework. However, the particulars differ between POSIX systems and Windows.
+
+#### POSIX
+
+When the individual test binary forks for a specific test, the *test process* is
+also set as the process group leader for a new process group. This ensures
+that any subprocesses it spawns can be killed after the main process finishes.
 
 Additionally, if tests are set to time out after a certain period, two more
 subprocesses are forked for each test: a *monitor process* and a *timer
@@ -34,7 +39,27 @@ monitor process kills the test and sends a message that it timed out.
 You might be thinking, "why not just use `alarm(2)` or `setitimer(2)` instead of
 forking two extra times?" However, this would interact poorly with tests that
 rely on functions like `sleep(3)`. Hence, in the interest of maximum isolation
-of the test code, the timer is implemented as a subprocess.
+of the test code, the timer is implemented as a subprocess. Likewise, running
+the timer in the parent process requires greater care when handling signals. In
+any case, the current method has the significant benefit of being entirely
+transparent to the parent process.
+
+#### Windows
+
+Since Windows is unable to fork a process, when the individual test binary
+creates a subprocess for a test, it simply reruns itself with a different set of
+command-line arguments, indicating that only a specific test should be run. This
+subprocess is immediately placed into a new job, ensuring that - like the POSIX
+version's process groups - any subprocesses it spawns can be killed after the
+main process finishes.
+
+Unlike the POSIX version, if tests are set to time out, we simply create a timer
+event and wait for it while we're waiting for the test process to end. If the
+timer's event fires first, we know to kill the test process. Since the timer is
+run in the parent process, this provides the same level of isolation as the
+POSIX version, but at the expense of some extra management; the parent process
+must now pay specific attention to the timer event instead of assuming that its
+child process will handle it.
 
 ## Suites
 

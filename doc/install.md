@@ -1,8 +1,9 @@
 # Installation
 
 Broadly, mettle is composed of three parts: a set of header files, a shared
-library (`libmettle.so`), and a universal test driver (`mettle`). Before we can
-start using mettle, we'll need to build and install it.
+library (`libmettle.so` or `mettle.dll`), and a universal test driver
+(`mettle`). Before we can start using mettle, we'll need to build and install
+it.
 
 ## Dependencies
 
@@ -13,10 +14,7 @@ Before you get started with mettle, you'll need to install its dependencies:
      * [clang](http://clang.llvm.org/) + [libc++](http://libcxx.llvm.org/) 3.5
      * [GCC](https://gcc.gnu.org/) + [libstdc++](https://gcc.gnu.org/libstdc++/)
        5.0
-     * [MSVC](http://www.visualstudio.com/) 2015 Preview *(for header-only
-       mode)*
-* A POSIX environment *(for full build; this dependency will be eliminated prior
-  to v1.0)*
+     * [MSVC](http://www.visualstudio.com/) 2015 Preview
 * [Boost](http://www.boost.org/)
 * [bencode.hpp](https://github.com/jimporter/bencode.hpp)
 
@@ -40,6 +38,11 @@ However, the header-only version is quite limited and doesn't support any of the
 command-line arguments described in [Running Tests](running-tests.md).
 
 ## Building and installing
+
+!!! note
+    Currently, the build system requires `make` and only works with compilers
+    with `cc`-like arguments, so Visual Studio users are currently on their own
+    for building. This will be fixed before 1.0 is released. Until then, sorry!
 
 Once you've installed all of mettle's dependencies, you can build mettle itself!
 If you've already set up your environment variables to use clang (or whatever
