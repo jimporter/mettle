@@ -8,7 +8,7 @@
 #include <mettle/driver/log/summary.hpp>
 #include <mettle/driver/log/term.hpp>
 
-#include "run_test_files.hpp"
+#include "posix/run_test_files.hpp"
 
 namespace mettle {
 
@@ -27,6 +27,7 @@ namespace {
 
 int main(int argc, const char *argv[]) {
   using namespace mettle;
+  using namespace mettle::posix;
   namespace opts = boost::program_options;
 
   auto factory = make_logger_factory();

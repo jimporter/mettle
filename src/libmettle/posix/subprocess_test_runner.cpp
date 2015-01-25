@@ -8,7 +8,8 @@
 #include <mettle/driver/posix/scoped_pipe.hpp>
 #include <mettle/driver/posix/scoped_signal.hpp>
 #include <mettle/driver/posix/subprocess.hpp>
-#include "../../utils.hpp"
+
+#include "err_string.hpp"
 
 namespace mettle {
 

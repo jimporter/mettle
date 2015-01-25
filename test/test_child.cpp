@@ -1,8 +1,8 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-#include "../src/run_test_files.hpp"
 #include "../src/log_pipe.hpp"
+#include "../src/test_file.hpp"
 #include <mettle/driver/log/child.hpp>
 
 struct recording_logger : log::file_logger {

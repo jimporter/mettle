@@ -17,7 +17,8 @@ TESTS := $(patsubst %.cpp,%,$(wildcard test/*.cpp))
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
 HEADER_ONLY_EXAMPLES := examples/test_header_only
 
-METTLE_SOURCES := $(wildcard src/*.cpp)
+METTLE_DIRS := src src/posix
+METTLE_SOURCES := $(foreach dir,$(METTLE_DIRS),$(wildcard $(dir)/*.cpp))
 LIBMETTLE_DIRS := src/libmettle src/libmettle/log src/libmettle/posix
 LIBMETTLE_SOURCES := $(foreach dir,$(LIBMETTLE_DIRS),$(wildcard $(dir)/*.cpp))
 SOURCES := $(METTLE_SOURCES) $(LIBMETTLE_SOURCES)
@@ -44,7 +45,7 @@ all: mettle libmettle.so
 
 TEST_LDFLAGS := $(LDFLAGS)
 test/test_child: TEST_LDFLAGS += -lboost_program_options -lboost_iostreams
-test/test_child: src/run_test_files.o src/test_file.o
+test/test_child: src/test_file.o src/posix/run_test_files.o
 
 $(TESTS) $(filter-out $(HEADER_ONLY_EXAMPLES),$(EXAMPLES)): %: %.o libmettle.so
 	$(CXX) $(CXXFLAGS) $(filter %.o,$^) -L. -lmettle $(TEST_LDFLAGS) -o $@
