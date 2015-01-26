@@ -90,10 +90,12 @@ auto sorted() {
 }
 
 template<typename T>
-auto sorted(const T &comparator) {
-  return make_matcher([comparator](const auto &value) {
-    return std::is_sorted(std::begin(value), std::end(value), comparator);
-  }, "sorted by " + type_name<T>());
+auto sorted(T &&compare) {
+  return make_matcher(
+    std::forward<T>(compare),
+    [](const auto &value, auto &&compare) {
+    return std::is_sorted(std::begin(value), std::end(value), compare);
+  }, "sorted by ");
 }
 
 } // namespace mettle
