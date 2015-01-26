@@ -64,7 +64,7 @@ template<typename T>
 struct is_iterable : decltype(detail::check_iterable<T>(0)) {};
 
 template<typename T, std::size_t N>
-class is_iterable<T[N]> : public std::true_type {};
+struct is_iterable<T[N]> : std::true_type {};
 
 } // namespace mettle
 
