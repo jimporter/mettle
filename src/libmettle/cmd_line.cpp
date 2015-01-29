@@ -1,5 +1,6 @@
 #include <mettle/driver/cmd_line.hpp>
 
+#include <cassert>
 #include <cstdint>
 #include <regex>
 #include <sstream>
@@ -9,6 +10,12 @@
 
 #include <mettle/driver/log/brief.hpp>
 #include <mettle/driver/log/verbose.hpp>
+
+#ifndef _WIN32
+#  include <unistd.h>
+#else
+#  include <io.h>
+#endif
 
 namespace mettle {
 
@@ -36,6 +43,23 @@ make_driver_options(driver_options &opts) {
   return desc;
 }
 
+bool color_enabled(color_option opt, int fd) {
+  switch(opt) {
+  case color_option::never:
+    return false;
+  case color_option::automatic:
+#ifndef _WIN32
+    return isatty(fd);
+#else
+    return _isatty(fd);
+#endif
+  case color_option::always:
+    return true;
+  default:
+    assert(false && "unexpected value");
+  }
+}
+
 boost::program_options::options_description
 make_output_options(output_options &opts, const logger_factory &factory) {
   using namespace boost::program_options;
@@ -53,7 +77,9 @@ make_output_options(output_options &opts, const logger_factory &factory) {
   options_description desc("Output options");
   desc.add_options()
     ("output,o", value(&opts.output)->value_name("FORMAT"), ss.str().c_str())
-    ("color,c", value(&opts.color)->zero_tokens(), "show colored output")
+    ("color,c", value(&opts.color)->value_name("WHEN")
+                ->implicit_value(color_option::always, "always"),
+     "show colored output (one of: \"never\", \"auto\", or \"always\")")
     ("runs,n", value(&opts.runs)->value_name("N"), "number of test runs")
     ("show-terminal", value(&opts.show_terminal)->zero_tokens(),
      "show terminal output for each test")
@@ -157,6 +183,22 @@ attr_filter parse_attr(const std::string &value) {
 
   assert(state == ITEM_START);
   return result;
+}
+
+void validate(boost::any &v, const std::vector<std::string> &values,
+              color_option*, int) {
+  using namespace boost::program_options;
+  validators::check_first_occurrence(v);
+  const std::string &val = validators::get_single_string(values);
+
+  if(val == "never")
+    v = color_option::never;
+  else if(val == "auto")
+    v = color_option::automatic;
+  else if(val == "always")
+    v = color_option::always;
+  else
+    boost::throw_exception(invalid_option_value(val));
 }
 
 void validate(boost::any &v, const std::vector<std::string> &values,

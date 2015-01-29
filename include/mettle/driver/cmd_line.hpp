@@ -39,9 +39,17 @@ struct driver_options {
 METTLE_PUBLIC boost::program_options::options_description
 make_driver_options(driver_options &opts);
 
+enum class color_option {
+  never,
+  automatic,
+  always
+};
+
+bool color_enabled(color_option opt, int fd = 1 /* STDOUT_FILENO */);
+
 struct output_options {
   std::string output;
-  bool color = false;
+  color_option color = color_option::never;
   std::size_t runs = 1;
   bool show_terminal = false;
   bool show_time = false;
@@ -75,6 +83,10 @@ std::vector<std::basic_string<Char>> filter_options(
 }
 
 METTLE_PUBLIC attr_filter parse_attr(const std::string &value);
+
+METTLE_PUBLIC void
+validate(boost::any &v, const std::vector<std::string> &values,
+         color_option*, int);
 
 METTLE_PUBLIC void
 validate(boost::any &v, const std::vector<std::string> &values,

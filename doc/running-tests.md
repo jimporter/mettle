@@ -129,10 +129,11 @@ format is set to *brief*. The available formats are:
   test, `!` a failed test, and `_` a skipped test.
 * `verbose`: Show the full name of tests and suites as they're being run.
 
-#### --color (-c)
+#### --color *[WHEN]* (-c)
 
 Print test results in color. This is good if your terminal supports colors,
-since it makes the results much easier to read!
+since it makes the results much easier to read! `WHEN` can be one of `always`
+(the default if you don't explicitly specify `WHEN`), `never`, or `auto`.
 
 #### --runs *N* (-n)
 

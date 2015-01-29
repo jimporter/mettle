@@ -74,7 +74,7 @@ install: all
 
 .PHONY: test
 test: tests mettle
-	./mettle --output=verbose --color $(TESTS)
+	./mettle --output=verbose --color=auto $(TESTS)
 
 .PHONY: doc
 doc:
