@@ -247,9 +247,10 @@ format is set to <em>brief</em>. The available formats are:</p>
   test, <code>!</code> a failed test, and <code>_</code> a skipped test.</li>
 <li><code>verbose</code>: Show the full name of tests and suites as they're being run.</li>
 </ul>
-<h4 id="-color-c">--color (-c)</h4>
+<h4 id="-color-when-c">--color <em>[WHEN]</em> (-c)</h4>
 <p>Print test results in color. This is good if your terminal supports colors,
-since it makes the results much easier to read!</p>
+since it makes the results much easier to read! <code>WHEN</code> can be one of <code>always</code>
+(the default if you don't explicitly specify <code>WHEN</code>), <code>never</code>, or <code>auto</code>.</p>
 <h4 id="-runs-n-n">--runs <em>N</em> (-n)</h4>
 <p>Run the tests a total of <em>N</em> times. This is useful for catching intermittent
 failures. At the end, the summary will show the output of each failure for every
