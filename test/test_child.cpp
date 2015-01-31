@@ -70,13 +70,16 @@ struct recording_logger : log::file_logger {
   log::test_duration duration;
 };
 
-auto equal_test(const test_name &expected) {
-  return make_matcher([expected](const test_name &actual) {
-    // IDs probably won't match exactly, since after being piped, the 4 high
-    // bytes are the file's UID. Thus, we only check the low 4 bytes.
-    return actual.suites == expected.suites && actual.test == expected.test &&
-           (actual.id & 0xffffffff) == (expected.id & 0xffffffff);
-  }, to_printable(expected));
+auto equal_test_name(const test_name &expected) {
+  return make_matcher(
+    expected,
+    [](const test_name &actual, const test_name &expected) {
+      // IDs probably won't match exactly, since after being piped, the 4 high
+      // bytes are the file's UID. Thus, we only check the low 4 bytes.
+      return actual.suites == expected.suites && actual.test == expected.test &&
+             (actual.id & 0xffffffff) == (expected.id & 0xffffffff);
+    }, ""
+  );
 }
 
 struct fixture {
@@ -130,7 +133,7 @@ suite<fixture> test_child("test child logger", [](auto &_) {
     f.pipe(f.stream);
 
     expect(f.parent.called, equal_to("started_test"));
-    expect(f.parent.test, equal_test(test));
+    expect(f.parent.test, equal_test_name(test));
   });
 
   _.test("passed_test()", [](fixture &f) {
@@ -142,7 +145,7 @@ suite<fixture> test_child("test child logger", [](auto &_) {
     f.pipe(f.stream);
 
     expect(f.parent.called, equal_to("passed_test"));
-    expect(f.parent.test, equal_test(test));
+    expect(f.parent.test, equal_test_name(test));
     expect(f.parent.output.stdout_log, equal_to(output.stdout_log));
     expect(f.parent.output.stderr_log, equal_to(output.stderr_log));
     expect(f.parent.duration, equal_to(duration));
@@ -158,7 +161,7 @@ suite<fixture> test_child("test child logger", [](auto &_) {
     f.pipe(f.stream);
 
     expect(f.parent.called, equal_to("failed_test"));
-    expect(f.parent.test, equal_test(test));
+    expect(f.parent.test, equal_test_name(test));
     expect(f.parent.message, equal_to(message));
     expect(f.parent.output.stdout_log, equal_to(output.stdout_log));
     expect(f.parent.output.stderr_log, equal_to(output.stderr_log));
@@ -173,7 +176,7 @@ suite<fixture> test_child("test child logger", [](auto &_) {
 
     expect(f.parent.called, equal_to("skipped_test"));
     expect(f.parent.message, equal_to(message));
-    expect(f.parent.test, equal_test(test));
+    expect(f.parent.test, equal_test_name(test));
   });
 
 });
