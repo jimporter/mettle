@@ -20,19 +20,6 @@ std::string to_printable(const attr_instance &attr) {
   return ss.str();
 }
 
-std::string to_printable(const attributes &attrs) {
-  std::ostringstream ss;
-  ss << "{";
-  if(!attrs.empty()) {
-    auto i = attrs.begin();
-    ss << to_printable(*i);
-    for(++i; i != attrs.end(); ++i)
-      ss << ", " << to_printable(*i);
-  }
-  ss << "}";
-  return ss.str();
-}
-
 std::string to_printable(const test_action &action) {
   switch(action) {
   case test_action::run:
