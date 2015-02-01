@@ -263,6 +263,26 @@ matcher.</p>
 <h4 id="eachmatcher">each(<em>matcher</em>)</h4>
 <p>A matcher that returns <code>true</code> when <em>every</em> item in a collection matches the
 composed matcher.</p>
+<h4 id="eachrange-meta_matcher">each(<em>range</em>, <em>meta_matcher</em>)</h4>
+<p>A matcher that returns <code>true</code> when each item in a collection matches the
+corresponding item in <em>range</em> according to the matcher built from
+<code>meta_matcher</code>. <em>range</em> can be any iterable collection, including a
+<code>std::initializer_list</code>. This is roughly equivalent to:</p>
+<pre><code class="c++">array( meta_matcher(range[0]), meta_matcher(range[1]), ...
+       meta_matcher(range[n]) )
+</code></pre>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When <code>meta_matcher</code> is a template function, be careful about how you pass it
+in. For instance, <code>equal_to&lt;int&gt;</code> will expect an rvalue-reference to an
+<code>int</code>. If <code>range</code> is an lvalue, you'll need to pass <code>equal_to&lt;const int &amp;&gt;</code>
+instead.</p>
+</div>
+<h4 id="eachbegin-end-meta_matcher">each(<em>begin</em>, <em>end</em>, <em>meta_matcher</em>)</h4>
+<p>A matcher that returns <code>true</code> when each item in a collection matches the
+corresponding item in the range [<code>begin</code>, <code>end</code>) according to the matcher built
+from <code>meta_matcher</code>.</p>
 <h4 id="arraymatchers">array(<em>matchers...</em>)</h4>
 <p>A matcher that returns <code>true</code> when the <em>ith</em> item in a collection matches the
 <em>ith</em> composed matcher, <em>and</em> the number of items in the collection is equal to
