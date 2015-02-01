@@ -2,10 +2,13 @@
 #define INC_METTLE_MATCHERS_COLLECTION_HPP
 
 #include <algorithm>
+#include <initializer_list>
+#include <iterator>
+#include <sstream>
 #include <tuple>
 
 #include "core.hpp"
-#include "../detail/tuple_algorithm.hpp"
+#include "../detail/move_if.hpp"
 
 namespace mettle {
 
@@ -35,6 +38,54 @@ auto each(T &&thing) {
       return true;
     }, "each "
   );
+}
+
+template<typename T, typename U>
+auto each(T begin, T end, U &&meta_matcher) {
+  using Matcher = decltype(meta_matcher(*begin));
+  std::vector<Matcher> matchers;
+  for(; begin != end; ++begin)
+    matchers.push_back(meta_matcher(*begin));
+
+  std::ostringstream ss;
+  auto mbegin = matchers.begin(), mend = matchers.end();
+  ss << "[";
+  if(mbegin != mend) {
+    ss << mbegin->desc();
+    for(++mbegin; mbegin != mend; ++mbegin)
+      ss << ", " << mbegin->desc();
+  }
+  ss << "]";
+
+  return make_matcher(
+    [matchers = std::move(matchers)](const auto &value) -> bool {
+      auto i = std::begin(value), end = std::end(value);
+      for(auto &&matcher : matchers) {
+        if(i == end || !matcher(*i))
+          return false;
+        ++i;
+      }
+      return i == end;
+    }, ss.str()
+  );
+}
+
+template<typename T, typename U>
+inline auto each(T &thing, U &&meta_matcher) {
+  return each(std::begin(thing), std::end(thing),
+              std::forward<U>(meta_matcher));
+}
+
+template<typename T, typename U>
+inline auto each(T &&thing, U &&meta_matcher) {
+  return each(std::make_move_iterator(std::begin(thing)),
+              std::make_move_iterator(std::end(thing)),
+              std::forward<U>(meta_matcher));
+}
+
+template<typename T, typename U>
+inline auto each(std::initializer_list<T> list, U &&meta_matcher) {
+  return each(list.begin(), list.end(), std::forward<U>(meta_matcher));
 }
 
 namespace detail {

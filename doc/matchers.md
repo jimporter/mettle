@@ -170,6 +170,30 @@ matcher.
 A matcher that returns `true` when *every* item in a collection matches the
 composed matcher.
 
+#### each(*range*, *meta_matcher*)
+
+A matcher that returns `true` when each item in a collection matches the
+corresponding item in *range* according to the matcher built from
+`meta_matcher`. *range* can be any iterable collection, including a
+`std::initializer_list`. This is roughly equivalent to:
+
+```c++
+array( meta_matcher(range[0]), meta_matcher(range[1]), ...
+       meta_matcher(range[n]) )
+```
+
+!!! note
+    When `meta_matcher` is a template function, be careful about how you pass it
+    in. For instance, `equal_to<int>` will expect an rvalue-reference to an
+    `int`. If `range` is an lvalue, you'll need to pass `equal_to<const int &>`
+    instead.
+
+#### each(*begin*, *end*, *meta_matcher*)
+
+A matcher that returns `true` when each item in a collection matches the
+corresponding item in the range [`begin`, `end`) according to the matcher built
+from `meta_matcher`.
+
 #### array(*matchers...*)
 
 A matcher that returns `true` when the *ith* item in a collection matches the

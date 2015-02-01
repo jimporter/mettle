@@ -210,12 +210,63 @@ suite<> matcher_tests("matchers", [](auto &_) {
       expect(each(123).desc(), equal_to("each 123"));
     });
 
+    _.test("each(begin, end, m)", []() {
+      std::vector<int> vec = {1, 2, 3, 4};
+      expect(std::vector<int>{},
+             each(vec.begin(), vec.begin(), equal_to<const int &>));
+      expect(std::vector<int>{1, 2, 3},
+             each(vec.begin(), vec.end() - 1, equal_to<const int &>));
+      expect(std::vector<int>{1, 2, 3},
+             is_not(each(vec.rbegin() + 1, vec.rend(), equal_to<const int &>)));
+      expect(std::vector<int>{1, 2, 3},
+             is_not(each(vec.begin(), vec.end() - 2, equal_to<const int &>)));
+      expect(std::vector<int>{1, 2, 3},
+             is_not(each(vec.begin(), vec.end(), equal_to<const int &>)));
+
+      expect(vec, each(vec.begin(), vec.end(), equal_to<const int &>));
+
+      int arr[] = {1, 2, 3, 4};
+      expect(arr, each(vec.begin(), vec.end(), equal_to<const int &>));
+
+      expect(each(vec.begin(), vec.end(), greater<const int &>).desc(),
+             equal_to("[> 1, > 2, > 3, > 4]"));
+    });
+
+    _.test("each(x, y)", []() {
+      using ivec = std::vector<int>;
+
+      expect(ivec{}, each(ivec{}, equal_to<int>));
+      expect(ivec{1, 2, 3}, each({1, 2, 3}, equal_to<const int &>));
+      expect(ivec{1, 2, 3}, is_not(each({3, 2, 1}, equal_to<const int &>)));
+      expect(ivec{1, 2, 3}, is_not(each({1, 2}, equal_to<const int &>)));
+      expect(ivec{1, 2, 3}, is_not(each({1, 2, 3, 4}, equal_to<const int &>)));
+
+      ivec v = {1, 2, 3};
+      expect(v, each({1, 2, 3}, equal_to<const int &>));
+
+      int arr[] = {1, 2, 3};
+      expect(arr, each({1, 2, 3}, equal_to<const int &>));
+
+      expect(ivec{1, 2, 3}, each(ivec{1, 2, 3}, equal_to<int>));
+      expect(ivec{1, 2, 3}, each(v, equal_to<const int &>));
+      expect(ivec{1, 2, 3}, each(arr, equal_to<const int &>));
+
+      expect(each({1, 2, 3}, greater<const int &>).desc(),
+             equal_to("[> 1, > 2, > 3]"));
+    });
+
     _.test("array()", []() {
       expect(std::vector<int>{}, array());
       expect(std::vector<int>{1, 2, 3}, array(1, 2, 3));
       expect(std::vector<int>{1, 2, 3}, is_not(array(3, 2, 1)));
       expect(std::vector<int>{1, 2, 3}, is_not(array(1, 2)));
       expect(std::vector<int>{1, 2, 3}, is_not(array(1, 2, 3, 4)));
+
+      std::vector<int> vec = {1, 2, 3};
+      expect(vec, array(1, 2, 3));
+      expect(vec, is_not(array(3, 2, 1)));
+      expect(vec, is_not(array(1, 2)));
+      expect(vec, is_not(array(1, 2, 3, 4)));
 
       int arr[] = {1, 2, 3};
       expect(arr, array(1, 2, 3));
