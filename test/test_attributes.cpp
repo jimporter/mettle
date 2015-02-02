@@ -95,9 +95,9 @@ suite<> test_attr("attributes", [](auto &_) {
     _.test("empty sets", []() {
       string_attr attr("1");
 
-      expect(unite({}, {}), equal_to(attributes{}));
-      expect(unite({attr("a")}, {}), equal_to(attributes{attr("a")}));
-      expect(unite({}, {attr("b")}), equal_to(attributes{attr("b")}));
+      expect(unite({}, {}), equal_attributes({}));
+      expect(unite({attr("a")}, {}), equal_attributes( {attr("a")} ));
+      expect(unite({}, {attr("b")}), equal_attributes( {attr("b")} ));
     });
 
     _.test("disjoint sets", []() {
@@ -109,7 +109,7 @@ suite<> test_attr("attributes", [](auto &_) {
         {attr1("a")},
         {attr2("b"), attr3("b")}
       );
-      expect(united, equal_to(attributes{attr1("a"), attr2("b"), attr3("b")}));
+      expect(united, equal_attributes( {attr1("a"), attr2("b"), attr3("b")} ));
     });
 
     _.test("intersecting sets", []() {
@@ -121,7 +121,7 @@ suite<> test_attr("attributes", [](auto &_) {
         {attr1("a"), attr2("a")},
         {attr2("b"), attr3("b")}
       );
-      expect(united, equal_to(attributes{attr1("a"), attr2("a"), attr3("b")}));
+      expect(united, equal_attributes( {attr1("a"), attr2("a"), attr3("b")} ));
     });
 
     _.test("intersecting sets (composable attrs)", []() {
@@ -133,7 +133,7 @@ suite<> test_attr("attributes", [](auto &_) {
         {attr1("a"), attr2("a")},
         {attr2("b"), attr3("b")}
       );
-      expect(united, equal_to(attributes{
+      expect(united, equal_attributes({
         attr1("a"), attr2("a", "b"), attr3("b")
       }));
     });

@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_TEST_HELPERS_HPP
 #define INC_METTLE_TEST_HELPERS_HPP
 
+#include <mettle/matchers/core.hpp>
 #include <mettle/suite/attributes.hpp>
 #include <mettle/driver/filters_core.hpp>
 #include <mettle/driver/test_name.hpp>
@@ -44,12 +45,28 @@ std::string to_printable(const test_name &test) {
   return test.full_name() + " (id=" + std::to_string(test.id) + ")";
 }
 
-bool operator ==(const attr_instance &lhs, const attr_instance &rhs) {
-  return lhs.attribute.name() == rhs.attribute.name() && lhs.value == rhs.value;
+auto equal_attr_inst(attr_instance expected) {
+  return make_matcher(
+    std::move(expected),
+    [](const attr_instance &actual, const attr_instance &expected) {
+      return actual.attribute.name() == expected.attribute.name() &&
+             actual.value == expected.value;
+    }, ""
+  );
 }
 
-bool operator ==(const filter_result &lhs, const filter_result &rhs) {
-  return lhs.action == rhs.action && lhs.message == rhs.message;
+inline auto equal_attributes(const attributes &expected) {
+  return each(expected, equal_attr_inst);
+}
+
+auto equal_filter_result(filter_result expected) {
+  return make_matcher(
+    std::move(expected),
+    [](const filter_result &actual, const filter_result &expected) {
+      return actual.action == expected.action &&
+             actual.message == expected.message;
+    }, ""
+  );
 }
 
 } // namespace mettle

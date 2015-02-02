@@ -46,8 +46,9 @@ auto equal_test_info(const T &expected) {
      << to_printable(expected.attrs) << ")";
 
   return make_matcher(
-    [expected](const auto &actual) {
-      return actual.name == expected.name && actual.attrs == expected.attrs;
+    [name = expected.name,
+     equal_attrs = equal_attributes(expected.attrs)](const auto &actual) {
+      return actual.name == name && equal_attrs(actual.attrs);
     }, ss.str()
   );
 }

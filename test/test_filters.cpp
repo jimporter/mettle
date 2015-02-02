@@ -97,7 +97,7 @@ suite<> test_core_filters("core filters", [](auto &_) {
     _.test("no attributes", []() {
       expect(
         default_filter{}(test_name(), {}),
-        equal_to(filter_result{test_action::indeterminate, ""})
+        equal_filter_result({test_action::indeterminate, ""})
       );
     });
 
@@ -105,7 +105,7 @@ suite<> test_core_filters("core filters", [](auto &_) {
       bool_attr attr("bool");
       expect(
         default_filter{}(test_name(), {attr}),
-        equal_to(filter_result{test_action::indeterminate, ""})
+        equal_filter_result({test_action::indeterminate, ""})
       );
     });
 
@@ -113,7 +113,7 @@ suite<> test_core_filters("core filters", [](auto &_) {
       bool_attr attr("bool", test_action::skip);
       expect(
         default_filter{}(test_name(), {attr("message")}),
-        equal_to(filter_result{test_action::indeterminate, ""})
+        equal_filter_result({test_action::indeterminate, ""})
       );
     });
   });
@@ -122,7 +122,7 @@ suite<> test_core_filters("core filters", [](auto &_) {
     _.test("no attributes", []() {
       expect(
         filter_by_attr({}),
-        equal_to(filter_result{test_action::run, ""})
+        equal_filter_result({test_action::run, ""})
       );
     });
 
@@ -130,7 +130,7 @@ suite<> test_core_filters("core filters", [](auto &_) {
       bool_attr attr("bool");
       expect(
         filter_by_attr({attr}),
-        equal_to(filter_result{test_action::run, ""})
+        equal_filter_result({test_action::run, ""})
       );
     });
 
@@ -138,7 +138,7 @@ suite<> test_core_filters("core filters", [](auto &_) {
       bool_attr attr("bool", test_action::skip);
       expect(
         filter_by_attr({attr("message")}),
-        equal_to(filter_result{test_action::skip, "message"})
+        equal_filter_result({test_action::skip, "message"})
       );
     });
   });
@@ -148,7 +148,7 @@ suite<> test_name_filters("name filters", [](auto &_) {
   _.test("empty set", []() {
     expect(
       name_filter_set{}({{"suite", "subsuite"}, "test", 1}, {}),
-      equal_to(filter_result{test_action::indeterminate, ""})
+      equal_filter_result({test_action::indeterminate, ""})
     );
   });
 
@@ -157,19 +157,19 @@ suite<> test_name_filters("name filters", [](auto &_) {
       name_filter_set{std::regex("test$")}(
         {{"suite", "subsuite"}, "test", 1}, {}
       ),
-      equal_to(filter_result{test_action::run, ""})
+      equal_filter_result({test_action::run, ""})
     );
     expect(
       name_filter_set{std::regex(R"(\bsubsuite\b)")}(
         {{"suite", "subsuite"}, "test", 1}, {}
       ),
-      equal_to(filter_result{test_action::run, ""})
+      equal_filter_result({test_action::run, ""})
     );
     expect(
       name_filter_set{std::regex("mismatch")}(
         {{"suite", "subsuite"}, "test", 1}, {}
       ),
-      equal_to(filter_result{test_action::hide, ""})
+      equal_filter_result({test_action::hide, ""})
     );
   });
 
@@ -179,7 +179,7 @@ suite<> test_name_filters("name filters", [](auto &_) {
       name_filter_set{std::regex("mismatch"), std::regex("bad")}(
         {{"suite", "subsuite"}, "test", 1}, {}
       ),
-      equal_to(filter_result{test_action::hide, ""})
+      equal_filter_result({test_action::hide, ""})
     );
 
     // run + run => run
@@ -187,7 +187,7 @@ suite<> test_name_filters("name filters", [](auto &_) {
       name_filter_set{std::regex("test"), std::regex("subsuite")}(
         {{"suite", "subsuite"}, "test", 1}, {}
       ),
-      equal_to(filter_result{test_action::run, ""})
+      equal_filter_result({test_action::run, ""})
     );
 
     // hide + run => run
@@ -195,7 +195,7 @@ suite<> test_name_filters("name filters", [](auto &_) {
       name_filter_set{std::regex("mismatch"), std::regex("test")}(
         {{"suite", "subsuite"}, "test", 1}, {}
       ),
-      equal_to(filter_result{test_action::run, ""})
+      equal_filter_result({test_action::run, ""})
     );
   });
 });
@@ -214,11 +214,11 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
         bool_attr attr("bool");
         expect(
           attr_filter{}(test_name(), {}),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
         expect(
           attr_filter{}(test_name(), {attr}),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
       });
 
@@ -228,17 +228,17 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
         expect(
           attr_filter{ has_attr("first") }(test_name(), {attr1}),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
         expect(
           attr_filter{ has_attr("first") }(test_name(), {attr1, attr2}),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
         expect(
           attr_filter{ has_attr("first"), has_attr("second") }(
             test_name(), { attr1, attr2 }
           ),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
       });
 
@@ -248,19 +248,19 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
         expect(
           attr_filter{ has_attr("first", "1") }(test_name(), {attr1("1")}),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
         expect(
           attr_filter{ has_attr("first", "1") }(
             test_name(), {attr1("1"), attr2("2")}
           ),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
         expect(
           attr_filter{ has_attr("first", "1"), has_attr("second", "2") }(
             test_name(), { attr1("1"), attr2("2") }
           ),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
       });
 
@@ -269,17 +269,17 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
         expect(
           attr_filter{ !has_attr("mismatch") }(test_name(), {}),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
         expect(
           attr_filter{ !has_attr("mismatch") }(test_name(), {attr}),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
         expect(
           attr_filter{ !has_attr("mismatch"), has_attr("bool") }(
             test_name(), {attr}
           ),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
       });
 
@@ -288,19 +288,19 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
         expect(
           attr_filter{ !has_attr("mismatch", "value") }(test_name(), {}),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
         expect(
           attr_filter{ !has_attr("mismatch", "value") }(
             test_name(), {attr("value")}
           ),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
         expect(
           attr_filter{ !has_attr("string", "mismatch") }(
             test_name(), {attr("value")}
           ),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
       });
 
@@ -310,13 +310,13 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
         expect(
           attr_filter{ has_attr("first") }(test_name(), {attr1}),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
         expect(
           attr_filter{ has_attr("first"), has_attr("second") }(
             test_name(), {attr1, attr2}
           ),
-          equal_to(filter_result{test_action::run, ""})
+          equal_filter_result({test_action::run, ""})
         );
       });
 
@@ -328,17 +328,17 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
         attributes attrs = { attr1("message"), attr2, attr3 };
         expect(
           attr_filter{}(test_name(), attrs),
-          equal_to(filter_result{test_action::skip, "message"})
+          equal_filter_result({test_action::skip, "message"})
         );
         expect(
           attr_filter{ has_attr("second") }(test_name(), attrs),
-          equal_to(filter_result{test_action::skip, "message"})
+          equal_filter_result({test_action::skip, "message"})
         );
         expect(
           attr_filter{ has_attr("second"), has_attr("third") }(
             test_name(), attrs
           ),
-          equal_to(filter_result{test_action::skip, "message"})
+          equal_filter_result({test_action::skip, "message"})
         );
       });
     });
@@ -349,17 +349,17 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
         expect(
           attr_filter{ has_attr("mismatch") }(test_name(), {}),
-          equal_to(filter_result{test_action::hide, ""})
+          equal_filter_result({test_action::hide, ""})
         );
         expect(
           attr_filter{ has_attr("mismatch") }(test_name(), {attr}),
-          equal_to(filter_result{test_action::hide, ""})
+          equal_filter_result({test_action::hide, ""})
         );
         expect(
           attr_filter{ has_attr("mismatch"), has_attr("bool") }(
             test_name(), {attr}
           ),
-          equal_to(filter_result{test_action::hide, ""})
+          equal_filter_result({test_action::hide, ""})
         );
       });
 
@@ -368,19 +368,19 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
         expect(
           attr_filter{ has_attr("mismatch", "value") }(test_name(), {}),
-          equal_to(filter_result{test_action::hide, ""})
+          equal_filter_result({test_action::hide, ""})
         );
         expect(
           attr_filter{ has_attr("mismatch", "value") }(
             test_name(), {attr("value")}
           ),
-          equal_to(filter_result{test_action::hide, ""})
+          equal_filter_result({test_action::hide, ""})
         );
         expect(
           attr_filter{ has_attr("string", "mismatch") }(
             test_name(), {attr("value")}
           ),
-          equal_to(filter_result{test_action::hide, "value"})
+          equal_filter_result({test_action::hide, "value"})
         );
       });
 
@@ -393,29 +393,29 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
         expect(
           attr_filter{ !has_attr("first") }(test_name(), first_attr),
-          equal_to(filter_result{test_action::hide, "1"})
+          equal_filter_result({test_action::hide, "1"})
         );
         expect(
           attr_filter{ !has_attr("first") }(test_name(), both_attrs),
-          equal_to(filter_result{test_action::hide, "1"})
+          equal_filter_result({test_action::hide, "1"})
         );
         expect(
           attr_filter{ !has_attr("first"), !has_attr("second") }(
             test_name(), both_attrs
           ),
-          equal_to(filter_result{test_action::hide, "1"})
+          equal_filter_result({test_action::hide, "1"})
         );
         expect(
           attr_filter{ !has_attr("first"), has_attr("second") }(
             test_name(), both_attrs
           ),
-          equal_to(filter_result{test_action::hide, "1"})
+          equal_filter_result({test_action::hide, "1"})
         );
         expect(
           attr_filter{ has_attr("first"), !has_attr("second") }(
             test_name(), both_attrs
           ),
-          equal_to(filter_result{test_action::hide, "2"})
+          equal_filter_result({test_action::hide, "2"})
         );
       });
 
@@ -428,29 +428,29 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
         expect(
           attr_filter{ !has_attr("first", "1") }(test_name(), first_attr),
-          equal_to(filter_result{test_action::hide, "1"})
+          equal_filter_result({test_action::hide, "1"})
         );
         expect(
           attr_filter{ !has_attr("first", "1") }(test_name(), both_attrs),
-          equal_to(filter_result{test_action::hide, "1"})
+          equal_filter_result({test_action::hide, "1"})
         );
         expect(
           attr_filter{ !has_attr("first", "1"), !has_attr("second", "2") }(
             test_name(), both_attrs
           ),
-          equal_to(filter_result{test_action::hide, "1"})
+          equal_filter_result({test_action::hide, "1"})
         );
         expect(
           attr_filter{ !has_attr("first", "1"), has_attr("second", "2") }(
             test_name(), both_attrs
           ),
-          equal_to(filter_result{test_action::hide, "1"})
+          equal_filter_result({test_action::hide, "1"})
         );
         expect(
           attr_filter{ has_attr("first", "1"), !has_attr("second", "2") }(
             test_name(), both_attrs
           ),
-          equal_to(filter_result{test_action::hide, "2"})
+          equal_filter_result({test_action::hide, "2"})
         );
       });
 
@@ -460,13 +460,13 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
         expect(
           attr_filter{ has_attr("mismatch") }(test_name(), {attr1}),
-          equal_to(filter_result{test_action::hide, ""})
+          equal_filter_result({test_action::hide, ""})
         );
         expect(
           attr_filter{ has_attr("first"), has_attr("mismatch") }(
             test_name(), {attr1, attr2}
           ),
-          equal_to(filter_result{test_action::hide, ""})
+          equal_filter_result({test_action::hide, ""})
         );
       });
     });
@@ -479,15 +479,15 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
       expect(
         attr_filter_set{}(test_name(), {}),
-        equal_to(filter_result{test_action::indeterminate, ""})
+        equal_filter_result({test_action::indeterminate, ""})
       );
       expect(
         attr_filter_set{}(test_name(), {attr2}),
-        equal_to(filter_result{test_action::indeterminate, ""})
+        equal_filter_result({test_action::indeterminate, ""})
       );
       expect(
         attr_filter_set{}(test_name(), {attr1}),
-        equal_to(filter_result{test_action::indeterminate, ""})
+        equal_filter_result({test_action::indeterminate, ""})
       );
     });
 
@@ -497,24 +497,24 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
 
       expect(
         attr_filter_set{ {has_attr("first")} }(test_name(), {}),
-        equal_to(filter_result{test_action::hide, ""})
+        equal_filter_result({test_action::hide, ""})
       );
       expect(
         attr_filter_set{ {!has_attr("first")} }(test_name(), {}),
-        equal_to(filter_result{test_action::run, ""})
+        equal_filter_result({test_action::run, ""})
       );
       expect(
         attr_filter_set{ {has_attr("first")} }(test_name(), {attr1}),
-        equal_to(filter_result{test_action::run, ""})
+        equal_filter_result({test_action::run, ""})
       );
       attributes attrs = { attr1("1"), attr2("2") };
       expect(
         attr_filter_set{ {has_attr("second")} }(test_name(), attrs),
-        equal_to(filter_result{test_action::skip, "1"})
+        equal_filter_result({test_action::skip, "1"})
       );
       expect(
         attr_filter_set{ {!has_attr("first")} }(test_name(), attrs),
-        equal_to(filter_result{test_action::hide, "1"})
+        equal_filter_result({test_action::hide, "1"})
       );
     });
 
@@ -529,13 +529,13 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
         attr_filter_set{ {has_attr("first")}, {has_attr("second")} }(
           test_name(), {}
         ),
-        equal_to(filter_result{test_action::hide, ""})
+        equal_filter_result({test_action::hide, ""})
       );
       expect(
         attr_filter_set{ {!has_attr("first")}, {!has_attr("second")} }(
           test_name(), both_attrs
         ),
-        equal_to(filter_result{test_action::hide, "1"})
+        equal_filter_result({test_action::hide, "1"})
       );
 
       // run + run => run
@@ -543,7 +543,7 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
         attr_filter_set{ {has_attr("first")}, {has_attr("second")} }(
           test_name(), both_attrs
         ),
-        equal_to(filter_result{test_action::run, ""})
+        equal_filter_result({test_action::run, ""})
       );
 
       // skip + skip => skip
@@ -551,7 +551,7 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
         attr_filter_set{ {has_attr("second")}, {has_attr("second")} }(
           test_name(), both_attrs
         ),
-        equal_to(filter_result{test_action::skip, "1"})
+        equal_filter_result({test_action::skip, "1"})
       );
 
       // hide + skip => skip
@@ -559,7 +559,7 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
         attr_filter_set{ {has_attr("other")}, {has_attr("second")} }(
           test_name(), both_attrs
         ),
-        equal_to(filter_result{test_action::skip, "1"})
+        equal_filter_result({test_action::skip, "1"})
       );
 
       // hide + run => run
@@ -567,7 +567,7 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
         attr_filter_set{ {has_attr("other")}, {has_attr("second")} }(
           test_name(), {attr2}
         ),
-        equal_to(filter_result{test_action::run, ""})
+        equal_filter_result({test_action::run, ""})
       );
 
       // run + skip => run
@@ -575,7 +575,7 @@ suite<> test_attr_filters("attribute filters", [](auto &_) {
         attr_filter_set{ {has_attr("first")}, {has_attr("second")} }(
           test_name(), both_attrs
         ),
-        equal_to(filter_result{test_action::run, ""})
+        equal_filter_result({test_action::run, ""})
       );
     });
   });
@@ -585,7 +585,7 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
   _.test("no filters", []() {
     expect(
       filter_set{}(test_name(), {}),
-      equal_to(filter_result{test_action::indeterminate, ""})
+      equal_filter_result({test_action::indeterminate, ""})
     );
   });
 
@@ -594,13 +594,13 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
       filter_set{ {std::regex("test$")}, {} }(
         {{"suite", "subsuite"}, "test", 1}, {}
       ),
-      equal_to(filter_result{test_action::run, ""})
+      equal_filter_result({test_action::run, ""})
     );
     expect(
       filter_set{ {std::regex("mismatch")}, {} }(
         {{"suite", "subsuite"}, "test", 1}, {}
       ),
-      equal_to(filter_result{test_action::hide, ""})
+      equal_filter_result({test_action::hide, ""})
     );
   });
 
@@ -612,19 +612,19 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
       filter_set{ {}, {{has_attr("first")}} }(
         test_name(), {attr1}
       ),
-      equal_to(filter_result{test_action::run, ""})
+      equal_filter_result({test_action::run, ""})
     );
     expect(
       filter_set{ {}, {{has_attr("second")}} }(
         test_name(), {attr1("message"), attr2}
       ),
-      equal_to(filter_result{test_action::skip, "message"})
+      equal_filter_result({test_action::skip, "message"})
     );
     expect(
       filter_set{ {}, {{has_attr("other")}} }(
         test_name(), {attr1}
       ),
-      equal_to(filter_result{test_action::hide, ""})
+      equal_filter_result({test_action::hide, ""})
     );
   });
 
@@ -637,7 +637,7 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
       filter_set{ {std::regex("mismatch")}, {{has_attr("other")}} }(
         {{"suite", "subsuite"}, "test", 1}, {attr1}
       ),
-      equal_to(filter_result{test_action::hide, ""})
+      equal_filter_result({test_action::hide, ""})
     );
 
     // hide + run => hide
@@ -645,7 +645,7 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
       filter_set{ {std::regex("mismatch")}, {{has_attr("first")}} }(
         {{"suite", "subsuite"}, "test", 1}, {attr1}
       ),
-      equal_to(filter_result{test_action::hide, ""})
+      equal_filter_result({test_action::hide, ""})
     );
 
     // hide + skip => hide
@@ -653,7 +653,7 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
       filter_set{ {std::regex("mismatch")}, {{has_attr("second")}} }(
         {{"suite", "subsuite"}, "test", 1}, {attr1, attr2}
       ),
-      equal_to(filter_result{test_action::hide, ""})
+      equal_filter_result({test_action::hide, ""})
     );
 
     // run + hide => hide
@@ -661,7 +661,7 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
       filter_set{ {std::regex("test$")}, {{has_attr("other")}} }(
         {{"suite", "subsuite"}, "test", 1}, {attr1}
       ),
-      equal_to(filter_result{test_action::hide, ""})
+      equal_filter_result({test_action::hide, ""})
     );
 
     // run + skip => skip
@@ -669,7 +669,7 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
       filter_set{ {std::regex("test$")}, {{has_attr("second")}} }(
         {{"suite", "subsuite"}, "test", 1}, {attr1("message"), attr2}
       ),
-      equal_to(filter_result{test_action::skip, "message"})
+      equal_filter_result({test_action::skip, "message"})
     );
 
     // run + run => run
@@ -677,7 +677,7 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
       filter_set{ {std::regex("test$")}, {{has_attr("first")}} }(
         {{"suite", "subsuite"}, "test", 1}, {attr1}
       ),
-      equal_to(filter_result{test_action::run, ""})
+      equal_filter_result({test_action::run, ""})
     );
   });
 });
