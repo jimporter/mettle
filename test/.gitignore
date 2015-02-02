@@ -1,9 +1,11 @@
 test_attributes
 test_child
 test_cmd_parse
+test_compiled_suite
 test_driver
 test_filters
 test_matchers
+test_move_if
 test_output
 test_run_tests
 test_scoped_pipe

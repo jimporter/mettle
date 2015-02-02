@@ -65,11 +65,9 @@ test_fork("subprocess_test_runner", ftr_factory{}, [](auto &_) {
         _.test("test", []() {});
       });
 
-      for(const auto &t : s) {
-        auto result = runner(t, output);
-        expect(result.passed, equal_to(true));
-        expect(result.message, equal_to(""));
-      }
+      auto result = runner(s.tests()[0], output);
+      expect(result.passed, equal_to(true));
+      expect(result.message, equal_to(""));
     });
 
     _.test("failing test", [](subprocess_test_runner &runner,
@@ -80,10 +78,8 @@ test_fork("subprocess_test_runner", ftr_factory{}, [](auto &_) {
         });
       });
 
-      for(const auto &t : s) {
-        auto result = runner(t, output);
-        expect(result.passed, equal_to(false));
-      }
+      auto result = runner(s.tests()[0], output);
+      expect(result.passed, equal_to(false));
     });
 
     _.test("aborting test", [](subprocess_test_runner &runner,
@@ -94,11 +90,9 @@ test_fork("subprocess_test_runner", ftr_factory{}, [](auto &_) {
         });
       });
 
-      for(const auto &t : s) {
-        auto result = runner(t, output);
-        expect(result.passed, equal_to(false));
-        expect(result.message, equal_to(strsignal(SIGABRT)));
-      }
+      auto result = runner(s.tests()[0], output);
+      expect(result.passed, equal_to(false));
+      expect(result.message, equal_to(strsignal(SIGABRT)));
     });
 
     _.test("segfaulting test", [](subprocess_test_runner &runner,
@@ -109,11 +103,9 @@ test_fork("subprocess_test_runner", ftr_factory{}, [](auto &_) {
         });
       });
 
-      for(const auto &t : s) {
-        auto result = runner(t, output);
-        expect(result.passed, equal_to(false));
-        expect(result.message, equal_to(strsignal(SIGSEGV)));
-      }
+      auto result = runner(s.tests()[0], output);
+      expect(result.passed, equal_to(false));
+      expect(result.message, equal_to(strsignal(SIGSEGV)));
     });
 
     _.test("timed out test", [](subprocess_test_runner &runner,
@@ -124,15 +116,13 @@ test_fork("subprocess_test_runner", ftr_factory{}, [](auto &_) {
         });
       });
 
-      for(const auto &t : s) {
-        auto then = std::chrono::steady_clock::now();
-        auto result = runner(t, output);
-        auto now = std::chrono::steady_clock::now();
+      auto then = std::chrono::steady_clock::now();
+      auto result = runner(s.tests()[0], output);
+      auto now = std::chrono::steady_clock::now();
 
-        expect(result.passed, equal_to(false));
-        expect(result.message, equal_to("Timed out after 500 ms"));
-        expect(now - then, less(std::chrono::seconds(1)));
-      }
+      expect(result.passed, equal_to(false));
+      expect(result.message, equal_to("Timed out after 500 ms"));
+      expect(now - then, less(std::chrono::seconds(1)));
     });
 
     _.test("test with timed out child", [](subprocess_test_runner &runner,
@@ -149,14 +139,12 @@ test_fork("subprocess_test_runner", ftr_factory{}, [](auto &_) {
         });
       });
 
-      for(const auto &t : s) {
-        auto then = std::chrono::steady_clock::now();
-        auto result = runner(t, output);
-        auto now = std::chrono::steady_clock::now();
+      auto then = std::chrono::steady_clock::now();
+      auto result = runner(s.tests()[0], output);
+      auto now = std::chrono::steady_clock::now();
 
-        expect(result.passed, equal_to(true));
-        expect(now - then, less(std::chrono::seconds(1)));
-      }
+      expect(result.passed, equal_to(true));
+      expect(now - then, less(std::chrono::seconds(1)));
     });
 
     _.test("test with stdout", [](subprocess_test_runner &runner,
@@ -167,10 +155,8 @@ test_fork("subprocess_test_runner", ftr_factory{}, [](auto &_) {
         });
       });
 
-      for(const auto &t : s) {
-        auto result = runner(t, output);
-        expect(output.stdout_log, equal_to("stdout"));
-      }
+      auto result = runner(s.tests()[0], output);
+      expect(output.stdout_log, equal_to("stdout"));
     });
 
     _.test("test with stdout/stderr", [](subprocess_test_runner &runner,
@@ -182,11 +168,9 @@ test_fork("subprocess_test_runner", ftr_factory{}, [](auto &_) {
         });
       });
 
-      for(const auto &t : s) {
-        auto result = runner(t, output);
-        expect(output.stdout_log, equal_to("stdout"));
-        expect(output.stderr_log, equal_to("stderr"));
-      }
+      auto result = runner(s.tests()[0], output);
+      expect(output.stdout_log, equal_to("stdout"));
+      expect(output.stderr_log, equal_to("stderr"));
     });
 
   });

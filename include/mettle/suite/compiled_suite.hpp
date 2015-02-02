@@ -1,95 +1,79 @@
 #ifndef INC_METTLE_SUITE_COMPILED_SUITE_HPP
 #define INC_METTLE_SUITE_COMPILED_SUITE_HPP
 
-#include <cstdint>
 #include <functional>
 #include <string>
 #include <vector>
 
 #include "attributes.hpp"
 #include "../test_uid.hpp"
+#include "../detail/move_if.hpp"
 
 namespace mettle {
-
-namespace detail {
-  template<typename Container, typename Element>
-  inline decltype(auto) move_if(Element &&value) {
-    using Value = typename std::remove_reference<Element>::type;
-    using ReturnType = typename std::conditional<
-      std::is_lvalue_reference<Container>::value, Value &, Value &&
-    >::type;
-    return static_cast<ReturnType>(value);
-  }
-}
 
 struct test_result {
   bool passed;
   std::string message;
 };
 
-template<typename Ret, typename ...T>
+template<typename Function>
+struct basic_test_info {
+  using function_type = std::function<Function>;
+
+  basic_test_info(std::string name, function_type function, attributes attrs)
+    : name(std::move(name)), function(std::move(function)),
+      attrs(std::move(attrs)), id(detail::make_test_uid()) {}
+
+  std::string name;
+  function_type function;
+  attributes attrs;
+  test_uid id;
+};
+
+template<typename Function>
 class compiled_suite {
-  template<typename Ret2, typename ...T2>
+  template<typename>
   friend class compiled_suite;
 public:
-  struct test_info {
-    using function_type = std::function<Ret(T&...)>;
-
-    test_info(std::string name, function_type function, attributes attrs)
-      : name(std::move(name)), function(std::move(function)),
-        attrs(std::move(attrs)), id(detail::make_test_uid()) {}
-
-    std::string name;
-    function_type function;
-    attributes attrs;
-    test_uid id;
-  };
-
+  using test_info = basic_test_info<Function>;
   using iterator = typename std::vector<test_info>::const_iterator;
 
-  template<typename String, typename Tests, typename Subsuites, typename Func>
+  template<typename String, typename Tests, typename Subsuites,
+           typename Compile>
   compiled_suite(
     String &&name, Tests &&tests, Subsuites &&subsuites,
-    const attributes &attrs, Func &&f
+    const attributes &attrs, Compile &&compile
   ) : name_(std::forward<String>(name)) {
     for(auto &&test : tests) {
       tests_.emplace_back(
         detail::move_if<Tests>(test.name),
-        f(detail::move_if<Tests>(test.function)),
+        compile(detail::move_if<Tests>(test.function)),
         unite(detail::move_if<Tests>(test.attrs), attrs)
       );
     }
     for(auto &&ss : subsuites)
-      subsuites_.emplace_back(detail::move_if<Subsuites>(ss), attrs, f);
+      subsuites_.emplace_back(detail::move_if<Subsuites>(ss), attrs, compile);
   }
 
-  template<typename Ret2, typename ...T2, typename Func>
-  compiled_suite(const compiled_suite<Ret2, T2...> &suite,
-                 const attributes &attrs, Func &&f)
+  template<typename Function2, typename Compile>
+  compiled_suite(const compiled_suite<Function2> &suite,
+                 const attributes &attrs, Compile &&compile)
     : compiled_suite(suite.name_, suite.tests_, suite.subsuites_, attrs,
-                     std::forward<Func>(f)) {}
+                     std::forward<Compile>(compile)) {}
 
-  template<typename Ret2, typename ...T2, typename Func>
-  compiled_suite(compiled_suite<Ret2, T2...> &&suite,
-                 const attributes &attrs, Func &&f)
+  template<typename Function2, typename Compile>
+  compiled_suite(compiled_suite<Function2> &&suite,
+                 const attributes &attrs, Compile &&compile)
     : compiled_suite(std::move(suite.name_), std::move(suite.tests_),
                      std::move(suite.subsuites_), attrs,
-                     std::forward<Func>(f)) {}
+                     std::forward<Compile>(compile)) {}
 
   const std::string & name() const {
     return name_;
   }
 
-  iterator begin() const {
-    return tests_.begin();
-  }
-
-  iterator end() const {
-    return tests_.end();
-  }
-
-  std::size_t size() const {
-    return tests_.size();
+  const std::vector<test_info> & tests() const {
+    return tests_;
   }
 
   const std::vector<compiled_suite> & subsuites() const {
@@ -101,7 +85,7 @@ private:
   std::vector<compiled_suite> subsuites_;
 };
 
-using runnable_suite = compiled_suite<test_result>;
+using runnable_suite = compiled_suite<test_result()>;
 using suites_list = std::vector<runnable_suite>;
 using test_info = runnable_suite::test_info;
 

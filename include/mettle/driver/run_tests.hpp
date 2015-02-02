@@ -64,7 +64,7 @@ namespace detail {
     for(const auto &suite : suites) {
       parents.push(suite.name());
 
-      for(const auto &test : suite) {
+      for(const auto &test : suite.tests()) {
         const test_name name = {parents.all(), test.name, test.id};
         auto action = filter(name, test.attrs);
         if(action.action == test_action::indeterminate)

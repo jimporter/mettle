@@ -157,7 +157,7 @@ namespace detail {
 
   template<typename ...T>
   struct compiled_subsuite_helper<std::tuple<T...>> {
-    using type = compiled_suite<void, T...>;
+    using type = compiled_suite<void(T&...)>;
   };
 
   // XXX: Remove this when MSVC's std::max is constexpr.
@@ -296,7 +296,7 @@ public:
     });
   }
 
-  void subsuite(compiled_suite<void, T...> subsuite) {
+  void subsuite(compiled_suite<void(T&...)> subsuite) {
     subsuites_.push_back(std::move(subsuite));
   }
 
@@ -331,7 +331,7 @@ protected:
   attributes attrs_;
   function_type setup_, teardown_;
   std::vector<test_info> tests_;
-  std::vector<compiled_suite<void, T...>> subsuites_;
+  std::vector<compiled_suite<void(T&...)>> subsuites_;
 };
 
 namespace detail {

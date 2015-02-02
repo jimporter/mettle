@@ -11,7 +11,7 @@ inline auto match_test(const std::string &name, bool skip) {
   if(skip)
     ss << "skipped ";
   ss << "test named \"" << name << "\"";
-  return make_matcher([name, skip](const runnable_suite::test_info &actual) {
+  return make_matcher([name, skip](const test_info &actual) {
     if(actual.name != name)
       return false;
     bool skipped = false;
@@ -64,8 +64,7 @@ suite<> test_suite("suite creation", [](auto &_) {
 
   auto check_suite = [](const runnable_suite &s) {
     expect(s.name(), equal_to("inner test suite"));
-    expect(s.size(), equal_to(2));
-    expect(s, array(
+    expect(s.tests(), array(
       match_test("inner test", false), match_test("skipped test", true)
     ));
   };
@@ -142,8 +141,7 @@ suite<> test_suite("suite creation", [](auto &_) {
     };
     for(int i = 0; i < 2; i++) {
       expect(suites[i].name(), equal_to( names[i] ));
-      expect(suites[i].size(), equal_to(2));
-      expect(suites[i], array(
+      expect(suites[i].tests(), array(
         match_test("inner test", false), match_test("skipped test", true)
       ));
     }
@@ -165,8 +163,7 @@ suite<> test_suite("suite creation", [](auto &_) {
     };
     for(int i = 0; i < 2; i++) {
       expect(suites[i].name(), equal_to( names[i] ));
-      expect(suites[i].size(), equal_to(2));
-      expect(suites[i], array(
+      expect(suites[i].tests(), array(
         match_test("inner test", false), match_test("skipped test", true)
       ));
     }
@@ -217,22 +214,19 @@ suite<> test_suite("suite creation", [](auto &_) {
 
     auto check_subsuites = [](const runnable_suite &suite) {
       expect(suite.name(), equal_to("inner test suite"));
-      expect(suite.size(), equal_to(0));
-      expect(suite, array());
+      expect(suite.tests(), array());
       expect(suite.subsuites().size(), equal_to(1));
 
       auto &sub = suite.subsuites()[0];
       expect(sub.name(), equal_to("subsuite"));
-      expect(sub.size(), equal_to(2));
-      expect(sub, array(
+      expect(sub.tests(), array(
         match_test("subtest", false), match_test("skipped subtest", true)
       ));
       expect(sub.subsuites().size(), equal_to(1));
 
       auto &subsub = sub.subsuites()[0];
       expect(subsub.name(), equal_to("sub-subsuite"));
-      expect(subsub.size(), equal_to(2));
-      expect(subsub, array(
+      expect(subsub.tests(), array(
         match_test("sub-subtest", false),
         match_test("skipped sub-subtest", true)
       ));
@@ -289,8 +283,7 @@ suite<> test_suite("suite creation", [](auto &_) {
 
     auto check_param_subsuites = [](const runnable_suite &suite) {
       expect(suite.name(), equal_to("inner test suite"));
-      expect(suite.size(), equal_to(0));
-      expect(suite, array());
+      expect(suite.tests(), array());
       expect(suite.subsuites().size(), equal_to(2));
 
       std::string names[] = {
@@ -299,8 +292,7 @@ suite<> test_suite("suite creation", [](auto &_) {
       for(int i = 0; i < 2; i++) {
         auto &sub = suite.subsuites()[i];
         expect(sub.name(), equal_to( names[i] ));
-        expect(sub.size(), equal_to(2));
-        expect(sub, array(
+        expect(sub.tests(), array(
           match_test("subtest", false), match_test("skipped subtest", true)
         ));
         expect(sub.subsuites().size(), equal_to(0));
@@ -353,7 +345,7 @@ suite<> test_suite("suite creation", [](auto &_) {
   subsuite<>(_, "skipped suites", [](auto &_) {
 
     auto check_suite = [](const runnable_suite &s) {
-      expect(s, array(
+      expect(s.tests(), array(
         match_test("inner test", true), match_test("skipped test", true)
       ));
     };
@@ -390,17 +382,17 @@ suite<> test_suite("suite creation", [](auto &_) {
     });
 
     auto check_subsuites = [](const runnable_suite &suite) {
-      expect(suite, array(
+      expect(suite.tests(), array(
         match_test("inner test", false), match_test("skipped test", true)
       ));
 
       auto &sub = suite.subsuites()[0];
-      expect(sub, array(
+      expect(sub.tests(), array(
         match_test("subtest", true), match_test("skipped subtest", true)
       ));
 
       auto &subsub = sub.subsuites()[0];
-      expect(subsub, array(
+      expect(subsub.tests(), array(
         match_test("sub-subtest", true), match_test("skipped sub-subtest", true)
       ));
     };
@@ -474,10 +466,8 @@ suite<> test_calling("test calling", [](auto &_) {
       _.test("inner test", test);
     });
 
-    for(const auto &t : s) {
-      auto result = t.function();
-      expect(result.passed, equal_to(true));
-    }
+    auto result = s.tests()[0].function();
+    expect(result.passed, equal_to(true));
 
     expect(test.runs(), equal_to(1));
   });
@@ -490,10 +480,8 @@ suite<> test_calling("test calling", [](auto &_) {
       _.test("inner test", test);
     });
 
-    for(const auto &t : s) {
-      auto result = t.function();
-      expect(result.passed, equal_to(false));
-    }
+    auto result = s.tests()[0].function();
+    expect(result.passed, equal_to(false));
 
     expect(test.runs(), equal_to(1));
   });
@@ -506,10 +494,8 @@ suite<> test_calling("test calling", [](auto &_) {
       _.test("inner test", test);
     });
 
-    for(const auto &t : s) {
-      auto result = t.function();
-      expect(result.passed, equal_to(true));
-    }
+    auto result = s.tests()[0].function();
+    expect(result.passed, equal_to(true));
 
     expect(setup.runs(), equal_to(1));
     expect(test.runs(), equal_to(1));
@@ -527,10 +513,8 @@ suite<> test_calling("test calling", [](auto &_) {
       _.test("inner test", test);
     });
 
-    for(const auto &t : s) {
-      auto result = t.function();
-      expect(result.passed, equal_to(false));
-    }
+    auto result = s.tests()[0].function();
+    expect(result.passed, equal_to(false));
 
     expect(setup.runs(), equal_to(1));
     expect(test.runs(), equal_to(1));
@@ -548,10 +532,8 @@ suite<> test_calling("test calling", [](auto &_) {
       _.test("inner test", test);
     });
 
-    for(const auto &t : s) {
-      auto result = t.function();
-      expect(result.passed, equal_to(false));
-    }
+    auto result = s.tests()[0].function();
+    expect(result.passed, equal_to(false));
 
     expect(setup.runs(), equal_to(1));
     expect(test.runs(), equal_to(0));
@@ -569,10 +551,8 @@ suite<> test_calling("test calling", [](auto &_) {
       _.test("inner test", test);
     });
 
-    for(const auto &t : s) {
-      auto result = t.function();
-      expect(result.passed, equal_to(false));
-    }
+    auto result = s.tests()[0].function();
+    expect(result.passed, equal_to(false));
 
     expect(setup.runs(), equal_to(1));
     expect(test.runs(), equal_to(1));
