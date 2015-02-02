@@ -19,34 +19,23 @@ namespace mettle {
   }
 }
 
-auto match_test(const std::string &name, bool skip) {
-  std::ostringstream ss;
-  if(skip)
-    ss << "skipped ";
-  ss << "test named \"" << name << "\"";
-  return make_matcher([name, skip](const test_info &actual) {
-    if(actual.name != name)
-      return false;
-    bool skipped = false;
-    for(auto &&i : actual.attrs) {
-      if(i.attribute.name() == "skip")
-        skipped = true;
-    }
-    return skipped == skip;
-  }, ss.str());
-}
-
 auto simple_suite(const std::string &suite_name, bool skip_all = false) {
+  attributes maybe_skip;
+  if(skip_all) maybe_skip.insert(skip);
+
   return all(
     filter([](auto &&x) { return x.name(); }, equal_to(suite_name),
            "name="),
     filter([](auto &&x) { return x.tests(); }, array(
-      match_test("test", skip_all), match_test("skipped test", true)
+      equal_test_info("test", maybe_skip),
+      equal_test_info("skipped test", {skip})
     ), "tests=")
   );
 }
 
 auto complex_suite(int skip_level = 4) {
+  attributes do_skip = {skip}, dont_skip = {};
+
   auto name      = [](auto &&x) { return x.name();      };
   auto tests     = [](auto &&x) { return x.tests();     };
   auto subsuites = [](auto &&x) { return x.subsuites(); };
@@ -54,8 +43,8 @@ auto complex_suite(int skip_level = 4) {
   auto subsub = all(
     filter(name, equal_to("sub-subsuite"), "name="),
     filter(tests, array(
-      match_test("sub-subtest", skip_level < 3),
-      match_test("skipped sub-subtest", true)
+      equal_test_info("sub-subtest", skip_level < 3 ? do_skip : dont_skip),
+      equal_test_info("skipped sub-subtest", do_skip)
     ), "tests="),
     filter(subsuites, array(), "subsuites=")
   );
@@ -63,8 +52,8 @@ auto complex_suite(int skip_level = 4) {
   auto sub = all(
     filter(name, equal_to("subsuite"), "name="),
     filter(tests, array(
-      match_test("subtest", skip_level < 2),
-      match_test("skipped subtest", true)
+      equal_test_info("subtest", skip_level < 2 ? do_skip : dont_skip),
+      equal_test_info("skipped subtest", do_skip)
     ), "tests="),
     filter(subsuites, array(subsub), "subsuites=")
   );
@@ -72,8 +61,8 @@ auto complex_suite(int skip_level = 4) {
   return all(
     filter(name, equal_to("test suite"), "name="),
     filter(tests, array(
-      match_test("test", skip_level < 1),
-      match_test("skipped test", true)
+      equal_test_info("test", skip_level < 1 ? do_skip : dont_skip),
+      equal_test_info("skipped test", do_skip)
     ), "tests="),
     filter(subsuites, array(sub), "subsuites=")
   );

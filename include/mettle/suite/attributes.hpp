@@ -78,12 +78,12 @@ public:
   bool_attr(std::string name, test_action action = test_action::run)
     : attr_base(std::move(name), action) {}
 
-  operator const attr_instance() const {
+  operator attr_instance() const {
     return attr_instance{*this, {}};
   }
 
   template<typename T>
-  const attr_instance operator ()(T &&comment) const {
+  attr_instance operator ()(T &&comment) const {
     return attr_instance{*this, {std::forward<T>(comment)}};
   }
 };
@@ -94,7 +94,7 @@ public:
     : attr_base(std::move(name)) {}
 
   template<typename T>
-  const attr_instance operator ()(T &&value) const {
+  attr_instance operator ()(T &&value) const {
     return attr_instance{*this, {std::forward<T>(value)}};
   }
 };
@@ -105,7 +105,7 @@ public:
     : attr_base(std::move(name)) {}
 
   template<typename ...T>
-  const attr_instance operator ()(T &&...args) const {
+  attr_instance operator ()(T &&...args) const {
     return attr_instance{*this, {std::forward<T>(args)...}};
   }
 

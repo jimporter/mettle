@@ -77,6 +77,24 @@ auto equal_filter_result(filter_result expected) {
   );
 }
 
+auto equal_test_info(const std::string &name, const attributes &attrs) {
+  std::ostringstream ss;
+  ss << "test_info(" << to_printable(name) << ", " << to_printable(attrs)
+     << ")";
+
+  return describe(
+    all(
+      filter([](auto &&x) { return x.name;  }, equal_to(name)),
+      filter([](auto &&x) { return x.attrs; }, equal_attributes(attrs))
+    ), ss.str()
+  );
+}
+
+template<typename T>
+inline auto equal_test_info(const T &expected) {
+  return equal_test_info(expected.name, expected.attrs);
+}
+
 } // namespace mettle
 
 #endif

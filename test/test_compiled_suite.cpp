@@ -31,20 +31,6 @@ struct wrap_test<void(Args...)> {
   }
 };
 
-template<typename T>
-auto equal_test_info(const T &expected) {
-  std::ostringstream ss;
-  ss << "test_info(" << to_printable(expected.name) << ", "
-     << to_printable(expected.attrs) << ")";
-
-  return describe(
-    all(
-      filter([](auto &&x) { return x.name;  }, equal_to(expected.name)),
-      filter([](auto &&x) { return x.attrs; }, equal_attributes(expected.attrs))
-    ), ss.str()
-  );
-}
-
 suite<> test_compiled_suite("compiled_suite", [](auto &_) {
   _.test("construct", []() {
     using inner_func = void(int&);
