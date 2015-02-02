@@ -204,6 +204,17 @@ still want to test it.</p>
 <p>A matcher that overrides the description of another matcher. <code>desc</code> is a string
 describing the resulting matcher. This can be useful for when the default
 description is unclear or overly-verbose.</p>
+<h4 id="filterfunc-matcher-desc">filter(<em>func</em>, <em>matcher</em>[, <em>desc</em>])</h4>
+<p>A matcher that filters the expected value through a function before passing it
+to another matcher. This helps when creating complex matchers that test multiple
+parts of a type, such as:</p>
+<pre><code class="c++">all( filter([](auto &amp;&amp;x) { return x.first;  }, equal_to(&quot;first&quot;)),
+     filter([](auto &amp;&amp;x) { return x.second; }, greater(0)) );
+</code></pre>
+
+<p>Additionally, you may pass in a string for <code>desc</code>, which will be added as a
+prefix to <code>matcher</code>'s description. This helps provide useful output explaining
+what exactly <code>func</code> is doing to the expected value.</p>
 <h3 id="relational-matchers">Relational matchers</h3>
 <h4 id="equal_tovalue">equal_to(<em>value</em>)</h4>
 <p>A matcher that returns <code>true</code> when the expected value is equal to <code>value</code>
