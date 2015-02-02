@@ -137,6 +137,16 @@ inline auto describe(T &&matcher, const std::string &desc) {
   return make_matcher(std::forward<T>(matcher), desc);
 }
 
+template<typename Filter, typename Matcher>
+auto filter(Filter &&f, Matcher &&matcher, const std::string &desc = "") {
+  return make_matcher(
+    std::forward<Matcher>(matcher),
+    [f = std::forward<Filter>(f)](const auto &actual, auto &&matcher) {
+      return matcher(f(actual));
+    }, desc
+  );
+}
+
 } // namespace mettle
 
 #endif

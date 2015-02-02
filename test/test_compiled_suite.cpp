@@ -45,11 +45,11 @@ auto equal_test_info(const T &expected) {
   ss << "test_info(" << to_printable(expected.name) << ", "
      << to_printable(expected.attrs) << ")";
 
-  return make_matcher(
-    [name = expected.name,
-     equal_attrs = equal_attributes(expected.attrs)](const auto &actual) {
-      return actual.name == name && equal_attrs(actual.attrs);
-    }, ss.str()
+  return describe(
+    all(
+      filter([](auto &&x) { return x.name;  }, equal_to(expected.name)),
+      filter([](auto &&x) { return x.attrs; }, equal_attributes(expected.attrs))
+    ), ss.str()
   );
 }
 

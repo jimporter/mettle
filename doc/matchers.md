@@ -81,6 +81,21 @@ A matcher that overrides the description of another matcher. `desc` is a string
 describing the resulting matcher. This can be useful for when the default
 description is unclear or overly-verbose.
 
+#### filter(*func*, *matcher*[, *desc*])
+
+A matcher that filters the expected value through a function before passing it
+to another matcher. This helps when creating complex matchers that test multiple
+parts of a type, such as:
+
+```c++
+all( filter([](auto &&x) { return x.first;  }, equal_to("first")),
+     filter([](auto &&x) { return x.second; }, greater(0)) );
+```
+
+Additionally, you may pass in a string for `desc`, which will be added as a
+prefix to `matcher`'s description. This helps provide useful output explaining
+what exactly `func` is doing to the expected value.
+
 ### Relational matchers
 
 #### equal_to(*value*)

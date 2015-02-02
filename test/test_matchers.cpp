@@ -50,6 +50,25 @@ suite<> matcher_tests("matchers", [](auto &_) {
 
       expect(describe(equal_to(123), "foo").desc(), equal_to("foo"));
     });
+
+    _.test("filter()", []() {
+      std::pair<std::string, int> p("first", 1);
+      expect(p, filter( [](auto &&x) { return x.first; }, equal_to("first") ));
+      expect(p, filter( [](auto &&x) { return x.second; }, is_not(less(0))) );
+      expect(p, is_not(filter( [](auto &&x) { return x.second; }, less(0)) ));
+
+      expect(p, filter( [](auto &&x) { return x.first; }, equal_to("first"),
+                        ".first " ));
+      expect(p, filter( [](auto &&x) { return x.second; }, is_not(less(0)),
+                        ".second " ));
+      expect(p, is_not(filter( [](auto &&x) { return x.second; }, less(0),
+                               ".second ") ));
+
+      expect(filter([](auto &&x) { return x; }, equal_to(123)).desc(),
+             equal_to("123"));
+      expect(filter([](auto &&x) { return x; }, equal_to(123), "desc ").desc(),
+             equal_to("desc 123"));
+    });
   });
 
   subsuite<>(_, "relational", [](auto &_) {
