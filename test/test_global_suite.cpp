@@ -1,7 +1,7 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-suite<suites_list> test_driver("driver suite declaration", [](auto &_) {
+suite<suites_list> test_global_suite("global suite declaration", [](auto &_) {
 
   _.test("create a test suite", [](suites_list &suites) {
     suite<>(suites, "inner test suite", [](auto &_){

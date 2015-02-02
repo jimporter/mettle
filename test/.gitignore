@@ -2,8 +2,8 @@ test_attributes
 test_child
 test_cmd_parse
 test_compiled_suite
-test_driver
 test_filters
+test_global_suite
 test_make_suite
 test_matchers
 test_move_if
