@@ -6,7 +6,20 @@ using namespace mettle;
 #include <memory>
 #include <stdexcept>
 
-inline auto match_test(const std::string &name, bool skip) {
+#include "helpers.hpp"
+
+namespace mettle {
+  template<typename T>
+  std::string to_printable(const compiled_suite<T> &suite) {
+    std::ostringstream ss;
+    ss << "compiled_suite(" << to_printable(suite.name()) << ", "
+       << to_printable(suite.tests()) << ", " << to_printable(suite.subsuites())
+       << ")";
+    return ss.str();
+  }
+}
+
+auto match_test(const std::string &name, bool skip) {
   std::ostringstream ss;
   if(skip)
     ss << "skipped ";
@@ -21,6 +34,49 @@ inline auto match_test(const std::string &name, bool skip) {
     }
     return skipped == skip;
   }, ss.str());
+}
+
+auto simple_suite(const std::string &suite_name, bool skip_all = false) {
+  return all(
+    filter([](auto &&x) { return x.name(); }, equal_to(suite_name),
+           "name="),
+    filter([](auto &&x) { return x.tests(); }, array(
+      match_test("test", skip_all), match_test("skipped test", true)
+    ), "tests=")
+  );
+}
+
+auto complex_suite(int skip_level = 4) {
+  auto name      = [](auto &&x) { return x.name();      };
+  auto tests     = [](auto &&x) { return x.tests();     };
+  auto subsuites = [](auto &&x) { return x.subsuites(); };
+
+  auto subsub = all(
+    filter(name, equal_to("sub-subsuite"), "name="),
+    filter(tests, array(
+      match_test("sub-subtest", skip_level < 3),
+      match_test("skipped sub-subtest", true)
+    ), "tests="),
+    filter(subsuites, array(), "subsuites=")
+  );
+
+  auto sub = all(
+    filter(name, equal_to("subsuite"), "name="),
+    filter(tests, array(
+      match_test("subtest", skip_level < 2),
+      match_test("skipped subtest", true)
+    ), "tests="),
+    filter(subsuites, array(subsub), "subsuites=")
+  );
+
+  return all(
+    filter(name, equal_to("test suite"), "name="),
+    filter(tests, array(
+      match_test("test", skip_level < 1),
+      match_test("skipped test", true)
+    ), "tests="),
+    filter(subsuites, array(sub), "subsuites=")
+  );
 }
 
 template<typename ...T>
@@ -62,142 +118,117 @@ struct basic_factory {
 
 suite<> test_suite("suite creation", [](auto &_) {
 
-  auto check_suite = [](const runnable_suite &s) {
-    expect(s.name(), equal_to("inner test suite"));
-    expect(s.tests(), array(
-      match_test("inner test", false), match_test("skipped test", true)
-    ));
-  };
-
-  _.test("create a test suite", [&check_suite]() {
-    auto s = make_suite<>("inner test suite", [](auto &_){
-      _.test("inner test", []() {});
+  _.test("create a test suite", []() {
+    auto s = make_suite<>("test suite", [](auto &_){
+      _.test("test", []() {});
       _.test("skipped test", {skip}, []() {});
     });
 
-    check_suite(s);
+    expect(s, simple_suite("test suite"));
 
-    auto s2 = make_suite("inner test suite", [](auto &_){
-      _.test("inner test", []() {});
+    auto s2 = make_suite("test suite", [](auto &_){
+      _.test("test", []() {});
       _.test("skipped test", {skip}, []() {});
     });
 
-    check_suite(s);
+    expect(s, simple_suite("test suite"));
   });
 
-  _.test("create a test suite with fixture", [&check_suite]() {
-    auto s = make_suite<int>("inner test suite", [](auto &_){
-      _.test("inner test", [](int &) {});
+  _.test("create a test suite with fixture", []() {
+    auto s = make_suite<int>("test suite", [](auto &_){
+      _.test("test", [](int &) {});
       _.test("skipped test", {skip}, [](int &) {});
     });
 
-    check_suite(s);
+    expect(s, simple_suite("test suite"));
   });
 
-  _.test("create a test suite with type-only fixture", [&check_suite]() {
-    auto s = make_suite<int>("inner test suite", type_only, [](auto &_){
-      _.test("inner test", []() {});
+  _.test("create a test suite with type-only fixture", []() {
+    auto s = make_suite<int>("test suite", type_only, [](auto &_){
+      _.test("test", []() {});
       _.test("skipped test", {skip}, []() {});
     });
 
-    check_suite(s);
+    expect(s, simple_suite("test suite"));
   });
 
-  _.test("create a test suite with setup/teardown", [&check_suite]() {
-    auto s = make_suite<>("inner test suite", [](auto &_){
+  _.test("create a test suite with setup/teardown", []() {
+    auto s = make_suite<>("test suite", [](auto &_){
       _.setup([]() {});
       _.teardown([]() {});
-      _.test("inner test", []() {});
+      _.test("test", []() {});
       _.test("skipped test", {skip}, []() {});
     });
 
-    check_suite(s);
+    expect(s, simple_suite("test suite"));
   });
 
-  _.test("create a test suite with fixture and setup/teardown",
-         [&check_suite]() {
-    auto s = make_suite<int>("inner test suite", [](auto &_){
+  _.test("create a test suite with fixture and setup/teardown", []() {
+    auto s = make_suite<int>("test suite", [](auto &_){
       _.setup([](int &) {});
       _.teardown([](int &) {});
-      _.test("inner test", [](int &) {});
+      _.test("test", [](int &) {});
       _.test("skipped test", {skip}, [](int &) {});
     });
 
-    check_suite(s);
+    expect(s, simple_suite("test suite"));
   });
 
   _.test("create a parameterized test suite", []() {
-    auto suites = make_suites<int, float>("inner test suite", [](auto &_) {
+    auto suites = make_suites<int, float>("test suite", [](auto &_) {
       using Fixture = fixture_type_t<decltype(_)>;
 
-      _.test("inner test", [](auto &) {});
+      _.test("test", [](auto &) {});
       _.test("skipped test", {skip}, [](auto &) {});
     });
 
-    expect(suites.size(), equal_to(2));
-
-    std::string names[] = {
-      "inner test suite (int)", "inner test suite (float)"
-    };
-    for(int i = 0; i < 2; i++) {
-      expect(suites[i].name(), equal_to( names[i] ));
-      expect(suites[i].tests(), array(
-        match_test("inner test", false), match_test("skipped test", true)
-      ));
-    }
+    expect(suites, array(
+      simple_suite("test suite (int)"),
+      simple_suite("test suite (float)")
+    ));
   });
 
   _.test("create a type-only parameterized test suite", []() {
-    auto suites = make_suites<int, float>("inner test suite", type_only,
+    auto suites = make_suites<int, float>("test suite", type_only,
                                           [](auto &_) {
       using Fixture = fixture_type_t<decltype(_)>;
 
-      _.test("inner test", []() {});
+      _.test("test", []() {});
       _.test("skipped test", {skip}, []() {});
     });
 
-    expect(suites.size(), equal_to(2));
-
-    std::string names[] = {
-      "inner test suite (int)", "inner test suite (float)"
-    };
-    for(int i = 0; i < 2; i++) {
-      expect(suites[i].name(), equal_to( names[i] ));
-      expect(suites[i].tests(), array(
-        match_test("inner test", false), match_test("skipped test", true)
-      ));
-    }
+    expect(suites, array(
+      simple_suite("test suite (int)"),
+      simple_suite("test suite (float)")
+    ));
   });
 
-  _.test("create a test suite via make_suites", [&check_suite]() {
-    auto suites = make_suites<>("inner test suite", [](auto &_) {
-      _.test("inner test", []() {});
+  _.test("create a test suite via make_suites", []() {
+    auto suites = make_suites<>("test suite", [](auto &_) {
+      _.test("test", []() {});
       _.test("skipped test", {skip}, []() {});
     });
 
-    expect(suites.size(), equal_to(1));
-    check_suite(suites[0]);
+    expect(suites, array(simple_suite("test suite")));
   });
 
-  _.test("create a test suite with fixture via make_suites", [&check_suite]() {
-    auto suites = make_suites<int>("inner test suite", [](auto &_) {
-      _.test("inner test", [](int &) {});
+  _.test("create a test suite with fixture via make_suites", []() {
+    auto suites = make_suites<int>("test suite", [](auto &_) {
+      _.test("test", [](int &) {});
       _.test("skipped test", {skip}, [](int &) {});
     });
 
-    expect(suites.size(), equal_to(1));
-    check_suite(suites[0]);
+    expect(suites, array(simple_suite("test suite")));
   });
 
   _.test("create a test suite with type-only fixture via make_suites",
-         [&check_suite]() {
-    auto suites = make_suites<int>("inner test suite", type_only, [](auto &_) {
-      _.test("inner test", []() {});
+         []() {
+    auto suites = make_suites<int>("test suite", type_only, [](auto &_) {
+      _.test("test", []() {});
       _.test("skipped test", {skip}, []() {});
     });
 
-    expect(suites.size(), equal_to(1));
-    check_suite(suites[0]);
+    expect(suites, array(simple_suite("test suite")));
   });
 
   _.test("create a test suite that throws", []() {
@@ -212,29 +243,11 @@ suite<> test_suite("suite creation", [](auto &_) {
 
   subsuite<>(_, "subsuite creation", [](auto &_) {
 
-    auto check_subsuites = [](const runnable_suite &suite) {
-      expect(suite.name(), equal_to("inner test suite"));
-      expect(suite.tests(), array());
-      expect(suite.subsuites().size(), equal_to(1));
+    _.test("create subsuites", []() {
+      auto s = make_suite<>("test suite", [](auto &_){
+        _.test("test", []() {});
+        _.test("skipped test", {skip}, []() {});
 
-      auto &sub = suite.subsuites()[0];
-      expect(sub.name(), equal_to("subsuite"));
-      expect(sub.tests(), array(
-        match_test("subtest", false), match_test("skipped subtest", true)
-      ));
-      expect(sub.subsuites().size(), equal_to(1));
-
-      auto &subsub = sub.subsuites()[0];
-      expect(subsub.name(), equal_to("sub-subsuite"));
-      expect(subsub.tests(), array(
-        match_test("sub-subtest", false),
-        match_test("skipped sub-subtest", true)
-      ));
-      expect(subsub.subsuites().size(), equal_to(0));
-    };
-
-    _.test("create subsuites", [&check_subsuites]() {
-      auto s = make_suite<>("inner test suite", [](auto &_){
         _.template subsuite<int>("subsuite", [](auto &_) {
           _.test("subtest", [](int &) {});
           _.test("skipped subtest", {skip}, [](int &) {});
@@ -246,11 +259,14 @@ suite<> test_suite("suite creation", [](auto &_) {
         });
       });
 
-      check_subsuites(s);
+      expect(s, complex_suite());
     });
 
-    _.test("create subsuites with helper syntax", [&check_subsuites]() {
-      auto s = make_suite<>("inner test suite", [](auto &_){
+    _.test("create subsuites with helper syntax", []() {
+      auto s = make_suite<>("test suite", [](auto &_){
+        _.test("test", []() {});
+        _.test("skipped test", {skip}, []() {});
+
         subsuite<int>(_, "subsuite", [](auto &_) {
           _.test("subtest", [](int &) {});
           _.test("skipped subtest", {skip}, [](int &) {});
@@ -262,11 +278,14 @@ suite<> test_suite("suite creation", [](auto &_) {
         });
       });
 
-      check_subsuites(s);
+      expect(s, complex_suite());
     });
 
-    _.test("create subsuites with make_subsuite", [&check_subsuites]() {
-      auto s = make_suite<>("inner test suite", [](auto &_){
+    _.test("create subsuites with make_subsuite", []() {
+      auto s = make_suite<>("test suite", [](auto &_){
+        _.test("test", []() {});
+        _.test("skipped test", {skip}, []() {});
+
         _.subsuite(make_subsuite<int>(_, "subsuite", [](auto &_) {
           _.test("subtest", [](int &) {});
           _.test("skipped subtest", {skip}, [](int &) {});
@@ -278,128 +297,103 @@ suite<> test_suite("suite creation", [](auto &_) {
         }));
       });
 
-      check_subsuites(s);
+      expect(s, complex_suite());
     });
 
-    auto check_param_subsuites = [](const runnable_suite &suite) {
-      expect(suite.name(), equal_to("inner test suite"));
-      expect(suite.tests(), array());
-      expect(suite.subsuites().size(), equal_to(2));
-
-      std::string names[] = {
-        "subsuite (int)", "subsuite (float)"
-      };
-      for(int i = 0; i < 2; i++) {
-        auto &sub = suite.subsuites()[i];
-        expect(sub.name(), equal_to( names[i] ));
-        expect(sub.tests(), array(
-          match_test("subtest", false), match_test("skipped subtest", true)
-        ));
-        expect(sub.subsuites().size(), equal_to(0));
-      }
-    };
-
-    _.test("create a parameterized subsuite", [&check_param_subsuites]() {
-      auto s = make_suite<>("inner test suite", [](auto &_) {
+    _.test("create a parameterized subsuite", []() {
+      auto s = make_suite<>("test suite", [](auto &_) {
         _.template subsuite<int, float>("subsuite", [](auto &_) {
           using Fixture = fixture_type_t<decltype(_)>;
 
-          _.test("subtest", [](auto &) {});
-          _.test("skipped subtest", {skip}, [](auto &) {});
+          _.test("test", [](auto &) {});
+          _.test("skipped test", {skip}, [](auto &) {});
         });
       });
 
-      check_param_subsuites(s);
+      expect(s.name(), equal_to("test suite"));
+      expect(s.tests(), array());
+      expect(s.subsuites(), array(
+        simple_suite("subsuite (int)"),
+        simple_suite("subsuite (float)")
+      ));
     });
 
-    _.test("create a parameterized subsuite with helper syntax",
-           [&check_param_subsuites]() {
-      auto s = make_suite<>("inner test suite", [](auto &_) {
+    _.test("create a parameterized subsuite with helper syntax", []() {
+      auto s = make_suite<>("test suite", [](auto &_) {
         subsuite<int, float>(_, "subsuite", [](auto &_) {
           using Fixture = fixture_type_t<decltype(_)>;
 
-          _.test("subtest", [](auto &) {});
-          _.test("skipped subtest", {skip}, [](auto &) {});
+          _.test("test", [](auto &) {});
+          _.test("skipped test", {skip}, [](auto &) {});
         });
       });
 
-      check_param_subsuites(s);
+      expect(s.name(), equal_to("test suite"));
+      expect(s.tests(), array());
+      expect(s.subsuites(), array(
+        simple_suite("subsuite (int)"),
+        simple_suite("subsuite (float)")
+      ));
     });
 
-    _.test("create a parameterized subsuite with make_subsuites",
-           [&check_param_subsuites]() {
-      auto s = make_suite<>("inner test suite", [](auto &_) {
+    _.test("create a parameterized subsuite with make_subsuites", []() {
+      auto s = make_suite<>("test suite", [](auto &_) {
         _.subsuite(make_subsuites<int, float>(_, "subsuite", [](auto &_) {
           using Fixture = fixture_type_t<decltype(_)>;
 
-          _.test("subtest", [](auto &) {});
-          _.test("skipped subtest", {skip}, [](auto &) {});
+          _.test("test", [](auto &) {});
+          _.test("skipped test", {skip}, [](auto &) {});
         }));
       });
 
-      check_param_subsuites(s);
+      expect(s.name(), equal_to("test suite"));
+      expect(s.tests(), array());
+      expect(s.subsuites(), array(
+        simple_suite("subsuite (int)"),
+        simple_suite("subsuite (float)")
+      ));
     });
 
   });
 
   subsuite<>(_, "skipped suites", [](auto &_) {
 
-    auto check_suite = [](const runnable_suite &s) {
-      expect(s.tests(), array(
-        match_test("inner test", true), match_test("skipped test", true)
-      ));
-    };
-
-    _.test("create a skipped test suite", [&check_suite]() {
-        auto s = make_suite<>("inner test suite", {skip}, [](auto &_){
-        _.test("inner test", []() {});
+    _.test("create a skipped test suite", []() {
+      auto s = make_suite<>("test suite", {skip}, [](auto &_){
+        _.test("test", []() {});
         _.test("skipped test", {skip}, []() {});
       });
 
-      check_suite(s);
+      expect(s, simple_suite("test suite", true));
     });
 
-    _.test("create a skipped test suite with fixture", [&check_suite]() {
-      auto s = make_suite<int>("inner test suite", {skip}, [](auto &_){
-        _.test("inner test", [](int &) {});
+    _.test("create a skipped test suite with fixture", []() {
+      auto s = make_suite<int>("test suite", {skip}, [](auto &_){
+        _.test("test", [](int &) {});
         _.test("skipped test", {skip}, [](int &) {});
       });
 
-      check_suite(s);
+      expect(s, simple_suite("test suite", true));
     });
 
-    _.test("create a skipped parameterized test suite", [&check_suite]() {
-      auto suites = make_suites<int, float>("inner test suite", {skip},
+    _.test("create a skipped parameterized test suite", []() {
+      auto suites = make_suites<int, float>("test suite", {skip},
                                             [](auto &_){
         using Fixture = fixture_type_t<decltype(_)>;
 
-        _.test("inner test", [](auto &) {});
+        _.test("test", [](auto &) {});
         _.test("skipped test", {skip}, [](auto &) {});
       });
 
-      for(int i = 0; i < 2; i++)
-        check_suite(suites[i]);
+      expect(suites, array(
+        simple_suite("test suite (int)", true),
+        simple_suite("test suite (float)", true)
+      ));
     });
 
-    auto check_subsuites = [](const runnable_suite &suite) {
-      expect(suite.tests(), array(
-        match_test("inner test", false), match_test("skipped test", true)
-      ));
-
-      auto &sub = suite.subsuites()[0];
-      expect(sub.tests(), array(
-        match_test("subtest", true), match_test("skipped subtest", true)
-      ));
-
-      auto &subsub = sub.subsuites()[0];
-      expect(subsub.tests(), array(
-        match_test("sub-subtest", true), match_test("skipped sub-subtest", true)
-      ));
-    };
-
-    _.test("create skipped subsuites", [&check_subsuites]() {
-      auto s = make_suite<>("inner test suite", [](auto &_){
-        _.test("inner test", []() {});
+    _.test("create skipped subsuites", []() {
+      auto s = make_suite<>("test suite", [](auto &_){
+        _.test("test", []() {});
         _.test("skipped test", {skip}, []() {});
 
         _.template subsuite<int>("subsuite", {skip}, [](auto &_) {
@@ -413,12 +407,12 @@ suite<> test_suite("suite creation", [](auto &_) {
         });
       });
 
-      check_subsuites(s);
+      expect(s, complex_suite(1));
     });
 
-    _.test("create skipped subsuites with helper syntax", [&check_subsuites]() {
-      auto s = make_suite<>("inner test suite", [](auto &_){
-        _.test("inner test", []() {});
+    _.test("create skipped subsuites with helper syntax", []() {
+      auto s = make_suite<>("test suite", [](auto &_){
+        _.test("test", []() {});
         _.test("skipped test", {skip}, []() {});
 
         subsuite<int>(_, "subsuite", {skip}, [](auto &_) {
@@ -432,12 +426,12 @@ suite<> test_suite("suite creation", [](auto &_) {
         });
       });
 
-      check_subsuites(s);
+      expect(s, complex_suite(1));
     });
 
-    _.test("create skipped subsuites with make_subsuite", [&check_subsuites]() {
-      auto s = make_suite<>("inner test suite", [](auto &_){
-        _.test("inner test", []() {});
+    _.test("create skipped subsuites with make_subsuite", []() {
+      auto s = make_suite<>("test suite", [](auto &_){
+        _.test("test", []() {});
         _.test("skipped test", {skip}, []() {});
 
         _.subsuite(make_subsuite<int>(_, "subsuite", {skip}, [](auto &_) {
@@ -451,7 +445,7 @@ suite<> test_suite("suite creation", [](auto &_) {
         }));
       });
 
-      check_subsuites(s);
+      expect(s, complex_suite(1));
     });
 
   });

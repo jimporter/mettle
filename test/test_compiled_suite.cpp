@@ -32,14 +32,6 @@ struct wrap_test<void(Args...)> {
 };
 
 template<typename T>
-std::string to_printable(const basic_test_info<T> &test) {
-  std::ostringstream ss;
-  ss << "test_info(" << to_printable(test.name) << ", "
-     << to_printable(test.attrs) << ")";
-  return ss.str();
-}
-
-template<typename T>
 auto equal_test_info(const T &expected) {
   std::ostringstream ss;
   ss << "test_info(" << to_printable(expected.name) << ", "

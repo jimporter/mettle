@@ -45,6 +45,14 @@ std::string to_printable(const test_name &test) {
   return test.full_name() + " (id=" + std::to_string(test.id) + ")";
 }
 
+template<typename T>
+std::string to_printable(const basic_test_info<T> &test) {
+  std::ostringstream ss;
+  ss << "test_info(" << to_printable(test.name) << ", "
+     << to_printable(test.attrs) << ")";
+  return ss.str();
+}
+
 auto equal_attr_inst(attr_instance expected) {
   return make_matcher(
     std::move(expected),

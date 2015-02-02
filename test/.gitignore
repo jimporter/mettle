@@ -4,9 +4,9 @@ test_cmd_parse
 test_compiled_suite
 test_driver
 test_filters
+test_make_suite
 test_matchers
 test_move_if
 test_output
 test_run_tests
 test_scoped_pipe
-test_suite
