@@ -1,6 +1,7 @@
 #include <mettle/driver/posix/subprocess.hpp>
 
 #include <cassert>
+#include <initializer_list>
 #include <thread>
 
 #include <pthread.h>
@@ -19,73 +20,41 @@ namespace posix {
       close(fd_to_close);
     }
 
-    [[noreturn]] void monitor_failed(int pid1 = -1, int pid2 = -1) {
-      if(pid1 != -1)
-        kill(pid1, SIGKILL);
-      if(pid2 != -1)
-        kill(pid2, SIGKILL);
+    [[noreturn]] void monitor_failed(std::initializer_list<int> pids = {}) {
+      for(int pid : pids)
+        kill(pid, SIGKILL);
       _exit(128);
     }
   }
 
   void make_timeout_monitor(std::chrono::milliseconds timeout) {
-    // Assume our process group is different from our parent's. However, we want
-    // some of our processes to rejoin the parent's process group.
-    pid_t parent_pgid = getpgid(getppid());
-    pid_t test_pgid = getpgid(0);
-    assert(parent_pgid != test_pgid);
-
     pid_t timer_pid;
     if((timer_pid = fork()) < 0)
       monitor_failed();
     if(timer_pid == 0) {
-      if(setpgid(0, parent_pgid) < 0)
-        monitor_failed();
       std::this_thread::sleep_for(timeout);
       _exit(err_timeout);
     }
 
-    if(setpgid(timer_pid, parent_pgid) < 0)
-      monitor_failed(timer_pid);
-
-    // The monitor process will signal the test process when it's ok to proceed
-    // (i.e. once it's rejoined the parent's process group). Set up a signal
-    // mask to wait for it.
-    sigset_t mask, oldmask;
-    sigemptyset(&mask);
-    sigaddset(&mask, SIGUSR1);
-    sigprocmask(SIG_BLOCK, &mask, &oldmask);
-
     pid_t test_pid;
     if((test_pid = fork()) < 0)
-      monitor_failed(timer_pid);
+      monitor_failed({timer_pid});
     if(test_pid != 0) {
-      sigprocmask(SIG_SETMASK, &oldmask, nullptr);
-      if(setpgid(0, parent_pgid) < 0 ||
-         kill(test_pid, SIGUSR1) < 0)
-        monitor_failed(timer_pid, test_pid);
-
       // Wait for the first child process (the timer or the test) to finish,
       // then kill (and wait) for the other one. If the timer finishes first,
       // kill the test's entire process group.
       int status;
       pid_t exited_pid;
       if((exited_pid = wait(&status)) < 0)
-        monitor_failed(timer_pid, -test_pgid);
-      if(kill(exited_pid == test_pid ? timer_pid : -test_pgid, SIGKILL) < 0)
-        monitor_failed(timer_pid, -test_pgid);
+        monitor_failed({timer_pid, test_pid});
+      if(kill(exited_pid == test_pid ? timer_pid : test_pid, SIGKILL) < 0)
+        monitor_failed({timer_pid, test_pid});
       wait(nullptr);
 
       if(WIFEXITED(status))
         _exit(WEXITSTATUS(status));
       else // WIFSIGNALED
         raise(WTERMSIG(status));
-    }
-    else {
-      int sig;
-      if(sigwait(&mask, &sig) < 0)
-        monitor_failed();
-      sigprocmask(SIG_SETMASK, &oldmask, nullptr);
     }
   }
 
@@ -122,6 +91,14 @@ namespace posix {
         }
       }
     }
+  }
+
+  int send_pgid(int fd, int pgid) {
+    return write(fd, &pgid, sizeof(pgid));
+  }
+
+  int recv_pgid(int fd, int *pgid) {
+    return read(fd, pgid, sizeof(*pgid));
   }
 
   int make_fd_private(int fd) {

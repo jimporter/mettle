@@ -18,8 +18,13 @@ namespace posix {
   };
 
   void make_timeout_monitor(std::chrono::milliseconds timeout);
+
   int read_into(std::vector<readfd> &dests, const timespec *timeout,
                 const sigset_t *sigmask);
+
+  int send_pgid(int fd, int pgid);
+  int recv_pgid(int fd, int *pgid);
+
   int make_fd_private(int fd);
 }
 

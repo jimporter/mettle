@@ -48,9 +48,10 @@ namespace posix {
   ) const {
     assert(test_pgid == 0);
 
-    scoped_pipe stdout_pipe, stderr_pipe, log_pipe;
+    scoped_pipe stdout_pipe, stderr_pipe, pgid_pipe, log_pipe;
     if(stdout_pipe.open() < 0 ||
        stderr_pipe.open() < 0 ||
+       pgid_pipe.open() < 0 ||
        log_pipe.open(O_CLOEXEC) < 0)
       return parent_failed();
 
@@ -69,20 +70,25 @@ namespace posix {
       if(mask.clear() < 0)
         child_failed();
 
-      // Make a new process group so we can kill the test and all its children
-      // as a group.
-      setpgid(0, 0);
-
-      if(timeout_)
-        make_timeout_monitor(*timeout_);
-
       if(stdout_pipe.close_read() < 0 ||
          stderr_pipe.close_read() < 0 ||
+         pgid_pipe.close_read() < 0 ||
          log_pipe.close_read() < 0)
         child_failed();
 
       if(stdout_pipe.move_write(STDOUT_FILENO) < 0 ||
          stderr_pipe.move_write(STDERR_FILENO) < 0)
+        child_failed();
+
+      if(timeout_)
+        make_timeout_monitor(*timeout_);
+
+      // Make a new process group so we can kill the test and all its children
+      // as a group.
+      if(setpgid(0, 0) < 0)
+        child_failed();
+
+      if(send_pgid(pgid_pipe.write_fd, getpgid(0)) < 0)
         child_failed();
 
       auto result = test.function();
@@ -96,7 +102,9 @@ namespace posix {
     }
     else {
       scoped_signal sigint, sigquit, sigchld;
-      test_pgid = pid;
+
+      if(recv_pgid(pgid_pipe.read_fd, &test_pgid) < 0)
+        return parent_failed();
 
       if(sigaction(SIGINT, nullptr, &old_sigint) < 0 ||
          sigaction(SIGQUIT, nullptr, &old_sigquit) < 0)
