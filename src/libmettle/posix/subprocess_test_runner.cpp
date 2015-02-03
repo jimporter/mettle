@@ -91,6 +91,9 @@ namespace posix {
       if(send_pgid(pgid_pipe.write_fd, getpgid(0)) < 0)
         child_failed();
 
+      if(pgid_pipe.close_write() < 0)
+        child_failed();
+
       auto result = test.function();
       if(write(log_pipe.write_fd, result.message.c_str(),
                result.message.length()) < 0)

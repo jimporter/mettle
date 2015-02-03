@@ -98,7 +98,13 @@ namespace posix {
   }
 
   int recv_pgid(int fd, int *pgid) {
-    return read(fd, pgid, sizeof(*pgid));
+    ssize_t size = read(fd, pgid, sizeof(*pgid));
+    if(size < 0)
+      return size;
+    if(size == sizeof(*pgid))
+      return 0;
+    errno = EIO;
+    return -1;
   }
 
   int make_fd_private(int fd) {
