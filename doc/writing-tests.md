@@ -424,3 +424,22 @@ attr_suite("my suite", {mettle::skip("broken"), tags("cat")}, [](auto &_) {
   });
 });
 ```
+
+#### Mixing fixture factories and attributes
+
+At this point, you may be wondering how to specify *both* a fixture factory and
+a set of attributes for suite. Since they're both optional arguments that appear
+between the suite's name and its creation function, which goes first? *The
+attributes always go first*:
+
+```c++
+mettle::suite<int>
+the_works("my complicated suite", {mettle::skip}, type_only, [](auto &_) {
+  /* ... */
+});
+```
+
+There's an easy rule to remember this: since attributes are a way of identifying
+the suite, they go near the other identifier: the name. Likewise, fixture
+factories affect how the suite is *executed*, so they go near the creation
+function, which also affects its execution.
