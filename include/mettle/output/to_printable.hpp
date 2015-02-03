@@ -371,15 +371,9 @@ namespace detail {
   template<typename T>
   std::string stringify_tuple(const T &tuple) {
     std::ostringstream ss;
-    bool first = true;
-    ss << "[";
-    tuple_for_each(tuple, [&ss, &first](const auto &x) {
-      if(!first)
-        ss << ", ";
-      ss << to_printable(x);
-      first = false;
-    });
-    ss << "]";
+    ss << "[" << tuple_joined(tuple, [](auto &&item) {
+      return to_printable(item);
+    }) << "]";
     return ss.str();
   }
 }

@@ -113,15 +113,9 @@ namespace detail {
 
     std::string desc() const {
       std::ostringstream ss;
-      bool first = true;
-      ss << "[";
-      detail::tuple_for_each(matchers_, [&ss, &first](const auto &matcher) {
-        if(!first)
-          ss << ", ";
-        ss << matcher.desc();
-        first = false;
-      });
-      ss << "]";
+      ss << "[" << detail::tuple_joined(matchers_, [](auto &&matcher) {
+        return matcher.desc();
+      }) << "]";
       return ss.str();
     }
   private:

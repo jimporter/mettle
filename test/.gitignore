@@ -9,5 +9,6 @@ test_matchers
 test_move_if
 test_output
 test_suite_execution
+test_tuple_algorithm
 posix/test_scoped_pipe
 posix/test_subprocess_test_runner
