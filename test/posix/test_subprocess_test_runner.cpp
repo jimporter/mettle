@@ -47,7 +47,7 @@ struct test_event_logger : log::test_logger {
   std::vector<std::string> events;
 };
 
-struct ftr_factory {
+struct sptr_factory {
   template<typename T>
   T make() {
     return T(std::chrono::milliseconds(500));
@@ -55,7 +55,7 @@ struct ftr_factory {
 };
 
 suite<subprocess_test_runner>
-test_fork("subprocess_test_runner", ftr_factory{}, [](auto &_) {
+test_fork("subprocess_test_runner", sptr_factory{}, [](auto &_) {
 
   subsuite<log::test_output>(_, "run one test", [](auto &_) {
 

@@ -8,6 +8,6 @@ test_make_suite
 test_matchers
 test_move_if
 test_output
-test_run_tests
-test_scoped_pipe
 test_suite_execution
+posix/test_scoped_pipe
+posix/test_subprocess_test_runner

@@ -13,7 +13,8 @@ ifndef TMPDIR
   TMPDIR := /tmp
 endif
 
-TESTS := $(patsubst %.cpp,%,$(wildcard test/*.cpp))
+TEST_DIRS := test test/posix
+TESTS := $(patsubst %.cpp,%,$(foreach d,$(TEST_DIRS),$(wildcard $(d)/*.cpp)))
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
 HEADER_ONLY_EXAMPLES := examples/test_header_only
 
