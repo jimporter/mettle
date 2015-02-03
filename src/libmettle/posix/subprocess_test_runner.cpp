@@ -103,6 +103,12 @@ namespace posix {
     else {
       scoped_signal sigint, sigquit, sigchld;
 
+      if(stdout_pipe.close_write() < 0 ||
+         stderr_pipe.close_write() < 0 ||
+         pgid_pipe.close_write() < 0 ||
+         log_pipe.close_write() < 0)
+        return parent_failed();
+
       if(recv_pgid(pgid_pipe.read_fd, &test_pgid) < 0)
         return parent_failed();
 
@@ -116,11 +122,6 @@ namespace posix {
         return parent_failed();
 
       if(mask.pop() < 0)
-        return parent_failed();
-
-      if(stdout_pipe.close_write() < 0 ||
-         stderr_pipe.close_write() < 0 ||
-         log_pipe.close_write() < 0)
         return parent_failed();
 
       std::string message;
