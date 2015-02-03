@@ -10,3 +10,4 @@ test_move_if
 test_output
 test_run_tests
 test_scoped_pipe
+test_suite_execution
