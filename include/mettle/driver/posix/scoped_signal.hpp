@@ -4,6 +4,7 @@
 #include <signal.h>
 
 #include <cassert>
+#include <initializer_list>
 #include <vector>
 
 namespace mettle {
@@ -24,7 +25,7 @@ namespace posix {
       return do_push(how, t);
     }
 
-    int push(int how, const std::initializer_list<int> &t) {
+    int push(int how, std::initializer_list<int> t) {
       return do_push(how, t);
     }
 

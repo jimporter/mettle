@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <initializer_list>
 #include <regex>
 #include <vector>
 
@@ -18,7 +19,7 @@ public:
   using iterator = container_type::const_iterator;
 
   name_filter_set() = default;
-  name_filter_set(const std::initializer_list<value_type> &i) : filters_(i) {}
+  name_filter_set(std::initializer_list<value_type> i) : filters_(i) {}
 
   METTLE_PUBLIC filter_result
   operator ()(const test_name &name, const attributes &) const;
@@ -85,7 +86,7 @@ public:
   using iterator = container_type::const_iterator;
 
   attr_filter() = default;
-  attr_filter(const std::initializer_list<value_type> &i) : filters_(i) {}
+  attr_filter(std::initializer_list<value_type> i) : filters_(i) {}
 
   METTLE_PUBLIC filter_result
   operator ()(const test_name &, const attributes &attrs) const;
@@ -124,7 +125,7 @@ public:
   using iterator = container_type::const_iterator;
 
   attr_filter_set() = default;
-  attr_filter_set(const std::initializer_list<value_type> &i) : filters_(i) {}
+  attr_filter_set(std::initializer_list<value_type> i) : filters_(i) {}
 
   METTLE_PUBLIC filter_result
   operator ()(const test_name &, const attributes &attrs) const;
