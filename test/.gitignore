@@ -1,6 +1,6 @@
 test_attributes
 test_child
-test_cmd_parse
+test_cmd_line
 test_compiled_suite
 test_filters
 test_global_suite
