@@ -206,7 +206,7 @@ void validate(boost::any &v, const std::vector<std::string> &values,
   using namespace boost::program_options;
   if(v.empty())
     v = attr_filter_set();
-  attr_filter_set* filters = boost::any_cast<attr_filter_set>(&v);
+  attr_filter_set *filters = boost::any_cast<attr_filter_set>(&v);
   assert(filters != nullptr);
   for(const auto &i : values) {
     try {
@@ -223,7 +223,7 @@ void validate(boost::any &v, const std::vector<std::string> &values,
   using namespace boost::program_options;
   if(v.empty())
     v = name_filter_set();
-  name_filter_set* filters = boost::any_cast<name_filter_set>(&v);
+  name_filter_set *filters = boost::any_cast<name_filter_set>(&v);
   assert(filters != nullptr);
   for(const auto &i : values) {
     try {
