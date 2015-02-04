@@ -79,14 +79,14 @@ namespace posix {
     std::vector<sigset_t> old_masks_;
   };
 
-  class scoped_signal {
+  class scoped_sigaction {
   public:
     using function_type = void (*)(int);
 
-    scoped_signal() = default;
-    scoped_signal(const scoped_signal &) = delete;
+    scoped_sigaction() = default;
+    scoped_sigaction(const scoped_sigaction &) = delete;
 
-    ~scoped_signal() {
+    ~scoped_sigaction() {
       close();
     }
 
