@@ -4,94 +4,6 @@ using namespace mettle;
 #include <mettle/driver/filters.hpp>
 #include "helpers.hpp"
 
-auto name_filter_suite(bool negated) {
-  auto filter = has_attr("attribute");
-  std::string suite_name("has_attr(name)");
-  if(negated) {
-    filter = !std::move(filter);
-    suite_name = "!" + suite_name;
-  }
-
-  return make_subsuite<std::tuple<>>(suite_name, [negated, filter](auto &_) {
-    _.test("basic", [=]() {
-      expect(filter.attribute, equal_to("attribute"));
-      expect(filter.func(nullptr), equal_to(negated));
-    });
-
-    _.test("bool_attr", [=]() {
-      bool_attr attr("attribute");
-
-      attr_instance a1 = attr;
-      expect(filter.func(&a1), equal_to(!negated));
-
-      attr_instance a2 = attr("value");
-      expect(filter.func(&a2), equal_to(!negated));
-    });
-
-    _.test("string_attr", [=]() {
-      string_attr attr("attribute");
-
-      attr_instance a = attr("value");
-      expect(filter.func(&a), equal_to(!negated));
-    });
-
-    _.test("list_attr", [=]() {
-      list_attr attr("attribute");
-
-      attr_instance a = attr("value");
-      expect(filter.func(&a), equal_to(!negated));
-    });
-  });
-}
-
-auto value_filter_suite(bool negated) {
-  auto filter = has_attr("attribute", "value");
-  std::string suite_name("has_attr(name, value)");
-  if(negated) {
-    filter = !std::move(filter);
-    suite_name = "!" + suite_name;
-  }
-
-  return make_subsuite<std::tuple<>>(suite_name, [negated, filter](auto &_) {
-    _.test("basic", [=]() {
-      expect(filter.attribute, equal_to("attribute"));
-      expect(filter.func(nullptr), equal_to(negated));
-    });
-
-    _.test("bool_attr", [=]() {
-      bool_attr attr("attribute");
-
-      attr_instance a1 = attr;
-      expect(filter.func(&a1), equal_to(negated));
-
-      attr_instance a2 = attr("value");
-      expect(filter.func(&a2), equal_to(!negated));
-      attr_instance a3 = attr("other");
-      expect(filter.func(&a3), equal_to(negated));
-    });
-
-    _.test("string_attr", [=]() {
-      string_attr attr("attribute");
-
-      attr_instance a1 = attr("value");
-      expect(filter.func(&a1), equal_to(!negated));
-      attr_instance a2 = attr("other");
-      expect(filter.func(&a2), equal_to(negated));
-    });
-
-    _.test("list_attr", [=]() {
-      list_attr attr("attribute");
-
-      attr_instance a1 = attr("value");
-      expect(filter.func(&a1), equal_to(!negated));
-      attr_instance a2 = attr("other");
-      expect(filter.func(&a2), equal_to(negated));
-      attr_instance a3 = attr("other", "value");
-      expect(filter.func(&a3), equal_to(!negated));
-    });
-  });
-}
-
 suite<> test_core_filters("core filters", [](auto &_) {
   subsuite<>(_, "default_filter", [](auto &_) {
     _.test("no attributes", []() {
@@ -200,11 +112,99 @@ suite<> test_name_filters("name filters", [](auto &_) {
   });
 });
 
+auto attr_name_filter_suite(bool negated) {
+  auto filter = has_attr("attribute");
+  std::string suite_name("has_attr(name)");
+  if(negated) {
+    filter = !std::move(filter);
+    suite_name = "!" + suite_name;
+  }
+
+  return make_subsuite<std::tuple<>>(suite_name, [negated, filter](auto &_) {
+    _.test("basic", [=]() {
+      expect(filter.attribute, equal_to("attribute"));
+      expect(filter.func(nullptr), equal_to(negated));
+    });
+
+    _.test("bool_attr", [=]() {
+      bool_attr attr("attribute");
+
+      attr_instance a1 = attr;
+      expect(filter.func(&a1), equal_to(!negated));
+
+      attr_instance a2 = attr("value");
+      expect(filter.func(&a2), equal_to(!negated));
+    });
+
+    _.test("string_attr", [=]() {
+      string_attr attr("attribute");
+
+      attr_instance a = attr("value");
+      expect(filter.func(&a), equal_to(!negated));
+    });
+
+    _.test("list_attr", [=]() {
+      list_attr attr("attribute");
+
+      attr_instance a = attr("value");
+      expect(filter.func(&a), equal_to(!negated));
+    });
+  });
+}
+
+auto attr_value_filter_suite(bool negated) {
+  auto filter = has_attr("attribute", "value");
+  std::string suite_name("has_attr(name, value)");
+  if(negated) {
+    filter = !std::move(filter);
+    suite_name = "!" + suite_name;
+  }
+
+  return make_subsuite<std::tuple<>>(suite_name, [negated, filter](auto &_) {
+    _.test("basic", [=]() {
+      expect(filter.attribute, equal_to("attribute"));
+      expect(filter.func(nullptr), equal_to(negated));
+    });
+
+    _.test("bool_attr", [=]() {
+      bool_attr attr("attribute");
+
+      attr_instance a1 = attr;
+      expect(filter.func(&a1), equal_to(negated));
+
+      attr_instance a2 = attr("value");
+      expect(filter.func(&a2), equal_to(!negated));
+      attr_instance a3 = attr("other");
+      expect(filter.func(&a3), equal_to(negated));
+    });
+
+    _.test("string_attr", [=]() {
+      string_attr attr("attribute");
+
+      attr_instance a1 = attr("value");
+      expect(filter.func(&a1), equal_to(!negated));
+      attr_instance a2 = attr("other");
+      expect(filter.func(&a2), equal_to(negated));
+    });
+
+    _.test("list_attr", [=]() {
+      list_attr attr("attribute");
+
+      attr_instance a1 = attr("value");
+      expect(filter.func(&a1), equal_to(!negated));
+      attr_instance a2 = attr("other");
+      expect(filter.func(&a2), equal_to(negated));
+      attr_instance a3 = attr("other", "value");
+      expect(filter.func(&a3), equal_to(!negated));
+    });
+  });
+}
+
 suite<> test_attr_filters("attribute filters", [](auto &_) {
   subsuite<>(_, "attr_filter_item", [](auto &_) {
     for(bool negated : {false, true}) {
-      _.subsuite(name_filter_suite(negated));
-      _.subsuite(value_filter_suite(negated));
+      _.subsuite(attr_name_filter_suite(negated));
+      _.subsuite(attr_value_filter_suite(negated));
     }
   });
 
