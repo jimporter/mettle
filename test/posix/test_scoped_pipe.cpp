@@ -2,6 +2,8 @@
 using namespace mettle;
 
 #include <iostream>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include <mettle/driver/posix/scoped_pipe.hpp>
 using namespace mettle::posix;
@@ -17,13 +19,39 @@ suite<scoped_pipe> test_scoped_pipe("scoped_pipe", [](auto &_) {
   });
 
   _.test("close()", [](scoped_pipe &pipe) {
+    int read_fd, write_fd;
+    read_fd = pipe.read_fd;
+    write_fd = pipe.write_fd;
+
     expect("close read fd", pipe.close_read(), equal_to(0));
     expect("read fd", pipe.read_fd, equal_to(-1));
     expect("close read fd again", pipe.close_read(), equal_to(-1));
 
+    expect("get read fd flags", fcntl(read_fd, F_GETFD), equal_to(-1));
+    expect(errno, equal_to(EBADF));
+
     expect("close write fd", pipe.close_write(), equal_to(0));
     expect("write fd", pipe.write_fd, equal_to(-1));
     expect("close write fd again", pipe.close_write(), equal_to(-1));
+
+    expect("get write fd flags", fcntl(write_fd, F_GETFD), equal_to(-1));
+    expect(errno, equal_to(EBADF));
+  });
+
+  _.test("~scoped_pipe()", [](scoped_pipe &) {
+    int read_fd, write_fd;
+    {
+      scoped_pipe pipe;
+      expect("open pipe", pipe.open(), equal_to(0));
+      read_fd = pipe.read_fd;
+      write_fd = pipe.write_fd;
+    }
+
+    expect("get read fd flags", fcntl(read_fd, F_GETFD), equal_to(-1));
+    expect(errno, equal_to(EBADF));
+
+    expect("get write fd flags", fcntl(write_fd, F_GETFD), equal_to(-1));
+    expect(errno, equal_to(EBADF));
   });
 
   _.test("read()/write()", [](scoped_pipe &pipe) {
