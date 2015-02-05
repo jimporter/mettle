@@ -1,23 +1,7 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-struct copyable_type {
-  copyable_type() = default;
-  copyable_type(const copyable_type &m)
-    : copies(m.copies + 1) {}
-
-  int copies = 0;
-};
-
-struct moveable_type {
-  moveable_type() = default;
-  moveable_type(const moveable_type &m)
-    : copies(m.copies + 1), moves(m.moves) {}
-  moveable_type(moveable_type &&m)
-    : copies(m.copies), moves(m.moves + 1) {}
-
-  int copies = 0, moves = 0;
-};
+#include "copy_counter.hpp"
 
 suite<> test_move_if("move_if()", [](auto &_) {
   subsuite<int, int &, const int &>(_, "move_if", type_only, [](auto &_) {

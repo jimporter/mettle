@@ -104,7 +104,7 @@ test_sigaction("scoped_sigaction", [](auto &_) {
   _.test("open()", [](auto &act) {
     struct sigaction old;
     expect("get sigaction", sigaction(SIGTERM, nullptr, &old), equal_to(0));
-    expect("check handler", old.sa_handler, equal_to(&sig_handler));
+    expect("check handler", old.sa_handler, equal_to(sig_handler));
 
     expect("reopen sigaction", [&act]() { act->open(SIGTERM, sig_handler); },
            killed(SIGABRT));
@@ -115,7 +115,7 @@ test_sigaction("scoped_sigaction", [](auto &_) {
 
     struct sigaction old;
     expect("get sigaction", sigaction(SIGTERM, nullptr, &old), equal_to(0));
-    expect("check handler", old.sa_handler, not_equal_to(&sig_handler));
+    expect("check handler", old.sa_handler, not_equal_to(sig_handler));
   });
 
   _.test("~scoped_sigaction", [](auto &act) {
@@ -123,6 +123,6 @@ test_sigaction("scoped_sigaction", [](auto &_) {
 
     struct sigaction old;
     expect("get sigaction", sigaction(SIGTERM, nullptr, &old), equal_to(0));
-    expect("check handler", old.sa_handler, not_equal_to(&sig_handler));
+    expect("check handler", old.sa_handler, not_equal_to(sig_handler));
   });
 });

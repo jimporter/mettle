@@ -16,6 +16,8 @@ namespace mettle {
 template<typename T>
 class any_capture {
 public:
+  using type = T;
+
   METTLE_CONSTEXPR any_capture(const T &t) : value(t) {}
   METTLE_CONSTEXPR any_capture(T &&t) : value(std::move(t)) {}
 
@@ -25,6 +27,8 @@ public:
 template<typename T, std::size_t N>
 class any_capture<T[N]> {
 public:
+  using type = T[N];
+
   METTLE_CONSTEXPR any_capture(const T (&t)[N])
     : any_capture(t, std::make_index_sequence<N>()) {}
   METTLE_CONSTEXPR any_capture(T (&&t)[N])
@@ -39,6 +43,11 @@ private:
   template<std::size_t ...I>
   METTLE_CONSTEXPR any_capture(T (&&t)[N], std::index_sequence<I...>)
     : value{std::move(t[I])...} {}
+};
+
+template<typename Ret, typename ...Args>
+class any_capture<Ret(Args...)> : public any_capture<Ret(*)(Args...)> {
+  using any_capture<Ret(*)(Args...)>::any_capture;
 };
 
 template<typename T>
