@@ -12,4 +12,5 @@ test_run_tests
 test_suite_execution
 test_tuple_algorithm
 posix/test_scoped_pipe
+posix/test_scoped_signal
 posix/test_subprocess_test_runner

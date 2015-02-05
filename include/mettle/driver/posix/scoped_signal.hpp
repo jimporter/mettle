@@ -92,6 +92,7 @@ namespace posix {
     }
 
     int open(int sig, function_type handler) {
+      assert(signum == 0);
       signum = sig;
       sigemptyset(&act.sa_mask);
       act.sa_flags = 0;
