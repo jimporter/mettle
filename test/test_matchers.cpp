@@ -18,7 +18,13 @@ T about_one() {
   return value;
 }
 
-suite<> matcher_tests("matchers", [](auto &_) {
+auto msg_matcher(bool match) {
+  return make_matcher([match](const auto &) -> match_result {
+    return {match, "message"};
+  }, "");
+}
+
+suite<> test_matchers("matchers", [](auto &_) {
 
   subsuite<>(_, "basic", [](auto &_) {
     _.test("anything()", []() {
@@ -38,10 +44,8 @@ suite<> matcher_tests("matchers", [](auto &_) {
 
       expect(is_not(123).desc(), equal_to("not 123"));
 
-      auto m = make_matcher([](const auto &) -> match_result {
-        return {true, "message"};
-      }, "");
-      expect(is_not(m)(123).message, equal_to("message"));
+      expect(is_not(msg_matcher(true))(123).message, equal_to("message"));
+      expect(is_not(msg_matcher(false))(123).message, equal_to("message"));
     });
 
     _.test("describe()", []() {
@@ -69,14 +73,16 @@ suite<> matcher_tests("matchers", [](auto &_) {
       expect(filter(identity, equal_to(123), "desc ").desc(),
              equal_to("desc 123"));
 
-      auto msg = make_matcher([](const auto &) -> match_result {
-        return {false, "message"};
-      }, "");
       expect(filter(second, equal_to(1))(p).message, equal_to("1"));
-      expect(filter(second, msg)(p).message, equal_to("message"));
+      expect(filter(second, msg_matcher(true))(p).message, equal_to("message"));
+      expect(filter(second, msg_matcher(false))(p).message,
+             equal_to("message"));
       expect(filter(second, equal_to(1), "desc ")(p).message,
              equal_to("desc 1"));
-      expect(filter(second, msg, "desc ")(p).message, equal_to("message"));
+      expect(filter(second, msg_matcher(true), "desc ")(p).message,
+             equal_to("message"));
+      expect(filter(second, msg_matcher(false), "desc ")(p).message,
+             equal_to("message"));
     });
   });
 
@@ -169,11 +175,8 @@ suite<> matcher_tests("matchers", [](auto &_) {
 
       expect(any(1, 2, 3).desc(), equal_to("any of(1, 2, 3)"));
 
-      auto msg = make_matcher([](const auto &) -> match_result {
-        return {true, "message"};
-      }, "");
-      expect(any(1, msg)(2).message, equal_to("message"));
-      expect(any(1, is_not(msg))(2).message, equal_to(""));
+      expect(any(1, msg_matcher(true))(2).message, equal_to("message"));
+      expect(any(1, is_not(msg_matcher(true)))(2).message, equal_to(""));
     });
 
     _.test("all()", []() {
@@ -186,11 +189,8 @@ suite<> matcher_tests("matchers", [](auto &_) {
 
       expect(all(1, 2, 3).desc(), equal_to("all of(1, 2, 3)"));
 
-      auto msg = make_matcher([](const auto &) -> match_result {
-        return {false, "message"};
-      }, "");
-      expect(all(1, msg)(1).message, equal_to("message"));
-      expect(all(1, is_not(msg))(1).message, equal_to(""));
+      expect(all(1, msg_matcher(false))(1).message, equal_to("message"));
+      expect(all(1, is_not(msg_matcher(false)))(1).message, equal_to(""));
     });
 
     _.test("none()", []() {
@@ -203,11 +203,8 @@ suite<> matcher_tests("matchers", [](auto &_) {
 
       expect(none(1, 2, 3).desc(), equal_to("none of(1, 2, 3)"));
 
-      auto msg = make_matcher([](const auto &) -> match_result {
-        return {true, "message"};
-      }, "");
-      expect(none(1, msg)(2).message, equal_to("message"));
-      expect(none(1, is_not(msg))(2).message, equal_to(""));
+      expect(none(1, msg_matcher(true))(2).message, equal_to("message"));
+      expect(none(1, is_not(msg_matcher(true)))(2).message, equal_to(""));
     });
   });
 
