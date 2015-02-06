@@ -222,6 +222,8 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(arr, is_not(member(4)));
 
       expect(member(123).desc(), equal_to("member 123"));
+      expect(member(msg_matcher(true))(arr).message,
+             equal_to("[message, message, message]"));
     });
 
     _.test("each()", []() {
@@ -234,48 +236,52 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(arr, is_not( each(less(2)) ));
 
       expect(each(123).desc(), equal_to("each 123"));
+      expect(each(msg_matcher(true))(arr).message,
+             equal_to("[message, message, message]"));
     });
 
     _.test("each(begin, end, m)", []() {
-      std::vector<int> vec = {1, 2, 3, 4};
-      expect(std::vector<int>{},
-             each(vec.begin(), vec.begin(), equal_to<const int &>));
-      expect(std::vector<int>{1, 2, 3},
-             each(vec.begin(), vec.end() - 1, equal_to<const int &>));
-      expect(std::vector<int>{1, 2, 3},
-             is_not(each(vec.rbegin() + 1, vec.rend(), equal_to<const int &>)));
-      expect(std::vector<int>{1, 2, 3},
-             is_not(each(vec.begin(), vec.end() - 2, equal_to<const int &>)));
-      expect(std::vector<int>{1, 2, 3},
-             is_not(each(vec.begin(), vec.end(), equal_to<const int &>)));
-
-      expect(vec, each(vec.begin(), vec.end(), equal_to<const int &>));
-
-      int arr[] = {1, 2, 3, 4};
-      expect(arr, each(vec.begin(), vec.end(), equal_to<const int &>));
-
-      expect(each(vec.begin(), vec.end(), greater<const int &>).desc(),
-             equal_to("[> 1, > 2, > 3, > 4]"));
-    });
-
-    _.test("each(x, y)", []() {
       using ivec = std::vector<int>;
-
-      expect(ivec{}, each(ivec{}, equal_to<int>));
-      expect(ivec{1, 2, 3}, each({1, 2, 3}, equal_to<const int &>));
-      expect(ivec{1, 2, 3}, is_not(each({3, 2, 1}, equal_to<const int &>)));
-      expect(ivec{1, 2, 3}, is_not(each({1, 2}, equal_to<const int &>)));
-      expect(ivec{1, 2, 3}, is_not(each({1, 2, 3, 4}, equal_to<const int &>)));
-
       ivec v = {1, 2, 3};
-      expect(v, each({1, 2, 3}, equal_to<const int &>));
+
+      expect(ivec{}, each(v.begin(), v.begin(), equal_to<const int &>));
+      expect(ivec{1, 2, 3}, each(v.begin(), v.end(), equal_to<const int &>));
+      expect(ivec{3, 2, 1}, is_not(
+        each(v.begin(), v.end(), equal_to<const int &>))
+      );
+      expect(ivec{1, 2}, is_not(
+        each(v.begin(), v.end(), equal_to<const int &>))
+      );
+      expect(ivec{1, 2, 3, 4}, is_not(
+        each(v.begin(), v.end(), equal_to<const int &>))
+      );
+
+      expect(v, each(v.begin(), v.end(), equal_to<const int &>));
 
       int arr[] = {1, 2, 3};
-      expect(arr, each({1, 2, 3}, equal_to<const int &>));
+      expect(arr, each(v.begin(), v.end(), equal_to<const int &>));
 
-      expect(ivec{1, 2, 3}, each(ivec{1, 2, 3}, equal_to<int>));
+      expect(each(v.begin(), v.end(), greater<const int &>).desc(),
+             equal_to("[> 1, > 2, > 3]"));
+    });
+
+    _.test("each(container, m)", []() {
+      using ivec = std::vector<int>;
+      ivec v = {1, 2, 3};
+
+      expect(ivec{}, each(ivec{}, equal_to<const int &>));
       expect(ivec{1, 2, 3}, each(v, equal_to<const int &>));
-      expect(ivec{1, 2, 3}, each(arr, equal_to<const int &>));
+      expect(ivec{3, 2, 1}, is_not(each(v, equal_to<const int &>)));
+      expect(ivec{1, 2}, is_not(each(v, equal_to<const int &>)));
+      expect(ivec{1, 2, 3, 4}, is_not(each(v, equal_to<const int &>)));
+
+      int arr[] = {1, 2, 3};
+      expect(arr, each(v, equal_to<const int &>));
+
+      expect(v, each(ivec{1, 2, 3}, equal_to<int>));
+      expect(v, each({1, 2, 3}, equal_to<const int &>));
+      expect(v, each(v, equal_to<const int &>));
+      expect(v, each(arr, equal_to<const int &>));
 
       expect(each({1, 2, 3}, greater<const int &>).desc(),
              equal_to("[> 1, > 2, > 3]"));

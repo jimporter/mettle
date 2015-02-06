@@ -12,31 +12,72 @@
 
 namespace mettle {
 
+namespace detail {
+
+  template<typename Call, typename Result, bool Enable = true>
+  struct enable_if_result : std::enable_if<
+    std::is_same<typename std::result_of<Call>::type, Result>::value == Enable,
+    typename std::result_of<Call>::type
+  > {};
+
+  template<typename Call, typename Result, bool Disable = true>
+  using disable_if_result = enable_if_result<Call, Result, !Disable>;
+
+  template<typename T>
+  class member_impl : public matcher_tag {
+  public:
+    member_impl(std::string desc, bool initial, T matcher)
+      : desc_(std::move(desc)), initial_(initial),
+        matcher_(std::move(matcher)) {}
+
+    template<typename U>
+    auto operator ()(const U &value) const -> typename enable_if_result<
+      T(decltype(*std::begin(value))), match_result
+    >::type {
+      std::ostringstream ss;
+      bool good = initial_;
+      ss << "[" << joined(value, [this, &good](auto &&i) {
+        auto result = matcher_(i);
+        if(result != initial_)
+          good = result;
+        return result.message;
+      }) << "]";
+      return {good, ss.str()};
+    }
+
+    template<typename U>
+    auto operator ()(const U &value) const -> typename disable_if_result<
+      T(decltype(*std::begin(value))), match_result
+    >::type {
+      for(const auto &i : value) {
+        auto result = matcher_(i);
+        if(result != initial_)
+          return result;
+      }
+      return initial_;
+    }
+
+    std::string desc() const {
+      return desc_ + matcher_.desc();
+    }
+  private:
+    const std::string desc_;
+    const bool initial_;
+    T matcher_;
+  };
+}
+
 template<typename T>
 auto member(T &&thing) {
-  return make_matcher(
-    ensure_matcher(std::forward<T>(thing)),
-    [](const auto &value, auto &&matcher) -> bool {
-      for(const auto &i : value) {
-        if(matcher(i))
-          return true;
-      }
-      return false;
-    }, "member "
+  return detail::member_impl<ensure_matcher_t<T>>(
+    "member ", false, ensure_matcher(std::forward<T>(thing))
   );
 }
 
 template<typename T>
 auto each(T &&thing) {
-  return make_matcher(
-    ensure_matcher(std::forward<T>(thing)),
-    [](const auto &value, auto &&matcher) -> bool {
-      for(const auto &i : value) {
-        if(!matcher(i))
-          return false;
-      }
-      return true;
-    }, "each "
+  return detail::member_impl<ensure_matcher_t<T>>(
+    "each ", true, ensure_matcher(std::forward<T>(thing))
   );
 }
 
