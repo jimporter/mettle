@@ -8,6 +8,7 @@
 
 #include "../output.hpp"
 #include "any_capture.hpp"
+#include "result.hpp"
 
 namespace mettle {
 
@@ -141,8 +142,11 @@ template<typename Filter, typename Matcher>
 auto filter(Filter &&f, Matcher &&matcher, const std::string &desc = "") {
   return make_matcher(
     std::forward<Matcher>(matcher),
-    [f = std::forward<Filter>(f)](const auto &actual, auto &&matcher) {
-      return matcher(f(actual));
+    [f = std::forward<Filter>(f), desc](const auto &actual, auto &&matcher) {
+      auto filtered = f(actual);
+      return match_result(
+        matcher(filtered), desc + detail::stringify(to_printable(filtered))
+      );
     }, desc
   );
 }

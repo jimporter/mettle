@@ -53,21 +53,30 @@ suite<> matcher_tests("matchers", [](auto &_) {
 
     _.test("filter()", []() {
       std::pair<std::string, int> p("first", 1);
-      expect(p, filter( [](auto &&x) { return x.first; }, equal_to("first") ));
-      expect(p, filter( [](auto &&x) { return x.second; }, is_not(less(0))) );
-      expect(p, is_not(filter( [](auto &&x) { return x.second; }, less(0)) ));
+      auto first = [](auto &&x) { return x.first; };
+      auto second = [](auto &&x) { return x.second; };
+      auto identity = [](auto &&x) { return x; };
 
-      expect(p, filter( [](auto &&x) { return x.first; }, equal_to("first"),
-                        ".first " ));
-      expect(p, filter( [](auto &&x) { return x.second; }, is_not(less(0)),
-                        ".second " ));
-      expect(p, is_not(filter( [](auto &&x) { return x.second; }, less(0),
-                               ".second ") ));
+      expect(p, filter( first, equal_to("first") ));
+      expect(p, filter( second, is_not(less(0)) ));
+      expect(p, is_not(filter( second, less(0) )));
 
-      expect(filter([](auto &&x) { return x; }, equal_to(123)).desc(),
-             equal_to("123"));
-      expect(filter([](auto &&x) { return x; }, equal_to(123), "desc ").desc(),
+      expect(p, filter( first, equal_to("first"), ".first " ));
+      expect(p, filter( second, is_not(less(0)), ".second " ));
+      expect(p, is_not(filter( second, less(0), ".second " )));
+
+      expect(filter(identity, equal_to(123)).desc(), equal_to("123"));
+      expect(filter(identity, equal_to(123), "desc ").desc(),
              equal_to("desc 123"));
+
+      auto msg = make_matcher([](const auto &) -> match_result {
+        return {false, "message"};
+      }, "");
+      expect(filter(second, equal_to(1))(p).message, equal_to("1"));
+      expect(filter(second, msg)(p).message, equal_to("message"));
+      expect(filter(second, equal_to(1), "desc ")(p).message,
+             equal_to("desc 1"));
+      expect(filter(second, msg, "desc ")(p).message, equal_to("message"));
     });
   });
 
