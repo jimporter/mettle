@@ -87,7 +87,7 @@ namespace detail {
   template<typename ...T>
   class array_impl : public matcher_tag {
   public:
-    using tuple_type = std::tuple<typename ensure_matcher_type<T>::type...>;
+    using tuple_type = std::tuple<ensure_matcher_t<T>...>;
 
     array_impl(T &&...matchers)
       : matchers_(ensure_matcher(std::forward<T>(matchers))...) {}
@@ -96,7 +96,7 @@ namespace detail {
     bool operator ()(const U &value) const {
       bool good = true;
       auto i = std::begin(value), end = std::end(value);
-      detail::tuple_for_until(matchers_, [&i, &end, &good](const auto &m) {
+      tuple_for_until(matchers_, [&i, &end, &good](const auto &m) {
         good = (i != end && m(*i));
         if(!good)
           return true;
@@ -107,7 +107,6 @@ namespace detail {
     }
 
     std::string desc() const {
-      using namespace detail;
       return "[" + stringify(tuple_joined(matchers_, [](auto &&matcher) {
         return matcher.desc();
       })) + "]";

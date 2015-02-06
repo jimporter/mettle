@@ -10,11 +10,11 @@
 namespace mettle {
 
 namespace detail {
-  template<typename ...T>
+  template<typename Reducer, typename ...T>
   class reduce_impl : public matcher_tag {
   public:
-    using reducer_type = std::function<bool(bool, bool)>;
-    using tuple_type = std::tuple<typename ensure_matcher_type<T>::type...>;
+    using reducer_type = Reducer;
+    using tuple_type = std::tuple<ensure_matcher_t<T>...>;
 
     reduce_impl(std::string desc, reducer_type reducer, bool initial,
                 T &&...matchers)
@@ -24,7 +24,7 @@ namespace detail {
     template<typename U>
     match_result operator ()(const U &value) const {
       match_result result = initial_;
-      detail::tuple_for_until(matchers_, [&, this](const auto &matcher) {
+      tuple_for_until(matchers_, [&, this](const auto &matcher) {
         auto m = matcher(value);
         bool done = reducer_(initial_, m) != initial_;
         if(done)
@@ -36,7 +36,7 @@ namespace detail {
 
     std::string desc() const {
       std::ostringstream ss;
-      ss << desc_ << "(" << detail::tuple_joined(matchers_, [](auto &&matcher) {
+      ss << desc_ << "(" << tuple_joined(matchers_, [](auto &&matcher) {
         return matcher.desc();
       }) << ")";
       return ss.str();
@@ -55,23 +55,23 @@ namespace detail {
 
 template<typename ...T>
 inline auto any(T &&...matchers) {
-  return detail::reduce_impl<T...>(
+  return detail::reduce_impl<std::logical_or<bool>, T...>(
     "any of", std::logical_or<bool>(), false, std::forward<T>(matchers)...
   );
 }
 
 template<typename ...T>
 inline auto all(T &&...matchers) {
-  return detail::reduce_impl<T...>(
+  return detail::reduce_impl<std::logical_and<bool>, T...>(
     "all of", std::logical_and<bool>(), true, std::forward<T>(matchers)...
   );
 }
 
 template<typename ...T>
 inline auto none(T &&...matchers) {
-  return detail::reduce_impl<T...>(
-    "none of", [](bool a, bool b) { return a && !b; }, true,
-    std::forward<T>(matchers)...
+  auto reducer = [](bool a, bool b) { return a && !b; };
+  return detail::reduce_impl<decltype(reducer), T...>(
+    "none of", std::move(reducer), true, std::forward<T>(matchers)...
   );
 }
 

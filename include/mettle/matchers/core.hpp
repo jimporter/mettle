@@ -105,16 +105,16 @@ inline auto anything() {
 }
 
 template<typename T>
-inline auto ensure_matcher(T &&matcher, typename std::enable_if<
-  is_matcher<T>::value
->::type* = 0) {
+inline auto ensure_matcher(T &&matcher) -> typename std::enable_if<
+  is_matcher<T>::value, decltype(std::forward<T>(matcher))
+>::type {
   return std::forward<T>(matcher);
 }
 
 template<typename T>
-inline auto ensure_matcher(T &&expected, typename std::enable_if<
-  !is_matcher<T>::value
->::type* = 0) {
+inline auto ensure_matcher(T &&expected) -> typename std::enable_if<
+  !is_matcher<T>::value, decltype( equal_to(std::forward<T>(expected)) )
+>::type {
   return equal_to(std::forward<T>(expected));
 }
 
@@ -122,6 +122,9 @@ template<typename T>
 struct ensure_matcher_type : public std::remove_reference<
   decltype(ensure_matcher(std::declval<T>()))
 > {};
+
+template<typename T>
+using ensure_matcher_t = typename ensure_matcher_type<T>::type;
 
 template<typename T>
 inline auto is_not(T &&thing) {
