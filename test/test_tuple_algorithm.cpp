@@ -4,7 +4,7 @@ using namespace mettle;
 #include <sstream>
 
 suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
-  subsuite<>(_, "tuple_for_until", [](auto &_) {
+  subsuite<>(_, "tuple_for_until()", [](auto &_) {
     using detail::tuple_for_until;
 
     _.test("empty tuple", []() {
@@ -85,7 +85,7 @@ suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
     });
   });
 
-  subsuite<>(_, "tuple_joined", [](auto &_) {
+  subsuite<>(_, "tuple_joined()", [](auto &_) {
     using detail::tuple_joined;
 
     _.test("empty tuple", []() {

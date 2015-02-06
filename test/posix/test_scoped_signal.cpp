@@ -118,7 +118,7 @@ test_sigaction("scoped_sigaction", [](auto &_) {
     expect("check handler", old.sa_handler, not_equal_to(sig_handler));
   });
 
-  _.test("~scoped_sigaction", [](auto &act) {
+  _.test("~scoped_sigaction()", [](auto &act) {
     act.reset();
 
     struct sigaction old;
