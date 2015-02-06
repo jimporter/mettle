@@ -92,16 +92,11 @@ auto thrown_raw(T &&thing) {
 
 template<typename Exception, typename T>
 auto thrown(T &&thing) {
-  return thrown_raw<Exception>(
-    make_matcher(
-      ensure_matcher(std::forward<T>(thing)),
-      [](const auto &value, auto &&matcher) -> match_result {
-        std::ostringstream ss;
-        ss << "what: " << to_printable(value.what());
-        return {matcher( std::string(value.what()) ), ss.str()};
-      }, "what: "
-    )
-  );
+  return thrown_raw<Exception>(filter(
+    [](auto &&e) { return std::string(e.what()); },
+    ensure_matcher(std::forward<T>(thing)),
+    "what: "
+  ));
 }
 
 template<typename Exception>

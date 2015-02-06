@@ -147,9 +147,10 @@ auto filter(Filter &&f, Matcher &&matcher, const std::string &desc = "") {
     std::forward<Matcher>(matcher),
     [f = std::forward<Filter>(f), desc](const auto &actual, auto &&matcher) {
       auto filtered = f(actual);
-      return match_result(
-        matcher(filtered), desc + detail::stringify(to_printable(filtered))
-      );
+      auto result = matcher(filtered);
+      std::ostringstream ss;
+      ss << desc << matcher_message(result, to_printable(filtered));
+      return match_result(result, ss.str());
     }, desc
   );
 }

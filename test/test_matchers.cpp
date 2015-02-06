@@ -77,12 +77,13 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(filter(second, msg_matcher(true))(p).message, equal_to("message"));
       expect(filter(second, msg_matcher(false))(p).message,
              equal_to("message"));
+
       expect(filter(second, equal_to(1), "desc ")(p).message,
              equal_to("desc 1"));
       expect(filter(second, msg_matcher(true), "desc ")(p).message,
-             equal_to("message"));
+             equal_to("desc message"));
       expect(filter(second, msg_matcher(false), "desc ")(p).message,
-             equal_to("message"));
+             equal_to("desc message"));
     });
   });
 
@@ -397,6 +398,9 @@ suite<> test_matchers("matchers", [](auto &_) {
              equal_to("threw " + ex_name + "(what: \"message\")"));
       expect(is_not(thrown<std::runtime_error>(anything()))(thrower).message,
              equal_to("threw " + ex_name + "(what: \"message\")"));
+
+      expect(thrown<std::runtime_error>(msg_matcher(true))(thrower).message,
+             equal_to("threw " + ex_name + "(what: message)"));
     });
 
     _.test("thrown_raw<T>()", [thrower, int_thrower, noop]() {
