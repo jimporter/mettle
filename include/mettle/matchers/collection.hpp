@@ -87,10 +87,7 @@ namespace detail {
   template<typename ...T>
   class array_impl : public matcher_tag {
   public:
-    using tuple_type = std::tuple<ensure_matcher_t<T>...>;
-
-    array_impl(T &&...matchers)
-      : matchers_(ensure_matcher(std::forward<T>(matchers))...) {}
+    array_impl(T ...matchers) : matchers_(std::move(matchers)...) {}
 
     template<typename U>
     bool operator ()(const U &value) const {
@@ -112,13 +109,15 @@ namespace detail {
       })) + "]";
     }
   private:
-    tuple_type matchers_;
+    std::tuple<T...> matchers_;
   };
 }
 
 template<typename ...T>
-inline auto array(T &&...matchers) {
-  return detail::array_impl<T...>(std::forward<T>(matchers)...);
+inline auto array(T &&...things) {
+  return detail::array_impl<ensure_matcher_t<T>...>(
+    ensure_matcher(std::forward<T>(things))...
+  );
 }
 
 auto sorted() {
