@@ -2,23 +2,10 @@
 #define INC_METTLE_DRIVER_FILTERS_CORE_HPP
 
 #include "../suite/attributes.hpp"
+#include "../detail/string_algorithm.hpp"
 #include "test_name.hpp"
 
 namespace mettle {
-
-namespace detail {
-  template<typename T>
-  std::string join(const T &t, const std::string &delim) {
-    auto begin = t.begin(), end = t.end();
-    if(begin == end)
-      return "";
-    std::ostringstream ss;
-    ss << *begin;
-    for(++begin; begin != end; ++begin)
-      ss << delim << *begin;
-    return ss.str();
-  }
-}
 
 struct filter_result {
   filter_result() = default;
@@ -36,9 +23,10 @@ struct default_filter {
 };
 
 inline filter_result filter_by_attr(const attributes &attrs) {
+  using namespace detail;
   for(const auto &attr : attrs) {
     if(attr.attribute.action() == test_action::skip)
-      return {test_action::skip, detail::join(attr.value, ", ")};
+      return {test_action::skip, stringify(joined(attr.value))};
   }
   return test_action::run;
 }

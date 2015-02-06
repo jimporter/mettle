@@ -17,15 +17,10 @@ sigset_t getprocmask() {
 }
 
 auto equal_sigprocmask(std::vector<int> mask) {
-  std::ostringstream ss;
-  ss << "[";
-  if(!mask.empty()) {
-    auto i = mask.begin();
-    ss << to_printable(strsignal(*i));
-    for(++i; i != mask.end(); ++i)
-      ss << ", " << to_printable(strsignal(*i));
-  }
-  ss << "]";
+  using namespace detail;
+  std::string desc = "[" + stringify(joined(mask, [](int i) {
+    return to_printable(strsignal(i));
+  })) + "]";
 
   return make_matcher(
     [mask = std::move(mask)](const auto &actual) -> match_result {
@@ -37,7 +32,7 @@ auto equal_sigprocmask(std::vector<int> mask) {
         }
       }
       return true;
-    }, ss.str()
+    }, desc
   );
 }
 

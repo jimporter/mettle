@@ -10,6 +10,7 @@ test_matchers
 test_move_if
 test_output
 test_run_tests
+test_string_algorithm
 test_suite_execution
 test_tuple_algorithm
 posix/test_scoped_pipe

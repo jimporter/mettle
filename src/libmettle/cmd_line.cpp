@@ -10,6 +10,7 @@
 
 #include <mettle/driver/log/brief.hpp>
 #include <mettle/driver/log/verbose.hpp>
+#include <mettle/detail/string_algorithm.hpp>
 
 #ifndef _WIN32
 #  include <unistd.h>
@@ -65,14 +66,9 @@ make_output_options(output_options &opts, const logger_factory &factory) {
   using namespace boost::program_options;
 
   std::ostringstream ss;
-  ss << "set output format (one of: ";
-  auto begin = factory.begin(), end = factory.end();
-  if(begin != end) {
-    ss << begin->first;
-    for(++begin; begin != end; ++begin)
-      ss << ", " << begin->first;
-  }
-  ss << ")";
+  ss << "set output format (one of: " << detail::joined(factory, [](auto &&i) {
+    return i.first;
+  }) << ")";
 
   options_description desc("Output options");
   desc.add_options()

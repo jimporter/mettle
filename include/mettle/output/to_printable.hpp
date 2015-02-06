@@ -9,6 +9,7 @@
 
 #include "traits.hpp"
 #include "type_name.hpp"
+#include "../detail/string_algorithm.hpp"
 #include "../detail/tuple_algorithm.hpp"
 
 // Try to use N4082's string_view class, or fall back to Boost's.
@@ -46,12 +47,6 @@
 namespace mettle {
 
 namespace detail {
-  template<typename T>
-  std::string stringify_iterable(T begin, T end);
-
-  template<typename T>
-  std::string stringify_tuple(const T &tuple);
-
   template<typename Char, typename Traits>
   void escape_char(std::basic_ostream<Char, Traits> &os, Char c, Char delim) {
     const char escape = '\\';
@@ -328,21 +323,29 @@ inline auto to_printable(const T &e) -> typename std::enable_if<
 // Iterables
 
 template<typename T>
+std::string to_printable(T begin, T end);
+
+template<typename T>
 auto to_printable(const T &v) -> typename std::enable_if<
   !is_printable<T>::value && !is_exception<T>::value && is_iterable<T>::value,
   std::string
 >::type {
-  return detail::stringify_iterable(std::begin(v), std::end(v));
+  return to_printable(std::begin(v), std::end(v));
 }
 
 template<typename T, std::size_t N>
 auto to_printable(const T (&v)[N]) -> typename std::enable_if<
   !is_any_char<T>::value, std::string
 >::type {
-  return detail::stringify_iterable(std::begin(v), std::end(v));
+  return to_printable(std::begin(v), std::end(v));
 }
 
 // Pairs/Tuples
+
+namespace detail {
+  template<typename T>
+  std::string stringify_tuple(const T &tuple);
+}
 
 template<typename T, typename U>
 std::string to_printable(const std::pair<T, U> &pair) {
@@ -354,20 +357,16 @@ std::string to_printable(const std::tuple<T...> &tuple) {
   return detail::stringify_tuple(tuple);
 }
 
-namespace detail {
-  template<typename T>
-  std::string stringify_iterable(T begin, T end) {
-    std::ostringstream ss;
-    ss << "[";
-    if(begin != end) {
-      ss << to_printable(*begin);
-      for(++begin; begin != end; ++begin)
-        ss << ", " << to_printable(*begin);
-    }
-    ss << "]";
-    return ss.str();
-  }
+template<typename T>
+std::string to_printable(T begin, T end) {
+  std::ostringstream ss;
+  ss << "[" << detail::iter_joined(begin, end, [](auto &&item) {
+    return to_printable(item);
+  }) << "]";
+  return ss.str();
+}
 
+namespace detail {
   template<typename T>
   std::string stringify_tuple(const T &tuple) {
     std::ostringstream ss;

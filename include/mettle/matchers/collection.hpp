@@ -42,20 +42,15 @@ auto each(T &&thing) {
 
 template<typename T, typename U>
 auto each(T begin, T end, U &&meta_matcher) {
+  using namespace detail;
   using Matcher = decltype(meta_matcher(*begin));
   std::vector<Matcher> matchers;
   for(; begin != end; ++begin)
     matchers.push_back(meta_matcher(*begin));
 
-  std::ostringstream ss;
-  auto mbegin = matchers.begin(), mend = matchers.end();
-  ss << "[";
-  if(mbegin != mend) {
-    ss << mbegin->desc();
-    for(++mbegin; mbegin != mend; ++mbegin)
-      ss << ", " << mbegin->desc();
-  }
-  ss << "]";
+  std::string desc = "[" + stringify(joined(matchers, [](const auto &matcher) {
+    return matcher.desc();
+  })) + "]";
 
   return make_matcher(
     [matchers = std::move(matchers)](const auto &value) -> bool {
@@ -66,7 +61,7 @@ auto each(T begin, T end, U &&meta_matcher) {
         ++i;
       }
       return i == end;
-    }, ss.str()
+    }, desc
   );
 }
 
@@ -112,11 +107,10 @@ namespace detail {
     }
 
     std::string desc() const {
-      std::ostringstream ss;
-      ss << "[" << detail::tuple_joined(matchers_, [](auto &&matcher) {
+      using namespace detail;
+      return "[" + stringify(tuple_joined(matchers_, [](auto &&matcher) {
         return matcher.desc();
-      }) << "]";
-      return ss.str();
+      })) + "]";
     }
   private:
     tuple_type matchers_;

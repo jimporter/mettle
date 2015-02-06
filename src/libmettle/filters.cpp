@@ -3,7 +3,7 @@
 namespace mettle {
   filter_result attr_filter::operator ()(const test_name &,
                                          const attributes &attrs) const {
-    using detail::join;
+    using namespace detail;
 
     std::set<const attr_instance*> explicitly_shown;
     for(const auto &f : filters_) {
@@ -17,14 +17,14 @@ namespace mettle {
       const attr_instance *attr = i == attrs.end() ? nullptr: &*i;
 
       if(!f.func(attr))
-        return {test_action::hide, attr ? join(attr->value, ", ") : ""};
+        return {test_action::hide, attr ? stringify(joined(attr->value)) : ""};
       else if(attr)
         explicitly_shown.insert(attr);
     }
     for(const auto &attr : attrs) {
       if(attr.attribute.action() == test_action::skip &&
          !explicitly_shown.count(&attr))
-        return {test_action::skip, join(attr.value, ", ")};
+        return {test_action::skip, stringify(joined(attr.value))};
     }
     return test_action::run;
   }

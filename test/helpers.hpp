@@ -12,11 +12,9 @@ namespace mettle {
     std::ostringstream ss;
     ss << attr.attribute.name();
     if(!attr.value.empty()) {
-      auto i = attr.value.begin();
-      ss << "(" << to_printable(*i);
-      for(++i; i != attr.value.end(); ++i)
-        ss << ", " << to_printable(*i);
-      ss << ")";
+      ss << "(" << detail::joined(attr.value, [](auto &&i) {
+        return to_printable(i);
+      }) << ")";
     }
     return ss.str();
   }
