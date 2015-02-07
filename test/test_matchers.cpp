@@ -297,8 +297,10 @@ suite<> test_matchers("matchers", [](auto &_) {
 
       expect(each(v.begin(), v.end(), greater<const int &>).desc(),
              equal_to("[> 1, > 2, > 3]"));
+      expect(each(v.begin(), v.end(), meta)(ivec{2, 4, 6}).message,
+             equal_to("[1, 2, 3]"));
       expect(each(v.begin(), v.end(), meta)(ivec{2, 4, 6, 8}).message,
-             equal_to("[1, 2, 3, (nil)]"));
+             equal_to("[1, 2, 3, 8]"));
     });
 
     _.test("each(container, m)", []() {
@@ -330,8 +332,10 @@ suite<> test_matchers("matchers", [](auto &_) {
 
       expect(each({1, 2, 3}, greater<const int &>).desc(),
              equal_to("[> 1, > 2, > 3]"));
+      expect(each({1, 2, 3}, meta)(ivec{2, 4, 6}).message,
+             equal_to("[1, 2, 3]"));
       expect(each({1, 2, 3}, meta)(ivec{2, 4, 6, 8}).message,
-             equal_to("[1, 2, 3, (nil)]"));
+             equal_to("[1, 2, 3, 8]"));
     });
 
     _.test("array()", []() {
@@ -354,6 +358,9 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(arr, is_not(array(1, 2, 3, 4)));
 
       expect(array(1, 2, 3).desc(), equal_to("[1, 2, 3]"));
+      expect(array(1, 2, 3)(arr).message, equal_to("[1, 2, 3]"));
+      expect(array(msg_matcher(true), msg_matcher(false))(arr).message,
+             equal_to("[message, message, 3]"));
     });
 
     _.test("sorted()", []() {

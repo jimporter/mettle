@@ -27,6 +27,25 @@ namespace detail {
     return s;
   }
 
+  class ostream_list_append {
+  public:
+    ostream_list_append(std::ostream &os, std::string delim = ", ")
+      : os_(os), delim_(std::move(delim)) {}
+
+    template<typename T>
+    void operator ()(T &&t) {
+      if(first_)
+        first_ = false;
+      else
+        os_ << delim_;
+      os_ << std::forward<T>(t);
+    }
+  private:
+    std::ostream &os_;
+    const std::string delim_;
+    bool first_ = true;
+  };
+
   template<typename Iter, typename Func>
   class string_joiner {
   public:
@@ -36,12 +55,9 @@ namespace detail {
 
     friend std::ostream &
     operator <<(std::ostream &os, const string_joiner &t) {
-      if(t.begin_ != t.end_) {
-        auto i = t.begin_;
-        os << t.func_(*i);
-        for(++i; i != t.end_; ++i)
-          os << t.delim_ << t.func_(*i);
-      }
+      ostream_list_append append(os, t.delim_);
+      for(auto i = t.begin_; i != t.end_; ++i)
+        append(t.func_(*i));
       return os;
     }
   private:
