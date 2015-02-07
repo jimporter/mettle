@@ -84,6 +84,12 @@ suite<> test_matchers("matchers", [](auto &_) {
              equal_to("desc message"));
       expect(filter(second, msg_matcher(false), "desc ")(p).message,
              equal_to("desc message"));
+
+      auto no_msg = make_matcher([](const auto &) -> match_result {
+        return {true, ""};
+      }, "");
+      expect(filter(second, no_msg)(p).message, equal_to("1"));
+      expect(filter(second, no_msg, "desc ")(p).message, equal_to("desc 1"));
     });
   });
 
@@ -221,6 +227,17 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(arr, member(3));
       expect(arr, is_not(member(4)));
 
+      expect(std::vector<int>{}, is_not(member( msg_matcher(true) )));
+      expect(std::vector<int>{1, 2, 3}, member(
+        filter([](auto &&i) { return 2 * i; }, equal_to(2))
+      ));
+      expect(std::vector<int>{1, 2, 3}, member(
+        filter([](auto &&i) { return 2 * i; }, equal_to(6))
+      ));
+      expect(std::vector<int>{1, 2, 3}, is_not(member(
+        filter([](auto &&i) { return 2 * i; }, equal_to(1))
+      )));
+
       expect(member(123).desc(), equal_to("member 123"));
       expect(member(msg_matcher(true))(arr).message,
              equal_to("[message, message, message]"));
@@ -228,12 +245,20 @@ suite<> test_matchers("matchers", [](auto &_) {
 
     _.test("each()", []() {
       expect(std::vector<int>{}, each( is_not(anything()) ));
-      expect(std::vector<int>{1, 2, 3}, each( greater(0)) );
+      expect(std::vector<int>{1, 2, 3}, each( greater(0) ));
       expect(std::vector<int>{1, 2, 3}, is_not( each(less(2)) ));
 
       int arr[] = {1, 2, 3};
       expect(arr, each( greater(0)) );
       expect(arr, is_not( each(less(2)) ));
+
+      expect(std::vector<int>{}, each( msg_matcher(false) ));
+      expect(std::vector<int>{1, 2, 3}, each(
+        filter([](auto &&i) { return 2 * i; }, greater(0))
+      ));
+      expect(std::vector<int>{1, 2, 3}, is_not(each(
+        filter([](auto &&i) { return 2 * i; }, less(4))
+      )));
 
       expect(each(123).desc(), equal_to("each 123"));
       expect(each(msg_matcher(true))(arr).message,
