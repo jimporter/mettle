@@ -2,7 +2,6 @@
 #define INC_METTLE_MATCHERS_EXCEPTION_HPP
 
 #include "core.hpp"
-#include "result.hpp"
 
 namespace mettle {
 

@@ -4,6 +4,8 @@
 #include <ostream>
 #include <string>
 
+#include "../output/to_printable.hpp"
+
 namespace mettle {
 
 struct match_result {
@@ -38,7 +40,7 @@ namespace detail {
       if(!m.result.message.empty())
         return os << m.result.message;
       else
-        return os << m.fallback;
+        return os << to_printable(m.fallback);
     }
   private:
     const match_result &result;
@@ -53,9 +55,9 @@ matcher_message(const match_result &result, const T &fallback) {
 }
 
 template<typename T>
-inline const T &
+inline decltype(auto)
 matcher_message(bool, const T &fallback) {
-  return fallback;
+  return to_printable(fallback);
 }
 
 } // namespace mettle

@@ -21,14 +21,14 @@ struct is_matcher : public std::is_base_of<
 
 namespace detail {
   template<typename T>
-  inline auto matcher_desc(T &&matcher, typename std::enable_if<
+  inline decltype(auto) matcher_desc(T &&matcher, typename std::enable_if<
     is_matcher<T>::value
   >::type* = 0) {
     return std::forward<T>(matcher).desc();
   }
 
   template<typename T>
-  inline auto matcher_desc(T &&expected, typename std::enable_if<
+  inline decltype(auto) matcher_desc(T &&expected, typename std::enable_if<
     !is_matcher<T>::value
   >::type* = 0) {
     return to_printable(std::forward<T>(expected));
@@ -44,7 +44,7 @@ public:
       prefix_(std::move(prefix)) {}
 
   template<typename U>
-  auto operator ()(U &&actual) const {
+  decltype(auto) operator ()(U &&actual) const {
     return f_(std::forward<U>(actual), thing_.value);
   }
 
@@ -67,7 +67,7 @@ public:
     : f_(std::forward<F2>(f)), desc_(std::move(desc)) {}
 
   template<typename U>
-  auto operator ()(U &&actual) const {
+  decltype(auto) operator ()(U &&actual) const {
     return f_(std::forward<U>(actual));
   }
 
@@ -149,7 +149,7 @@ auto filter(Filter &&f, Matcher &&matcher, const std::string &desc = "") {
       auto filtered = f(actual);
       auto result = matcher(filtered);
       std::ostringstream ss;
-      ss << desc << matcher_message(result, to_printable(filtered));
+      ss << desc << matcher_message(result, filtered);
       return match_result(result, ss.str());
     }, desc
   );

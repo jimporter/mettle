@@ -4,7 +4,6 @@
 #ifndef _WIN32
 
 #include "core.hpp"
-#include "result.hpp"
 
 #include <sys/wait.h>
 #include <unistd.h>

@@ -188,9 +188,9 @@ namespace detail {
           return true;
         }
 
-        match_result result = m(*i);
+        auto result = m(*i);
         good &= result;
-        append(matcher_message(result, to_printable(*i)));
+        append(matcher_message(result, *i));
         ++i;
         return false;
       });

@@ -22,7 +22,7 @@ void expect(const T &value, const Matcher &matcher) {
   if(m == false) {
     std::ostringstream ss;
     ss << "expected: " << matcher.desc() << std::endl
-       << "actual:   " << matcher_message(m, to_printable(value));
+       << "actual:   " << matcher_message(m, value);
     throw expectation_error(ss.str());
   }
 }
@@ -37,7 +37,7 @@ void expect(const std::string &desc, const T &value, const Matcher &matcher) {
     std::ostringstream ss;
     ss << desc << std::endl
        << "expected: " << matcher.desc() << std::endl
-       << "actual:   " << matcher_message(m, to_printable(value));
+       << "actual:   " << matcher_message(m, value);
     throw expectation_error(ss.str());
   }
 }
