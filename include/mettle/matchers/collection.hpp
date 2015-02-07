@@ -81,28 +81,71 @@ auto each(T &&thing) {
   );
 }
 
-template<typename T, typename U>
-auto each(T begin, T end, U &&meta_matcher) {
-  using namespace detail;
-  using Matcher = decltype(meta_matcher(*begin));
-  std::vector<Matcher> matchers;
-  for(; begin != end; ++begin)
-    matchers.push_back(meta_matcher(*begin));
+namespace detail {
+  template<typename Matcher>
+  class each_impl : public matcher_tag {
+  public:
+    template<typename T, typename U>
+    each_impl(T begin, T end, U &&meta_matcher) {
+      for(; begin != end; ++begin)
+        matchers_.push_back(meta_matcher(*begin));
+    }
 
-  std::string desc = "[" + stringify(joined(matchers, [](const auto &matcher) {
-    return matcher.desc();
-  })) + "]";
+    template<typename U>
+    auto operator ()(const U &value) const -> typename enable_if_result<
+      Matcher&(decltype(*std::begin(value))), match_result
+    >::type {
+      std::ostringstream ss;
+      bool good = true;
+      auto m = matchers_.begin(), end = matchers_.end();
+      ss << "[" << joined(value, [this, &good, &m, &end](auto &&i) {
+        if(m == end) {
+          good = false;
+          // XXX: Is there a better string to show for an element of `value`
+          // that has no matcher to match against?
+          return std::string("(nil)");
+        }
 
-  return make_matcher(
-    [matchers = std::move(matchers)](const auto &value) -> bool {
-      auto i = std::begin(value), end = std::end(value);
-      for(auto &&matcher : matchers) {
-        if(i == end || !matcher(*i))
+        auto result = (*m++)(i);
+        if(!result)
+          good = false;
+        return result.message;
+      }) << "]";
+      return {good && m == end, ss.str()};
+    }
+
+    template<typename U>
+    auto operator ()(const U &value) const -> typename disable_if_result<
+      Matcher&(decltype(*std::begin(value))), match_result
+    >::type {
+      auto m = matchers_.begin(), end = matchers_.end();
+      for(auto &&i : value) {
+        if(m == end)
           return false;
-        ++i;
+        auto result = (*m++)(i);
+        if(!result)
+          return result;
       }
-      return i == end;
-    }, desc
+      return m == end;
+    }
+
+    std::string desc() const {
+      return "[" + stringify(joined(matchers_, [](const auto &matcher) {
+        return matcher.desc();
+      })) + "]";
+    }
+  private:
+    std::vector<Matcher> matchers_;
+  };
+}
+
+template<typename T, typename U>
+inline auto each(T begin, T end, U &&meta_matcher) {
+  using Matcher = decltype(meta_matcher(*begin));
+  static_assert(is_matcher<Matcher>::value,
+                "meta_matcher must be a function that returns a matcher");
+  return detail::each_impl<decltype(meta_matcher(*begin))>(
+    begin, end, std::forward<U>(meta_matcher)
   );
 }
 

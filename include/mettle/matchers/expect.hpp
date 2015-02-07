@@ -15,7 +15,7 @@ class expectation_error : public std::runtime_error {
 
 template<typename T, typename Matcher>
 void expect(const T &value, const Matcher &matcher) {
-  static_assert(std::is_base_of<matcher_tag, Matcher>::value,
+  static_assert(is_matcher<Matcher>::value,
                 "expected a matcher for argument 2");
 
   auto m = matcher(value);
@@ -29,7 +29,7 @@ void expect(const T &value, const Matcher &matcher) {
 
 template<typename T, typename Matcher>
 void expect(const std::string &desc, const T &value, const Matcher &matcher) {
-  static_assert(std::is_base_of<matcher_tag, Matcher>::value,
+  static_assert(is_matcher<Matcher>::value,
                 "expected a matcher for argument 3");
 
   auto m = matcher(value);

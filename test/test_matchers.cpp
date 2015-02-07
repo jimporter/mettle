@@ -286,8 +286,19 @@ suite<> test_matchers("matchers", [](auto &_) {
       int arr[] = {1, 2, 3};
       expect(arr, each(v.begin(), v.end(), equal_to<const int &>));
 
+      auto meta = [](auto &&x) {
+        return filter([](auto &&i) { return i / 2; }, equal_to(x));
+      };
+      expect(ivec{}, each(v.begin(), v.begin(), meta));
+      expect(ivec{2, 4, 6}, each(v.begin(), v.end(), meta));
+      expect(ivec{6, 4, 2}, is_not(each(v.begin(), v.end(), meta)));
+      expect(ivec{2, 4}, is_not(each(v.begin(), v.end(), meta)));
+      expect(ivec{2, 4, 6, 8}, is_not(each(v.begin(), v.end(), meta)));
+
       expect(each(v.begin(), v.end(), greater<const int &>).desc(),
              equal_to("[> 1, > 2, > 3]"));
+      expect(each(v.begin(), v.end(), meta)(ivec{2, 4, 6, 8}).message,
+             equal_to("[1, 2, 3, (nil)]"));
     });
 
     _.test("each(container, m)", []() {
@@ -308,8 +319,19 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(v, each(v, equal_to<const int &>));
       expect(v, each(arr, equal_to<const int &>));
 
+      auto meta = [](auto &&x) {
+        return filter([](auto &&i) { return i / 2; }, equal_to(x));
+      };
+      expect(ivec{}, each(ivec{}, meta));
+      expect(ivec{2, 4, 6}, each(v, meta));
+      expect(ivec{6, 4, 2}, is_not(each(v, meta)));
+      expect(ivec{2, 4}, is_not(each(v, meta)));
+      expect(ivec{2, 4, 6, 8}, is_not(each(v, meta)));
+
       expect(each({1, 2, 3}, greater<const int &>).desc(),
              equal_to("[> 1, > 2, > 3]"));
+      expect(each({1, 2, 3}, meta)(ivec{2, 4, 6, 8}).message,
+             equal_to("[1, 2, 3, (nil)]"));
     });
 
     _.test("array()", []() {
