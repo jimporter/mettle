@@ -18,11 +18,16 @@ T about_one() {
   return value;
 }
 
-auto msg_matcher(bool match) {
-  return make_matcher([match](const auto &) -> match_result {
-    return {match, "message"};
+auto msg_matcher(bool match, std::string message = "message") {
+  match_result result = {match, std::move(message)};
+  return make_matcher([result = std::move(result)](const auto &) {
+    return result;
   }, "");
 }
+
+auto meta_matcher(int x) {
+  return filter([](auto &&i) { return i / 2; }, equal_to(x));
+};
 
 suite<> test_matchers("matchers", [](auto &_) {
 
@@ -46,6 +51,8 @@ suite<> test_matchers("matchers", [](auto &_) {
 
       expect(is_not(msg_matcher(true))(123).message, equal_to("message"));
       expect(is_not(msg_matcher(false))(123).message, equal_to("message"));
+      expect(is_not(msg_matcher(true, ""))(123).message, equal_to(""));
+      expect(is_not(msg_matcher(false, ""))(123).message, equal_to(""));
     });
 
     _.test("describe()", []() {
@@ -77,6 +84,8 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(filter(second, msg_matcher(true))(p).message, equal_to("message"));
       expect(filter(second, msg_matcher(false))(p).message,
              equal_to("message"));
+      expect(filter(second, msg_matcher(true, ""))(p).message, equal_to("1"));
+      expect(filter(second, msg_matcher(false, ""))(p).message, equal_to("1"));
 
       expect(filter(second, equal_to(1), "desc ")(p).message,
              equal_to("desc 1"));
@@ -84,12 +93,10 @@ suite<> test_matchers("matchers", [](auto &_) {
              equal_to("desc message"));
       expect(filter(second, msg_matcher(false), "desc ")(p).message,
              equal_to("desc message"));
-
-      auto no_msg = make_matcher([](const auto &) -> match_result {
-        return {true, ""};
-      }, "");
-      expect(filter(second, no_msg)(p).message, equal_to("1"));
-      expect(filter(second, no_msg, "desc ")(p).message, equal_to("desc 1"));
+      expect(filter(second, msg_matcher(true, ""), "desc ")(p).message,
+             equal_to("desc 1"));
+      expect(filter(second, msg_matcher(false, ""), "desc ")(p).message,
+             equal_to("desc 1"));
     });
   });
 
@@ -183,6 +190,7 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(any(1, 2, 3).desc(), equal_to("any of(1, 2, 3)"));
 
       expect(any(1, msg_matcher(true))(2).message, equal_to("message"));
+      expect(any(1, msg_matcher(true, ""))(2).message, equal_to(""));
       expect(any(1, is_not(msg_matcher(true)))(2).message, equal_to(""));
     });
 
@@ -197,6 +205,7 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(all(1, 2, 3).desc(), equal_to("all of(1, 2, 3)"));
 
       expect(all(1, msg_matcher(false))(1).message, equal_to("message"));
+      expect(all(1, msg_matcher(false, ""))(1).message, equal_to(""));
       expect(all(1, is_not(msg_matcher(false)))(1).message, equal_to(""));
     });
 
@@ -211,6 +220,7 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(none(1, 2, 3).desc(), equal_to("none of(1, 2, 3)"));
 
       expect(none(1, msg_matcher(true))(2).message, equal_to("message"));
+      expect(none(1, msg_matcher(true, ""))(2).message, equal_to(""));
       expect(none(1, is_not(msg_matcher(true)))(2).message, equal_to(""));
     });
   });
@@ -239,8 +249,11 @@ suite<> test_matchers("matchers", [](auto &_) {
       )));
 
       expect(member(123).desc(), equal_to("member 123"));
+      expect(member(123)(arr).message, equal_to("[1, 2, 3]"));
       expect(member(msg_matcher(true))(arr).message,
              equal_to("[message, message, message]"));
+      expect(each(msg_matcher(true, ""))(arr).message,
+             equal_to("[1, 2, 3]"));
     });
 
     _.test("each()", []() {
@@ -261,8 +274,11 @@ suite<> test_matchers("matchers", [](auto &_) {
       )));
 
       expect(each(123).desc(), equal_to("each 123"));
+      expect(each(123)(arr).message, equal_to("[1, 2, 3]"));
       expect(each(msg_matcher(true))(arr).message,
              equal_to("[message, message, message]"));
+      expect(each(msg_matcher(true, ""))(arr).message,
+             equal_to("[1, 2, 3]"));
     });
 
     _.test("each(begin, end, m)", []() {
@@ -286,20 +302,23 @@ suite<> test_matchers("matchers", [](auto &_) {
       int arr[] = {1, 2, 3};
       expect(arr, each(v.begin(), v.end(), equal_to<const int &>));
 
-      auto meta = [](auto &&x) {
-        return filter([](auto &&i) { return i / 2; }, equal_to(x));
-      };
-      expect(ivec{}, each(v.begin(), v.begin(), meta));
-      expect(ivec{2, 4, 6}, each(v.begin(), v.end(), meta));
-      expect(ivec{6, 4, 2}, is_not(each(v.begin(), v.end(), meta)));
-      expect(ivec{2, 4}, is_not(each(v.begin(), v.end(), meta)));
-      expect(ivec{2, 4, 6, 8}, is_not(each(v.begin(), v.end(), meta)));
+      expect(ivec{}, each(v.begin(), v.begin(), meta_matcher));
+      expect(ivec{2, 4, 6}, each(v.begin(), v.end(), meta_matcher));
+      expect(ivec{6, 4, 2}, is_not(each(v.begin(), v.end(), meta_matcher)));
+      expect(ivec{2, 4}, is_not(each(v.begin(), v.end(), meta_matcher)));
+      expect(ivec{2, 4, 6, 8}, is_not(each(v.begin(), v.end(), meta_matcher)));
 
+      expect(each(
+        v.begin(), v.end(), equal_to<const int &>
+      )(ivec{2, 4, 6}).message, equal_to("[2, 4, 6]"));
+      expect(each(
+        v.begin(), v.end(), equal_to<const int &>
+      )(ivec{2, 4, 6, 8}).message, equal_to("[2, 4, 6, 8]"));
       expect(each(v.begin(), v.end(), greater<const int &>).desc(),
              equal_to("[> 1, > 2, > 3]"));
-      expect(each(v.begin(), v.end(), meta)(ivec{2, 4, 6}).message,
+      expect(each(v.begin(), v.end(), meta_matcher)(ivec{2, 4, 6}).message,
              equal_to("[1, 2, 3]"));
-      expect(each(v.begin(), v.end(), meta)(ivec{2, 4, 6, 8}).message,
+      expect(each(v.begin(), v.end(), meta_matcher)(ivec{2, 4, 6, 8}).message,
              equal_to("[1, 2, 3, 8]"));
     });
 
@@ -321,20 +340,22 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(v, each(v, equal_to<const int &>));
       expect(v, each(arr, equal_to<const int &>));
 
-      auto meta = [](auto &&x) {
-        return filter([](auto &&i) { return i / 2; }, equal_to(x));
-      };
-      expect(ivec{}, each(ivec{}, meta));
-      expect(ivec{2, 4, 6}, each(v, meta));
-      expect(ivec{6, 4, 2}, is_not(each(v, meta)));
-      expect(ivec{2, 4}, is_not(each(v, meta)));
-      expect(ivec{2, 4, 6, 8}, is_not(each(v, meta)));
+      expect(ivec{}, each(ivec{}, meta_matcher));
+      expect(ivec{2, 4, 6}, each(v, meta_matcher));
+      expect(ivec{6, 4, 2}, is_not(each(v, meta_matcher)));
+      expect(ivec{2, 4}, is_not(each(v, meta_matcher)));
+      expect(ivec{2, 4, 6, 8}, is_not(each(v, meta_matcher)));
 
       expect(each({1, 2, 3}, greater<const int &>).desc(),
              equal_to("[> 1, > 2, > 3]"));
-      expect(each({1, 2, 3}, meta)(ivec{2, 4, 6}).message,
+
+      expect(each({1, 2, 3}, equal_to<const int &>)(ivec{2, 4, 6}).message,
+             equal_to("[2, 4, 6]"));
+      expect(each({1, 2, 3}, equal_to<const int &>)(ivec{2, 4, 6, 8}).message,
+             equal_to("[2, 4, 6, 8]"));
+      expect(each({1, 2, 3}, meta_matcher)(ivec{2, 4, 6}).message,
              equal_to("[1, 2, 3]"));
-      expect(each({1, 2, 3}, meta)(ivec{2, 4, 6, 8}).message,
+      expect(each({1, 2, 3}, meta_matcher)(ivec{2, 4, 6, 8}).message,
              equal_to("[1, 2, 3, 8]"));
     });
 

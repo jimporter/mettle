@@ -34,6 +34,7 @@ namespace detail {
   public:
     message_impl(const match_result &result, const T &fallback)
       : result(result), fallback(fallback) {}
+    message_impl(const message_impl &) = delete;
 
     friend std::ostream &
     operator <<(std::ostream &os, const message_impl<T> &m) {
@@ -49,7 +50,7 @@ namespace detail {
 }
 
 template<typename T>
-inline detail::message_impl<T>
+inline const detail::message_impl<T>
 matcher_message(const match_result &result, const T &fallback) {
   return {result, fallback};
 }

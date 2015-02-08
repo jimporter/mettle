@@ -52,6 +52,7 @@ namespace detail {
     string_joiner(Iter begin, Iter end, const Func &func,
                   const std::string &delim)
       : begin_(begin), end_(end), func_(func), delim_(delim) {}
+    string_joiner(const string_joiner &) = delete;
 
     friend std::ostream &
     operator <<(std::ostream &os, const string_joiner &t) {
@@ -67,24 +68,24 @@ namespace detail {
   };
 
   template<typename Iter, typename Func = identity>
-  inline string_joiner<Iter, Func>
+  inline const string_joiner<Iter, Func>
   iter_joined(Iter begin, Iter end, const Func &func = identity{},
          const std::string &delim = ", ") {
     return {begin, end, func, delim};
   }
 
   template<typename T, typename Func = identity>
-  inline auto
-  joined(const T &t, const Func &func = identity{},
-         const std::string &delim = ", ") {
-    return iter_joined(std::begin(t), std::end(t), func, delim);
+  inline auto joined(const T &t, const Func &func = identity{},
+                     const std::string &delim = ", ") ->
+  const string_joiner<decltype(std::begin(t)), Func> {
+    return {std::begin(t), std::end(t), func, delim};
   }
 
   template<typename T, typename Func = identity>
-  inline auto
-  joined(std::initializer_list<T> t, const Func &func = identity{},
-         const std::string &delim = ", ") {
-    return iter_joined(std::begin(t), std::end(t), func, delim);
+  inline auto joined(std::initializer_list<T> t, const Func &func = identity{},
+                     const std::string &delim = ", ") ->
+  const string_joiner<decltype(std::begin(t)), Func> {
+    return {std::begin(t), std::end(t), func, delim};
   }
 
 }

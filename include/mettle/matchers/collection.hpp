@@ -14,15 +14,6 @@ namespace mettle {
 
 namespace detail {
 
-  template<typename Call, typename Result, bool Enable = true>
-  struct enable_if_result : std::enable_if<
-    std::is_same<typename std::result_of<Call>::type, Result>::value == Enable,
-    typename std::result_of<Call>::type
-  > {};
-
-  template<typename Call, typename Result, bool Disable = true>
-  using disable_if_result = enable_if_result<Call, Result, !Disable>;
-
   template<typename Matcher>
   class member_impl : public matcher_tag {
   public:
@@ -31,30 +22,21 @@ namespace detail {
         matcher_(std::move(matcher)) {}
 
     template<typename U>
-    auto operator ()(const U &value) const -> typename enable_if_result<
-      const Matcher & (decltype(*std::begin(value))), match_result
-    >::type {
+    match_result operator ()(const U &value) const {
       std::ostringstream ss;
+      ostream_list_append append(ss);
       bool good = initial_;
-      ss << "[" << joined(value, [this, &good](auto &&i) {
+
+      ss << "[";
+      for(auto &&i : value) {
         auto result = matcher_(i);
         if(result != initial_)
           good = result;
-        return result.message;
-      }) << "]";
-      return {good, ss.str()};
-    }
-
-    template<typename U>
-    auto operator ()(const U &value) const -> typename disable_if_result<
-      const Matcher & (decltype(*std::begin(value))), match_result
-    >::type {
-      for(const auto &i : value) {
-        auto result = matcher_(i);
-        if(result != initial_)
-          return result;
+        append(matcher_message(result, i));
       }
-      return initial_;
+      ss << "]";
+
+      return {good, ss.str()};
     }
 
     std::string desc() const {
@@ -92,42 +74,34 @@ namespace detail {
     }
 
     template<typename U>
-    auto operator ()(const U &value) const -> typename enable_if_result<
-      const Matcher & (decltype(*std::begin(value))), match_result
-    >::type {
+    match_result operator ()(const U &value) const {
       std::ostringstream ss;
+      ostream_list_append append(ss);
       bool good = true;
-      auto m = matchers_.begin(), end = matchers_.end();
 
-      ss << "[" << joined(value, [this, &good, &m, &end](auto &&i) {
-        if(m == end) {
+      ss << "[";
+      auto i = std::begin(value), end = std::end(value);
+      for(auto &&m : matchers_) {
+        if(i == end) {
           good = false;
-          // XXX: Come up with a good way to indicate that this is an extra
-          // value we don't have a matcher for.
-          return stringify(to_printable(i));
+          break;
         }
 
-        match_result result = (*m++)(i);
+        match_result result = m(*i);
         good &= result;
-        return result.message;
-      }) << "]";
-
-      return {good && m == end, ss.str()};
-    }
-
-    template<typename U>
-    auto operator ()(const U &value) const -> typename disable_if_result<
-      const Matcher & (decltype(*std::begin(value))), match_result
-    >::type {
-      auto m = matchers_.begin(), end = matchers_.end();
-      for(auto &&i : value) {
-        if(m == end)
-          return false;
-        auto result = (*m++)(i);
-        if(!result)
-          return result;
+        append(matcher_message(result, *i));
+        ++i;
       }
-      return m == end;
+
+      // Print any remaining expected values (if `value` is longer than the list
+      // of matchers).
+      good &= (i == end);
+      for(; i != end; ++i)
+        append(to_printable(*i));
+
+      ss << "]";
+
+      return {good, ss.str()};
     }
 
     std::string desc() const {
@@ -196,8 +170,7 @@ namespace detail {
       });
 
       // Print any remaining expected values (if `value` is longer than the list
-      // of matchers). XXX: Come up with a better way to indicate that these
-      // values are extra?
+      // of matchers).
       good &= (i == end);
       for(; i != end; ++i)
         append(to_printable(*i));
