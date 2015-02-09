@@ -3,6 +3,7 @@ test_attributes
 test_child
 test_cmd_line
 test_compiled_suite
+test_expect
 test_filters
 test_global_suite
 test_make_suite
