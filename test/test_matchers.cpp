@@ -31,6 +31,60 @@ auto meta_matcher(int x) {
 
 suite<> test_matchers("matchers", [](auto &_) {
 
+  subsuite<>(_, "make_matcher()", [](auto &_) {
+    _.test("make_matcher(f, desc) -> bool", []() {
+      auto matcher = make_matcher([](const auto &actual) -> bool {
+        return actual == 4;
+      }, "is 4");
+
+      expect(4, matcher);
+      expect(0, is_not(matcher));
+      expect(matcher.desc(), equal_to("is 4"));
+    });
+
+    _.test("make_matcher(capture, f, desc) -> bool", []() {
+      auto matcher = [](auto &&x) {
+        return make_matcher(
+          std::forward<decltype(x)>(x),
+          [](const auto &actual, const auto &expected) -> bool {
+            return actual == expected;
+          }, "is "
+        );
+      };
+
+      expect(4, matcher(4));
+      expect(0, is_not(matcher(4)));
+      expect(matcher(4).desc(), equal_to("is 4"));
+    });
+
+    _.test("make_matcher(f, desc) -> match_result", []() {
+      auto matcher = make_matcher([](const auto &actual) -> match_result {
+        return {actual == 4, "message"};
+      }, "is 4");
+
+      expect(4, matcher);
+      expect(0, is_not(matcher));
+      expect(matcher.desc(), equal_to("is 4"));
+      expect(matcher(4).message, equal_to("message"));
+    });
+
+    _.test("make_matcher(capture, f, desc) -> match_result", []() {
+      auto matcher = [](auto &&x) {
+        return make_matcher(
+          std::forward<decltype(x)>(x),
+          [](const auto &actual, const auto &expected) -> match_result {
+            return {actual == expected, "message"};
+          }, "is "
+        );
+      };
+
+      expect(4, matcher(4));
+      expect(0, is_not(matcher(4)));
+      expect(matcher(4).desc(), equal_to("is 4"));
+      expect(matcher(4)(0).message, equal_to("message"));
+    });
+  });
+
   subsuite<>(_, "basic", [](auto &_) {
     _.test("anything()", []() {
       expect(true, anything());
@@ -97,6 +151,16 @@ suite<> test_matchers("matchers", [](auto &_) {
              equal_to("desc 1"));
       expect(filter(second, msg_matcher(false, ""), "desc ")(p).message,
              equal_to("desc 1"));
+    });
+
+    _.test("ensure_matcher()", []() {
+      auto zero_matcher = ensure_matcher(0);
+      expect(0, zero_matcher);
+      expect(1, is_not(zero_matcher));
+
+      auto gt_zero_matcher = ensure_matcher(greater(0));
+      expect(1, gt_zero_matcher);
+      expect(0, is_not(gt_zero_matcher));
     });
   });
 
