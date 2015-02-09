@@ -7,7 +7,7 @@
 
 #include "attributes.hpp"
 #include "../test_uid.hpp"
-#include "../detail/move_if.hpp"
+#include "../detail/forward_if.hpp"
 
 namespace mettle {
 
@@ -46,13 +46,13 @@ public:
   ) : name_(std::forward<String>(name)) {
     for(auto &&test : tests) {
       tests_.emplace_back(
-        detail::move_if<Tests>(test.name),
-        compile(detail::move_if<Tests>(test.function)),
-        unite(detail::move_if<Tests>(test.attrs), attrs)
+        detail::forward_if<Tests>(test.name),
+        compile(detail::forward_if<Tests>(test.function)),
+        unite(detail::forward_if<Tests>(test.attrs), attrs)
       );
     }
     for(auto &&ss : subsuites)
-      subsuites_.emplace_back(detail::move_if<Subsuites>(ss), attrs, compile);
+      subsuites_.emplace_back(detail::forward_if<Subsuites>(ss), attrs, compile);
   }
 
   template<typename Function2, typename Compile>

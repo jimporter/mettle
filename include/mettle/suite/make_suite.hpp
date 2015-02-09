@@ -303,7 +303,7 @@ public:
   template<typename Subsuites>
   void subsuite(Subsuites &&subsuites) {
     for(auto &&i : subsuites)
-      subsuites_.push_back(detail::move_if<Subsuites>(i));
+      subsuites_.push_back(detail::forward_if<Subsuites>(i));
   }
 
   template<typename ...Fixture, typename ...Args>

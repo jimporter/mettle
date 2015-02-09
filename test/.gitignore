@@ -5,10 +5,10 @@ test_cmd_line
 test_compiled_suite
 test_expect
 test_filters
+test_forward_if
 test_global_suite
 test_make_suite
 test_matchers
-test_move_if
 test_output
 test_run_tests
 test_string_algorithm
