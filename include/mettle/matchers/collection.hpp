@@ -8,7 +8,6 @@
 #include <tuple>
 
 #include "core.hpp"
-#include "../detail/move_if.hpp"
 
 namespace mettle {
 
