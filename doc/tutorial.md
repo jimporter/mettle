@@ -61,10 +61,10 @@ expect(true, equal_to(true));
 ```
 
 This is an *expectation*. We'll discuss them in more detail
-[later](matchers.md), but in short, they define the things we actually want to
-*test* in our tests. This expectation makes sure that `true` is equal to `true`.
-If it's not, the test will alert us to the fact so we can fix it (hopefully
-before the universe finishes crashing down around us).
+[later](expectations.md), but in short, they define the things we actually want
+to *test* in our tests. This expectation makes sure that `true` is equal to
+`true`. If it's not, the test will alert us to the fact so we can fix it
+(hopefully before the universe finishes crashing down around us).
 
 ## Building the test
 

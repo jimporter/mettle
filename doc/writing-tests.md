@@ -39,7 +39,7 @@ mettle::suite<> my_suite("my suite", [](auto &_) {
 });
 ```
 
-If you don't plan to use mettle's [expectations](matchers.md) for checking
+If you don't plan to use mettle's [expectations](expectations.md) for checking
 program state, you can replace `mettle::suite<>` with
 `mettle::basic_suite<my_exception>` to create a test suite using your own
 exception type as the "canonical" exception.
@@ -62,7 +62,7 @@ mettle::suite<> my_suite("my suite", [](auto &_) {
 
 Inside the test's callback function, we can write our actual test. If our code
 throws an exception, the test will fail; otherwise, it passes. Most of your
-tests should use *[expectations](matchers.md)* (similar to assertions) to
+tests should use *[expectations](expectations.md)* (similar to assertions) to
 perform the actual tests. Expectations provide informative error messages if any
 part of your test fails.
 
