@@ -78,7 +78,15 @@
                         </li>
                     
                         <li >
-                            <a href="../matchers">Expectations and Matchers</a>
+                            <a href="../expectations">Expectations</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../built-in-matchers">Built-in Matchers</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../writing-matchers">Writing Your Own Matchers</a>
                         </li>
                     
                     </ul>
@@ -195,10 +203,10 @@ function, but this time the callback is the code to run when the test executes:<
 </code></pre>
 
 <p>This is an <em>expectation</em>. We'll discuss them in more detail
-<a href="../matchers">later</a>, but in short, they define the things we actually want to
-<em>test</em> in our tests. This expectation makes sure that <code>true</code> is equal to <code>true</code>.
-If it's not, the test will alert us to the fact so we can fix it (hopefully
-before the universe finishes crashing down around us).</p>
+<a href="../expectations">later</a>, but in short, they define the things we actually want
+to <em>test</em> in our tests. This expectation makes sure that <code>true</code> is equal to
+<code>true</code>. If it's not, the test will alert us to the fact so we can fix it
+(hopefully before the universe finishes crashing down around us).</p>
 <h2 id="building-the-test">Building the test</h2>
 <p>Building a test is straightforward. Since mettle provides its own test runner
 with a <code>main()</code> function, the above source code is all you need for a

@@ -78,7 +78,15 @@
                         </li>
                     
                         <li >
-                            <a href="../matchers">Expectations and Matchers</a>
+                            <a href="../expectations">Expectations</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../built-in-matchers">Built-in Matchers</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../writing-matchers">Writing Your Own Matchers</a>
                         </li>
                     
                     </ul>
@@ -108,7 +116,7 @@
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../matchers">
+                    <a rel="prev" href="../expectations">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -182,7 +190,7 @@ we just define the callback as a generic lambda:</p>
 });
 </code></pre>
 
-<p>If you don't plan to use mettle's <a href="../matchers">expectations</a> for checking
+<p>If you don't plan to use mettle's <a href="../expectations">expectations</a> for checking
 program state, you can replace <code>mettle::suite&lt;&gt;</code> with
 <code>mettle::basic_suite&lt;my_exception&gt;</code> to create a test suite using your own
 exception type as the "canonical" exception.</p>
@@ -201,7 +209,7 @@ function defining the test. However, the test's callback takes no arguments:</p>
 
 <p>Inside the test's callback function, we can write our actual test. If our code
 throws an exception, the test will fail; otherwise, it passes. Most of your
-tests should use <em><a href="../matchers">expectations</a></em> (similar to assertions) to
+tests should use <em><a href="../expectations">expectations</a></em> (similar to assertions) to
 perform the actual tests. Expectations provide informative error messages if any
 part of your test fails.</p>
 <h2 id="setup-and-teardown">Setup and teardown</h2>
