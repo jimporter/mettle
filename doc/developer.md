@@ -49,8 +49,8 @@ transparent to the parent process.
 Since Windows is unable to fork a process, when the individual test binary
 creates a subprocess for a test, it simply reruns itself with a different set of
 command-line arguments, indicating that only a specific test should be run. This
-subprocess is immediately placed into a new job, ensuring that - like the POSIX
-version's process groups - any subprocesses it spawns can be killed after the
+subprocess is immediately placed into a new job, ensuring that – like the POSIX
+version's process groups – any subprocesses it spawns can be killed after the
 main process finishes.
 
 Unlike the POSIX version, if tests are set to time out, we simply create a timer

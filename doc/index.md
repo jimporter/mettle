@@ -1,31 +1,33 @@
 # mettle
 
-**mettle** is a unit testing framework for C++14. It aims to maximize
-readability and clarity, allowing you to focus on writing tests instead of
-wrestling with the API.
+**mettle** is a "batteries included" unit testing framework for C++14. Its
+mission is to provide a full toolbox to address your testing needs and to look
+good doing it.
 
 ## Features
 ---
 
+#### Build your own assertions
+
+Expectations (assertions) are defined using composable matchers that
+automatically generate human-readable output, ensuring even complex objects are
+easy to test.
+
+#### Nest your tests
+
+Suites group your tests together and can be nested as deeply as you need,
+so you can use their hierarchy to set up and tear down your fixtures for you.
+
 #### Don't repeat yourself
 
-Tests can be parameterized by value and by type, allowing you to reuse the same
-tests with different preconditions.
+Type- and value-parameterized tests let you write your tests once and apply them
+to multiple implementations or preconditions.
 
-#### Declarative, matcher-based expectations
+#### Aggregate everything
 
-Expectations (assertions) are created using composable matchers, allowing you to
-test complex things using a minimal set of core functions.
-
-#### Nested suites
-
-Test suites can be nested arbitrarily deep. Group your tests however you like,
-and let the suites set up and tear down your fixtures for you.
-
-#### Aggregate all your tests
-
-Write multiple, independent test files and aggregate them into a single list of
-results with the `mettle` test runner.
+The `mettle` universal test runner makes it a snap to write multiple,
+independent test files – even ones running completely different kinds of tests –
+and aggregate them into a single list of results.
 
 ---
 
