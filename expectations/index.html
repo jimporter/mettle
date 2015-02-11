@@ -295,7 +295,7 @@ any). In this case, the matcher returns a <code>mettle::match_result</code> obje
 <code>bool</code> and a <code>std::string</code> description) when called instead of a solitary
 <code>bool</code>. This makes the output for a failed test much nicer in this case:</p>
 <pre><code>expected: threw std::runtime_error(what: &quot;bad&quot;)
-actual:   threw std::logic_error(what: &quot;worse&quot;)
+actual:   threw std::runtime_error(what: &quot;worse&quot;)
 </code></pre>
 
 <p>A <code>match_result</code> is implicity convertible to and from a <code>bool</code>, so matchers that
