@@ -171,7 +171,7 @@ any). In this case, the matcher returns a `mettle::match_result` object (a
 
 ```
 expected: threw std::runtime_error(what: "bad")
-actual:   threw std::logic_error(what: "worse")
+actual:   threw std::runtime_error(what: "worse")
 ```
 
 A `match_result` is implicity convertible to and from a `bool`, so matchers that
