@@ -6,6 +6,8 @@
 #include <mettle/driver/filters.hpp>
 #include <mettle/driver/test_name.hpp>
 
+#include <boost/any.hpp>
+
 namespace mettle {
 
   std::string to_printable(const attr_instance &attr) {
@@ -55,8 +57,6 @@ namespace mettle {
     return ss.str();
   }
 
-} // namespace mettle
-
 auto equal_attr_inst(attr_instance expected) {
   return make_matcher(
     std::move(expected),
@@ -98,5 +98,26 @@ template<typename T>
 inline auto equal_test_info(const T &expected) {
   return equal_test_info(expected.name, expected.attrs);
 }
+
+template<typename Type, typename T>
+auto match_any(T &&thing) {
+  return make_matcher(
+    ensure_matcher(std::forward<T>(thing)),
+    [](const boost::any &actual, auto &&matcher) -> match_result {
+      using ValueType = typename std::remove_reference<Type>::type;
+      auto value = boost::any_cast<ValueType>(&actual);
+      if(!value)
+        return {false, "value not of type \"" + type_name<ValueType>() + "\""};
+      return matcher(*value);
+    }, ""
+  );
+}
+
+template<typename T>
+auto any_equal(T &&thing) {
+  return match_any<T>(std::forward<T>(thing));
+}
+
+} // namespace mettle
 
 #endif

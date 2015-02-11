@@ -28,20 +28,6 @@ auto equal_option_description(std::string name) {
   );
 }
 
-template<typename T>
-auto any_equal(T &&thing) {
-  return make_matcher(
-    std::forward<T>(thing),
-    [](const boost::any &actual, auto &&expected) -> match_result {
-      using Type = typename std::remove_reference<T>::type;
-      auto value = boost::any_cast<Type>(&actual);
-      if(!value)
-        return {false, "value not of type \"" + type_name<Type>() + "\""};
-      return *value == expected;
-    }, ""
-  );
-}
-
 suite<> test_parse_attr("parse_attr()", [](auto &_) {
   _.test("attr", []() {
     bool_attr attr("attr");
