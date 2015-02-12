@@ -151,23 +151,25 @@
             <div class="col-md-9" role="main">
 
 <h1 id="mettle">mettle</h1>
-<p><strong>mettle</strong> is a unit testing framework for C++14. It aims to maximize
-readability and clarity, allowing you to focus on writing tests instead of
-wrestling with the API.</p>
+<p><strong>mettle</strong> is a "batteries included" unit testing framework for C++14. Its
+mission is to provide a full toolbox to address your testing needs and to look
+good doing it.</p>
 <h2 id="features">Features</h2>
 <hr />
+<h4 id="build-your-own-assertions">Build your own assertions</h4>
+<p>Expectations (assertions) are defined using composable matchers that
+automatically generate human-readable output, ensuring even complex objects are
+easy to test.</p>
+<h4 id="nest-your-tests">Nest your tests</h4>
+<p>Suites group your tests together and can be nested as deeply as you need,
+so you can use their hierarchy to set up and tear down your fixtures for you.</p>
 <h4 id="dont-repeat-yourself">Don't repeat yourself</h4>
-<p>Tests can be parameterized by value and by type, allowing you to reuse the same
-tests with different preconditions.</p>
-<h4 id="declarative-matcher-based-expectations">Declarative, matcher-based expectations</h4>
-<p>Expectations (assertions) are created using composable matchers, allowing you to
-test complex things using a minimal set of core functions.</p>
-<h4 id="nested-suites">Nested suites</h4>
-<p>Test suites can be nested arbitrarily deep. Group your tests however you like,
-and let the suites set up and tear down your fixtures for you.</p>
-<h4 id="aggregate-all-your-tests">Aggregate all your tests</h4>
-<p>Write multiple, independent test files and aggregate them into a single list of
-results with the <code>mettle</code> test runner.</p>
+<p>Type- and value-parameterized tests let you write your tests once and apply them
+to multiple implementations or preconditions.</p>
+<h4 id="aggregate-everything">Aggregate everything</h4>
+<p>The <code>mettle</code> universal test runner makes it a snap to write multiple,
+independent test files – even ones running completely different kinds of tests –
+and aggregate them into a single list of results.</p>
 <hr />
 <h2 id="a-brief-example">A brief example</h2>
 <p>A picture is worth a thousand words, and code's almost as good (I'm sure it's
