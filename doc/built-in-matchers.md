@@ -1,4 +1,4 @@
-# Built-in matchers
+# Built-in Matchers
 
 Mettle comes with a set of general-purpose matchers that should cover the most
 common cases. We'll look at each of them below.
