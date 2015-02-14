@@ -32,7 +32,7 @@ test_fork("subprocess_test_runner", sptr_factory{}, [](auto &_) {
       });
 
       auto result = runner(s.tests()[0], output);
-      //expect(result.passed, equal_to(true));
+      expect(result.passed, equal_to(true));
       expect(result.message, equal_to(""));
     });
 
