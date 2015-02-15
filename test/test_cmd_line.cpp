@@ -19,12 +19,11 @@ auto match_filter_item(attr_instance attr, bool matched) {
 
 auto equal_option_description(std::string name) {
   using boost::program_options::option_description;
-  std::ostringstream ss;
-  ss << "option_description(" << to_printable(name) << ")";
   return make_matcher(
-    [name = std::move(name)](const option_description *actual) {
+    std::move(name),
+    [](const option_description *actual, const std::string &name) {
       return actual && actual->long_name() == name;
-    }, ss.str()
+    }, {"option_description(", ")"}
   );
 }
 

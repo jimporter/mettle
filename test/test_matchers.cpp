@@ -57,6 +57,21 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(matcher(4).desc(), equal_to("is 4"));
     });
 
+    _.test("make_matcher(capture, f, pair) -> bool", []() {
+      auto matcher = [](auto &&x) {
+        return make_matcher(
+          std::forward<decltype(x)>(x),
+          [](const auto &actual, const auto &expected) -> bool {
+            return actual == expected;
+          }, {"is(", ")"}
+        );
+      };
+
+      expect(4, matcher(4));
+      expect(0, is_not(matcher(4)));
+      expect(matcher(4).desc(), equal_to("is(4)"));
+    });
+
     _.test("make_matcher(f, desc) -> match_result", []() {
       auto matcher = make_matcher([](const auto &actual) -> match_result {
         return {actual == 4, "message"};

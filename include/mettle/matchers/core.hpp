@@ -38,10 +38,12 @@ namespace detail {
 template<typename T, typename F>
 class basic_matcher : public matcher_tag {
 public:
-  template<typename T2, typename F2>
-  basic_matcher(T2 &&thing, F2 &&f, std::string prefix)
-    : thing_(std::forward<T2>(thing)), f_(std::forward<F2>(f)),
-      prefix_(std::move(prefix)) {}
+  basic_matcher(any_capture<T> thing, F f, std::string prefix)
+    : thing_(std::move(thing)), f_(std::move(f)), prefix_(std::move(prefix)) {}
+  basic_matcher(any_capture<T> thing, F f,
+                std::pair<std::string, std::string> format)
+    : thing_(std::move(thing)), f_(std::move(f)),
+      prefix_(std::move(format.first)), suffix_(std::move(format.second)) {}
 
   template<typename U>
   decltype(auto) operator ()(U &&actual) const {
@@ -50,13 +52,13 @@ public:
 
   std::string desc() const {
     std::ostringstream ss;
-    ss << prefix_ << detail::matcher_desc(thing_.value);
+    ss << prefix_ << detail::matcher_desc(thing_.value) << suffix_;
     return ss.str();
   }
 private:
   any_capture<T> thing_;
   F f_;
-  std::string prefix_;
+  std::string prefix_, suffix_;
 };
 
 template<typename F>
@@ -84,6 +86,14 @@ inline auto make_matcher(T &&thing, F &&f, String &&prefix) {
   return basic_matcher<
     std::remove_reference_t<T>, std::remove_reference_t<F>
   >(std::forward<T>(thing), std::forward<F>(f), std::forward<String>(prefix));
+}
+
+template<typename T, typename F>
+inline auto
+make_matcher(T &&thing, F &&f, std::pair<std::string, std::string> format) {
+  return basic_matcher<
+    std::remove_reference_t<T>, std::remove_reference_t<F>
+  >(std::forward<T>(thing), std::forward<F>(f), std::move(format));
 }
 
 template<typename F, typename String>
