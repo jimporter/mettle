@@ -48,6 +48,7 @@ TEST_LDFLAGS := $(LDFLAGS)
 test/test_child test/test_cmd_line test/test_test_file: \
   TEST_LDFLAGS += -lboost_program_options
 test/test_child: TEST_LDFLAGS += -lboost_iostreams
+test/posix/test_subprocess: TEST_LDFLAGS += -lpthread
 test/test_test_file: src/test_file.o
 
 $(TESTS) $(filter-out $(HEADER_ONLY_EXAMPLES),$(EXAMPLES)): %: %.o libmettle.so

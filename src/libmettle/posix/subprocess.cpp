@@ -25,6 +25,15 @@ namespace posix {
         kill(pid, SIGKILL);
       _exit(128);
     }
+
+    inline int size_to_status(int size) {
+      if(size < 0)
+        return size;
+      if(size == sizeof(int))
+        return 0;
+      errno = EIO;
+      return -1;
+    }
   }
 
   void make_timeout_monitor(std::chrono::milliseconds timeout) {
@@ -94,17 +103,11 @@ namespace posix {
   }
 
   int send_pgid(int fd, int pgid) {
-    return write(fd, &pgid, sizeof(pgid));
+    return size_to_status( write(fd, &pgid, sizeof(pgid)) );
   }
 
   int recv_pgid(int fd, int *pgid) {
-    ssize_t size = read(fd, pgid, sizeof(*pgid));
-    if(size < 0)
-      return size;
-    if(size == sizeof(*pgid))
-      return 0;
-    errno = EIO;
-    return -1;
+    return size_to_status( read(fd, pgid, sizeof(*pgid)) );
   }
 
   int make_fd_private(int fd) {

@@ -1,6 +1,6 @@
 test_any_capture
 test_attributes
-test_child
+test_child_pipe
 test_cmd_line
 test_compiled_suite
 test_expect
@@ -18,4 +18,5 @@ test_test_file
 test_tuple_algorithm
 posix/test_scoped_pipe
 posix/test_scoped_signal
+posix/test_subprocess
 posix/test_subprocess_test_runner
