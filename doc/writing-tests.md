@@ -97,28 +97,35 @@ suite:
 
 ```c++
 mettle::suite<> with_subsuites("suite with subsuites", [](auto &_) {
-
-  _.template subsuite<>("subsuite", [](auto &_) {
+  _.subsuite("subsuite", [](auto &_) {
     _.test("my subtest", []() {
       /* ... */
     });
   });
-
 });
 ```
 
-You've probably noticed that we had to type `template subsuite<>` when declaring
-our subsuite. This is because, as you may recall, our suite's callback uses a
-generic lambda, and so `_` is a *dependent type*. Template member functions of a
-dependent type must be disambiguated with the `template` keyword. We could
+You might have noticed above that, unlike for the root suite, our subsuite
+doesn't contain an empty template parameter list (read: there's no `<>`). Since
+`subsuite` is just a member function, the angle brackets aren't necessary, but
+what if you want to supply a fixture for your subsuite? That's where it gets a
+bit more complex. As you may recall, our suite's callback uses a generic lambda,
+and so `_` is a *dependent type*. Template member functions of a dependent type
+must be prefixed with the `template` keyword, like so:
+
+```c++
+_.template subsuite<int>("subsuite", [](auto &_) {
+  /* ... */
+});
+```
+
+However, this is rather ugly. To eliminate the `template` keyword, we could
 either redefine our lambda to no longer be generic, or just use the
 `mettle::subsuite` helper:
 
 ```c++
-mettle::suite<> with_subsuites("suite with subsuites", [](auto &_) {
-  mettle::subsuite<>(_, "subsuite", [](auto &_) {
-    /* ... */
-  });
+mettle::subsuite<>(_, "subsuite", [](auto &_) {
+  /* ... */
 });
 ```
 
