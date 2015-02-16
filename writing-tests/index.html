@@ -237,26 +237,31 @@ each test in the suite:</p>
 test suites together. You can do this by creating a subsuite inside a parent
 suite:</p>
 <pre><code class="c++">mettle::suite&lt;&gt; with_subsuites(&quot;suite with subsuites&quot;, [](auto &amp;_) {
-
-  _.template subsuite&lt;&gt;(&quot;subsuite&quot;, [](auto &amp;_) {
+  _.subsuite(&quot;subsuite&quot;, [](auto &amp;_) {
     _.test(&quot;my subtest&quot;, []() {
       /* ... */
     });
   });
-
 });
 </code></pre>
 
-<p>You've probably noticed that we had to type <code>template subsuite&lt;&gt;</code> when declaring
-our subsuite. This is because, as you may recall, our suite's callback uses a
-generic lambda, and so <code>_</code> is a <em>dependent type</em>. Template member functions of a
-dependent type must be disambiguated with the <code>template</code> keyword. We could
+<p>You might have noticed above that, unlike for the root suite, our subsuite
+doesn't contain an empty template parameter list (read: there's no <code>&lt;&gt;</code>). Since
+<code>subsuite</code> is just a member function, the angle brackets aren't necessary, but
+what if you want to supply a fixture for your subsuite? That's where it gets a
+bit more complex. As you may recall, our suite's callback uses a generic lambda,
+and so <code>_</code> is a <em>dependent type</em>. Template member functions of a dependent type
+must be prefixed with the <code>template</code> keyword, like so:</p>
+<pre><code class="c++">_.template subsuite&lt;int&gt;(&quot;subsuite&quot;, [](auto &amp;_) {
+  /* ... */
+});
+</code></pre>
+
+<p>However, this is rather ugly. To eliminate the <code>template</code> keyword, we could
 either redefine our lambda to no longer be generic, or just use the
 <code>mettle::subsuite</code> helper:</p>
-<pre><code class="c++">mettle::suite&lt;&gt; with_subsuites(&quot;suite with subsuites&quot;, [](auto &amp;_) {
-  mettle::subsuite&lt;&gt;(_, &quot;subsuite&quot;, [](auto &amp;_) {
-    /* ... */
-  });
+<pre><code class="c++">mettle::subsuite&lt;&gt;(_, &quot;subsuite&quot;, [](auto &amp;_) {
+  /* ... */
 });
 </code></pre>
 
