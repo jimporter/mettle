@@ -96,7 +96,7 @@ has_option(const boost::program_options::options_description &options,
 }
 
 logger_factory make_logger_factory() {
-  logger_factory f("output format");
+  logger_factory f;
 
   f.add("silent", [](indenting_ostream &, const output_options &) {
     return std::unique_ptr<log::file_logger>();
@@ -109,7 +109,7 @@ logger_factory make_logger_factory() {
       out, args.runs, args.show_time, args.show_terminal
     );
   });
-  f.set_default("brief");
+  f.alias("brief", "");
 
   return f;
 }

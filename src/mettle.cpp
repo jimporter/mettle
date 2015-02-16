@@ -90,6 +90,10 @@ int main(int argc, const char *argv[]) {
     logger.summarize();
     return !logger.good();
   }
+  catch(const std::out_of_range &e) {
+    mettle::report_error("unknown output format \"" + args.output + "\"");
+    return 3;
+  }
   catch(const std::exception &e) {
     mettle::report_error(e.what());
     return 3;

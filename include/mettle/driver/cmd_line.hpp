@@ -56,7 +56,7 @@ struct output_options {
 };
 
 using logger_factory = object_factory<
-  log::file_logger, indenting_ostream &, const output_options &
+  log::file_logger(indenting_ostream &, const output_options &)
 >;
 METTLE_PUBLIC logger_factory make_logger_factory();
 

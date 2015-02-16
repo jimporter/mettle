@@ -171,6 +171,10 @@ namespace detail {
       logger.summarize();
       return !logger.good();
     }
+    catch(const std::out_of_range &e) {
+      report_error(argv[0], "unknown output format \"" + args.output + "\"");
+      return 3;
+    }
     catch(const std::exception &e) {
       report_error(argv[0], e.what());
       return 3;

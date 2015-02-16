@@ -3,39 +3,34 @@
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
 namespace mettle {
 
+template<typename Function>
+class object_factory;
+
 template<typename Result, typename ...Args>
-class object_factory {
+class object_factory<Result(Args...)> {
 public:
   using result_type = std::unique_ptr<Result>;
   using function_type = std::function<result_type(Args...)>;
   using container_type = std::map<std::string, function_type>;
   using iterator = typename container_type::const_iterator;
 
-  object_factory(std::string kind = "object") : object_kind_(std::move(kind)) {}
-
   void add(std::string name, function_type f) {
     registry_.emplace(std::move(name), std::move(f));
   }
 
-  void set_default(std::string name) {
-    assert(registry_.count(name) && "factory function not registered");
-    default_logger_ = std::move(name);
+  void alias(const std::string &name, std::string alias) {
+    registry_.emplace(std::move(alias), registry_.at(name));
   }
 
-  result_type make(const std::string &name, Args... args) {
-    std::string key = name.empty() ? default_logger_ : name;
-    auto i = registry_.find(key);
-    if(i == registry_.end()) {
-      throw std::invalid_argument(
-        "unknown " + object_kind_ + " \"" + name + "\""
-      );
-    }
-    return i->second(args...);
+  template<typename ...CallArgs>
+  result_type make(const std::string &name, CallArgs &&...args) {
+    return registry_.at(name)(std::forward<CallArgs>(args)...);
   }
 
   iterator begin() const {
@@ -46,8 +41,7 @@ public:
     return registry_.end();
   }
 private:
-  std::map<std::string, function_type> registry_;
-  std::string object_kind_, default_logger_;
+  container_type registry_;
 };
 
 } // namespace mettle
