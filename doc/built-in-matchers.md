@@ -146,7 +146,7 @@ array( meta_matcher(range[0]), meta_matcher(range[1]), ...
 ### each(*begin*, *end*, *meta_matcher*)
 
 A matcher that returns `true` when each item in a collection matches the
-corresponding item in the range [`begin`, `end`) according to the matcher built
+corresponding item in the range \[`begin`, `end`\) according to the matcher built
 from `meta_matcher`.
 
 ### array(*matchers...*)
@@ -177,9 +177,9 @@ operator if `predicate` isn't supplied).
 
 ### permutation(*begin*, *end*[, *predicate*])
 
-A matcher that returns `true` if the range [`begin`, `end`) is a permutation of
-the collection for the binary predicate `predicate` (or the equality operator if
-`predicate` isn't supplied).
+A matcher that returns `true` if the range \[`begin`, `end`\) is a permutation
+of the collection for the binary predicate `predicate` (or the equality operator
+if `predicate` isn't supplied).
 
 ## Exception
 

@@ -297,7 +297,7 @@ namespace detail {
   template<typename T, typename Predicate>
   class permutation_pred_impl : public matcher_tag {
   public:
-    permutation_comp_impl(T container, Predicate predicate)
+    permutation_pred_impl(T container, Predicate predicate)
       : container_(std::move(container)), predicate_(std::move(predicate)) {}
 
     template<typename U>
@@ -312,7 +312,7 @@ namespace detail {
     std::string desc() const {
       std::ostringstream ss;
       ss << "permutation of " << to_printable(container_.value) << " for "
-         << to_printable(compare_);
+         << to_printable(predicate_);
       return ss.str();
     }
   private:
@@ -330,8 +330,8 @@ inline auto permutation(T &&container) {
 template<typename T, typename Pred>
 inline auto permutation(T &&container, Pred &&predicate) {
   using Value = typename std::remove_reference<T>::type;
-  using PredValue = typename std::remove_reference<Compare>::type;
-  return detail::permutation_pred_impl<Value, CompareValue>(
+  using PredValue = typename std::remove_reference<Pred>::type;
+  return detail::permutation_pred_impl<Value, PredValue>(
     std::forward<T>(container), std::forward<Pred>(predicate)
   );
 }
@@ -341,7 +341,7 @@ inline auto permutation(T begin, T end) {
   return permutation(detail::range<T>(begin, end));
 }
 
-template<typename T, typename Compare>
+template<typename T, typename Pred>
 inline auto permutation(T begin, T end, Pred &&predicate) {
   return permutation(detail::range<T>(begin, end),
                      std::forward<Pred>(predicate));
