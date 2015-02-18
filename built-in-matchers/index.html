@@ -268,6 +268,12 @@ from <code>meta_matcher</code>.</p>
 <p>A matcher that returns <code>true</code> when the <em>ith</em> item in a collection matches the
 <em>ith</em> composed matcher, <em>and</em> the number of items in the collection is equal to
 the number of composed matchers.</p>
+<h3 id="tuplematchers">tuple(<em>matchers...</em>)</h3>
+<p>Similar to <code>array</code>, but applies to tuples instead (or anything else with a
+<code>std::get&lt;I&gt;()</code> overload). This matcher returns <code>true</code> when the <em>ith</em> item in a
+tuple matches the <em>ith</em> composed matcher. Since the size of a tuple can be
+determined at compile time, a length mismatch between the tuple and the number
+of composed matchers will cause a compiler error.</p>
 <h3 id="sortedcomparator">sorted([<em>comparator</em>])</h3>
 <p>A matcher that returns <code>true</code> when the collection is sorted according to the
 binary predicate <code>comparator</code> (or the less-than operator if <code>comparator</code> isn't

@@ -171,8 +171,7 @@ beginning of our examples:</p>
 compiling <code>libmettle.so</code> and the <code>mettle</code> universal driver.</p>
 <p>If you'd rather include a smaller subset of headers, e.g. to improve compilation
 speeds, you'll need the following to define tests and suites:</p>
-<pre><code class="c++">#include &lt;mettle/suite.hpp&gt; // The core of suite definition
-#include &lt;mettle/glue.hpp&gt;  // Hooks up the suites with the expectations
+<pre><code class="c++">#include &lt;mettle/suite.hpp&gt;
 
 // Choose only one of these:
 #include &lt;mettle/driver/lib_driver.hpp&gt;    // The driver to go with libmettle.so
