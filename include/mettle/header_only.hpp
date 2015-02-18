@@ -3,7 +3,6 @@
 
 #include "suite.hpp"
 #include "matchers.hpp"
-#include "glue.hpp"
 #include "driver/header_driver.hpp"
 
 #endif

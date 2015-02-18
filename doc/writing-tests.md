@@ -17,8 +17,7 @@ If you'd rather include a smaller subset of headers, e.g. to improve compilation
 speeds, you'll need the following to define tests and suites:
 
 ```c++
-#include <mettle/suite.hpp> // The core of suite definition
-#include <mettle/glue.hpp>  // Hooks up the suites with the expectations
+#include <mettle/suite.hpp>
 
 // Choose only one of these:
 #include <mettle/driver/lib_driver.hpp>    // The driver to go with libmettle.so
