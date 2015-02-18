@@ -278,6 +278,14 @@ of composed matchers will cause a compiler error.</p>
 <p>A matcher that returns <code>true</code> when the collection is sorted according to the
 binary predicate <code>comparator</code> (or the less-than operator if <code>comparator</code> isn't
 supplied).</p>
+<h3 id="permutationrange-predicate">permutation(<em>range</em>[, <em>predicate</em>])</h3>
+<p>A matcher that returns <code>true</code> if a permutation of <code>range</code> exists that equals
+the collection according for the binary predicate <code>predicate</code> (or the equality
+operator if <code>predicate</code> isn't supplied).</p>
+<h3 id="permutationbegin-end-predicate">permutation(<em>begin</em>, <em>end</em>[, <em>predicate</em>])</h3>
+<p>A matcher that returns <code>true</code> if the range [<code>begin</code>, <code>end</code>) is a permutation of
+the collection for the binary predicate <code>predicate</code> (or the equality operator if
+<code>predicate</code> isn't supplied).</p>
 <h2 id="exception">Exception</h2>
 <p>Exception matchers work a bit differently from other matchers. Since we can't
 catch an exception after the fact, we have to pass a function to our
