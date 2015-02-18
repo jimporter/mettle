@@ -245,7 +245,7 @@ inline auto tuple(T &&...things) {
   );
 }
 
-auto sorted() {
+inline auto sorted() {
   return make_matcher([](const auto &value) {
     return std::is_sorted(std::begin(value), std::end(value));
   }, "sorted");
