@@ -463,6 +463,25 @@ suite<> test_matchers("matchers", [](auto &_) {
              equal_to("[message, message, 3]"));
     });
 
+    _.test("tuple()", []() {
+      expect(std::make_tuple(), tuple());
+      expect(std::make_tuple(1, 2, 3), tuple(1, 2, 3));
+      expect(std::make_tuple(1, 2, 3), is_not(tuple(3, 2, 1)));
+
+      auto tup = std::make_tuple(1, 2, 3);
+      expect(tup, tuple(1, 2, 3));
+      expect(tup, is_not(tuple(3, 2, 1)));
+
+      expect(std::make_pair(1, 2), tuple(1, 2));
+      expect(std::make_pair(1, 2), is_not(tuple(2, 1)));
+
+      expect(tuple(1, 2, 3).desc(), equal_to("[1, 2, 3]"));
+      expect(tuple(1, 2, 3)(tup).message, equal_to("[1, 2, 3]"));
+      expect(tuple( msg_matcher(true), msg_matcher(false),
+                    msg_matcher(false) )(tup).message,
+             equal_to("[message, message, message]"));
+    });
+
     _.test("sorted()", []() {
       expect(std::vector<int>{}, sorted());
       expect(std::vector<int>{1, 2, 3}, sorted());

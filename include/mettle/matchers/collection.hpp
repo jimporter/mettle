@@ -196,6 +196,55 @@ inline auto array(T &&...things) {
   );
 }
 
+namespace detail {
+  template<typename ...T>
+  class tuple_impl : public matcher_tag {
+  public:
+    tuple_impl(T ...matchers) : matchers_(std::move(matchers)...) {}
+
+    template<typename U>
+    match_result operator ()(const U &value) const {
+      static_assert(std::tuple_size<U>::value == sizeof...(T),
+                    "tuple sizes mismatch");
+      std::ostringstream ss;
+      ostream_list_append append(ss);
+      bool good = true;
+
+      ss << "[";
+      do_until<0, sizeof...(T)>([this, &value, &good, &append](auto i) {
+        auto v = std::get<decltype(i)::value>(value);
+        auto result = std::get<decltype(i)::value>(matchers_)(v);
+        good &= result;
+        append(matcher_message(result, v));
+        return false;
+      });
+      ss << "]";
+
+      return {good, ss.str()};
+    }
+
+    std::string desc() const {
+      return "[" + stringify(tuple_joined(matchers_, [](auto &&matcher) {
+        return matcher.desc();
+      })) + "]";
+    }
+  private:
+    template<std::size_t I, typename U>
+    auto match(const U &value) const {
+      return std::get<I>(matchers_)(std::get<I>(value));
+    }
+
+    std::tuple<T...> matchers_;
+  };
+}
+
+template<typename ...T>
+inline auto tuple(T &&...things) {
+  return detail::tuple_impl<ensure_matcher_t<T>...>(
+    ensure_matcher(std::forward<T>(things))...
+  );
+}
+
 auto sorted() {
   return make_matcher([](const auto &value) {
     return std::is_sorted(std::begin(value), std::end(value));

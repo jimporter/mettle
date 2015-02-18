@@ -9,29 +9,27 @@ namespace mettle {
 
 namespace detail {
 
-  template<std::size_t N>
+  template<std::size_t I, std::size_t N>
   struct do_until {
-    template<typename Tuple, typename Func>
-    do_until(Tuple &&tuple, Func &&f) {
-      using T = typename std::remove_reference<Tuple>::type;
-      constexpr auto I = std::tuple_size<T>::value - N;
-      if(!f( std::get<I>(tuple) ))
-        do_until<N-1>(std::forward<Tuple>(tuple), std::forward<Func>(f));
+    template<typename Func>
+    do_until(Func &&f) {
+      if(!f(std::integral_constant<std::size_t, I>{}))
+        do_until<I+1, N>(std::forward<Func>(f));
     }
   };
 
-  template<>
-  struct do_until<0> {
-    template<typename Tuple, typename Func>
-    do_until(Tuple &&, Func &&) {}
+  template<std::size_t N>
+  struct do_until<N, N> {
+    template<typename Func>
+    do_until(Func &&) {}
   };
 
   template<typename Tuple, typename Func>
   void tuple_for_until(Tuple &&tuple, Func &&f) {
     using T = typename std::remove_reference<Tuple>::type;
-    do_until<std::tuple_size<T>::value>(
-      std::forward<Tuple>(tuple), std::forward<Func>(f)
-    );
+    do_until<0, std::tuple_size<T>::value>([&](auto i) {
+      return f(std::get<decltype(i)::value>(tuple));
+    });
   }
 
   template<typename Tuple, typename Func>

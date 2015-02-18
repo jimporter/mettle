@@ -155,6 +155,14 @@ A matcher that returns `true` when the *ith* item in a collection matches the
 *ith* composed matcher, *and* the number of items in the collection is equal to
 the number of composed matchers.
 
+### tuple(*matchers...*)
+
+Similar to `array`, but applies to tuples instead (or anything else with a
+`std::get<I>()` overload). This matcher returns `true` when the *ith* item in a
+tuple matches the *ith* composed matcher. Since the size of a tuple can be
+determined at compile time, a length mismatch between the tuple and the number
+of composed matchers will cause a compiler error.
+
 ### sorted([*comparator*])
 
 A matcher that returns `true` when the collection is sorted according to the
