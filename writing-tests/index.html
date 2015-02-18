@@ -351,8 +351,19 @@ inherit their parents' setup and teardown functions.</p>
 <h3 id="fixture-factories">Fixture factories</h3>
 <p>Sometimes, a fixture can't be constructed as is, e.g if the fixture isn't
 default-constructible. In these cases, you can use a <em>fixture factory</em> to create
-your fixture object with any parameters you like. A fixture factory is simply an
-object with a templated <code>make&lt;T&gt;()</code> function:</p>
+your fixture object with any parameters you like. For simple cases, we can use
+<code>mettle::bind_factory</code>, which takes a list of arguments and constructs an object
+of your fixture's type with those arguments:</p>
+<pre><code class="c++">mettle::suite&lt;int&gt;
+bound_fixture(&quot;using bind_factory&quot;, mettle::bind_factory(3), [](auto &amp;_) {
+  _.test([](int &amp;i) {
+    mettle::expect(i, equal_to(3));
+  });
+});
+</code></pre>
+
+<p>For more complex fixtures, you can create your own factories from scratch. A
+fixture factory is simply an object with a templated <code>make&lt;T&gt;()</code> function:</p>
 <pre><code class="c++">struct my_factory {
   template&lt;typename T&gt;
   T make() {
@@ -365,7 +376,7 @@ mettle::suite&lt;my_fixture&gt; with_factory(&quot;suite&quot;, my_factory{}, []
 });
 </code></pre>
 
-<p>In fact, "ordinary "fixtures use their own factory: <code>auto_factory</code>. The
+<p>In fact, even "ordinary" fixtures use their own factory: <code>auto_factory</code>. The
 following code snippets are equivalent:</p>
 <pre><code class="c++">mettle::suite&lt;my_fixture&gt;
 without_auto_factory(&quot;suite&quot;, [](auto &amp;_) {
