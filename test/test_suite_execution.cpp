@@ -1,28 +1,26 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-#include <functional>
-#include <memory>
+#include "run_counter.hpp"
 
-template<typename ...T>
-class run_counter {
-public:
-  run_counter(const std::function<void(T...)> &f = nullptr)
-    : f_(f), runs_(std::make_shared<std::size_t>(0)) {}
-
-  void operator ()(T &...t) {
-    (*runs_)++;
-    if(f_)
-      f_(t...);
+namespace mettle {
+  std::string to_printable(const test_result &result) {
+    std::ostringstream ss;
+    ss << "test_result(" << to_printable(result.passed) << ", "
+       << to_printable(result.message) << ")";
+    return ss.str();
   }
+}
 
-  std::size_t runs() const {
-    return *runs_;
-  }
-private:
-  std::function<void(T...)> f_;
-  std::shared_ptr<std::size_t> runs_;
-};
+auto equal_test_result(bool result, const std::string &message) {
+  return make_matcher(
+    test_result{result, message},
+    [](const auto &actual, const auto &expected) -> bool {
+      return actual.passed == expected.passed &&
+             actual.message == expected.message;
+    }, ""
+  );
+}
 
 struct basic_fixture {
   basic_fixture() = default;
@@ -50,7 +48,7 @@ suite<> test_calling("test calling", [](auto &_) {
     });
 
     auto result = s.tests()[0].function();
-    expect("test passed", result.passed, equal_to(true));
+    expect(result, equal_test_result(true, ""));
 
     expect("test run count", test.runs(), equal_to(1));
   });
@@ -64,7 +62,7 @@ suite<> test_calling("test calling", [](auto &_) {
     });
 
     auto result = s.tests()[0].function();
-    expect("test passed", result.passed, equal_to(false));
+    expect(result, equal_test_result(false, "expected: true\nactual:   false"));
 
     expect("test run count", test.runs(), equal_to(1));
   });
@@ -78,7 +76,7 @@ suite<> test_calling("test calling", [](auto &_) {
     });
 
     auto result = s.tests()[0].function();
-    expect("test passed", result.passed, equal_to(true));
+    expect("test passed", result, equal_test_result(true, ""));
 
     expect("setup run count", setup.runs(), equal_to(1));
     expect("test run count", test.runs(), equal_to(1));
@@ -97,7 +95,7 @@ suite<> test_calling("test calling", [](auto &_) {
     });
 
     auto result = s.tests()[0].function();
-    expect("test passed", result.passed, equal_to(false));
+    expect(result, equal_test_result(false, "expected: true\nactual:   false"));
 
     expect("setup run count", setup.runs(), equal_to(1));
     expect("test run count", test.runs(), equal_to(1));
@@ -116,7 +114,7 @@ suite<> test_calling("test calling", [](auto &_) {
     });
 
     auto result = s.tests()[0].function();
-    expect("test passed", result.passed, equal_to(false));
+    expect(result, equal_test_result(false, "expected: true\nactual:   false"));
 
     expect("setup run count", setup.runs(), equal_to(1));
     expect("test run count", test.runs(), equal_to(0));
@@ -135,7 +133,31 @@ suite<> test_calling("test calling", [](auto &_) {
     });
 
     auto result = s.tests()[0].function();
-    expect("test passed", result.passed, equal_to(false));
+    expect(result, equal_test_result(false, "expected: true\nactual:   false"));
+
+    expect("setup run count", setup.runs(), equal_to(1));
+    expect("test run count", test.runs(), equal_to(1));
+    expect("teardown run count", teardown.runs(), equal_to(1));
+  });
+
+  _.test("test failure reported if test and teardown fail", []() {
+    run_counter<> setup;
+    run_counter<> teardown([]() {
+      expect(std::string("teardown"), equal_to("foo"));
+    });
+    run_counter<> test([]() {
+      expect(std::string("test"), equal_to("foo"));
+    });
+    auto s = make_suite<>("inner", [&setup, &teardown, &test](auto &_){
+      _.setup(setup);
+      _.teardown(teardown);
+      _.test("inner test", test);
+    });
+
+    auto result = s.tests()[0].function();
+    expect(result, equal_test_result(
+      false, "expected: \"foo\"\nactual:   \"test\""
+    ));
 
     expect("setup run count", setup.runs(), equal_to(1));
     expect("test run count", test.runs(), equal_to(1));

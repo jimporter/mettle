@@ -4,6 +4,7 @@ test_child_pipe
 test_cmd_line
 test_compiled_suite
 test_expect
+test_factory
 test_filters
 test_forward_if
 test_global_suite
@@ -15,6 +16,7 @@ test_output
 test_run_tests
 test_string_algorithm
 test_suite_execution
+test_test_caller
 test_test_file
 test_tuple_algorithm
 posix/test_scoped_pipe

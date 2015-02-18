@@ -1,156 +1,27 @@
 #ifndef INC_METTLE_SUITE_MAKE_SUITE_HPP
 #define INC_METTLE_SUITE_MAKE_SUITE_HPP
 
-#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <functional>
-#include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "attributes.hpp"
 #include "compiled_suite.hpp"
+#include "factory.hpp"
+#include "detail/test_caller.hpp"
 #include "../output.hpp"
 
 namespace mettle {
 
 namespace detail {
-  template<typename ...>
-  struct first;
-
-  template<typename First, typename ...Rest>
-  struct first<First, Rest...> {
-    using type = First;
-  };
-
-  template<>
-  struct first<> {
-    using type = void;
-  };
-
-  template<typename ...T>
-  using first_t = typename first<T...>::type;
-
-  template<typename Factory, typename ...Child>
-  struct transform_fixture;
-
-  template<typename Factory>
-  struct transform_fixture<Factory> {
-    using type = void;
-  };
-
-  template<typename Factory, typename Child>
-  struct transform_fixture<Factory, Child> {
-    using type = decltype(std::declval<Factory>().template make<Child>());
-  };
-
-  template<typename Factory, typename ...Child>
-  using transform_fixture_t = typename transform_fixture<
-    Factory, Child...
-  >::type;
-
-  template<typename Function>
-  struct test_caller_sub_base {
-#if defined(_MSC_VER) && !defined(__clang__)
-    template<typename Setup, typename Teardown, typename Test>
-    test_caller_sub_base(Setup &&setup, Teardown &&teardown, Test &&test)
-      : setup(std::forward<Setup>(setup)),
-        teardown(std::forward<Teardown>(teardown)),
-        test(std::forward<Test>(test)) {}
-#endif
-    template<typename ...Args>
-    void call_test(Args &...args) {
-      if(setup)
-        setup(args...);
-
-      try {
-        test(args...);
-      }
-      catch(...) {
-        if(teardown)
-          teardown(args...);
-        throw;
-      }
-
-      if(teardown)
-        teardown(args...);
-    }
-
-    std::function<Function> setup, teardown, test;
-  };
-
-  template<typename Factory, typename Parent, typename InChild,
-           typename OutChild>
-  class test_caller_base;
-
-  template<typename Factory, typename ...Parent, typename InChild,
-           typename OutChild>
-  class test_caller_base<Factory, std::tuple<Parent...>, InChild, OutChild>
-    : private test_caller_sub_base<void(Parent&..., OutChild&)> {
-  private:
-    using base = test_caller_sub_base<void(Parent&..., OutChild&)>;
-  public:
-    template<typename ...T>
-    test_caller_base(Factory f, T &&...t)
-      : base{std::forward<T>(t)...}, factory(f) {}
-
-    inline void operator ()(Parent &...args) {
-      auto &&child = factory.template make<InChild>();
-      base::call_test(args..., child);
-    }
-
-    Factory factory;
-  };
-
-  template<typename Factory, typename ...Parent, typename InChild>
-  class test_caller_base<Factory, std::tuple<Parent...>, InChild, void>
-    : private test_caller_sub_base<void(Parent&...)> {
-  private:
-    using base = test_caller_sub_base<void(Parent&...)>;
-  public:
-    template<typename ...T>
-    test_caller_base(const Factory &, T &&...t)
-      : base{std::forward<T>(t)...} {}
-  public:
-    inline void operator ()(Parent &...args) {
-      base::call_test(args...);
-    }
-  };
-
-  template<typename Factory, typename Parent, typename ...Child>
-  class test_caller : public test_caller_base<
-    Factory, Parent, first_t<Child...>, transform_fixture_t<Factory, Child...>
-  > {
-  private:
-    using base = test_caller_base<
-      Factory, Parent, first_t<Child...>, transform_fixture_t<Factory, Child...>
-    >;
-  public:
-    using base::base;
-  };
-
   template<typename T>
   std::string annotate_type(const std::string &s) {
     return s + " (" + type_name<T>() + ")";
   }
-
-  struct auto_factory_t {
-    constexpr auto_factory_t() {}
-
-    template<typename T>
-    T make() const {
-      return {};
-    }
-  };
-
-  struct type_only_factory_t {
-    constexpr type_only_factory_t() {}
-
-    template<typename T>
-    void make() const {}
-  };
 
   template<typename Tuple>
   struct compiled_subsuite_helper;
@@ -169,9 +40,6 @@ namespace detail {
 template<typename Tuple>
 using compiled_subsuite = typename detail::compiled_subsuite_helper<Tuple>
   ::type;
-
-constexpr detail::auto_factory_t auto_factory;
-constexpr detail::type_only_factory_t type_only;
 
 template<typename Factory, typename ParentFixture, typename ...Fixture>
 class subsuite_builder;

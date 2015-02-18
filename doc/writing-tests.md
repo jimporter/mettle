@@ -227,8 +227,21 @@ inherit their parents' setup and teardown functions.
 
 Sometimes, a fixture can't be constructed as is, e.g if the fixture isn't
 default-constructible. In these cases, you can use a *fixture factory* to create
-your fixture object with any parameters you like. A fixture factory is simply an
-object with a templated `make<T>()` function:
+your fixture object with any parameters you like. For simple cases, we can use
+`mettle::bind_factory`, which takes a list of arguments and constructs an object
+of your fixture's type with those arguments:
+
+```c++
+mettle::suite<int>
+bound_fixture("using bind_factory", mettle::bind_factory(3), [](auto &_) {
+  _.test([](int &i) {
+    mettle::expect(i, equal_to(3));
+  });
+});
+```
+
+For more complex fixtures, you can create your own factories from scratch. A
+fixture factory is simply an object with a templated `make<T>()` function:
 
 ```c++
 struct my_factory {
@@ -243,7 +256,7 @@ mettle::suite<my_fixture> with_factory("suite", my_factory{}, [](auto &_) {
 });
 ```
 
-In fact, "ordinary "fixtures use their own factory: `auto_factory`. The
+In fact, even "ordinary" fixtures use their own factory: `auto_factory`. The
 following code snippets are equivalent:
 
 ```c++
