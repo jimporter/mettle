@@ -169,6 +169,18 @@ A matcher that returns `true` when the collection is sorted according to the
 binary predicate `comparator` (or the less-than operator if `comparator` isn't
 supplied).
 
+### permutation(*range*[, *predicate*])
+
+A matcher that returns `true` if a permutation of `range` exists that equals
+the collection according for the binary predicate `predicate` (or the equality
+operator if `predicate` isn't supplied).
+
+### permutation(*begin*, *end*[, *predicate*])
+
+A matcher that returns `true` if the range [`begin`, `end`) is a permutation of
+the collection for the binary predicate `predicate` (or the equality operator if
+`predicate` isn't supplied).
+
 ## Exception
 
 Exception matchers work a bit differently from other matchers. Since we can't

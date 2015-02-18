@@ -6,6 +6,7 @@
 #include <iterator>
 #include <sstream>
 #include <tuple>
+#include <vector>
 
 #include "core.hpp"
 
@@ -258,6 +259,102 @@ auto sorted(T &&compare) {
     [](const auto &value, auto &&compare) {
     return std::is_sorted(std::begin(value), std::end(value), compare);
   }, "sorted by ");
+}
+
+namespace detail {
+  template<typename T>
+  class range {
+  public:
+    range(T begin, T end) : begin_(begin), end_(end) {}
+    T begin() const { return begin_; }
+    T end() const { return end_; }
+  private:
+    T begin_, end_;
+  };
+
+  template<typename T>
+  class permutation_impl : public matcher_tag {
+  public:
+    permutation_impl(T container) : container_(std::move(container)) {}
+
+    template<typename U>
+    bool operator ()(const U &actual) const {
+      return std::is_permutation(
+        std::begin(actual), std::end(actual),
+        std::begin(container_.value), std::end(container_.value)
+      );
+    }
+
+    std::string desc() const {
+      std::ostringstream ss;
+      ss << "permutation of " << to_printable(container_.value);
+      return ss.str();
+    }
+  private:
+    any_capture<T> container_;
+  };
+
+  template<typename T, typename Predicate>
+  class permutation_pred_impl : public matcher_tag {
+  public:
+    permutation_comp_impl(T container, Predicate predicate)
+      : container_(std::move(container)), predicate_(std::move(predicate)) {}
+
+    template<typename U>
+    bool operator ()(const U &actual) const {
+      return std::is_permutation(
+        std::begin(actual), std::end(actual),
+        std::begin(container_.value), std::end(container_.value),
+        predicate_
+      );
+    }
+
+    std::string desc() const {
+      std::ostringstream ss;
+      ss << "permutation of " << to_printable(container_.value) << " for "
+         << to_printable(compare_);
+      return ss.str();
+    }
+  private:
+    any_capture<T> container_;
+    Predicate predicate_;
+  };
+}
+
+template<typename T>
+inline auto permutation(T &&container) {
+  using Value = typename std::remove_reference<T>::type;
+  return detail::permutation_impl<Value>(std::forward<T>(container));
+}
+
+template<typename T, typename Pred>
+inline auto permutation(T &&container, Pred &&predicate) {
+  using Value = typename std::remove_reference<T>::type;
+  using PredValue = typename std::remove_reference<Compare>::type;
+  return detail::permutation_pred_impl<Value, CompareValue>(
+    std::forward<T>(container), std::forward<Pred>(predicate)
+  );
+}
+
+template<typename T>
+inline auto permutation(T begin, T end) {
+  return permutation(detail::range<T>(begin, end));
+}
+
+template<typename T, typename Compare>
+inline auto permutation(T begin, T end, Pred &&predicate) {
+  return permutation(detail::range<T>(begin, end),
+                     std::forward<Pred>(predicate));
+}
+
+template<typename T>
+inline auto permutation(std::initializer_list<T> list) {
+  return permutation(std::vector<T>{list});
+}
+
+template<typename T, typename Pred>
+inline auto permutation(std::initializer_list<T> list, Pred &&predicate) {
+  return permutation(std::vector<T>{list}, std::forward<Pred>(predicate));
 }
 
 } // namespace mettle

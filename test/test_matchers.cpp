@@ -500,6 +500,94 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(sorted(std::less<int>()).desc(),
              equal_to("sorted by " + type_name<std::less<int>>()));
     });
+
+    _.test("permutation(begin, end)", []() {
+      using ivec = std::vector<int>;
+      ivec v = {1, 2, 3};
+
+      expect(ivec{}, permutation( v.begin(), v.begin() ));
+      expect(ivec{2, 3, 1}, permutation( v.begin(), v.end() ));
+      expect(ivec{2, 3, 4}, is_not(permutation( v.begin(), v.end() )));
+      expect(ivec{1, 2, 3, 4}, is_not(permutation( v.begin(), v.end() )));
+      expect(ivec{1, 2}, is_not(permutation( v.begin(), v.end() )));
+
+      int arr[] = {1, 2, 3};
+      expect(arr, permutation( v.begin(), v.end() ));
+
+      expect(v, permutation( v.begin(), v.end() ));
+
+      expect(permutation(v.begin(), v.end()).desc(),
+             equal_to("permutation of [1, 2, 3]"));
+    });
+
+    _.test("permutation(begin, end, comp)", []() {
+      using ivec = std::vector<int>;
+      ivec v = {1, 2, 3};
+
+      auto equal_mod3 = [](auto a, auto b) {
+        return (a - b) % 3 == 0;
+      };
+
+      expect(ivec{}, permutation(v.begin(), v.begin(), equal_mod3));
+      expect(ivec{2, 3, 4}, permutation(v.begin(), v.end(), equal_mod3));
+      expect(ivec{2, 3, 5},
+             is_not(permutation(v.begin(), v.end(), equal_mod3)));
+      expect(ivec{1, 2, 3, 4},
+             is_not(permutation(v.begin(), v.end(), equal_mod3)));
+      expect(ivec{1, 2}, is_not(permutation(v.begin(), v.end(), equal_mod3)));
+
+      int arr[] = {4, 5, 6};
+      expect(arr, permutation(v.begin(), v.end(), equal_mod3));
+
+      expect(v, permutation(v.begin(), v.end(), equal_mod3));
+
+      expect(permutation(v.begin(), v.end(), std::less<int>{}).desc(),
+             equal_to("permutation of [1, 2, 3] for " +
+                      type_name<std::less<int>>()));
+    });
+
+    _.test("permutation(container)", []() {
+      using ivec = std::vector<int>;
+      ivec v = {1, 2, 3};
+
+      expect(ivec{}, permutation(ivec{}));
+      expect(ivec{2, 3, 1}, permutation(v));
+      expect(ivec{2, 3, 4}, is_not(permutation(v)));
+      expect(ivec{1, 2, 3, 4}, is_not(permutation(v)));
+      expect(ivec{1, 2}, is_not(permutation(v)));
+
+      int arr[] = {1, 2, 3};
+      expect(arr, permutation({2, 3, 1}));
+
+      expect(v, permutation({2, 3, 1}));
+
+      expect(permutation({1, 2, 3}).desc(),
+             equal_to("permutation of [1, 2, 3]"));
+    });
+
+    _.test("permutation(container, comp)", []() {
+      using ivec = std::vector<int>;
+      ivec v = {1, 2, 3};
+
+      auto equal_mod3 = [](auto a, auto b) {
+        return (a - b) % 3 == 0;
+      };
+
+      expect(ivec{}, permutation(ivec{}, equal_mod3));
+      expect(ivec{2, 3, 4}, permutation(v, equal_mod3));
+      expect(ivec{2, 3, 5}, is_not(permutation(v, equal_mod3)));
+      expect(ivec{1, 2, 3, 4}, is_not(permutation(v, equal_mod3)));
+      expect(ivec{1, 2}, is_not(permutation(v, equal_mod3)));
+
+      int arr[] = {4, 5, 6};
+      expect(arr, permutation({5, 6, 4}, equal_mod3));
+
+      expect(v, permutation({2, 3, 4}, equal_mod3));
+
+      expect(permutation({1, 2, 3}, std::less<int>{}).desc(),
+             equal_to("permutation of [1, 2, 3] for " +
+                      type_name<std::less<int>>()));
+    });
   });
 
   subsuite<>(_, "exception", [](auto &_) {
