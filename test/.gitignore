@@ -1,6 +1,5 @@
 test_any_capture
 test_attributes
-test_child_pipe
 test_cmd_line
 test_compiled_suite
 test_expect
@@ -8,7 +7,6 @@ test_factory
 test_filters
 test_forward_if
 test_global_suite
-test_indent
 test_make_suite
 test_matchers
 test_match_result
@@ -20,6 +18,8 @@ test_suite_execution
 test_test_caller
 test_test_file
 test_tuple_algorithm
+log/test_child_pipe
+log/test_indent
 posix/test_scoped_pipe
 posix/test_scoped_signal
 posix/test_subprocess
