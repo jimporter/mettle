@@ -8,6 +8,7 @@ test_factory
 test_filters
 test_forward_if
 test_global_suite
+test_indent
 test_make_suite
 test_matchers
 test_match_result
