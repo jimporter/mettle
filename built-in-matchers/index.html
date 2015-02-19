@@ -162,8 +162,12 @@
 
 <h1 id="built-in-matchers">Built-in Matchers</h1>
 <p>Mettle comes with a set of general-purpose matchers that should cover the most
-common cases. We'll look at each of them below.</p>
+common cases. We'll look at each of them below. The entire set of matchers can
+be included via <code>#include &lt;mettle/matchers.hpp&gt;</code>, or you can include just the
+categories you need by including the appropriate file (e.g.
+<code>#include &lt;mettle/matchers/combinatoric.hpp</code>).</p>
 <h2 id="core">Core</h2>
+<p class="subtitle"><em>&lt;mettle/matchers/core.hpp&gt;</em></p>
 <h3 id="anything">anything()</h3>
 <p>A matcher that always returns <code>true</code>. This is useful primarily as a placeholder,
 e.g. when you can't know for sure what an expected value is going to be, but you
@@ -186,6 +190,7 @@ parts of a type, such as:</p>
 prefix to <code>matcher</code>'s description. This helps provide useful output explaining
 what exactly <code>func</code> is doing to the expected value.</p>
 <h2 id="relational">Relational</h2>
+<p class="subtitle"><em>&lt;mettle/matchers/relational.hpp&gt;</em></p>
 <h3 id="equal_tovalue">equal_to(<em>value</em>)</h3>
 <p>A matcher that returns <code>true</code> when the expected value is equal to <code>value</code>
 according to the <code>==</code> operator.</p>
@@ -212,6 +217,7 @@ according to the <code>&lt;</code> operator.</p>
 <p>A matcher that returns <code>true</code> when the expected value is less than or equal to
 <code>value</code> according to the <code>&lt;=</code> operator.</p>
 <h2 id="arithmetic">Arithmetic</h2>
+<p class="subtitle"><em>&lt;mettle/matchers/arithmetic.hpp&gt;</em></p>
 <h3 id="near_tovalue-epsilon">near_to(<em>value</em>[, <em>epsilon</em>])</h3>
 <p>A matcher that returns <code>true</code> when the expected value is approximately equal to
 <code>value</code>, specifically when:</p>
@@ -231,6 +237,7 @@ zero. In that case, use <code>near_to_abs</code>.</p>
 <p>A matcher that returns <code>true</code> when the expected value is approximately equal to
 <code>value</code>, specifically when <code>std::abs(actual - expected) &lt;= tolerance</code>.</p>
 <h2 id="combinatoric">Combinatoric</h2>
+<p class="subtitle"><em>&lt;mettle/matchers/combinatoric.hpp&gt;</em></p>
 <h3 id="anymatchers">any(<em>matchers...</em>)</h3>
 <p>A matcher that returns <code>true</code> when <em>any of</em> its composed matchers are true.</p>
 <h3 id="allmatchers">all(<em>matchers...</em>)</h3>
@@ -238,6 +245,7 @@ zero. In that case, use <code>near_to_abs</code>.</p>
 <h3 id="nonematchers">none(<em>matchers...</em>)</h3>
 <p>A matcher that returns <code>true</code> when <em>none of</em> its composed matchers are true.</p>
 <h2 id="collection">Collection</h2>
+<p class="subtitle"><em>&lt;mettle/matchers/collection.hpp&gt;</em></p>
 <h3 id="membermatcher">member(<em>matcher</em>)</h3>
 <p>A matcher that returns <code>true</code> when an item in a collection matches the composed
 matcher.</p>
@@ -287,6 +295,7 @@ operator if <code>predicate</code> isn't supplied).</p>
 of the collection for the binary predicate <code>predicate</code> (or the equality operator
 if <code>predicate</code> isn't supplied).</p>
 <h2 id="exception">Exception</h2>
+<p class="subtitle"><em>&lt;mettle/matchers/exception.hpp&gt;</em></p>
 <p>Exception matchers work a bit differently from other matchers. Since we can't
 catch an exception after the fact, we have to pass a function to our
 expectation instead:</p>
@@ -306,6 +315,7 @@ expectation instead:</p>
 <p>A matcher that returns <code>true</code> if an exception of type <code>Type</code> (or a subclass of
 <code>Type</code>) is thrown and whose value matches <code>matcher</code>.</p>
 <h2 id="death">Death</h2>
+<p class="subtitle"><em>&lt;mettle/matchers/death.hpp&gt;</em></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>These matchers are currently unusable on Windows. Sorry about that!</p>

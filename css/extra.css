@@ -54,3 +54,10 @@ a > code:focus {
 .admonition p:last-child {
   margin-bottom: 0;
 }
+
+/* Add small subtitles */
+
+.subtitle {
+  margin-top: -10.5px;
+  color: #BBB;
+}
