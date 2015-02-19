@@ -69,6 +69,28 @@ suite<> test_indent("indentation", [](auto &_) {
       generate(f, indent_style::logical, indent_style::visual);
       expect(f.ss.str(), equal_to("  123\n   4\n  5\n  6"));
     });
+
+    _.test("move-construct stream", [](stream_factory &f) {
+      f.is.indent(1, indent_style::logical);
+      f.is << "1\n";
+      auto is = std::move(f.is);
+      is.indent(-1, indent_style::logical);
+      is << "2";
+
+      expect(f.ss.str(), equal_to("  1\n2"));
+    });
+
+    _.test("move-assign stream", [](stream_factory &f) {
+      std::ostringstream ss;
+      indenting_ostream is(ss);
+      f.is.indent(1, indent_style::logical);
+      f.is << "1\n";
+      is = std::move(f.is);
+      is.indent(-1, indent_style::logical);
+      is << "2";
+
+      expect(f.ss.str(), equal_to("  1\n2"));
+    });
   });
 
   subsuite<stream_factory>(_, "scoped_indent", [](auto &_) {

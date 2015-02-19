@@ -62,8 +62,19 @@ public:
 
   basic_indenting_ostream(base_type &os, std::size_t base_indent = 2)
     : base_type(&buf), buf(os.rdbuf(), base_indent) {
-    this->copyfmt(os);
-    this->clear(os.rdstate());
+    base_type::copyfmt(os);
+    base_type::clear(os.rdstate());
+  }
+
+  basic_indenting_ostream(basic_indenting_ostream &&rhs)
+    : base_type(std::move(rhs)), buf(std::move(rhs.buf)) {
+    base_type::set_rdbuf(&buf);
+  }
+
+  basic_indenting_ostream & operator =(basic_indenting_ostream &&rhs) {
+    base_type::operator =(std::move(rhs));
+    buf = std::move(rhs.buf);
+    return *this;
   }
 
   void indent(std::ptrdiff_t offset, indent_style style) {
