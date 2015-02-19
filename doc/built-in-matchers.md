@@ -1,9 +1,14 @@
 # Built-in Matchers
 
 Mettle comes with a set of general-purpose matchers that should cover the most
-common cases. We'll look at each of them below.
+common cases. We'll look at each of them below. The entire set of matchers can
+be included via `#include <mettle/matchers.hpp>`, or you can include just the
+categories you need by including the appropriate file (e.g.
+`#include <mettle/matchers/combinatoric.hpp`).
 
 ## Core
+*&lt;mettle/matchers/core.hpp&gt;*
+{: .subtitle}
 
 ### anything()
 
@@ -37,6 +42,8 @@ prefix to `matcher`'s description. This helps provide useful output explaining
 what exactly `func` is doing to the expected value.
 
 ## Relational
+*&lt;mettle/matchers/relational.hpp&gt;*
+{: .subtitle}
 
 ### equal_to(*value*)
 
@@ -75,6 +82,8 @@ A matcher that returns `true` when the expected value is less than or equal to
 `value` according to the `<=` operator.
 
 ## Arithmetic
+*&lt;mettle/matchers/arithmetic.hpp&gt;*
+{: .subtitle}
 
 ### near_to(*value*[, *epsilon*])
 
@@ -100,6 +109,8 @@ A matcher that returns `true` when the expected value is approximately equal to
 `value`, specifically when `std::abs(actual - expected) <= tolerance`.
 
 ## Combinatoric
+*&lt;mettle/matchers/combinatoric.hpp&gt;*
+{: .subtitle}
 
 ### any(*matchers...*)
 
@@ -114,6 +125,8 @@ A matcher that returns `true` when *all of* its composed matchers are true.
 A matcher that returns `true` when *none of* its composed matchers are true.
 
 ## Collection
+*&lt;mettle/matchers/collection.hpp&gt;*
+{: .subtitle}
 
 ### member(*matcher*)
 
@@ -182,6 +195,8 @@ of the collection for the binary predicate `predicate` (or the equality operator
 if `predicate` isn't supplied).
 
 ## Exception
+*&lt;mettle/matchers/exception.hpp&gt;*
+{: .subtitle}
 
 Exception matchers work a bit differently from other matchers. Since we can't
 catch an exception after the fact, we have to pass a function to our
@@ -212,6 +227,8 @@ A matcher that returns `true` if an exception of type `Type` (or a subclass of
 `Type`) is thrown and whose value matches `matcher`.
 
 ## Death
+*&lt;mettle/matchers/death.hpp&gt;*
+{: .subtitle}
 
 !!! note
     These matchers are currently unusable on Windows. Sorry about that!
