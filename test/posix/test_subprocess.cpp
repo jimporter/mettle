@@ -128,7 +128,7 @@ suite<> test_subprocess("subprocess utilities", [](auto &_) {
     });
   });
 
-  _.test("make_fd_private", []() {
+  _.test("make_fd_private()", []() {
     scoped_pipe pipe;
     expect("open pipe", pipe.open(), equal_to(0));
     expect("make_fd_private", make_fd_private(STDOUT_FILENO),
