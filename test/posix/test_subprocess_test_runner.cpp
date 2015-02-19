@@ -13,15 +13,10 @@ using namespace mettle;
 #include "../test_event_logger.hpp"
 using namespace mettle::posix;
 
-struct sptr_factory {
-  template<typename T>
-  T make() {
-    return T(std::chrono::milliseconds(250));
-  }
-};
+using namespace std::literals::chrono_literals;
 
 suite<subprocess_test_runner>
-test_fork("subprocess_test_runner", sptr_factory{}, [](auto &_) {
+test_fork("subprocess_test_runner", bind_factory(250ms), [](auto &_) {
 
   subsuite<log::test_output>(_, "run one test", [](auto &_) {
 
@@ -78,7 +73,7 @@ test_fork("subprocess_test_runner", sptr_factory{}, [](auto &_) {
                                 log::test_output &output) {
       auto s = make_suite<>("inner", [](auto &_){
         _.test("test", []() {
-          std::this_thread::sleep_for(std::chrono::seconds(2));
+          std::this_thread::sleep_for(2s);
         });
       });
 
@@ -88,7 +83,7 @@ test_fork("subprocess_test_runner", sptr_factory{}, [](auto &_) {
 
       expect(result.passed, equal_to(false));
       expect(result.message, equal_to("Timed out after 250 ms"));
-      expect(now - then, less(std::chrono::seconds(1)));
+      expect(now - then, less(1s));
     });
 
     _.test("test with timed out child", [](subprocess_test_runner &runner,
@@ -102,7 +97,7 @@ test_fork("subprocess_test_runner", sptr_factory{}, [](auto &_) {
           if((pid = fork()) < 0)
             throw std::system_error(errno, std::system_category());
           if(pid == 0) {
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            std::this_thread::sleep_for(2s);
           }
         });
       });
@@ -117,7 +112,7 @@ test_fork("subprocess_test_runner", sptr_factory{}, [](auto &_) {
       auto now = std::chrono::steady_clock::now();
 
       expect(result.passed, equal_to(true));
-      expect(now - then, less(std::chrono::seconds(1)));
+      expect(now - then, less(1s));
     });
 
     _.test("test with timed out child in new process group",
@@ -131,7 +126,7 @@ test_fork("subprocess_test_runner", sptr_factory{}, [](auto &_) {
             // This will prevent the child process from being killed when the
             // parent is killed.
             setpgid(0, 0);
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            std::this_thread::sleep_for(2s);
           }
         });
       });
@@ -141,7 +136,7 @@ test_fork("subprocess_test_runner", sptr_factory{}, [](auto &_) {
       auto now = std::chrono::steady_clock::now();
 
       expect(result.passed, equal_to(true));
-      expect(now - then, less(std::chrono::seconds(1)));
+      expect(now - then, less(1s));
     });
 
     _.test("timed out test with timed out child",
@@ -152,7 +147,7 @@ test_fork("subprocess_test_runner", sptr_factory{}, [](auto &_) {
           if((pid = fork()) < 0)
             throw std::system_error(errno, std::system_category());
 
-          std::this_thread::sleep_for(std::chrono::seconds(2));
+          std::this_thread::sleep_for(2s);
         });
       });
 
@@ -162,7 +157,7 @@ test_fork("subprocess_test_runner", sptr_factory{}, [](auto &_) {
 
       expect(result.passed, equal_to(false));
       expect(result.message, equal_to("Timed out after 250 ms"));
-      expect(now - then, less(std::chrono::seconds(1)));
+      expect(now - then, less(1s));
     });
 
     _.test("test with stdout", [](subprocess_test_runner &runner,
