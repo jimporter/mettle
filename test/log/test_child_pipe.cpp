@@ -90,7 +90,7 @@ struct fixture {
   std::stringstream stream;
 };
 
-suite<fixture> test_child("test child logger", [](auto &_) {
+suite<fixture> test_child("child/pipe loggers", [](auto &_) {
 
   _.test("started_run()", [](fixture &f) {
     f.child.started_run();
