@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <mettle/driver/exit_code.hpp>
 #include <mettle/driver/windows/scoped_pipe.hpp>
 #include <mettle/driver/windows/subprocess.hpp>
 
@@ -112,10 +113,10 @@ namespace windows {
       return { false, ss.str() };
     }
     else {
-      DWORD exit_code;
-      if(!GetExitCodeProcess(proc_info.hProcess, &exit_code))
+      DWORD exit_status;
+      if(!GetExitCodeProcess(proc_info.hProcess, &exit_status))
         return failed();
-      return {exit_code == 0, message};
+      return {exit_status == exit_code::success, message};
     }
   }
 

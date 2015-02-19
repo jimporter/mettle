@@ -8,6 +8,7 @@
 
 #include <mettle/driver/run_tests.hpp>
 #include <mettle/driver/cmd_line.hpp>
+#include <mettle/driver/exit_code.hpp>
 #include <mettle/driver/log/child.hpp>
 #include <mettle/driver/log/summary.hpp>
 #include <mettle/driver/log/term.hpp>
@@ -86,14 +87,14 @@ namespace detail {
       opts::notify(vm);
     } catch(const std::exception &e) {
       report_error(argv[0], e.what());
-      return 2;
+      return exit_code::bad_args;
     }
 
     if(args.show_help) {
       opts::options_description displayed;
       displayed.add(generic).add(driver).add(output);
       std::cout << displayed << std::endl;
-      return 0;
+      return exit_code::success;
     }
 
 #ifdef _WIN32
@@ -102,14 +103,15 @@ namespace detail {
         report_error(
           argv[0], "--test-id and --log-fd must be specified together"
         );
-        return 3;
+        return exit_code::bad_args;
       }
       auto test = find_test(suites, *args.test_id);
       if(!test) {
         report_error(argv[0], "unable to find test");
-        return 3;
+        return exit_code::bad_args;
       }
-      return run_single_test(*test, *args.log_fd) ? 0 : 1;
+      return run_single_test(*test, *args.log_fd) ?
+             exit_code::success : exit_code::failure;
     }
 #endif
 
@@ -119,7 +121,7 @@ namespace detail {
         report_error(
           argv[0], "--timeout requires running tests in subprocesses"
         );
-        return 2;
+        return exit_code::bad_args;
       }
       runner = inline_test_runner;
     }
@@ -132,7 +134,7 @@ namespace detail {
         using namespace opts::command_line_style;
         report_error(argv[0], output_opt->canonical_display_name(allow_long) +
                               " can't be used with --output-fd");
-        return 2;
+        return exit_code::bad_args;
       }
 
       make_fd_private(*args.output_fd);
@@ -142,19 +144,19 @@ namespace detail {
       );
       log::child logger(fds);
       run_tests(suites, logger, runner, args.filters);
-      return 0;
+      return exit_code::success;
     }
 
     if(args.no_subproc && args.show_terminal) {
       report_error(
         argv[0], "--show-terminal requires running tests in subprocesses"
       );
-      return 2;
+      return exit_code::bad_args;
     }
 
     if(args.runs == 0) {
       report_error(argv[0], "no test runs, exiting");
-      return 1;
+      return exit_code::no_inputs;
     }
 
     try {
@@ -169,15 +171,15 @@ namespace detail {
         run_tests(suites, logger, runner, args.filters);
 
       logger.summarize();
-      return !logger.good();
+      return logger.good() ? exit_code::success : exit_code::failure;
     }
     catch(const std::out_of_range &e) {
       report_error(argv[0], "unknown output format \"" + args.output + "\"");
-      return 3;
+      return exit_code::bad_args;
     }
     catch(const std::exception &e) {
       report_error(argv[0], e.what());
-      return 3;
+      return exit_code::unknown_error;
     }
   }
 }

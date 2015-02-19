@@ -5,6 +5,7 @@ using namespace mettle;
 
 #include <fcntl.h>
 
+#include <mettle/driver/exit_code.hpp>
 #include <mettle/driver/posix/scoped_pipe.hpp>
 #include <mettle/driver/posix/scoped_signal.hpp>
 #include <mettle/driver/posix/subprocess.hpp>
@@ -34,7 +35,7 @@ suite<> test_subprocess("subprocess utilities", [](auto &_) {
         make_timeout_monitor(std::chrono::milliseconds(100));
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
         _exit(0);
-      }, exited(err_timeout));
+      }, exited(exit_code::timeout));
     });
   });
 

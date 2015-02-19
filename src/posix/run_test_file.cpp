@@ -8,6 +8,7 @@
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
 
+#include <mettle/driver/exit_code.hpp>
 #include <mettle/driver/posix/scoped_pipe.hpp>
 
 #include "../libmettle/posix/err_string.hpp"
@@ -36,10 +37,10 @@ namespace posix {
           "message", err
         );
         stream.flush();
-        _exit(0);
+        _exit(exit_code::success);
       }
       catch(...) {
-        _exit(128);
+        _exit(exit_code::fatal);
       }
     }
 
@@ -110,10 +111,10 @@ namespace posix {
       }
 
       if(WIFEXITED(status)) {
-        int exit_code = WEXITSTATUS(status);
-        if(exit_code) {
+        int exit_status = WEXITSTATUS(status);
+        if(exit_status != exit_code::success) {
           std::ostringstream ss;
-          ss << "Exited with status " << exit_code;
+          ss << "Exited with status " << exit_status;
           return {false, ss.str()};
         }
         else if(except) {

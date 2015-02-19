@@ -10,8 +10,6 @@
 namespace mettle {
 
 namespace posix {
-  constexpr const int err_timeout = 64;
-
   struct readfd {
     int fd;
     std::string *dest;

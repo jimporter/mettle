@@ -5,6 +5,7 @@
 #include <boost/program_options.hpp>
 
 #include <mettle/driver/cmd_line.hpp>
+#include <mettle/driver/exit_code.hpp>
 #include <mettle/driver/log/summary.hpp>
 #include <mettle/driver/log/term.hpp>
 
@@ -55,25 +56,25 @@ int main(int argc, const char *argv[]) {
     opts::notify(vm);
     child_args = filter_options(parsed, driver);
   } catch(const std::exception &e) {
-    mettle::report_error(e.what());
-    return 2;
+    report_error(e.what());
+    return exit_code::bad_args;
   }
 
   if(args.show_help) {
     opts::options_description displayed;
     displayed.add(generic).add(driver).add(output);
     std::cout << displayed << std::endl;
-    return 0;
+    return exit_code::success;
   }
 
   if(args.files.empty()) {
-    mettle::report_error("no inputs specified");
-    return 1;
+    report_error("no inputs specified");
+    return exit_code::no_inputs;
   }
 
   if(args.runs == 0) {
-    mettle::report_error("no test runs, exiting");
-    return 1;
+    report_error("no test runs, exiting");
+    return exit_code::no_inputs;
   }
 
   try {
@@ -88,14 +89,14 @@ int main(int argc, const char *argv[]) {
       run_test_files(args.files, logger, child_args);
 
     logger.summarize();
-    return !logger.good();
+    return logger.good() ? exit_code::success : exit_code::failure;
   }
   catch(const std::out_of_range &e) {
-    mettle::report_error("unknown output format \"" + args.output + "\"");
-    return 3;
+    report_error("unknown output format \"" + args.output + "\"");
+    return exit_code::bad_args;
   }
   catch(const std::exception &e) {
-    mettle::report_error(e.what());
-    return 3;
+    report_error(e.what());
+    return exit_code::unknown_error;
   }
 }

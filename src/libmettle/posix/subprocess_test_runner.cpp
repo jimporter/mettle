@@ -5,6 +5,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 
+#include <mettle/driver/exit_code.hpp>
 #include <mettle/driver/posix/scoped_pipe.hpp>
 #include <mettle/driver/posix/scoped_signal.hpp>
 #include <mettle/driver/posix/subprocess.hpp>
@@ -39,7 +40,7 @@ namespace posix {
     }
 
     [[noreturn]] inline void child_failed() {
-      _exit(128);
+      _exit(exit_code::fatal);
     }
   }
 
@@ -101,7 +102,7 @@ namespace posix {
 
       fflush(nullptr);
 
-      _exit(!result.passed);
+      _exit(result.passed ? exit_code::success : exit_code::failure);
     }
     else {
       scoped_sigaction sigint, sigquit, sigchld;
@@ -157,14 +158,14 @@ namespace posix {
       test_pgid = 0;
 
       if(WIFEXITED(status)) {
-        int exit_code = WEXITSTATUS(status);
-        if(exit_code == err_timeout) {
+        int exit_status = WEXITSTATUS(status);
+        if(exit_status == exit_code::timeout) {
           std::ostringstream ss;
           ss << "Timed out after " << timeout_->count() << " ms";
           return { false, ss.str() };
         }
         else {
-          return { exit_code == 0, message };
+          return { exit_status == exit_code::success, message };
         }
       }
       else { // WIFSIGNALED
