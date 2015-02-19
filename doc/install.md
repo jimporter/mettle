@@ -41,8 +41,9 @@ command-line arguments described in [Running Tests](running-tests.md).
 
 !!! note
     Currently, the build system requires `make` and only works with compilers
-    with `cc`-like arguments, so Visual Studio users are currently on their own
-    for building. This will be fixed before 1.0 is released. Until then, sorry!
+    with `cc`-like arguments, so Visual Studio users are on their own for
+    building for now. This will be fixed before 1.0 is released. Until then,
+    sorry!
 
 Once you've installed all of mettle's dependencies, you can build mettle itself!
 If you've already set up your environment variables to use clang (or whatever
