@@ -72,8 +72,9 @@ namespace detail {
     }
   }
 
-  template<typename Char, typename Traits>
-  std::basic_string<Char, Traits>
+  template<typename Char, typename Traits,
+           typename Alloc = std::allocator<Char>>
+  std::basic_string<Char, Traits, Alloc>
   escape_str(const METTLE_STRING_VIEW<Char, Traits> &s, Char delim = '"') {
     std::basic_ostringstream<Char, Traits> ss;
     ss << std::hex << delim;
@@ -83,22 +84,27 @@ namespace detail {
     return ss.str();
   }
 
-  template<typename Char, typename Traits>
+  template<typename Char, typename Traits, typename Alloc>
   std::basic_string<Char, Traits>
-  escape_str(const std::basic_string<Char, Traits> &s, Char delim = '"') {
-    return escape_str(METTLE_STRING_VIEW<Char, Traits>(s), delim);
+  escape_str(const std::basic_string<Char, Traits, Alloc> &s,
+             Char delim = '"') {
+    return escape_str<Char, Traits, Alloc>(
+      METTLE_STRING_VIEW<Char, Traits>(s), delim
+    );
   }
 
-  template<typename Char>
-  std::basic_string<Char>
+  template<typename Char, typename Traits = std::char_traits<Char>,
+           typename Alloc = std::allocator<Char>>
+  std::basic_string<Char, Traits, Alloc>
   escape_str(const Char *s, Char delim = '"') {
-    return escape_str(METTLE_STRING_VIEW<Char>(s), delim);
+    return escape_str<Char, Traits, Alloc>(METTLE_STRING_VIEW<Char>(s), delim);
   }
 
-  template<typename Char = char>
-  std::basic_string<Char>
+  template<typename Char = char, typename Traits = std::char_traits<Char>,
+           typename Alloc = std::allocator<Char>>
+  std::basic_string<Char, Traits, Alloc>
   null_str() {
-    std::basic_ostringstream<Char> ss;
+    std::basic_ostringstream<Char, Traits, Alloc> ss;
     ss << static_cast<const void *>(nullptr);
     return ss.str();
   }
@@ -140,23 +146,31 @@ inline std::string to_printable(std::nullptr_t) {
   return "nullptr";
 }
 
-inline std::string to_printable(const std::string &s) {
+template<typename Traits, typename Alloc>
+inline std::string
+to_printable(const std::basic_string<char, Traits, Alloc> &s) {
   return detail::escape_str(s);
 }
 
 #ifdef METTLE_HAS_CODECVT
 
-inline std::string to_printable(const std::wstring &s) {
+template<typename Traits, typename Alloc>
+inline std::string
+to_printable(const std::basic_string<wchar_t, Traits, Alloc> &s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
   return detail::escape_str(conv.to_bytes(s));
 }
 
-inline std::string to_printable(const std::u16string &s) {
+template<typename Traits, typename Alloc>
+inline std::string
+to_printable(const std::basic_string<char16_t, Traits, Alloc> &s) {
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
   return detail::escape_str(conv.to_bytes(s));
 }
 
-inline std::string to_printable(const std::u32string &s) {
+template<typename Traits, typename Alloc>
+inline std::string
+to_printable(const std::basic_string<char32_t, Traits, Alloc> &s) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
   return detail::escape_str(conv.to_bytes(s));
 }
