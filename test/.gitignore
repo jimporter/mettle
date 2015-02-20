@@ -18,8 +18,10 @@ test_suite_execution
 test_test_caller
 test_test_file
 test_tuple_algorithm
+log/test_brief
 log/test_child_pipe
 log/test_indent
+log/test_verbose
 posix/test_scoped_pipe
 posix/test_scoped_signal
 posix/test_subprocess
