@@ -202,12 +202,14 @@ suite<> output("debug output", [](auto &_){
     subsuite<>(_, "strings", [](auto &_) {
       _.test("char", []() {
         expect('x', stringified("'x'"));
+        expect('\0', stringified("'\\0'"));
         expect('\n', stringified("'\\n'"));
         expect('\x1f', stringified("'\\x1f'"));
 
         expect("text", stringified("\"text\""));
         expect("text\nmore", stringified("\"text\\nmore\""));
         expect(std::string("text"), stringified("\"text\""));
+        expect(std::string{'a', '\0', 'b'}, stringified("\"a\\0b\""));
 
         char s[] = "text";
         expect(s, stringified("\"text\""));
@@ -224,6 +226,7 @@ suite<> output("debug output", [](auto &_){
       _.test("signed char", []() {
         expect(static_cast<signed char>('x'), stringified("'x'"));
         expect(static_cast<signed char>('\n'), stringified("'\\n'"));
+        expect(static_cast<signed char>('\0'), stringified("'\\0'"));
         expect(static_cast<signed char>('\x1f'), stringified("'\\x1f'"));
 
         signed char s[] = "text";
@@ -241,6 +244,7 @@ suite<> output("debug output", [](auto &_){
       _.test("unsigned char", []() {
         expect(static_cast<unsigned char>('x'), stringified("'x'"));
         expect(static_cast<unsigned char>('\n'), stringified("'\\n'"));
+        expect(static_cast<unsigned char>('\0'), stringified("'\\0'"));
         expect(static_cast<unsigned char>('\x1f'), stringified("'\\x1f'"));
 
         unsigned char s[] = "text";
@@ -263,11 +267,13 @@ suite<> output("debug output", [](auto &_){
       _.test("wchar_t", skip_if_no_codecvt, []() {
         expect(L'x', stringified("'x'"));
         expect(L'\n', stringified("'\\n'"));
+        expect(L'\0', stringified("'\\0'"));
         expect(L'\x1f', stringified("'\\x1f'"));
 
         expect(L"text", stringified("\"text\""));
         expect(L"text\nmore", stringified("\"text\\nmore\""));
         expect(std::wstring(L"text"), stringified("\"text\""));
+        expect(std::wstring{L'a', L'\0', L'b'}, stringified("\"a\\0b\""));
 
         wchar_t s[] = L"text";
         expect(s, stringified("\"text\""));
@@ -284,11 +290,13 @@ suite<> output("debug output", [](auto &_){
       _.test("char16_t", skip_if_no_codecvt, []() {
         expect(u'x', stringified("'x'"));
         expect(u'\n', stringified("'\\n'"));
+        expect(u'\0', stringified("'\\0'"));
         expect(u'\x1f', stringified("'\\x1f'"));
 
         expect(u"text", stringified("\"text\""));
         expect(u"text\nmore", stringified("\"text\\nmore\""));
         expect(std::u16string(u"text"), stringified("\"text\""));
+        expect(std::u16string{u'a', u'\0', u'b'}, stringified("\"a\\0b\""));
 
         char16_t s[] = u"text";
         expect(s, stringified("\"text\""));
@@ -305,11 +313,13 @@ suite<> output("debug output", [](auto &_){
       _.test("char32_t", skip_if_no_codecvt, []() {
         expect(U'x', stringified("'x'"));
         expect(U'\n', stringified("'\\n'"));
+        expect(U'\0', stringified("'\\0'"));
         expect(U'\x1f', stringified("'\\x1f'"));
 
         expect(U"text", stringified("\"text\""));
         expect(U"text\nmore", stringified("\"text\\nmore\""));
         expect(std::u32string(U"text"), stringified("\"text\""));
+        expect(std::u32string{U'a', U'\0', U'b'}, stringified("\"a\\0b\""));
 
         char32_t s[] = U"text";
         expect(s, stringified("\"text\""));
