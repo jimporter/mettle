@@ -147,6 +147,8 @@
         
             <li><a href="#arithmetic">Arithmetic</a></li>
         
+            <li><a href="#regular-expression">Regular expression</a></li>
+        
             <li><a href="#combinatoric">Combinatoric</a></li>
         
             <li><a href="#collection">Collection</a></li>
@@ -236,6 +238,23 @@ zero. In that case, use <code>near_to_abs</code>.</p>
 <h3 id="near_to_absvalue-tolerance">near_to_abs(<em>value</em>, <em>tolerance</em>)</h3>
 <p>A matcher that returns <code>true</code> when the expected value is approximately equal to
 <code>value</code>, specifically when <code>std::abs(actual - expected) &lt;= tolerance</code>.</p>
+<h2 id="regular-expression">Regular expression</h2>
+<p class="subtitle"><em>&lt;mettle/matchers/regex.hpp&gt;</em></p>
+<h3 id="regex_matchex-syntax-match">regex_match(<em>ex</em>[, <em>syntax</em>, <em>match</em>])</h3>
+<p>A matcher that returns <code>true</code> if the regex <code>ex</code> matches the entirety of the
+actual value. If <code>syntax</code> or <code>match</code> are specified, the matcher uses those for
+the regex's syntax and match flags, respectively.</p>
+<h3 id="regex_searchex-syntax-match">regex_search(<em>ex</em>[, <em>syntax</em>, <em>match</em>])</h3>
+<p>A matcher that returns <code>true</code> if the regex <code>ex</code> matches a subsequence of the
+actual value. If <code>syntax</code> or <code>match</code> are specified, the matcher uses those for
+the regex's syntax and match flags, respectively.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since <code>std::regex</code> objects don't provide access to a string representation
+of the expression, the <code>ex</code> parameter in the above matchers should be a
+string, not a regex. This allows the matcher to print the regex to the
+console if the matcher fails.</p>
+</div>
 <h2 id="combinatoric">Combinatoric</h2>
 <p class="subtitle"><em>&lt;mettle/matchers/combinatoric.hpp&gt;</em></p>
 <h3 id="anymatchers">any(<em>matchers...</em>)</h3>
