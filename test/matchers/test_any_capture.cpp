@@ -1,7 +1,7 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-#include "copy_counter.hpp"
+#include "../copy_counter.hpp"
 
 void func() {}
 

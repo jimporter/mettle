@@ -1,7 +1,7 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-#include "helpers.hpp"
+#include "../helpers.hpp"
 
 template<typename T>
 struct mock_test {

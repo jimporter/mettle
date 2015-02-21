@@ -3,7 +3,7 @@ using namespace mettle;
 
 #include <mettle/driver/cmd_line.hpp>
 #include <boost/program_options.hpp>
-#include "helpers.hpp"
+#include "../helpers.hpp"
 
 auto match_filter_item(attr_instance attr, bool matched) {
   std::ostringstream ss;

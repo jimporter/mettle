@@ -13,7 +13,7 @@ ifndef TMPDIR
   TMPDIR := /tmp
 endif
 
-TEST_DIRS := test test/log test/posix
+TEST_DIRS := $(filter-out test/windows,$(shell find test -type d))
 TESTS := $(patsubst %.cpp,%,$(foreach d,$(TEST_DIRS),$(wildcard $(d)/*.cpp)))
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
 HEADER_ONLY_EXAMPLES := examples/test_header_only
@@ -45,11 +45,10 @@ all: mettle libmettle.so
 	@rm -f $(TEMP)
 
 TEST_LDFLAGS := $(LDFLAGS)
-test/test_child test/test_cmd_line test/test_test_file: \
+test/driver/test_cmd_line test/driver/test_test_file: \
   TEST_LDFLAGS += -lboost_program_options
-test/test_child: TEST_LDFLAGS += -lboost_iostreams
 test/posix/test_subprocess: TEST_LDFLAGS += -lpthread
-test/test_test_file: src/test_file.o
+test/driver/test_test_file: src/test_file.o
 
 $(TESTS) $(filter-out $(HEADER_ONLY_EXAMPLES),$(EXAMPLES)): %: %.o libmettle.so
 	$(CXX) $(CXXFLAGS) $(filter %.o,$^) -L. -lmettle $(TEST_LDFLAGS) -o $@

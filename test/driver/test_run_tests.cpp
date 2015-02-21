@@ -1,8 +1,8 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-#include "test_event_logger.hpp"
 #include <mettle/driver/run_tests.hpp>
+#include "../test_event_logger.hpp"
 
 suite<test_event_logger> test_run_tests("run_tests", [](auto &_) {
 

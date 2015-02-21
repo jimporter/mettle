@@ -1,7 +1,7 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-#include "helpers.hpp"
+#include "../helpers.hpp"
 
 suite<> test_attr("attributes", [](auto &_) {
   _.test("unite(attr_instance, attr_instance) checks attributes", []() {

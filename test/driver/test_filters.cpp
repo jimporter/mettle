@@ -2,7 +2,7 @@
 using namespace mettle;
 
 #include <mettle/driver/filters.hpp>
-#include "helpers.hpp"
+#include "../helpers.hpp"
 
 suite<> test_core_filters("core filters", [](auto &_) {
   subsuite<>(_, "default_filter", [](auto &_) {

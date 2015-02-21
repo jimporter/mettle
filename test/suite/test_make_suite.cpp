@@ -5,7 +5,7 @@ using namespace mettle;
 #include <sstream>
 #include <stdexcept>
 
-#include "helpers.hpp"
+#include "../helpers.hpp"
 
 namespace mettle {
   template<typename T>
