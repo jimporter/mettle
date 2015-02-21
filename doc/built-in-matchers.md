@@ -108,6 +108,28 @@ If `epsilon` is not specified, it defaults to
 A matcher that returns `true` when the expected value is approximately equal to
 `value`, specifically when `std::abs(actual - expected) <= tolerance`.
 
+## Regular expression
+*&lt;mettle/matchers/regex.hpp&gt;*
+{: .subtitle}
+
+### regex_match(*ex*[, *syntax*, *match*])
+
+A matcher that returns `true` if the regex `ex` matches the entirety of the
+actual value. If `syntax` or `match` are specified, the matcher uses those for
+the regex's syntax and match flags, respectively.
+
+### regex_search(*ex*[, *syntax*, *match*])
+
+A matcher that returns `true` if the regex `ex` matches a subsequence of the
+actual value. If `syntax` or `match` are specified, the matcher uses those for
+the regex's syntax and match flags, respectively.
+
+!!! note
+    Since `std::regex` objects don't provide access to a string representation
+    of the expression, the `ex` parameter in the above matchers should be a
+    string, not a regex. This allows the matcher to print the regex to the
+    console if the matcher fails.
+
 ## Combinatoric
 *&lt;mettle/matchers/combinatoric.hpp&gt;*
 {: .subtitle}

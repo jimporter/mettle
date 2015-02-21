@@ -256,6 +256,42 @@ suite<> test_matchers("matchers", [](auto &_) {
     });
   });
 
+  subsuite<>(_, "regex", [](auto &_) {
+    _.test("regex_match()", []() {
+      using namespace std::regex_constants;
+
+      expect("text", regex_match("t.{2}t"));
+      expect("some text", is_not(regex_match("t.{2}t")));
+      expect("txt", is_not(regex_match("t.{2}t")));
+
+      expect("Text", regex_match("t.{2}t", icase));
+      expect("text", is_not(regex_search(
+        "t.{2}t\\b", ECMAScript, match_not_eow
+      )));
+
+      expect(regex_match("t.{2}t").desc(), equal_to("matched /t.{2}t/"));
+      expect(regex_match("t.{2}t", icase).desc(),
+             equal_to("matched /t.{2}t/i"));
+    });
+
+    _.test("regex_search()", []() {
+      using namespace std::regex_constants;
+
+      expect("text", regex_search("t.{2}t"));
+      expect("some text", regex_search("t.{2}t"));
+      expect("txt", is_not(regex_search("t.{2}t")));
+
+      expect("Some Text", regex_search("t.{2}t", icase));
+      expect("some text", is_not(regex_search(
+        "t.{2}t\\b", ECMAScript, match_not_eow
+      )));
+
+      expect(regex_search("t.{2}t").desc(), equal_to("searched /t.{2}t/"));
+      expect(regex_search("t.{2}t", icase).desc(),
+             equal_to("searched /t.{2}t/i"));
+    });
+  });
+
   subsuite<>(_, "combinatoric", [](auto &_) {
     _.test("any()", []() {
       expect(123, any(equal_to(1), equal_to(2), equal_to(123)));
