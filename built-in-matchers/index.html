@@ -194,7 +194,7 @@ what exactly <code>func</code> is doing to the expected value.</p>
 <h2 id="relational">Relational</h2>
 <p class="subtitle"><em>&lt;mettle/matchers/relational.hpp&gt;</em></p>
 <h3 id="equal_tovalue">equal_to(<em>value</em>)</h3>
-<p>A matcher that returns <code>true</code> when the expected value is equal to <code>value</code>
+<p>A matcher that returns <code>true</code> when the actual value is equal to <code>value</code>
 according to the <code>==</code> operator.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -204,24 +204,24 @@ converted to <code>equal_to(value)</code>. This doesn't work for the root matche
 need to explicitly say <code>equal_to(value)</code> in that case.</p>
 </div>
 <h3 id="not_equal_tovalue">not_equal_to(<em>value</em>)</h3>
-<p>A matcher that returns <code>true</code> when the expected value is not equal to <code>value</code>
+<p>A matcher that returns <code>true</code> when the actual value is not equal to <code>value</code>
 according to the <code>!=</code> operator.</p>
 <h3 id="greatervalue">greater(<em>value</em>)</h3>
-<p>A matcher that returns <code>true</code> when the expected value is greater than <code>value</code>
+<p>A matcher that returns <code>true</code> when the actual value is greater than <code>value</code>
 according to the <code>&gt;</code> operator.</p>
 <h3 id="greater_equalvalue">greater_equal(<em>value</em>)</h3>
-<p>A matcher that returns <code>true</code> when the expected value is greater than or equal
-to <code>value</code> according to the <code>&gt;=</code> operator.</p>
+<p>A matcher that returns <code>true</code> when the actual value is greater than or equal to
+<code>value</code> according to the <code>&gt;=</code> operator.</p>
 <h3 id="lessvalue">less(<em>value</em>)</h3>
-<p>A matcher that returns <code>true</code> when the expected value is less than <code>value</code>
+<p>A matcher that returns <code>true</code> when the actual value is less than <code>value</code>
 according to the <code>&lt;</code> operator.</p>
 <h3 id="less_equalvalue">less_equal(<em>value</em>)</h3>
-<p>A matcher that returns <code>true</code> when the expected value is less than or equal to
+<p>A matcher that returns <code>true</code> when the actual value is less than or equal to
 <code>value</code> according to the <code>&lt;=</code> operator.</p>
 <h2 id="arithmetic">Arithmetic</h2>
 <p class="subtitle"><em>&lt;mettle/matchers/arithmetic.hpp&gt;</em></p>
 <h3 id="near_tovalue-epsilon">near_to(<em>value</em>[, <em>epsilon</em>])</h3>
-<p>A matcher that returns <code>true</code> when the expected value is approximately equal to
+<p>A matcher that returns <code>true</code> when the actual value is approximately equal to
 <code>value</code>, specifically when:</p>
 <pre><code class="c++">auto mag = std::max&lt;T&gt;(std::abs(expected), std::abs(actual));
 std::abs(actual - expected) &lt;= mag * epsilon;
@@ -236,7 +236,7 @@ approximately equal, this matcher will likely fail if one of the values is
 zero. In that case, use <code>near_to_abs</code>.</p>
 </div>
 <h3 id="near_to_absvalue-tolerance">near_to_abs(<em>value</em>, <em>tolerance</em>)</h3>
-<p>A matcher that returns <code>true</code> when the expected value is approximately equal to
+<p>A matcher that returns <code>true</code> when the actual value is approximately equal to
 <code>value</code>, specifically when <code>std::abs(actual - expected) &lt;= tolerance</code>.</p>
 <h2 id="regular-expression">Regular expression</h2>
 <p class="subtitle"><em>&lt;mettle/matchers/regex.hpp&gt;</em></p>
@@ -289,8 +289,8 @@ instead.</p>
 </div>
 <h3 id="eachbegin-end-meta_matcher">each(<em>begin</em>, <em>end</em>, <em>meta_matcher</em>)</h3>
 <p>A matcher that returns <code>true</code> when each item in a collection matches the
-corresponding item in the range [<code>begin</code>, <code>end</code>) according to the matcher built
-from <code>meta_matcher</code>.</p>
+corresponding item in the range [<code>begin</code>, <code>end</code>) according to the matcher
+built from <code>meta_matcher</code>.</p>
 <h3 id="arraymatchers">array(<em>matchers...</em>)</h3>
 <p>A matcher that returns <code>true</code> when the <em>ith</em> item in a collection matches the
 <em>ith</em> composed matcher, <em>and</em> the number of items in the collection is equal to
