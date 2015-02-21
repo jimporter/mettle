@@ -47,7 +47,7 @@ what exactly `func` is doing to the expected value.
 
 ### equal_to(*value*)
 
-A matcher that returns `true` when the expected value is equal to `value`
+A matcher that returns `true` when the actual value is equal to `value`
 according to the `==` operator.
 
 !!! note
@@ -58,27 +58,27 @@ according to the `==` operator.
 
 ### not_equal_to(*value*)
 
-A matcher that returns `true` when the expected value is not equal to `value`
+A matcher that returns `true` when the actual value is not equal to `value`
 according to the `!=` operator.
 
 ### greater(*value*)
 
-A matcher that returns `true` when the expected value is greater than `value`
+A matcher that returns `true` when the actual value is greater than `value`
 according to the `>` operator.
 
 ### greater_equal(*value*)
 
-A matcher that returns `true` when the expected value is greater than or equal
-to `value` according to the `>=` operator.
+A matcher that returns `true` when the actual value is greater than or equal to
+`value` according to the `>=` operator.
 
 ### less(*value*)
 
-A matcher that returns `true` when the expected value is less than `value`
+A matcher that returns `true` when the actual value is less than `value`
 according to the `<` operator.
 
 ### less_equal(*value*)
 
-A matcher that returns `true` when the expected value is less than or equal to
+A matcher that returns `true` when the actual value is less than or equal to
 `value` according to the `<=` operator.
 
 ## Arithmetic
@@ -87,7 +87,7 @@ A matcher that returns `true` when the expected value is less than or equal to
 
 ### near_to(*value*[, *epsilon*])
 
-A matcher that returns `true` when the expected value is approximately equal to
+A matcher that returns `true` when the actual value is approximately equal to
 `value`, specifically when:
 
 ```c++
@@ -105,7 +105,7 @@ If `epsilon` is not specified, it defaults to
 
 ### near_to_abs(*value*, *tolerance*)
 
-A matcher that returns `true` when the expected value is approximately equal to
+A matcher that returns `true` when the actual value is approximately equal to
 `value`, specifically when `std::abs(actual - expected) <= tolerance`.
 
 ## Regular expression
@@ -181,8 +181,8 @@ array( meta_matcher(range[0]), meta_matcher(range[1]), ...
 ### each(*begin*, *end*, *meta_matcher*)
 
 A matcher that returns `true` when each item in a collection matches the
-corresponding item in the range \[`begin`, `end`\) according to the matcher built
-from `meta_matcher`.
+corresponding item in the range \[`begin`, `end`\) according to the matcher
+built from `meta_matcher`.
 
 ### array(*matchers...*)
 
