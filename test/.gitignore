@@ -11,13 +11,15 @@ test_make_suite
 test_matchers
 test_match_result
 test_object_factory
-test_output
 test_run_tests
 test_string_algorithm
+test_string_output
 test_suite_execution
 test_test_caller
 test_test_file
+test_to_printable
 test_tuple_algorithm
+test_type_name
 log/test_brief
 log/test_child_pipe
 log/test_indent

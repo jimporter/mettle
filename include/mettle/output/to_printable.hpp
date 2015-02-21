@@ -7,35 +7,11 @@
 #include <sstream>
 #include <string>
 
+#include "string.hpp"
 #include "traits.hpp"
 #include "type_name.hpp"
 #include "../detail/string_algorithm.hpp"
 #include "../detail/tuple_algorithm.hpp"
-
-// Try to use N4082's string_view class, or fall back to Boost's.
-#ifdef __has_include
-#  if __has_include(<experimental/string_view>)
-#    include <experimental/string_view>
-#    define METTLE_STRING_VIEW std::experimental::basic_string_view
-#  else
-#    include <boost/utility/string_ref.hpp>
-#    define METTLE_STRING_VIEW boost::basic_string_ref
-#  endif
-#else
-#  include <boost/utility/string_ref.hpp>
-#  define METTLE_STRING_VIEW boost::basic_string_ref
-#endif
-
-// Check if we have the <codecvt> header (GCC currently doesn't).
-#ifdef __has_include
-#  if __has_include(<codecvt>)
-#    define METTLE_HAS_CODECVT
-#    include <codecvt>
-#  endif
-#elif defined _MSC_VER
-#  define METTLE_HAS_CODECVT
-#  include <codecvt>
-#endif
 
 // XXX: Remove this when MSVC supports "optional" constexpr on templates.
 #if !defined(_MSC_VER) || defined(__clang__)
@@ -45,70 +21,6 @@
 #endif
 
 namespace mettle {
-
-namespace detail {
-  template<typename Char, typename Traits>
-  void escape_char(std::basic_ostream<Char, Traits> &os, Char c, Char delim) {
-    const char escape = '\\';
-    if(c < 32 || c == 0x7f) {
-      os << escape;
-      switch(c) {
-      case '\0': os << os.widen('0'); break;
-      case '\a': os << os.widen('a'); break;
-      case '\b': os << os.widen('b'); break;
-      case '\f': os << os.widen('f'); break;
-      case '\n': os << os.widen('n'); break;
-      case '\r': os << os.widen('r'); break;
-      case '\t': os << os.widen('t'); break;
-      case '\v': os << os.widen('v'); break;
-      default:   os << os.widen('x') << static_cast<unsigned long>(c);
-      }
-    }
-    else if(c == delim || c == escape) {
-      os << escape << c;
-    }
-    else {
-      os << c;
-    }
-  }
-
-  template<typename Char, typename Traits,
-           typename Alloc = std::allocator<Char>>
-  std::basic_string<Char, Traits, Alloc>
-  escape_str(const METTLE_STRING_VIEW<Char, Traits> &s, Char delim = '"') {
-    std::basic_ostringstream<Char, Traits> ss;
-    ss << std::hex << delim;
-    for(const auto &c : s)
-      escape_char(ss, c, delim);
-    ss << delim;
-    return ss.str();
-  }
-
-  template<typename Char, typename Traits, typename Alloc>
-  std::basic_string<Char, Traits>
-  escape_str(const std::basic_string<Char, Traits, Alloc> &s,
-             Char delim = '"') {
-    return escape_str<Char, Traits, Alloc>(
-      METTLE_STRING_VIEW<Char, Traits>(s), delim
-    );
-  }
-
-  template<typename Char, typename Traits = std::char_traits<Char>,
-           typename Alloc = std::allocator<Char>>
-  std::basic_string<Char, Traits, Alloc>
-  escape_str(const Char *s, Char delim = '"') {
-    return escape_str<Char, Traits, Alloc>(METTLE_STRING_VIEW<Char>(s), delim);
-  }
-
-  template<typename Char = char, typename Traits = std::char_traits<Char>,
-           typename Alloc = std::allocator<Char>>
-  std::basic_string<Char, Traits, Alloc>
-  null_str() {
-    std::basic_ostringstream<Char, Traits, Alloc> ss;
-    ss << static_cast<const void *>(nullptr);
-    return ss.str();
-  }
-}
 
 // The to_printable overloads below are rather complicated, to say the least; we
 // need to be extra-careful to ensure that things which are convertible to bool
@@ -146,64 +58,42 @@ inline std::string to_printable(std::nullptr_t) {
   return "nullptr";
 }
 
-template<typename Traits, typename Alloc>
+template<typename Char, typename Traits, typename Alloc>
 inline std::string
-to_printable(const std::basic_string<char, Traits, Alloc> &s) {
-  return detail::escape_str(s);
+to_printable(const std::basic_string<Char, Traits, Alloc> &s) {
+  return escape_string(string_convert(s));
 }
 
-#ifdef METTLE_HAS_CODECVT
-
-template<typename Traits, typename Alloc>
+template<typename Char, typename Traits>
 inline std::string
-to_printable(const std::basic_string<wchar_t, Traits, Alloc> &s) {
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
-  return detail::escape_str(conv.to_bytes(s));
+to_printable(const METTLE_STRING_VIEW<Char, Traits> &s) {
+  return escape_string(string_convert(s));
 }
-
-template<typename Traits, typename Alloc>
-inline std::string
-to_printable(const std::basic_string<char16_t, Traits, Alloc> &s) {
-  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
-  return detail::escape_str(conv.to_bytes(s));
-}
-
-template<typename Traits, typename Alloc>
-inline std::string
-to_printable(const std::basic_string<char32_t, Traits, Alloc> &s) {
-  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-  return detail::escape_str(conv.to_bytes(s));
-}
-
-#endif
 
 inline std::string to_printable(char c) {
-  return detail::escape_str(std::string(1, c), '\'');
+  return escape_string(std::string(1, c), '\'');
 }
 
 inline std::string to_printable(unsigned char c) {
-  return detail::escape_str(std::string(1, c), '\'');
+  return escape_string(std::string(1, c), '\'');
 }
 
 inline std::string to_printable(signed char c) {
-  return detail::escape_str(std::string(1, c), '\'');
+  return escape_string(std::string(1, c), '\'');
 }
 
 #ifdef METTLE_HAS_CODECVT
 
 inline std::string to_printable(wchar_t c) {
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
-  return detail::escape_str(conv.to_bytes(std::wstring(1, c)), '\'');
+  return escape_string(string_convert(std::wstring(1, c)), '\'');
 }
 
 inline std::string to_printable(char16_t c) {
-  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
-  return detail::escape_str(conv.to_bytes(std::u16string(1, c)), '\'');
+  return escape_string(string_convert(std::u16string(1, c)), '\'');
 }
 
 inline std::string to_printable(char32_t c) {
-  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-  return detail::escape_str(conv.to_bytes(std::u32string(1, c)), '\'');
+  return escape_string(string_convert(std::u32string(1, c)), '\'');
 }
 
 #endif
@@ -241,37 +131,34 @@ inline auto to_printable_boolish(Ret (*)(Args...)) {
 
 inline std::string to_printable_boolish(const char *s) {
   if(!s) return detail::null_str();
-  return detail::escape_str(s);
+  return escape_string(s);
 }
 
 inline std::string to_printable_boolish(const unsigned char *s) {
   if(!s) return detail::null_str();
-  return detail::escape_str(reinterpret_cast<const char*>(s));
+  return escape_string(reinterpret_cast<const char*>(s));
 }
 
 inline std::string to_printable_boolish(const signed char *s) {
   if(!s) return detail::null_str();
-  return detail::escape_str(reinterpret_cast<const char*>(s));
+  return escape_string(reinterpret_cast<const char*>(s));
 }
 
 #ifdef METTLE_HAS_CODECVT
 
 inline std::string to_printable_boolish(const wchar_t *s) {
   if(!s) return detail::null_str();
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
-  return detail::escape_str(conv.to_bytes(s));
+  return escape_string(string_convert(s));
 }
 
 inline std::string to_printable_boolish(const char16_t *s) {
   if(!s) return detail::null_str();
-  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
-  return detail::escape_str(conv.to_bytes(s));
+  return escape_string(string_convert(s));
 }
 
 inline std::string to_printable_boolish(const char32_t *s) {
   if(!s) return detail::null_str();
-  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-  return detail::escape_str(conv.to_bytes(s));
+  return escape_string(string_convert(s));
 }
 
 #endif
