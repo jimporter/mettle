@@ -3,12 +3,14 @@ test_string_algorithm
 test_tuple_algorithm
 driver/test_cmd_line
 driver/test_filters
-driver/test_indent
 driver/test_object_factory
 driver/test_run_tests
 driver/test_test_file
 driver/log/test_brief
 driver/log/test_child_pipe
+driver/log/test_indent
+driver/log/test_simple_summary
+driver/log/test_summary
 driver/log/test_verbose
 posix/test_scoped_pipe
 posix/test_scoped_signal

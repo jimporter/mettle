@@ -4,6 +4,8 @@ using namespace mettle;
 #include <mettle/driver/log/brief.hpp>
 #include <mettle/driver/log/indent.hpp>
 
+#include "log_runs.hpp"
+
 struct logger_factory {
   logger_factory() : is(ss), logger(is) {}
   std::ostringstream ss;
@@ -65,5 +67,20 @@ suite<logger_factory> test_brief("brief logger", [](auto &_) {
   _.test("failed_file()", [](logger_factory &f) {
     f.logger.failed_file("test_file", "error");
     expect(f.ss.str(), equal_to("X"));
+  });
+
+  _.test("passing run", [](logger_factory &f) {
+    passing_run(f.logger);
+    expect(f.ss.str(), equal_to("...\n"));
+  });
+
+  _.test("failing run", [](logger_factory &f) {
+    failing_run(f.logger);
+    expect(f.ss.str(), equal_to("._!\n"));
+  });
+
+  _.test("failing file run", [](logger_factory &f) {
+    failing_file_run(f.logger);
+    expect(f.ss.str(), equal_to("._X!\n"));
   });
 });
