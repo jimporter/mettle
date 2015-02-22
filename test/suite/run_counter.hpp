@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_TEST_RUN_COUNTER_HPP
-#define INC_METTLE_TEST_RUN_COUNTER_HPP
+#ifndef INC_METTLE_TEST_SUITE_RUN_COUNTER_HPP
+#define INC_METTLE_TEST_SUITE_RUN_COUNTER_HPP
 
 #include <cstdint>
 #include <functional>
