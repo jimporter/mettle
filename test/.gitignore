@@ -17,6 +17,7 @@ posix/test_scoped_pipe
 posix/test_scoped_signal
 posix/test_subprocess
 posix/test_subprocess_test_runner
+posix/test_term
 output/test_string_output
 output/test_to_printable
 output/test_type_name

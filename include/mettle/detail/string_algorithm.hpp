@@ -3,7 +3,7 @@
 
 #include <initializer_list>
 #include <iterator>
-#include <ostream>
+#include <sstream>
 #include <string>
 
 namespace mettle {
