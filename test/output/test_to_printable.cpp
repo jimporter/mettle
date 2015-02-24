@@ -9,11 +9,17 @@ auto stringified(T &&thing) {
   return make_matcher(
     ensure_matcher(std::forward<T>(thing)),
     [](const auto &value, auto &&matcher) -> bool {
-      std::ostringstream s;
-      s << to_printable(value);
-      return matcher(s.str());
+      std::ostringstream ss;
+      ss << to_printable(value);
+      return matcher(ss.str());
     }, ""
   );
+}
+
+auto nil() {
+  std::ostringstream ss;
+  ss << static_cast<void*>(0);
+  return stringified(ss.str());
 }
 
 struct my_type {};
@@ -73,12 +79,12 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
     expect(nullptr, stringified("nullptr"));
 
     void *x = 0;
-    expect(x, stringified("(nil)"));
-    expect(const_cast<const void*>(x), stringified("(nil)"));
+    expect(x, nil());
+    expect(const_cast<const void*>(x), nil());
 
     int *y = 0;
-    expect(y, stringified("(nil)"));
-    expect(const_cast<const int*>(y), stringified("(nil)"));
+    expect(y, nil());
+    expect(const_cast<const int*>(y), nil());
 
     struct some_type {};
     expect(some_type{}, stringified(none("true", "1")));
@@ -220,7 +226,7 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(static_cast<const char*>(cs), stringified("\"text\""));
 
       char *ns = nullptr;
-      expect(ns, stringified("(nil)"));
+      expect(ns, nil());
     });
 
     _.test("signed char", []() {
@@ -238,7 +244,7 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(static_cast<const signed char*>(cs), stringified("\"text\""));
 
       signed char *ns = nullptr;
-      expect(ns, stringified("(nil)"));
+      expect(ns, nil());
     });
 
     _.test("unsigned char", []() {
@@ -256,15 +262,10 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(static_cast<const unsigned char*>(cs), stringified("\"text\""));
 
       unsigned char *ns = nullptr;
-      expect(ns, stringified("(nil)"));
+      expect(ns, nil());
     });
 
-    attributes skip_if_no_codecvt;
-#ifndef METTLE_HAS_CODECVT
-    skip_if_no_codecvt.insert(skip("<codecvt> header not found"));
-#endif
-
-    _.test("wchar_t", skip_if_no_codecvt, []() {
+    _.test("wchar_t", []() {
       expect(L'x', stringified("'x'"));
       expect(L'\n', stringified("'\\n'"));
       expect(L'\0', stringified("'\\0'"));
@@ -285,10 +286,10 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(static_cast<const wchar_t*>(cs), stringified("\"text\""));
 
       wchar_t *ns = nullptr;
-      expect(ns, stringified("(nil)"));
+      expect(ns, nil());
     });
 
-    _.test("char16_t", skip_if_no_codecvt, []() {
+    _.test("char16_t", []() {
       expect(u'x', stringified("'x'"));
       expect(u'\n', stringified("'\\n'"));
       expect(u'\0', stringified("'\\0'"));
@@ -309,10 +310,10 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(static_cast<const char16_t*>(cs), stringified("\"text\""));
 
       char16_t *ns = nullptr;
-      expect(ns, stringified("(nil)"));
+      expect(ns, nil());
     });
 
-    _.test("char32_t", skip_if_no_codecvt, []() {
+    _.test("char32_t", []() {
       expect(U'x', stringified("'x'"));
       expect(U'\n', stringified("'\\n'"));
       expect(U'\0', stringified("'\\0'"));
@@ -333,7 +334,7 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(static_cast<const char32_t*>(cs), stringified("\"text\""));
 
       char32_t *ns = nullptr;
-      expect(ns, stringified("(nil)"));
+      expect(ns, nil());
     });
   });
 });

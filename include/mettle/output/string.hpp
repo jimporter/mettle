@@ -15,16 +15,9 @@
 #  define METTLE_STRING_VIEW boost::basic_string_ref
 #endif
 
-// Check if we have the <codecvt> header (GCC currently doesn't).
-#ifdef __has_include
-#  if __has_include(<codecvt>)
-#    define METTLE_HAS_CODECVT
-#    include <codecvt>
-#  endif
-#elif defined _MSC_VER
-#  define METTLE_HAS_CODECVT
-#  include <codecvt>
-#endif
+#include <codecvt>
+#include <ostream>
+#include <string>
 
 namespace mettle {
 
@@ -96,8 +89,6 @@ string_convert(const METTLE_STRING_VIEW<char> &s) {
   return s;
 }
 
-#ifdef METTLE_HAS_CODECVT
-
 inline std::string
 string_convert(const METTLE_STRING_VIEW<wchar_t> &s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
@@ -115,8 +106,6 @@ string_convert(const METTLE_STRING_VIEW<char32_t> &s) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
   return conv.to_bytes(s.data(), s.data() + s.size());
 }
-
-#endif
 
 } // namespace mettle
 

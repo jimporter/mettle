@@ -82,8 +82,6 @@ inline std::string to_printable(signed char c) {
   return escape_string(std::string(1, c), '\'');
 }
 
-#ifdef METTLE_HAS_CODECVT
-
 inline std::string to_printable(wchar_t c) {
   return escape_string(string_convert(std::wstring(1, c)), '\'');
 }
@@ -95,8 +93,6 @@ inline std::string to_printable(char16_t c) {
 inline std::string to_printable(char32_t c) {
   return escape_string(string_convert(std::u32string(1, c)), '\'');
 }
-
-#endif
 
 // Helper for bool-ish types
 
@@ -144,8 +140,6 @@ inline std::string to_printable_boolish(const signed char *s) {
   return escape_string(reinterpret_cast<const char*>(s));
 }
 
-#ifdef METTLE_HAS_CODECVT
-
 inline std::string to_printable_boolish(const wchar_t *s) {
   if(!s) return detail::null_str();
   return escape_string(string_convert(s));
@@ -160,8 +154,6 @@ inline std::string to_printable_boolish(const char32_t *s) {
   if(!s) return detail::null_str();
   return escape_string(string_convert(s));
 }
-
-#endif
 
 template<typename T>
 auto to_printable_boolish(const T &t) -> typename std::enable_if<
