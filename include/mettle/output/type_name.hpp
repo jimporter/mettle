@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_OUTPUT_TYPE_NAME_HPP
 #define INC_METTLE_OUTPUT_TYPE_NAME_HPP
 
+#include <memory>
 #include <string>
 #include <typeinfo>
 
