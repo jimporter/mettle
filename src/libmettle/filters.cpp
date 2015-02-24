@@ -7,13 +7,7 @@ namespace mettle {
 
     std::set<const attr_instance*> explicitly_shown;
     for(const auto &f : filters_) {
-#ifndef __GLIBCXX__
       auto i = attrs.find(f.attribute);
-#else
-      // XXX: Remove this GCC hack.
-      bool_attr tmp_attr(f.attribute);
-      auto i = attrs.find({tmp_attr, {}});
-#endif
       const attr_instance *attr = i == attrs.end() ? nullptr: &*i;
 
       if(!f.func(attr))
