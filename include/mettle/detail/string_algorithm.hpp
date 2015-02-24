@@ -19,7 +19,9 @@ namespace detail {
 
   template<typename T>
   std::string stringify(const T &t) {
-    return (std::ostringstream{} << t).str();
+    std::ostringstream ss;
+    ss << t;
+    return ss.str();
   }
 
   template<typename ...Args>
