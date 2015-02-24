@@ -19,7 +19,7 @@ suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
     });
 
     _.test("1-tuple", []() {
-      std::tuple<int> tup = {1};
+      std::tuple<int> tup(1);
       std::size_t count = 0;
       tuple_for_until(tup, [&count](auto &&item) {
         expect("tuple value", item, equal_to(1));
@@ -31,7 +31,7 @@ suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
     });
 
     _.test("2-tuple", []() {
-      std::tuple<int, std::string> tup = {1, "two"};
+      std::tuple<int, std::string> tup(1, "two");
       std::size_t count = 0;
       tuple_for_until(tup, [&count](auto &&) {
         count++;
@@ -40,7 +40,7 @@ suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
 
       expect("number of iterations", count, equal_to(2));
 
-      std::tuple<int, int> tup2 = {0, 1};
+      std::tuple<int, int> tup2(0, 1);
       count = 0;
       tuple_for_until(tup2, [&count](auto &&item) {
         expect("tuple value", item, equal_to(count));
@@ -52,7 +52,7 @@ suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
     });
 
     _.test("pair", []() {
-      std::pair<int, std::string> pair = {1, "two"};
+      std::pair<int, std::string> pair(1, "two");
       std::size_t count = 0;
       tuple_for_until(pair, [&count](auto &&) {
         count++;
@@ -63,7 +63,7 @@ suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
     });
 
     _.test("early exit", []() {
-      std::tuple<int, std::string> tup = {1, "two"};
+      std::tuple<int, std::string> tup(1, "two");
       std::size_t count = 0;
       tuple_for_until(tup, [&count](auto &&) {
         count++;
@@ -74,7 +74,7 @@ suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
     });
 
     _.test("modification", []() {
-      std::tuple<int, int> tup = {1, 2};
+      std::tuple<int, int> tup(1, 2);
       std::size_t count = 0;
       tuple_for_until(tup, [&count](auto &&item) {
         item++;
@@ -101,7 +101,7 @@ suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
     });
 
     _.test("1-tuple", []() {
-      std::tuple<int> tup = {1};
+      std::tuple<int> tup(1);
 
       std::ostringstream os1;
       os1 << tuple_joined(tup, [](auto &&item) { return item; });
@@ -113,7 +113,7 @@ suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
     });
 
     _.test("2-tuple", []() {
-      std::tuple<int, std::string> tup = {1, "two"};
+      std::tuple<int, std::string> tup(1, "two");
 
       std::ostringstream os1;
       os1 << tuple_joined(tup, [](auto &&item) { return item; });
@@ -125,7 +125,7 @@ suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
     });
 
     _.test("pair", []() {
-      std::pair<int, std::string> pair = {1, "two"};
+      std::pair<int, std::string> pair(1, "two");
 
       std::ostringstream os1;
       os1 << tuple_joined(pair, [](auto &&item) { return item; });
