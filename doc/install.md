@@ -15,7 +15,7 @@ Before you get started with mettle, you'll need to install its dependencies:
      * [GCC](https://gcc.gnu.org/) + [libstdc++](https://gcc.gnu.org/libstdc++/)
        5.0
      * [MSVC](http://www.visualstudio.com/) 2015 Preview
-* [Boost](http://www.boost.org/)
+* [Boost](http://www.boost.org/) 1.55
 * [bencode.hpp](https://github.com/jimporter/bencode.hpp)
 
 !!! note
