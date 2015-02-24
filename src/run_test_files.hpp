@@ -17,7 +17,7 @@ struct file_result {
 
 void run_test_files(
   const std::vector<test_file> &files, log::file_logger &logger,
-  const std::vector<std::string> &args = std::vector<std::string>{}
+  const std::vector<std::string> &args = {}
 );
 
 } // namespace mettle

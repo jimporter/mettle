@@ -6,7 +6,7 @@
 
 #include <mettle/driver/log/core.hpp>
 
-struct test_event_logger : log::test_logger {
+struct test_event_logger : log::file_logger {
   test_event_logger() {}
 
   void started_run() {
@@ -36,6 +36,16 @@ struct test_event_logger : log::test_logger {
   }
   void skipped_test(const test_name &, const std::string &) {
     events.push_back("skipped_test");
+  }
+
+  void started_file(const std::string &) {
+    events.push_back("started_file");
+  }
+  void ended_file(const std::string &) {
+    events.push_back("ended_file");
+  }
+  void failed_file(const std::string &, const std::string &) {
+    events.push_back("failed_file");
   }
 
   std::vector<std::string> events;

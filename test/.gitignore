@@ -4,6 +4,7 @@ test_tuple_algorithm
 driver/test_cmd_line
 driver/test_filters
 driver/test_object_factory
+driver/test_run_test_files
 driver/test_run_tests
 driver/test_test_file
 driver/log/test_brief
@@ -30,3 +31,6 @@ matchers/test_any_capture
 matchers/test_expect
 matchers/test_matchers
 matchers/test_match_result
+test_data/test_abort
+test_data/test_fail
+test_data/test_pass

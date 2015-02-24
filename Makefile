@@ -13,10 +13,14 @@ ifndef TMPDIR
   TMPDIR := /tmp
 endif
 
-TEST_DIRS := $(filter-out test/windows,$(shell find test -type d))
+NON_TEST_DIRS := test/windows test/test_data
+TEST_DIRS := $(filter-out $(NON_TEST_DIRS),$(shell find test -type d))
 TESTS := $(patsubst %.cpp,%,$(foreach d,$(TEST_DIRS),$(wildcard $(d)/*.cpp)))
+TEST_DATA := $(patsubst %.cpp,%,$(wildcard test/test_data/*.cpp))
+
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
 HEADER_ONLY_EXAMPLES := examples/test_header_only
+LIB_EXAMPLES := $(filter-out $(HEADER_ONLY_EXAMPLES),$(EXAMPLES))
 
 METTLE_DIRS := src src/posix
 METTLE_SOURCES := $(foreach dir,$(METTLE_DIRS),$(wildcard $(dir)/*.cpp))
@@ -45,20 +49,30 @@ all: mettle libmettle.so
 	@rm -f $(TEMP)
 
 TEST_LDFLAGS := $(LDFLAGS)
-test/driver/test_cmd_line test/driver/test_test_file: \
+test/driver/test_cmd_line test/driver/test_test_file \
+test/driver/test_run_test_files: \
   TEST_LDFLAGS += -lboost_program_options
+test/driver/test_run_test_files: TEST_LDFLAGS += -lboost_iostreams
 test/posix/test_subprocess: TEST_LDFLAGS += -lpthread
-test/driver/test_test_file: src/test_file.o
 
-$(TESTS) $(filter-out $(HEADER_ONLY_EXAMPLES),$(EXAMPLES)): %: %.o libmettle.so
+test/driver/test_test_file: src/test_file.o
+test/driver/test_run_test_files: \
+  src/posix/run_test_file.o src/run_test_files.o src/test_file.o
+
+$(TESTS) $(TEST_DATA) $(LIB_EXAMPLES): %: %.o libmettle.so
 	$(CXX) $(CXXFLAGS) $(filter %.o,$^) -L. -lmettle $(TEST_LDFLAGS) -o $@
 
 $(HEADER_ONLY_EXAMPLES): %: %.o
 	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -o $@
 
+.PHONY: examples
 examples: $(EXAMPLES)
 
+.PHONY: tests
 tests: $(TESTS)
+
+.PHONY: test-data
+test-data: $(TEST_DATA)
 
 mettle: MY_LDFLAGS := $(LDFLAGS) -lboost_program_options -lboost_iostreams
 mettle: $(METTLE_SOURCES:.cpp=.o) libmettle.so
@@ -76,8 +90,9 @@ install: all
 	cp libmettle.so $(PREFIX)/lib/libmettle.so
 
 .PHONY: test
-test: tests mettle
-	./mettle --output=verbose --color=auto $(TESTS)
+test: mettle tests test-data
+	$(eval DATA_DIR := $(shell readlink -f test/test_data))
+	TEST_DATA=$(DATA_DIR)/ ./mettle --output=verbose --color=auto $(TESTS)
 
 .PHONY: doc
 doc:
@@ -96,7 +111,7 @@ clean: clean-tests clean-examples clean-bin clean-obj
 
 .PHONY: clean-tests
 clean-tests:
-	rm -f $(TESTS)
+	rm -f $(TESTS) $(TEST_DATA)
 
 .PHONY: clean-examples
 clean-examples:
@@ -112,6 +127,7 @@ clean-obj:
 
 .PHONY: gitignore
 gitignore:
-	@echo $(TESTS) | sed -e 's|test/||g' -e 's/ /\n/g' > test/.gitignore
+	@echo $(TESTS) $(TEST_DATA) | sed -e 's|test/||g' -e 's/ /\n/g' > \
+          test/.gitignore
 	@echo $(EXAMPLES) | sed -e 's|examples/||g' -e 's/ /\n/g' > \
 	  examples/.gitignore
