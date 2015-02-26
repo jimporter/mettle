@@ -9,8 +9,8 @@ auto equal_factory(std::string name, int result) {
     [result](const auto &actual, const auto &name) -> match_result {
       auto actual_result = actual.second(1);
       std::ostringstream ss;
-      ss << "[name = " << actual.first << ", f(1) = " << *actual_result << "]";
-      return { actual.first == name && *actual_result == result, ss.str() };
+      ss << "[name = " << actual.first << ", f(1) = " << actual_result << "]";
+      return { actual.first == name && actual_result == result, ss.str() };
     }, {"[name = ", ", f(1) = " + std::to_string(result) + "]"}
   );
 }
@@ -19,17 +19,17 @@ suite<object_factory<int(int)>>
 test_object_factory("object_factory", [](auto &_) {
   _.setup([](object_factory<int(int)> &f) {
     f.add("double", [](int i) {
-      return std::make_unique<int>(2*i);
+      return 2*i;
     });
 
     f.add("triple", [](int i) {
-      return std::make_unique<int>(3*i);
+      return 3*i;
     });
   });
 
   _.test("make()", [](object_factory<int(int)> &f) {
     auto x = f.make("double", 1);
-    expect(*x, equal_to(2));
+    expect(x, equal_to(2));
 
     expect([&f]() {
       f.make("unknown", 1);
@@ -39,7 +39,7 @@ test_object_factory("object_factory", [](auto &_) {
   _.test("alias()", [](object_factory<int(int)> &f) {
     f.alias("double", "twice");
     auto x = f.make("twice", 1);
-    expect(*x, equal_to(2));
+    expect(x, equal_to(2));
 
     expect([&f]() {
       f.alias("unknown", "alias");

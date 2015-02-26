@@ -15,7 +15,7 @@ class object_factory;
 template<typename Result, typename ...Args>
 class object_factory<Result(Args...)> {
 public:
-  using result_type = std::unique_ptr<Result>;
+  using result_type = Result;
   using function_type = std::function<result_type(Args...)>;
   using container_type = std::map<std::string, function_type>;
   using iterator = typename container_type::const_iterator;
