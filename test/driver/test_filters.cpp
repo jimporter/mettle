@@ -121,12 +121,12 @@ auto attr_name_filter_suite(bool negated) {
   }
 
   return make_subsuite<std::tuple<>>(suite_name, [negated, filter](auto &_) {
-    _.test("basic", [=]() {
+    _.test("basic", [negated, filter]() {
       expect(filter.attribute, equal_to("attribute"));
       expect(filter.func(nullptr), equal_to(negated));
     });
 
-    _.test("bool_attr", [=]() {
+    _.test("bool_attr", [negated, filter]() {
       bool_attr attr("attribute");
 
       attr_instance a1 = attr;
@@ -136,14 +136,14 @@ auto attr_name_filter_suite(bool negated) {
       expect(filter.func(&a2), equal_to(!negated));
     });
 
-    _.test("string_attr", [=]() {
+    _.test("string_attr", [negated, filter]() {
       string_attr attr("attribute");
 
       attr_instance a = attr("value");
       expect(filter.func(&a), equal_to(!negated));
     });
 
-    _.test("list_attr", [=]() {
+    _.test("list_attr", [negated, filter]() {
       list_attr attr("attribute");
 
       attr_instance a = attr("value");
@@ -161,12 +161,12 @@ auto attr_value_filter_suite(bool negated) {
   }
 
   return make_subsuite<std::tuple<>>(suite_name, [negated, filter](auto &_) {
-    _.test("basic", [=]() {
+    _.test("basic", [negated, filter]() {
       expect(filter.attribute, equal_to("attribute"));
       expect(filter.func(nullptr), equal_to(negated));
     });
 
-    _.test("bool_attr", [=]() {
+    _.test("bool_attr", [negated, filter]() {
       bool_attr attr("attribute");
 
       attr_instance a1 = attr;
@@ -178,7 +178,7 @@ auto attr_value_filter_suite(bool negated) {
       expect(filter.func(&a3), equal_to(negated));
     });
 
-    _.test("string_attr", [=]() {
+    _.test("string_attr", [negated, filter]() {
       string_attr attr("attribute");
 
       attr_instance a1 = attr("value");
@@ -187,7 +187,7 @@ auto attr_value_filter_suite(bool negated) {
       expect(filter.func(&a2), equal_to(negated));
     });
 
-    _.test("list_attr", [=]() {
+    _.test("list_attr", [negated, filter]() {
       list_attr attr("attribute");
 
       attr_instance a1 = attr("value");
