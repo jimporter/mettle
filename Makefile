@@ -40,7 +40,7 @@ all: mettle libmettle.so
 # Build .o files and the corresponding .d (dependency) files. For more info, see
 # <http://scottmcpeak.com/autodepend/autodepend.html>.
 %.o: %.cpp
-	$(eval TEMP := $(shell mktemp $(TMPDIR)/$(*F)-XXXXXX.d))
+	$(eval TEMP := $(shell mktemp $(TMPDIR)/$(notdir $*)-XXXXXX.d))
 	$(CXX) $(CXXFLAGS) -Iinclude -MMD -MF $(TEMP) -c $< -o $@
 	@sed -e 's|.*:|$*.o:|' < $(TEMP) > $*.d
 	@sed -e 's/.*://' -e 's/\\$$//' < $(TEMP) | fmt -1 | \
