@@ -40,12 +40,9 @@ all: mettle libmettle.so
 # Build .o files and the corresponding .d (dependency) files. For more info, see
 # <http://scottmcpeak.com/autodepend/autodepend.html>.
 %.o: %.cpp
-	$(eval TEMP := $(shell mktemp $(TMPDIR)/$(notdir $*)-XXXXXX.d))
-	$(CXX) $(CXXFLAGS) -Iinclude -MMD -MF $(TEMP) -c $< -o $@
-	@sed -e 's|.*:|$*.o:|' < $(TEMP) > $*.d
-	@sed -e 's/.*://' -e 's/\\$$//' < $(TEMP) | fmt -1 | \
+	$(CXX) $(CXXFLAGS) -Iinclude -MMD -MF $*.d -c $< -o $@
+	@sed -e 's/.*://' -e 's/\\$$//' < $*.d | fmt -1 | \
 	  sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
-	@rm -f $(TEMP)
 
 TEST_LDFLAGS := $(LDFLAGS)
 test/driver/test_cmd_line test/driver/test_test_file \
