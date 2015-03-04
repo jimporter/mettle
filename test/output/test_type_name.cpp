@@ -10,8 +10,8 @@ namespace my_namespace {
 suite<> test_type_name("type_name()", [](auto &_) {
   _.test("primitives", []() {
     expect(type_name<int>(), equal_to("int"));
-    expect(type_name<int &>(), equal_to("int &"));
-    expect(type_name<int &&>(), equal_to("int &&"));
+    expect(type_name<int &>(), regex_match("int\\s*&"));
+    expect(type_name<int &&>(), regex_match("int\\s*&&"));
     expect(type_name<const int>(), equal_to("const int"));
     expect(type_name<volatile int>(), equal_to("volatile int"));
     expect(type_name<const volatile int>(), equal_to("const volatile int"));
