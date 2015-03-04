@@ -87,7 +87,7 @@ test_scoped_pipe("scoped_pipe", [](auto &_) {
     std::cout << in_data << std::flush;
     close(STDOUT_FILENO);
 
-    char out_data[sizeof(in_data)];
+    char out_data[sizeof(in_data)] = {};
     expect("read data", read(pipe->read_fd, out_data, sizeof(out_data)),
            equal_to(sizeof(in_data) - 1));
     expect(std::string(out_data), equal_to(in_data));
