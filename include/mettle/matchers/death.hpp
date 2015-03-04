@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <cassert>
 #include <system_error>
 
 namespace mettle {
