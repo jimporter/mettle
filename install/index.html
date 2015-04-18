@@ -184,15 +184,16 @@ it.</p>
 build Boost to link to it.</p>
 </div>
 <h3 id="header-only-version">Header-only version</h3>
-<p>If you're on Windows, or you don't want to install all of the above dependencies
-(namely bencode.hpp and the non-header-only parts of Boost) and build the
-binaries for mettle, you can use this library in a header-only mode by using the
-following instead of the usual <code>#include &lt;mettle.hpp&gt;</code>:</p>
+<p>If you don't want to install all of the above dependencies and build the
+binaries for mettle, you can use this library in a header-only mode by using
+the following instead of the usual <code>#include &lt;mettle.hpp&gt;</code>:</p>
 <pre><code class="c++">#include &lt;mettle/header_only.hpp&gt;
 </code></pre>
 
 <p>However, the header-only version is quite limited and doesn't support any of the
-command-line arguments described in <a href="../running-tests">Running Tests</a>.</p>
+command-line arguments described in <a href="../running-tests">Running Tests</a>. In
+addition, if you don't have Boost installed, you'll need a standard library that
+includes <code>std::experimental::string_view</code>.</p>
 <h2 id="building-and-installing">Building and installing</h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
