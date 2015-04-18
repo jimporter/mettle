@@ -25,17 +25,18 @@ Before you get started with mettle, you'll need to install its dependencies:
 
 ### Header-only version
 
-If you're on Windows, or you don't want to install all of the above dependencies
-(namely bencode.hpp and the non-header-only parts of Boost) and build the
-binaries for mettle, you can use this library in a header-only mode by using the
-following instead of the usual `#include <mettle.hpp>`:
+If you don't want to install all of the above dependencies and build the
+binaries for mettle, you can use this library in a header-only mode by using
+the following instead of the usual `#include <mettle.hpp>`:
 
 ```c++
 #include <mettle/header_only.hpp>
 ```
 
 However, the header-only version is quite limited and doesn't support any of the
-command-line arguments described in [Running Tests](running-tests.md).
+command-line arguments described in [Running Tests](running-tests.md). In
+addition, if you don't have Boost installed, you'll need a standard library that
+includes `std::experimental::string_view`.
 
 ## Building and installing
 
