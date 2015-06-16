@@ -112,6 +112,14 @@ suite<> test_name_filters("name filters", [](auto &_) {
   });
 });
 
+struct attr_filter_fixture {
+  attr_filter_fixture(bool negated, attr_filter_item filter) :
+    negated(negated), filter(std::move(filter)) {}
+
+  bool negated;
+  attr_filter_item filter;
+};
+
 auto attr_name_filter_suite(bool negated) {
   auto filter = has_attr("attribute");
   std::string suite_name("has_attr(name)");
@@ -120,35 +128,36 @@ auto attr_name_filter_suite(bool negated) {
     suite_name = "!" + suite_name;
   }
 
-  return make_subsuite<std::tuple<>>(suite_name, [negated, filter](auto &_) {
-    _.test("basic", [negated, filter]() {
-      expect(filter.attribute, equal_to("attribute"));
-      expect(filter.func(nullptr), equal_to(negated));
-    });
+  return make_subsuite<std::tuple<>, attr_filter_fixture>(
+    suite_name, bind_factory(negated, std::move(filter)), [](auto &_) {
+      _.test("basic", [](auto &fixture) {
+        expect(fixture.filter.attribute, equal_to("attribute"));
+        expect(fixture.filter.func(nullptr), equal_to(fixture.negated));
+      });
 
-    _.test("bool_attr", [negated, filter]() {
-      bool_attr attr("attribute");
+      _.test("bool_attr", [](auto &fixture) {
+        bool_attr attr("attribute");
 
-      attr_instance a1 = attr;
-      expect(filter.func(&a1), equal_to(!negated));
+        attr_instance a1 = attr;
+        expect(fixture.filter.func(&a1), equal_to(!fixture.negated));
 
-      attr_instance a2 = attr("value");
-      expect(filter.func(&a2), equal_to(!negated));
-    });
+        attr_instance a2 = attr("value");
+        expect(fixture.filter.func(&a2), equal_to(!fixture.negated));
+      });
 
-    _.test("string_attr", [negated, filter]() {
-      string_attr attr("attribute");
+      _.test("string_attr", [](auto &fixture) {
+        string_attr attr("attribute");
 
-      attr_instance a = attr("value");
-      expect(filter.func(&a), equal_to(!negated));
-    });
+        attr_instance a = attr("value");
+        expect(fixture.filter.func(&a), equal_to(!fixture.negated));
+      });
 
-    _.test("list_attr", [negated, filter]() {
-      list_attr attr("attribute");
+      _.test("list_attr", [](auto &fixture) {
+        list_attr attr("attribute");
 
-      attr_instance a = attr("value");
-      expect(filter.func(&a), equal_to(!negated));
-    });
+        attr_instance a = attr("value");
+        expect(fixture.filter.func(&a), equal_to(!fixture.negated));
+      });
   });
 }
 
@@ -160,43 +169,44 @@ auto attr_value_filter_suite(bool negated) {
     suite_name = "!" + suite_name;
   }
 
-  return make_subsuite<std::tuple<>>(suite_name, [negated, filter](auto &_) {
-    _.test("basic", [negated, filter]() {
-      expect(filter.attribute, equal_to("attribute"));
-      expect(filter.func(nullptr), equal_to(negated));
-    });
+  return make_subsuite<std::tuple<>, attr_filter_fixture>(
+    suite_name, bind_factory(negated, std::move(filter)), [](auto &_) {
+      _.test("basic", [](auto &fixture) {
+        expect(fixture.filter.attribute, equal_to("attribute"));
+        expect(fixture.filter.func(nullptr), equal_to(fixture.negated));
+      });
 
-    _.test("bool_attr", [negated, filter]() {
-      bool_attr attr("attribute");
+      _.test("bool_attr", [](auto &fixture) {
+        bool_attr attr("attribute");
 
-      attr_instance a1 = attr;
-      expect(filter.func(&a1), equal_to(negated));
+        attr_instance a1 = attr;
+        expect(fixture.filter.func(&a1), equal_to(fixture.negated));
 
-      attr_instance a2 = attr("value");
-      expect(filter.func(&a2), equal_to(!negated));
-      attr_instance a3 = attr("other");
-      expect(filter.func(&a3), equal_to(negated));
-    });
+        attr_instance a2 = attr("value");
+        expect(fixture.filter.func(&a2), equal_to(!fixture.negated));
+        attr_instance a3 = attr("other");
+        expect(fixture.filter.func(&a3), equal_to(fixture.negated));
+      });
 
-    _.test("string_attr", [negated, filter]() {
-      string_attr attr("attribute");
+      _.test("string_attr", [](auto &fixture) {
+        string_attr attr("attribute");
 
-      attr_instance a1 = attr("value");
-      expect(filter.func(&a1), equal_to(!negated));
-      attr_instance a2 = attr("other");
-      expect(filter.func(&a2), equal_to(negated));
-    });
+        attr_instance a1 = attr("value");
+        expect(fixture.filter.func(&a1), equal_to(!fixture.negated));
+        attr_instance a2 = attr("other");
+        expect(fixture.filter.func(&a2), equal_to(fixture.negated));
+      });
 
-    _.test("list_attr", [negated, filter]() {
-      list_attr attr("attribute");
+      _.test("list_attr", [](auto &fixture) {
+        list_attr attr("attribute");
 
-      attr_instance a1 = attr("value");
-      expect(filter.func(&a1), equal_to(!negated));
-      attr_instance a2 = attr("other");
-      expect(filter.func(&a2), equal_to(negated));
-      attr_instance a3 = attr("other", "value");
-      expect(filter.func(&a3), equal_to(!negated));
-    });
+        attr_instance a1 = attr("value");
+        expect(fixture.filter.func(&a1), equal_to(!fixture.negated));
+        attr_instance a2 = attr("other");
+        expect(fixture.filter.func(&a2), equal_to(fixture.negated));
+        attr_instance a3 = attr("other", "value");
+        expect(fixture.filter.func(&a3), equal_to(!fixture.negated));
+      });
   });
 }
 
