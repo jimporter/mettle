@@ -11,7 +11,7 @@ Before you get started with mettle, you'll need to install its dependencies:
 
 * A C++14-compliant compiler (for generic lambdas and various standard library
   features)
-     * [clang](http://clang.llvm.org/) + [libc++](http://libcxx.llvm.org/) 3.5
+     * [clang](http://clang.llvm.org/) + [libc++](http://libcxx.llvm.org/) 3.6
      * [GCC](https://gcc.gnu.org/) + [libstdc++](https://gcc.gnu.org/libstdc++/)
        5.0
      * [MSVC](http://www.visualstudio.com/) 2015 Preview
