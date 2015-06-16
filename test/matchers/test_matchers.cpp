@@ -341,6 +341,10 @@ suite<> test_matchers("matchers", [](auto &_) {
   });
 
   subsuite<>(_, "collection", [](auto &_) {
+    // XXX: Work around GCC bug 64194.
+    { auto x = equal_to<const int &>; (void)x; }
+    { auto x = greater<const int &>; (void)x; }
+
     _.test("member()", []() {
       expect(std::vector<int>{}, is_not(member(0)));
       expect(std::vector<int>{1, 2, 3}, member(1));

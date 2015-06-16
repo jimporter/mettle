@@ -55,8 +55,10 @@ namespace detail {
 constexpr detail::auto_factory_t auto_factory;
 constexpr detail::type_only_factory_t type_only;
 
+// XXX: Work around GCC bug 65308 and don't return auto here.
 template<typename ...Args>
-auto bind_factory(Args &&...args) {
+detail::bind_factory_t<typename std::remove_reference<Args>::type...>
+bind_factory(Args &&...args) {
   return detail::bind_factory_t<typename std::remove_reference<Args>::type...>(
     std::forward<Args>(args)...
   );
