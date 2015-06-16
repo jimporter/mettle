@@ -31,6 +31,7 @@ suite<suites_list> test_global_suite("global suite declaration", [](auto &_) {
          [](suites_list &suites) {
     suite<int, float>(suites, "inner test suite", [](auto &_){
       using Fixture = fixture_type_t<decltype(_)>;
+      (void)Fixture{};
 
       _.test("inner test", [](auto &) {});
       _.test("skipped test", {skip}, [](auto &) {});
@@ -72,6 +73,7 @@ suite<suites_list> test_global_suite("global suite declaration", [](auto &_) {
          [](suites_list &suites) {
     suite<int, float>(suites, "inner test suite", {skip}, [](auto &_){
       using Fixture = fixture_type_t<decltype(_)>;
+      (void)Fixture{};
 
       _.test("inner test", [](auto &) {});
       _.test("skipped test", {skip}, [](auto &) {});

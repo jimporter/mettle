@@ -201,6 +201,7 @@ suite<> test_suite("suite creation", [](auto &_) {
       auto s = make_suite<>("test suite", [](auto &_) {
         _.template subsuite<int, float>("subsuite", [](auto &_) {
           using Fixture = fixture_type_t<decltype(_)>;
+          (void)Fixture{};
 
           _.test("test", [](auto &) {});
           _.test("skipped test", {skip}, [](auto &) {});
@@ -219,6 +220,7 @@ suite<> test_suite("suite creation", [](auto &_) {
       auto s = make_suite<>("test suite", [](auto &_) {
         subsuite<int, float>(_, "subsuite", [](auto &_) {
           using Fixture = fixture_type_t<decltype(_)>;
+          (void)Fixture{};
 
           _.test("test", [](auto &) {});
           _.test("skipped test", {skip}, [](auto &) {});
@@ -237,6 +239,7 @@ suite<> test_suite("suite creation", [](auto &_) {
       auto s = make_suite<>("test suite", [](auto &_) {
         _.subsuite(make_subsuites<int, float>(_, "subsuite", [](auto &_) {
           using Fixture = fixture_type_t<decltype(_)>;
+          (void)Fixture{};
 
           _.test("test", [](auto &) {});
           _.test("skipped test", {skip}, [](auto &) {});
@@ -372,6 +375,7 @@ suite<> test_suite("suite creation", [](auto &_) {
     _.test("create a parameterized test suite", []() {
       auto suites = make_suites<int, float>("test suite", [](auto &_) {
         using Fixture = fixture_type_t<decltype(_)>;
+        (void)Fixture{};
 
         _.test("test", [](auto &) {});
         _.test("skipped test", {skip}, [](auto &) {});
@@ -387,6 +391,7 @@ suite<> test_suite("suite creation", [](auto &_) {
       auto suites = make_suites<int, float>("test suite", type_only,
                                             [](auto &_) {
         using Fixture = fixture_type_t<decltype(_)>;
+        (void)Fixture{};
 
         _.test("test", []() {});
         _.test("skipped test", {skip}, []() {});
@@ -401,6 +406,7 @@ suite<> test_suite("suite creation", [](auto &_) {
     _.test("create a skipped parameterized test suite", []() {
       auto suites = make_suites<int, float>("test suite", {skip}, [](auto &_){
         using Fixture = fixture_type_t<decltype(_)>;
+        (void)Fixture{};
 
         _.test("test", [](auto &) {});
         _.test("skipped test", {skip}, [](auto &) {});
@@ -416,6 +422,7 @@ suite<> test_suite("suite creation", [](auto &_) {
       auto suites = make_suites<int, float>("test suite", {skip}, type_only,
                                             [](auto &_) {
         using Fixture = fixture_type_t<decltype(_)>;
+        (void)Fixture{};
 
         _.test("test", []() {});
         _.test("skipped test", {skip}, []() {});
