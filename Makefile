@@ -9,10 +9,6 @@ else
   MKDOCS := mkdocs
 endif
 
-ifndef TMPDIR
-  TMPDIR := /tmp
-endif
-
 NON_TEST_DIRS := test/windows test/test_data
 TEST_DIRS := $(filter-out $(NON_TEST_DIRS),$(shell find test -type d))
 TESTS := $(patsubst %.cpp,%,$(foreach d,$(TEST_DIRS),$(wildcard $(d)/*.cpp)))
@@ -49,7 +45,6 @@ test/driver/test_cmd_line test/driver/test_test_file \
 test/driver/test_run_test_files: \
   TEST_LDFLAGS += -lboost_program_options
 test/driver/test_run_test_files: TEST_LDFLAGS += -lboost_iostreams
-test/posix/test_subprocess: TEST_LDFLAGS += -lpthread
 
 test/driver/test_test_file: src/test_file.o
 test/driver/test_run_test_files: \
