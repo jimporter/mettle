@@ -27,7 +27,7 @@ auto msg_matcher(bool match, std::string message = "message") {
 
 auto meta_matcher(int x) {
   return filter([](auto &&i) { return i / 2; }, equal_to(x));
-};
+}
 
 suite<> test_matchers("matchers", [](auto &_) {
 

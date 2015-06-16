@@ -12,7 +12,7 @@ namespace exit_code {
   constexpr const int no_inputs = 66;
   constexpr const int unknown_error = 70;
   constexpr const int fatal = 71;
-};
+}
 
 } // namespace mettle
 
