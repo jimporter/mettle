@@ -13,7 +13,7 @@
 
         <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
-        <link href="../css/prettify-1.0.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
         <link href="../css/base.css" rel="stylesheet">
         <link href="../css/extra.css" rel="stylesheet">
 
@@ -22,6 +22,8 @@
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
             <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
         <![endif]-->
+
+        
     </head>
 
     <body>
@@ -56,7 +58,7 @@
             
             
                 <li >
-                    <a href="../install">Installation</a>
+                    <a href="../install/">Installation</a>
                 </li>
             
             
@@ -66,27 +68,27 @@
                     <ul class="dropdown-menu">
                     
                         <li >
-                            <a href="../tutorial">Tutorial</a>
+                            <a href="../tutorial/">Tutorial</a>
                         </li>
                     
                         <li >
-                            <a href="../running-tests">Running Tests</a>
+                            <a href="../running-tests/">Running Tests</a>
                         </li>
                     
                         <li >
-                            <a href="../writing-tests">Writing Tests</a>
+                            <a href="../writing-tests/">Writing Tests</a>
                         </li>
                     
                         <li class="active">
-                            <a href=".">Expectations</a>
+                            <a href="./">Expectations</a>
                         </li>
                     
                         <li >
-                            <a href="../built-in-matchers">Built-in Matchers</a>
+                            <a href="../built-in-matchers/">Built-in Matchers</a>
                         </li>
                     
                         <li >
-                            <a href="../writing-matchers">Writing Your Own Matchers</a>
+                            <a href="../writing-matchers/">Writing Your Own Matchers</a>
                         </li>
                     
                     </ul>
@@ -95,13 +97,13 @@
             
             
                 <li >
-                    <a href="../developer">Developer Guide</a>
+                    <a href="../developer/">Developer Guide</a>
                 </li>
             
             
             
                 <li >
-                    <a href="../license">License</a>
+                    <a href="../license/">License</a>
                 </li>
             
             
@@ -109,14 +111,13 @@
 
             <!-- Search, Navigation and Repo links -->
             <ul class="nav navbar-nav navbar-right">
-                
                 <li >
-                    <a rel="next" href="../writing-tests">
+                    <a rel="next" href="../writing-tests/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../built-in-matchers">
+                    <a rel="prev" href="../built-in-matchers/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -172,7 +173,7 @@ for the type(s) in question).  Here it is all put together:</p>
 </code></pre>
 
 <p>If this expectation failed, you'd see something like the following logged to
-your console (with the name of the failing <a href="../writing-tests#tests">test case</a>
+your console (with the name of the failing <a href="../writing-tests/#tests">test case</a>
 preceding it):</p>
 <pre><code>expected: 666
 actual:   123
@@ -229,7 +230,7 @@ composability of matchers allows you to build complex expections from a
 relatively small set of simple matchers. What's more, matchers automatically
 produce human-readable descriptions of what exactly they're testing, freeing you
 from having to manually describe every expectation!</p>
-<p>In addition, mettle comes with a collection of <a href="../built-in-matchers">built-in
+<p>In addition, mettle comes with a collection of <a href="../built-in-matchers/">built-in
 matchers</a> that can be used (or combined together) to
 perform most common tests. However, if these don't suffice, you can always
 <a href="#writing-your-own-matchers">write your own</a>.</p>
@@ -253,18 +254,18 @@ is 0:</p>
 </code></pre>
 
 <h2 id="composing-matchers">Composing matchers</h2>
-<p>Many of the built-in matchers, such as the <a href="../built-in-matchers#combinatoric">combinatoric
+<p>Many of the built-in matchers, such as the <a href="../built-in-matchers/#combinatoric">combinatoric
 matchers</a>, are <em>higher-order matchers</em>. That
 is, they are created by taking other matchers as arguments. This allows you to
 build more complex matchers that test multiple aspects of an object at once. For
 instance, you might want to check that a value is in the range [2, 4). With
-the <a href="../built-in-matchers#all"><code>all</code></a> matcher, this is easy:</p>
+the <a href="../built-in-matchers/#all"><code>all</code></a> matcher, this is easy:</p>
 <pre><code class="c++">using namespace mettle;
 expect(x, all(greater_equal(2), less(4)));
 </code></pre>
 
 <p>Similarly, there are higher-order matchers that operate on
-<a href="../built-in-matchers#collection">collections</a>, allowing you, for example, to
+<a href="../built-in-matchers/#collection">collections</a>, allowing you, for example, to
 test that all elements of a container meet a certain condition:</p>
 <pre><code class="c++">using namespace mettle;
 expect(v, each(greater(0)));
@@ -284,7 +285,7 @@ actual:   5
 <p>As we saw above, for most simple expectations, a failure will cause the
 matcher's description to be printed out along with the actual value supplied to
 <code>expect</code>. However, for some matchers, just seeing the actual value isn't very
-useful. For example, with the <a href="../built-in-matchers#exception"><code>thrown</code></a>
+useful. For example, with the <a href="../built-in-matchers/#exception"><code>thrown</code></a>
 matchers, you already know that the actual value is a function, so printing that
 fact out doesn't help.</p>
 <p>Instead, matchers can choose to return a mismatch message that provides a
@@ -307,15 +308,18 @@ message.</p>
 <p>Despite the name "mismatch message", it's useful to provide a message even
 on success, since a successful match can easily become a mismatch simply by
 using the <code>is_not</code> matcher.</p>
-</div>
-</div>
+</div></div>
         </div>
 
-        
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
 
-        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="../js/jquery-1.10.2.min.js"></script>
         <script src="../js/bootstrap-3.0.3.min.js"></script>
-        <script src="../js/prettify-1.0.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
         <script src="../js/base.js"></script>
     </body>
 </html>

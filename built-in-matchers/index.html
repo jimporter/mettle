@@ -13,7 +13,7 @@
 
         <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
-        <link href="../css/prettify-1.0.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
         <link href="../css/base.css" rel="stylesheet">
         <link href="../css/extra.css" rel="stylesheet">
 
@@ -22,6 +22,8 @@
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
             <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
         <![endif]-->
+
+        
     </head>
 
     <body>
@@ -56,7 +58,7 @@
             
             
                 <li >
-                    <a href="../install">Installation</a>
+                    <a href="../install/">Installation</a>
                 </li>
             
             
@@ -66,27 +68,27 @@
                     <ul class="dropdown-menu">
                     
                         <li >
-                            <a href="../tutorial">Tutorial</a>
+                            <a href="../tutorial/">Tutorial</a>
                         </li>
                     
                         <li >
-                            <a href="../running-tests">Running Tests</a>
+                            <a href="../running-tests/">Running Tests</a>
                         </li>
                     
                         <li >
-                            <a href="../writing-tests">Writing Tests</a>
+                            <a href="../writing-tests/">Writing Tests</a>
                         </li>
                     
                         <li >
-                            <a href="../expectations">Expectations</a>
+                            <a href="../expectations/">Expectations</a>
                         </li>
                     
                         <li class="active">
-                            <a href=".">Built-in Matchers</a>
+                            <a href="./">Built-in Matchers</a>
                         </li>
                     
                         <li >
-                            <a href="../writing-matchers">Writing Your Own Matchers</a>
+                            <a href="../writing-matchers/">Writing Your Own Matchers</a>
                         </li>
                     
                     </ul>
@@ -95,13 +97,13 @@
             
             
                 <li >
-                    <a href="../developer">Developer Guide</a>
+                    <a href="../developer/">Developer Guide</a>
                 </li>
             
             
             
                 <li >
-                    <a href="../license">License</a>
+                    <a href="../license/">License</a>
                 </li>
             
             
@@ -109,14 +111,13 @@
 
             <!-- Search, Navigation and Repo links -->
             <ul class="nav navbar-nav navbar-right">
-                
                 <li >
-                    <a rel="next" href="../expectations">
+                    <a rel="next" href="../expectations/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="../writing-matchers">
+                    <a rel="prev" href="../writing-matchers/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -354,15 +355,18 @@ signal that was raised matches <code>matcher</code>.</p>
 <h3 id="exitedmatcher">exited([<em>matcher</em>])</h3>
 <p>A matcher that returns <code>true</code> if the function terminated the process by exiting
 (i.e. with <code>exit</code>, <code>_exit</code>, or <code>_Exit</code>). If <code>matcher</code> is specified, <code>exited</code>
-will only return <code>true</code> if the exit status matches <code>matcher</code>.</p>
-</div>
+will only return <code>true</code> if the exit status matches <code>matcher</code>.</p></div>
         </div>
 
-        
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
 
-        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="../js/jquery-1.10.2.min.js"></script>
         <script src="../js/bootstrap-3.0.3.min.js"></script>
-        <script src="../js/prettify-1.0.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
         <script src="../js/base.js"></script>
     </body>
 </html>
