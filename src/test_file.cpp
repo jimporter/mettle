@@ -23,7 +23,7 @@ namespace detail {
 
   class glob {
   public:
-    using iterator = const char ** const;
+    using iterator = const char **;
 
     glob(const std::string &s) {
       if(::glob(s.c_str(), 0, nullptr, &glob_) != 0)
