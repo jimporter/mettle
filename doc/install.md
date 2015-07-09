@@ -40,18 +40,42 @@ includes `std::experimental::string_view`.
 
 ## Building and installing
 
-!!! note
-    Currently, the build system requires `make` and only works with compilers
-    with `cc`-like arguments, so Visual Studio users are on their own for
-    building for now. This will be fixed before 1.0 is released. Until then,
-    sorry!
-
 Once you've installed all of mettle's dependencies, you can build mettle itself!
-If you've already set up your environment variables to use clang (or whatever
-C++14-compliant compiler you like), you should be able to run
+There are currently two ways to build mettle: via (experimental support for)
+[bfg9000](https://github.com/jimporter/bfg9000), or via
+[Make](https://www.gnu.org/software/make/).
+
+### Building with bfg9000
+
+!!! note
+    Building with `bfg9000` is currently experimental, but will become the sole
+    method of building in 1.0.
+
+Building with `bfg9000` is straightforward. Just run the following:
 
 ```sh
-$ make && make install
+$ bfg9000 /path/to/mettle build
+$ cd build
+$ make install
+```
+
+You can specify the compiler to use and its options with the usual (Unix-style)
+environment variables, such as `CXX` and `CXXFLAGS`. For further information
+about how to use bfg9000, such as changing the build backend, see its
+[documentation](https://github.com/jimporter/bfg9000).
+
+### Building with Make
+
+!!! note
+    Building with Make is deprecated and will be removed in 1.0. In addition,
+    mettle's Makefile only works with compilers with `cc`-like arguments, so
+    Visual Studio users should use the bfg9000 build file.
+
+If you've already set up your environment variables to use your compiler of
+choice, you should be able to run
+
+```sh
+$ make install
 ```
 
 to build and install mettle. Otherwise, you can specify the appropriate
@@ -77,21 +101,20 @@ $ make test
 ```
 
 If you'd rather build the tests *without* running them, you can call
-`make tests` or `make test/test_filename`, where `test_filename` is the name of
-the test you'd like to build. In that case, you can execute the tests as
-described later in [Running Tests](running-tests.md).
+`make tests`. In that case, you can execute the tests as described later in
+[Running Tests](running-tests.md).
 
 ## Building the examples
 
 mettle comes with a series of examples to help show how to construct different
 kinds of tests. Similar to the above, you can build all of these with
-`make examples`, or build a single file with `make examples/test_filename`.
+`make examples`.
 
 ## Building the documentation
 
 mettle uses [MkDocs](http://www.mkdocs.org/) for its documentation. To build the
-documentation, first install MkDocs, and then run `make build-doc`. You can also
-run `make serve-doc` to run a test webserver with a preview of the
+documentation, first install MkDocs, and then run `make doc-build`. You can also
+run `make doc-serve` to run a test webserver with a preview of the
 documentation.
 
 ## Cleaning the tree

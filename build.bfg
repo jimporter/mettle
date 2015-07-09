@@ -1,0 +1,91 @@
+# -*- python -*-
+
+from os.path import splitext
+from bfg9000.shell import quote as sh_quote # TODO?
+
+def simple_executable(file, libs):
+    return executable(splitext(file)[0], files=[file], include=includes,
+                      libs=libs)
+
+global_options('-std=c++1y -pthread', lang='c++')
+global_link_options('-pthread')
+
+includes = header_directory('include')
+
+iostreams = boost_package('iostreams')
+prog_opts = boost_package('program_options')
+
+libmettle_dirs = ['src/libmettle', 'src/libmettle/log', 'src/libmettle/posix']
+libmettle = shared_library(
+    'mettle',
+    files=find_files(libmettle_dirs, '*.cpp', flat=True),
+    packages=[iostreams, prog_opts],
+    include=includes
+)
+
+mettle_dirs = ['src', 'src/posix']
+mettle_objs = object_files(
+    files=find_files(mettle_dirs, '*.cpp', flat=True),
+    include=includes
+)
+mettle = executable(
+    'mettle',
+    files=mettle_objs,
+    libs=[libmettle],
+    packages=[iostreams, prog_opts]
+)
+
+install(mettle, libmettle, includes)
+
+non_test_dirs = ['test/test_data', 'test/windows']
+test_dirs = filter(lambda x: x not in non_test_dirs,
+                   find_files('test', '*', type='d'))
+extra_files = {
+    'test/driver/test_test_file.cpp': ['src/test_file.cpp'],
+    'test/driver/test_run_test_files.cpp': [
+        'src/posix/run_test_file.cpp', 'src/run_test_files.cpp',
+        'src/test_file.cpp'
+    ],
+}
+extra_pkgs = {
+    'test/driver/test_cmd_line.cpp': [prog_opts],
+    'test/driver/test_test_file.cpp': [prog_opts],
+    'test/driver/test_run_test_files.cpp': [iostreams, prog_opts],
+}
+
+driver = test_driver(
+    mettle,
+    options='--color --output=verbose',
+    # TODO: Don't hardcode bin/.
+    environment={'TEST_DATA': 'bin/test/test_data/'}
+)
+for src in find_files(test_dirs, '*.cpp', flat=True):
+    test(executable(
+        splitext(src)[0],
+        files=[src] + [mettle_objs[i] for i in extra_files.get(src, [])],
+        libs=[libmettle],
+        include=includes,
+        packages=extra_pkgs.get(src),
+    ), driver=driver)
+
+test_data = alias('test-data', [
+    simple_executable(src, libmettle) for src in
+    find_files('test/test_data', '*.cpp')
+])
+test_deps(test_data)
+
+header_only_examples = ['examples/test_header_only.cpp']
+alias('examples', [
+    simple_executable(src, None if src in header_only_examples else libmettle)
+    for src in find_files('examples', '*.cpp')
+])
+
+# XXX: Do something saner when MkDocs supports building from other dirs.
+mkdocs = 'cd {} && mkdocs '.format(sh_quote(env.srcdir))
+if 'MKDOCS_VENV' in env.variables:
+    mkdocs = '. {env}/bin/activate && {cd}'.format(
+        env=env.variables['MKDOCS_VENV'], cd=mkdocs
+    )
+command('doc', cmd=mkdocs + 'build --clean')
+command('doc-serve', cmd=mkdocs + 'serve --dev-addr=0.0.0.0:8000')
+command('doc-deploy', cmd=mkdocs + 'gh-deploy --clean')
