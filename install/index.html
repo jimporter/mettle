@@ -196,17 +196,36 @@ command-line arguments described in <a href="../running-tests/">Running Tests</a
 addition, if you don't have Boost installed, you'll need a standard library that
 includes <code>std::experimental::string_view</code>.</p>
 <h2 id="building-and-installing">Building and installing</h2>
+<p>Once you've installed all of mettle's dependencies, you can build mettle itself!
+There are currently two ways to build mettle: via (experimental support for)
+<a href="https://github.com/jimporter/bfg9000">bfg9000</a>, or via
+<a href="https://www.gnu.org/software/make/">Make</a>.</p>
+<h3 id="building-with-bfg9000">Building with bfg9000</h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Currently, the build system requires <code>make</code> and only works with compilers
-with <code>cc</code>-like arguments, so Visual Studio users are on their own for
-building for now. This will be fixed before 1.0 is released. Until then,
-sorry!</p>
+<p>Building with <code>bfg9000</code> is currently experimental, but will become the sole
+method of building in 1.0.</p>
 </div>
-<p>Once you've installed all of mettle's dependencies, you can build mettle itself!
-If you've already set up your environment variables to use clang (or whatever
-C++14-compliant compiler you like), you should be able to run</p>
-<pre><code class="sh">$ make &amp;&amp; make install
+<p>Building with <code>bfg9000</code> is straightforward. Just run the following:</p>
+<pre><code class="sh">$ bfg9000 /path/to/mettle build
+$ cd build
+$ make install
+</code></pre>
+
+<p>You can specify the compiler to use and its options with the usual (Unix-style)
+environment variables, such as <code>CXX</code> and <code>CXXFLAGS</code>. For further information
+about how to use bfg9000, such as changing the build backend, see its
+<a href="https://github.com/jimporter/bfg9000">documentation</a>.</p>
+<h3 id="building-with-make">Building with Make</h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Building with Make is deprecated and will be removed in 1.0. In addition,
+mettle's Makefile only works with compilers with <code>cc</code>-like arguments, so
+Visual Studio users should use the bfg9000 build file.</p>
+</div>
+<p>If you've already set up your environment variables to use your compiler of
+choice, you should be able to run</p>
+<pre><code class="sh">$ make install
 </code></pre>
 
 <p>to build and install mettle. Otherwise, you can specify the appropriate
@@ -226,17 +245,16 @@ test framework otherwise!) To build and run all the tests, just call:</p>
 </code></pre>
 
 <p>If you'd rather build the tests <em>without</em> running them, you can call
-<code>make tests</code> or <code>make test/test_filename</code>, where <code>test_filename</code> is the name of
-the test you'd like to build. In that case, you can execute the tests as
-described later in <a href="../running-tests/">Running Tests</a>.</p>
+<code>make tests</code>. In that case, you can execute the tests as described later in
+<a href="../running-tests/">Running Tests</a>.</p>
 <h2 id="building-the-examples">Building the examples</h2>
 <p>mettle comes with a series of examples to help show how to construct different
 kinds of tests. Similar to the above, you can build all of these with
-<code>make examples</code>, or build a single file with <code>make examples/test_filename</code>.</p>
+<code>make examples</code>.</p>
 <h2 id="building-the-documentation">Building the documentation</h2>
 <p>mettle uses <a href="http://www.mkdocs.org/">MkDocs</a> for its documentation. To build the
-documentation, first install MkDocs, and then run <code>make build-doc</code>. You can also
-run <code>make serve-doc</code> to run a test webserver with a preview of the
+documentation, first install MkDocs, and then run <code>make doc-build</code>. You can also
+run <code>make doc-serve</code> to run a test webserver with a preview of the
 documentation.</p>
 <h2 id="cleaning-the-tree">Cleaning the tree</h2>
 <p>As you might expect, you can also call <code>make clean</code> to clean the source tree of
