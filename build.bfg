@@ -12,8 +12,8 @@ global_link_options('-pthread')
 
 includes = header_directory('include')
 
-iostreams = boost_package('iostreams')
-prog_opts = boost_package('program_options')
+iostreams = boost_package('iostreams', version='>=1.55')
+prog_opts = boost_package('program_options', version='>=1.55')
 
 libmettle_dirs = ['src/libmettle', 'src/libmettle/log', 'src/libmettle/posix']
 libmettle = shared_library(
