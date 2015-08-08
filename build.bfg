@@ -3,10 +3,6 @@
 from os.path import splitext
 from bfg9000.shell import quote as sh_quote # TODO?
 
-def simple_executable(file, libs):
-    return executable(splitext(file)[0], files=[file], include=includes,
-                      libs=libs)
-
 global_options('-std=c++1y -pthread', lang='c++')
 global_link_options('-pthread')
 
@@ -56,26 +52,27 @@ extra_pkgs = {
 driver = test_driver(
     mettle,
     options='--color --output=verbose',
-    environment={'TEST_DATA': 'test/test_data/'}
+    environment={'TEST_DATA': 'test/test_data/'},
 )
 for src in find_files(test_dirs, '*.cpp', flat=True):
     test(executable(
         splitext(src)[0],
         files=[src] + [mettle_objs[i] for i in extra_files.get(src, [])],
-        libs=[libmettle],
+        libs=libmettle,
         include=includes,
         packages=extra_pkgs.get(src),
     ), driver=driver)
 
 test_data = alias('test-data', [
-    simple_executable(src, libmettle) for src in
-    find_files('test/test_data', '*.cpp')
+    executable(splitext(src)[0], files=src, include=includes, libs=libmettle)
+    for src in find_files('test/test_data', '*.cpp')
 ])
 test_deps(test_data)
 
 header_only_examples = ['examples/test_header_only.cpp']
 alias('examples', [
-    simple_executable(src, None if src in header_only_examples else libmettle)
+    executable(splitext(src)[0], files=src, include=includes,
+               libs=None if src in header_only_examples else libmettle)
     for src in find_files('examples', '*.cpp')
 ])
 
