@@ -45,7 +45,8 @@ enum class color_option {
   always
 };
 
-bool color_enabled(color_option opt, int fd = 1 /* STDOUT_FILENO */);
+METTLE_PUBLIC bool
+color_enabled(color_option opt, int fd = 1 /* STDOUT_FILENO */);
 
 struct output_options {
   std::string output;
