@@ -123,7 +123,7 @@ namespace windows {
   const test_info *
   find_test(const suites_list &suites, test_uid id) {
     for(const auto &suite : suites) {
-      for(const auto &test : suite) {
+      for(const auto &test : suite.tests()) {
         if(test.id == id)
           return &test;
       }
