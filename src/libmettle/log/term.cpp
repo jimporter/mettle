@@ -123,7 +123,7 @@ namespace term {
                                int flag) {
         switch(type) {
         case std::ios_base::copyfmt_event:
-          ios.pword(flag) = detail::dup(GetStdHandle(STD_OUTPUT_HANDLE));
+          ios.pword(flag) = dup(GetStdHandle(STD_OUTPUT_HANDLE));
           break;
         case std::ios_base::erase_event:
           CloseHandle(ios.pword(flag));

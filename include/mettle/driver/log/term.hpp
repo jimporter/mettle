@@ -56,7 +56,8 @@ namespace term {
   }
 
   class format {
-    friend std::ostream & operator <<(std::ostream &, const format &);
+    friend METTLE_PUBLIC std::ostream &
+    operator <<(std::ostream &, const format &);
   public:
     template<typename ...Args>
     explicit format(Args &&...args) : values_{std::forward<Args>(args)...} {
@@ -74,7 +75,6 @@ namespace term {
   }
 
   METTLE_PUBLIC void enable(std::ios_base &ios, bool enabled);
-  METTLE_PUBLIC std::ostream & operator <<(std::ostream &o, const format &fmt);
 }
 
 } // namespace mettle
