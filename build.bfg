@@ -8,6 +8,7 @@ global_link_options('-pthread')
 
 includes = header_directory('include')
 
+boost = boost_package(version='>=1.55')
 iostreams = boost_package('iostreams', version='>=1.55')
 prog_opts = boost_package('program_options', version='>=1.55')
 
@@ -15,20 +16,23 @@ libmettle_dirs = ['src/libmettle', 'src/libmettle/log', 'src/libmettle/posix']
 libmettle = shared_library(
     'mettle',
     files=find_files(libmettle_dirs, '*.cpp', flat=True),
+    include=includes,
     packages=[iostreams, prog_opts],
-    include=includes
+    # TODO: Remove this when bfg does it for us.
+    compile_options='-DMETTLE_EXPORTS',
 )
 
 mettle_dirs = ['src', 'src/posix']
 mettle_objs = object_files(
     files=find_files(mettle_dirs, '*.cpp', flat=True),
-    include=includes
+    include=includes,
+    packages=boost,
 )
 mettle = executable(
     'mettle',
     files=mettle_objs,
     libs=[libmettle],
-    packages=[iostreams, prog_opts]
+    packages=[iostreams, prog_opts],
 )
 
 install(mettle, libmettle, includes)
@@ -58,13 +62,14 @@ for src in find_files(test_dirs, '*.cpp', flat=True):
     test(executable(
         splitext(src)[0],
         files=[src] + [mettle_objs[i] for i in extra_files.get(src, [])],
-        libs=libmettle,
         include=includes,
-        packages=extra_pkgs.get(src),
+        libs=libmettle,
+        packages=[boost] + extra_pkgs.get(src, []),
     ), driver=driver)
 
 test_data = alias('test-data', [
-    executable(splitext(src)[0], files=src, include=includes, libs=libmettle)
+    executable(splitext(src)[0], files=src, include=includes, libs=libmettle,
+               packages=boost)
     for src in find_files('test/test_data', '*.cpp')
 ])
 test_deps(test_data)
@@ -72,7 +77,8 @@ test_deps(test_data)
 header_only_examples = ['examples/test_header_only.cpp']
 alias('examples', [
     executable(splitext(src)[0], files=src, include=includes,
-               libs=None if src in header_only_examples else libmettle)
+               libs=None if src in header_only_examples else libmettle,
+               packages=boost)
     for src in find_files('examples', '*.cpp')
 ])
 
