@@ -10,7 +10,7 @@
 #else
 #  include <boost/iterator/iterator_facade.hpp>
 #  include <windows.h>
-#  include "libmettle/windows/err_string.hpp"
+#  include "../err_string.hpp"
 #endif
 
 #include <boost/program_options.hpp>

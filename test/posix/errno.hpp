@@ -2,7 +2,7 @@
 #define INC_METTLE_TEST_POSIX_ERRNO_HPP
 
 #include <mettle/matchers/core.hpp>
-#include "../../src/libmettle/posix/err_string.hpp"
+#include "../../src/err_string.hpp"
 
 class equal_errno : public mettle::matcher_tag {
 public:
@@ -11,11 +11,11 @@ public:
   template<typename T>
   mettle::match_result operator ()(const T &) const {
     int errnum = errno;
-    return {errnum == expected_, posix::err_string(errnum)};
+    return {errnum == expected_, mettle::err_string(errnum)};
   }
 
   std::string desc() const {
-    return mettle::posix::err_string(expected_);
+    return mettle::err_string(expected_);
   }
 private:
   int expected_;

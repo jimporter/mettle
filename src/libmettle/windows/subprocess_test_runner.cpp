@@ -10,7 +10,7 @@
 #include <mettle/driver/windows/scoped_pipe.hpp>
 #include <mettle/driver/windows/subprocess.hpp>
 
-#include "err_string.hpp"
+#include "../../err_string.hpp"
 
 namespace mettle {
 

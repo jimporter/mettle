@@ -10,7 +10,7 @@
 #include <mettle/driver/posix/scoped_signal.hpp>
 #include <mettle/driver/posix/subprocess.hpp>
 
-#include "err_string.hpp"
+#include "../../err_string.hpp"
 
 namespace mettle {
 

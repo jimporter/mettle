@@ -2,7 +2,7 @@
 using namespace mettle;
 
 #include "../helpers.hpp"
-#include "../../src/test_file.hpp"
+#include "../../src/mettle/test_file.hpp"
 
 suite<> test_test_file("test_file", [](auto &_) {
   subsuite<>(_, "file expansion", [](auto &_) {

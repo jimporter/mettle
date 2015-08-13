@@ -9,7 +9,7 @@
 #include <mettle/driver/windows/scoped_pipe.hpp>
 
 #include "../log_pipe.hpp"
-#include "../libmettle/windows/err_string.hpp"
+#include "../../err_string.hpp"
 
 namespace mettle {
 

@@ -2,7 +2,7 @@
 using namespace mettle;
 
 #include "../../helpers.hpp"
-#include "../../../src/log_pipe.hpp"
+#include "../../../src/mettle/log_pipe.hpp"
 #include <mettle/driver/log/child.hpp>
 
 struct recording_logger : log::file_logger {

@@ -11,7 +11,7 @@
 #include <mettle/driver/exit_code.hpp>
 #include <mettle/driver/posix/scoped_pipe.hpp>
 
-#include "../libmettle/posix/err_string.hpp"
+#include "../../err_string.hpp"
 
 namespace mettle {
 

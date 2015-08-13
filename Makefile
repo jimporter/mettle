@@ -9,16 +9,16 @@ else
   MKDOCS := mkdocs
 endif
 
-NON_TEST_DIRS := test/windows test/test_data
+NON_TEST_DIRS := test/windows
 TEST_DIRS := $(filter-out $(NON_TEST_DIRS),$(shell find test -type d))
 TESTS := $(patsubst %.cpp,%,$(foreach d,$(TEST_DIRS),$(wildcard $(d)/*.cpp)))
-TEST_DATA := $(patsubst %.cpp,%,$(wildcard test/test_data/*.cpp))
+TEST_DATA := $(patsubst %.cpp,%,$(wildcard test_data/*.cpp))
 
 EXAMPLES := $(patsubst %.cpp,%,$(wildcard examples/*.cpp))
 HEADER_ONLY_EXAMPLES := examples/test_header_only
 LIB_EXAMPLES := $(filter-out $(HEADER_ONLY_EXAMPLES),$(EXAMPLES))
 
-METTLE_DIRS := src src/posix
+METTLE_DIRS := src/mettle src/mettle/posix
 METTLE_SOURCES := $(foreach dir,$(METTLE_DIRS),$(wildcard $(dir)/*.cpp))
 LIBMETTLE_DIRS := src/libmettle src/libmettle/log src/libmettle/posix
 LIBMETTLE_SOURCES := $(foreach dir,$(LIBMETTLE_DIRS),$(wildcard $(dir)/*.cpp))

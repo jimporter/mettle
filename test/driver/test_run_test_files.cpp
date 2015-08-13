@@ -3,14 +3,14 @@ using namespace mettle;
 
 #include <cstdlib>
 
-#include "../../src/log_pipe.hpp"
-#include "../../src/run_test_files.hpp"
+#include "../../src/mettle/log_pipe.hpp"
+#include "../../src/mettle/run_test_files.hpp"
 
 #ifndef _WIN32
-#  include "../../src/posix/run_test_file.hpp"
+#  include "../../src/mettle/posix/run_test_file.hpp"
 namespace platform = mettle::posix;
 #else
-#  include "../../src/windows/run_test_file.hpp"
+#  include "../../src/mettle/windows/run_test_file.hpp"
 namespace platform = mettle::windows;
 #endif
 
