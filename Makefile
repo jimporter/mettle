@@ -115,10 +115,3 @@ clean-bin:
 .PHONY: clean-obj
 clean-obj:
 	find . -name "*.[od]" -exec rm -f {} +
-
-.PHONY: gitignore
-gitignore:
-	@echo $(TESTS) $(TEST_DATA) | sed -e 's|test/||g' -e 's/ /\n/g' > \
-          test/.gitignore
-	@echo $(EXAMPLES) | sed -e 's|examples/||g' -e 's/ /\n/g' > \
-	  examples/.gitignore
