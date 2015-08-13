@@ -62,7 +62,7 @@ namespace detail {
         if(!(glob_->handle = FindFirstFileA(s.c_str(), &glob_->data))) {
           auto err = GetLastError();
           if(err != ERROR_FILE_NOT_FOUND)
-            throw std::runtime_error(windows::err_string(err));
+            throw std::runtime_error(err_string(err));
         }
       }
     private:
@@ -81,7 +81,7 @@ namespace detail {
         if(!FindNextFileA(glob_->handle, &glob_->data)) {
           auto err = GetLastError();
           if(err != ERROR_NO_MORE_FILES)
-            throw std::runtime_error(windows::err_string(err));
+            throw std::runtime_error(err_string(err));
 
           glob_.reset();
           filename_ = nullptr;
