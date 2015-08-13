@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+#define METTLE_STATIC
+
 #include "run_tests.hpp"
 #include "log/indent.hpp"
 #include "log/simple_summary.hpp"
