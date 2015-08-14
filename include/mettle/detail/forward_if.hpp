@@ -7,12 +7,20 @@ namespace mettle {
 
 namespace detail {
   template<typename Container, typename Element>
-  inline decltype(auto) forward_if(Element &&value) {
-    using Value = typename std::remove_reference<Element>::type;
-    using ReturnType = typename std::conditional<
-      std::is_lvalue_reference<Container>::value, Value &, Value &&
-    >::type;
-    return static_cast<ReturnType>(value);
+  struct ref_if {
+    using type = typename std::conditional<
+      std::is_lvalue_reference<Container>::value,
+      typename std::remove_reference<Element>::type &,
+      typename std::remove_reference<Element>::type &&
+     >::type;
+  };
+
+  // XXX: We could use decltype(auto) for this function, but MSVC's
+  // implementation is currently broken.
+  template<typename Container, typename Element>
+  inline typename ref_if<Container, Element>::type
+  forward_if(Element &&value) {
+    return static_cast<typename ref_if<Container, Element>::type>(value);
   }
 }
 
