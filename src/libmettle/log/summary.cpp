@@ -3,6 +3,8 @@
 #include <cassert>
 #include <cmath>
 
+#include <boost/io/ios_state.hpp>
+
 #include <mettle/driver/log/term.hpp>
 
 namespace mettle {
@@ -108,10 +110,10 @@ namespace log {
       auto elapsed = duration_cast<duration<float>>(
         steady_clock::now() - start_time_
       );
-      std::ostringstream elapsed_str;
-      elapsed_str << std::setprecision(4) << elapsed.count() << " s";
-      out_ << " " << format(fg(color::black)) << "(took "
-           << elapsed_str.str() << ")";
+
+      boost::io::ios_all_saver ias(out_);
+      out_ << " " << format(fg(color::black)) << "(took " << std::fixed
+           << std::setprecision(4) << elapsed.count() << " s)";
     }
 
     out_ << reset() << std::endl;
