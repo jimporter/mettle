@@ -29,7 +29,7 @@ suite<> test_test_file("test_file", [](auto &_) {
 
     _.test("invalid syntax", []() {
       expect([]() { test_file("glob["); },
-             thrown<std::runtime_error>("invalid glob \"glob[\""));
+             thrown<std::runtime_error>("no matches found: glob["));
     });
   });
 

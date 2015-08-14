@@ -26,8 +26,11 @@ namespace detail {
     using iterator = const char **;
 
     glob(const std::string &s) {
-      if(::glob(s.c_str(), 0, nullptr, &glob_) != 0)
-        throw std::runtime_error("invalid glob \"" + s + "\"");
+      int err = ::glob(s.c_str(), 0, nullptr, &glob_);
+      if(err == GLOB_NOMATCH)
+        throw std::runtime_error("no matches found: " + s);
+      else if(err != 0)
+        throw std::runtime_error("unknown error");
     }
 
     glob(const glob &) = delete;
@@ -59,9 +62,12 @@ namespace detail {
       explicit iterator(const std::string &s)
         : glob_(new glob_info), filename_(glob_->data.cFileName) {
 
-        if(!(glob_->handle = FindFirstFileA(s.c_str(), &glob_->data))) {
+        if((glob_->handle = FindFirstFileA(s.c_str(), &glob_->data)) ==
+           INVALID_HANDLE_VALUE) {
           auto err = GetLastError();
-          if(err != ERROR_FILE_NOT_FOUND)
+          if(err == ERROR_FILE_NOT_FOUND)
+            throw std::runtime_error("no matches found: " + s);
+          else
             throw std::runtime_error(err_string(err));
         }
       }
