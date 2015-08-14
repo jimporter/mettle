@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_SRC_GLOB_HPP
-#define INC_METTLE_SRC_GLOB_HPP
+#ifndef INC_METTLE_SRC_METTLE_GLOB_HPP
+#define INC_METTLE_SRC_METTLE_GLOB_HPP
 
 #ifndef _WIN32
 #  include <glob.h>

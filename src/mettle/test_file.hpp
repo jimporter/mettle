@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_SRC_TEST_FILE_HPP
-#define INC_METTLE_SRC_TEST_FILE_HPP
+#ifndef INC_METTLE_SRC_METTLE_TEST_FILE_HPP
+#define INC_METTLE_SRC_METTLE_TEST_FILE_HPP
 
 #include <memory>
 #include <string>
