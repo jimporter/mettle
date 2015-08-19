@@ -3,8 +3,12 @@
 from os.path import splitext
 from bfg9000.shell import quote as sh_quote # TODO?
 
-global_options('-std=c++1y -pthread', lang='c++')
-global_link_options('-pthread')
+# TODO: Filter on compiler type instead of platform.
+if env.platform.name == 'windows':
+    global_options('/EHsc', lang='c++')
+else:
+    global_options('-std=c++1y -pthread', lang='c++')
+    global_link_options('-pthread')
 
 includes = header_directory('include')
 
@@ -38,9 +42,8 @@ install(mettle, libmettle, includes)
 extra_files = {
     'test/driver/test_test_file.cpp': ['src/mettle/test_file.cpp'],
     'test/driver/test_run_test_files.cpp': [
-        'src/mettle/posix/run_test_file.cpp', 'src/mettle/run_test_files.cpp',
-        'src/mettle/test_file.cpp'
-    ],
+        'src/mettle/run_test_files.cpp', 'src/mettle/test_file.cpp'
+    ] + find_files('src/mettle', 'run_test_file.cpp'),
 }
 extra_pkgs = {
     'test/driver/test_cmd_line.cpp': [prog_opts],
