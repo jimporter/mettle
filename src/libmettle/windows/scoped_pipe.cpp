@@ -8,7 +8,7 @@ namespace mettle {
 
 namespace windows {
 
-  bool scoped_pipe::open(const std::pair<bool, bool> &overlapped) {
+  bool scoped_pipe::open(bool overlapped_read, bool overlapped_write) {
     assert(!read_handle && !write_handle);
     const std::size_t BUFSIZE = 4096;
     static std::uint64_t pipe_id = 0;
@@ -18,7 +18,7 @@ namespace windows {
     std::string name = ss.str();
 
     DWORD read_flags = PIPE_ACCESS_INBOUND;
-    if(overlapped.first)
+    if(overlapped_read)
       read_flags |= FILE_FLAG_OVERLAPPED;
     read_handle = CreateNamedPipeA(
       name.c_str(), read_flags, 0, 1, BUFSIZE, BUFSIZE, 0, nullptr
@@ -27,7 +27,7 @@ namespace windows {
       return false;
 
     DWORD write_flags = FILE_ATTRIBUTE_NORMAL;
-    if(overlapped.first)
+    if(overlapped_write)
       write_flags |= FILE_FLAG_OVERLAPPED;
     write_handle = CreateFileA(
       name.c_str(), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, write_flags,

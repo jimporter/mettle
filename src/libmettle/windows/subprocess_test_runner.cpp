@@ -26,9 +26,9 @@ namespace windows {
     const test_info &test, log::test_output &output
   ) const {
     scoped_pipe stdout_pipe, stderr_pipe, log_pipe;
-    if(!stdout_pipe.open({true, false}) ||
-       !stderr_pipe.open({true, false}) ||
-       !log_pipe.open({true, false}))
+    if(!stdout_pipe.open(true, false) ||
+       !stderr_pipe.open(true, false) ||
+       !log_pipe.open(true, false))
       return failed();
 
     if(!stdout_pipe.set_write_inherit(true) ||

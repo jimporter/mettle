@@ -15,7 +15,11 @@ namespace windows {
     scoped_pipe() = default;
     scoped_pipe(const scoped_pipe &) = delete;
 
-    bool open(const std::pair<bool, bool> &overlapped = {false, false});
+    bool open(bool overlapped_read, bool overlapped_write);
+
+    bool open() {
+      return open(false, false);
+    }
 
     bool set_read_inherit(bool inherit) {
       return do_set_inherit(read_handle, inherit);
