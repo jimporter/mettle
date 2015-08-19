@@ -2,6 +2,7 @@
 #define INC_METTLE_DRIVER_POSIX_SCOPED_PIPE_HPP
 
 #include <unistd.h>
+#include <fcntl.h>
 
 #include <cassert>
 
@@ -21,7 +22,21 @@ namespace posix {
 
     int open(int flags = 0) {
       assert(read_fd == -1 && write_fd == -1);
+#ifdef _GNU_SOURCE
       return pipe2(&read_fd, flags);
+#else
+      if(pipe(&read_fd) == -1)
+        return -1;
+
+      if(flags & O_CLOEXEC) {
+        if(fcntl(read_fd, F_SETFD, FD_CLOEXEC) == -1 ||
+           fcntl(write_fd, F_SETFD, FD_CLOEXEC) == -1) {
+          read_fd = write_fd = -1;
+          return -1;
+        }
+      }
+      return 0;
+#endif
     }
 
     int close_read() {
