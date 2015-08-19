@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include <signal.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
 
