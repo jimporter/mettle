@@ -8,10 +8,9 @@ h1 {
 /* Make the inline code blocks look like the paragraph-level ones. */
 *:not(pre) > code {
   color: #333;
-  background-color: #FAFAFA;
+  background-color: #F5F5F5;
   padding: 1px 3px;
-  border: 1px solid #E8E8E8;
-  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05) inset;
+  border: 1px solid #CCC;
 }
 
 /* Don't double up on the border for inline code inside admonitions. */
@@ -31,11 +30,16 @@ a > code:focus {
   color: #00526E !important;
 }
 
+/* Reduce the padding for code blocks. */
+
+pre {
+  padding: 4px;
+}
+
 /* Style the admonitions. */
 .admonition {
-  border: 1px solid #E8E8E8;
-  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05) inset;
-  background-color: #FAFAFA;
+  border: 1px solid #CCC;
+  background-color: #F5F5F5;
   padding: 8px;
   margin-bottom: 20px;
 }
