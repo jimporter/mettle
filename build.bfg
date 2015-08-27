@@ -1,7 +1,6 @@
 # -*- python -*-
 
 from os.path import splitext
-from bfg9000.shell import quote as sh_quote # TODO?
 
 # TODO: Filter on compiler type instead of platform.
 if env.platform.name == 'windows':
@@ -80,12 +79,8 @@ alias('examples', [
     for src in find_files('examples', '*.cpp')
 ])
 
-# XXX: Do something saner when MkDocs supports building from other dirs.
-mkdocs = 'cd {} && mkdocs '.format(sh_quote(env.srcdir))
-if 'MKDOCS_VENV' in env.variables:
-    mkdocs = '. {env}/bin/activate && {cd}'.format(
-        env=env.variables['MKDOCS_VENV'], cd=mkdocs
-    )
+# XXX: Don't cd once MkDocs supports building from other dirs.
+mkdocs = 'cd ' + env.srcdir + ' && mkdocs '
 command('doc', cmd=mkdocs + 'build --clean')
 command('doc-serve', cmd=mkdocs + 'serve --dev-addr=0.0.0.0:8000')
 command('doc-deploy', cmd=mkdocs + 'gh-deploy --clean')
