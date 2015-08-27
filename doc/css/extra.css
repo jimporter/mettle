@@ -31,7 +31,6 @@ a > code:focus {
 }
 
 /* Reduce the padding for code blocks. */
-
 pre {
   padding: 4px;
 }
@@ -59,8 +58,7 @@ pre {
   margin-bottom: 0;
 }
 
-/* Add small subtitles */
-
+/* Add small subtitles. */
 .subtitle {
   margin-top: -10.5px;
   color: #BBB;
