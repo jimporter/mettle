@@ -20,8 +20,6 @@ libmettle = shared_library(
     files=find_files('src/libmettle', '*.cpp'),
     include=includes,
     packages=[iostreams, prog_opts],
-    # TODO: Remove this when bfg does it for us.
-    compile_options='-DMETTLE_EXPORTS',
 )
 
 mettle_objs = object_files(
