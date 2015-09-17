@@ -10,33 +10,38 @@
 
 namespace mettle {
 
-template<typename T>
-auto near_to(T &&expected, const T &epsilon) {
+template<typename T, typename U>
+auto near_to(T &&expected, U &&epsilon) {
   return make_matcher(
     std::forward<T>(expected),
-    [epsilon](const auto &actual, const auto &expected) -> bool {
+    [epsilon = std::forward<U>(epsilon)](
+      const auto &actual, const auto &expected
+    ) -> bool {
       // If one of expected or actual is NaN, mag is undefined, but that's ok
       // because we'll always return false in that case, just like we should.
-      auto mag = std::max<T>(std::abs(expected), std::abs(actual));
+      auto mag = std::max(std::abs(expected), std::abs(actual));
       return std::abs(actual - expected) <= mag * epsilon;
     }, "~= "
   );
 }
 
 template<typename T>
-inline auto near_to(T &&expected) -> typename std::enable_if<
-  !std::numeric_limits<T>::is_integer,
-  decltype(near_to(std::declval<T>(), std::declval<T>()))
->::type {
+inline auto near_to(T &&expected) {
+  using ValueType = std::remove_cv_t<std::remove_reference_t<T>>;
+  static_assert(!std::numeric_limits<ValueType>::is_integer,
+                "near_to(x) not defined for integral types");
+
   return near_to(std::forward<T>(expected),
-                 std::numeric_limits<T>::epsilon() * 10);
+                 std::numeric_limits<ValueType>::epsilon() * 10);
 }
 
-template<typename T>
-auto near_to_abs(T &&expected, const T &tolerance) {
+template<typename T, typename U>
+auto near_to_abs(T &&expected, U &&tolerance) {
   return make_matcher(
     std::forward<T>(expected),
-    [tolerance](const auto &actual, const auto &expected) -> bool {
+    [tolerance = std::forward<U>(tolerance)](
+      const auto &actual, const auto &expected
+    ) -> bool {
       return std::abs(actual - expected) <= tolerance;
     }, "~= "
   );

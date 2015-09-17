@@ -232,6 +232,13 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(about_one<double>(), near_to(1.0, 1e-6));
       expect(about_one<long double>(), near_to(1.0L, 1e-6L));
 
+      double one = 1.0;
+      double eps = 1e-6;
+      expect(about_one<double>(), near_to(one));
+      expect(about_one<double>(), near_to(one, eps));
+      expect(about_one<double>(), near_to(1.0, eps));
+      expect(about_one<double>(), near_to(one, 1e-6));
+
       expect(std::numeric_limits<float>::quiet_NaN(), is_not(near_to(0.0f)));
       expect(std::numeric_limits<double>::quiet_NaN(), is_not(near_to(0.0)));
       expect(std::numeric_limits<long double>::quiet_NaN(),
@@ -241,9 +248,9 @@ suite<> test_matchers("matchers", [](auto &_) {
     });
 
     _.test("near_to_abs()", []() {
-      expect(1.01f, near_to(1.0f, 0.01f));
-      expect(1.01, near_to(1.0, 0.01));
-      expect(1.01L, near_to(1.0L, 0.01L));
+      expect(1.01f, near_to(1.0f, 0.02f));
+      expect(1.01, near_to(1.0, 0.02));
+      expect(1.01L, near_to(1.0L, 0.02L));
 
       expect(std::numeric_limits<float>::quiet_NaN(),
              is_not(near_to_abs(0.0f, 0.01f)));
@@ -251,6 +258,12 @@ suite<> test_matchers("matchers", [](auto &_) {
              is_not(near_to(0.0, 0.01)));
       expect(std::numeric_limits<long double>::quiet_NaN(),
              is_not(near_to(0.0L, 0.01L)));
+
+      double one = 1.0;
+      double tol = 0.02;
+      expect(1.01, near_to_abs(one, tol));
+      expect(1.01, near_to_abs(1.0, tol));
+      expect(1.01, near_to_abs(one, 0.02));
 
       expect(near_to_abs(1.23f, 0.0f).desc(), equal_to("~= 1.23"));
     });
