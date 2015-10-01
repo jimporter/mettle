@@ -47,7 +47,7 @@ There are currently two ways to build mettle: via (experimental support for)
 
 ### Building with bfg9000
 
-!!! note
+!!! warning
     Building with `bfg9000` is currently experimental, but will become the sole
     method of building in 1.0.
 
@@ -66,7 +66,7 @@ about how to use bfg9000, such as changing the build backend, see its
 
 ### Building with Make
 
-!!! note
+!!! warning
     Building with Make is deprecated and will be removed in 1.0. In addition,
     mettle's Makefile only works with compilers with `cc`-like arguments, so
     Visual Studio users should use the bfg9000 build file.

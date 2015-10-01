@@ -65,7 +65,7 @@ Show help and usage information.
 
 Time out and fail any tests that take longer than *N* milliseconds to execute.
 
-!!! note
+!!! warning
     `--no-subproc` can't be specified while using this option.
 
 #### --test *REGEX* (-T)

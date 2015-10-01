@@ -98,7 +98,7 @@ std::abs(actual - expected) <= mag * epsilon;
 If `epsilon` is not specified, it defaults to
 `std::numeric_limits<T>::epsilon() * 10`.
 
-!!! note
+!!! warning
     As with most functions that check if two floating point numbers are
     approximately equal, this matcher will likely fail if one of the values is
     zero. In that case, use `near_to_abs`.
@@ -172,7 +172,7 @@ array( meta_matcher(range[0]), meta_matcher(range[1]), ...
        meta_matcher(range[n]) )
 ```
 
-!!! note
+!!! warning
     When `meta_matcher` is a template function, be careful about how you pass it
     in. For instance, `equal_to<int>` will expect an rvalue-reference to an
     `int`. If `range` is an lvalue, you'll need to pass `equal_to<const int &>`
