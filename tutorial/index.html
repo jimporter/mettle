@@ -212,14 +212,11 @@ to <em>test</em> in our tests. This expectation makes sure that <code>true</code
 <p>Building a test is straightforward. Since mettle provides its own test runner
 with a <code>main()</code> function, the above source code is all you need for a
 fully-operational test. Just compile the test like so:</p>
-<pre><code class="sh">$ clang++ -std=c++1y -lmettle -o test_first test_first.cpp
+<pre><code class="sh">$ clang++ -std=c++14 -lmettle -o test_first test_first.cpp
 </code></pre>
 
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>We need to compile in C++1y (aka C++14) mode, since mettle relies on some
-C++14 features to simplify writing tests.</p>
-</div>
+<p>Remember, mettle is a C++14 library, so you'll likely need to tell the compiler
+to use C++14 mode (or C++1y mode for slightly older compilers).</p>
 <h2 id="running-the-test">Running the test</h2>
 <p>Once you've built the test, you just need to run the binary and observe the
 results. In this case, the results will look like:</p>
