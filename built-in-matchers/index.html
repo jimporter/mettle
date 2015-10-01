@@ -230,8 +230,8 @@ std::abs(actual - expected) &lt;= mag * epsilon;
 
 <p>If <code>epsilon</code> is not specified, it defaults to
 <code>std::numeric_limits&lt;T&gt;::epsilon() * 10</code>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
 <p>As with most functions that check if two floating point numbers are
 approximately equal, this matcher will likely fail if one of the values is
 zero. In that case, use <code>near_to_abs</code>.</p>
@@ -281,8 +281,8 @@ corresponding item in <em>range</em> according to the matcher built from
        meta_matcher(range[n]) )
 </code></pre>
 
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
 <p>When <code>meta_matcher</code> is a template function, be careful about how you pass it
 in. For instance, <code>equal_to&lt;int&gt;</code> will expect an rvalue-reference to an
 <code>int</code>. If <code>range</code> is an lvalue, you'll need to pass <code>equal_to&lt;const int &amp;&gt;</code>
@@ -357,12 +357,6 @@ signal that was raised matches <code>matcher</code>.</p>
 (i.e. with <code>exit</code>, <code>_exit</code>, or <code>_Exit</code>). If <code>matcher</code> is specified, <code>exited</code>
 will only return <code>true</code> if the exit status matches <code>matcher</code>.</p></div>
         </div>
-
-        <footer class="col-md-12">
-            <hr>
-            
-            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
-        </footer>
 
         <script src="../js/jquery-1.10.2.min.js"></script>
         <script src="../js/bootstrap-3.0.3.min.js"></script>

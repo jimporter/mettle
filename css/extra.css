@@ -1,4 +1,5 @@
 /* Give the main header an underline. */
+
 h1 {
   padding-bottom: 21px;
   margin-bottom: 21px;
@@ -6,6 +7,7 @@ h1 {
 }
 
 /* Make the inline code blocks look like the paragraph-level ones. */
+
 *:not(pre) > code {
   color: #333;
   background-color: #F5F5F5;
@@ -13,14 +15,8 @@ h1 {
   border: 1px solid #CCC;
 }
 
-/* Don't double up on the border for inline code inside admonitions. */
-.admonition code {
-  background-color: transparent;
-  border: none;
-  box-shadow: none;
-}
-
 /* Fix links containing inline code. */
+
 a > code {
   color: #008CBA !important;
 }
@@ -36,32 +32,69 @@ pre {
   padding: 4px;
 }
 
-/* Style the admonitions. */
-.admonition {
-  border: 1px solid #CCC;
-  background-color: #F5F5F5;
-  padding: 8px;
-  margin-bottom: 20px;
-}
-
-.admonition-title {
-  font-weight: bold;
-  float: left;
-  margin-right: 1ch;
-  margin-bottom: 0;
-}
-
-.admonition-title::after {
-  content: ':';
-}
-
-.admonition p:last-child {
-  margin-bottom: 0;
-}
-
-/* Add small subtitles */
+/* Add small subtitles. */
 
 .subtitle {
   margin-top: -10.5px;
   color: #BBB;
+}
+
+
+/* Style the admonitions. */
+
+.admonition {
+  border: 1px solid;
+  margin-bottom: 21px;
+}
+
+.admonition-title {
+  margin: 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid;
+  font-size: 17px;
+}
+
+.admonition > p {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.admonition > p:not(.admonition-title):first-of-type,
+.admonition > .admonition-title + p {
+  padding-top: 15px;
+}
+
+.admonition > p:last-child {
+  margin-bottom: 0;
+  padding-bottom: 15px;
+}
+
+/* Style each kind of admonition. */
+
+.admonition.note, .admonition.note > .admonition-title {
+  border-color: #3db5d8;
+}
+
+.admonition.note > .admonition-title {
+  color: #5bc0de;
+  background-color: #d9edf7;
+}
+
+.admonition.warning, .admonition.warning > .admonition-title {
+  border-color: #d08002;
+}
+
+.admonition.warning > .admonition-title {
+  color: #e99002;
+  background-color: #fcf8e3;
+}
+
+.admonition.danger, .admonition.danger > .admonition-title {
+  border-color: #ea2f10;
+}
+
+.admonition.danger > .admonition-title {
+  color: #f04124;
+  background-color: #f2dede;
 }
