@@ -2,8 +2,7 @@
 
 from os.path import splitext
 
-# TODO: Filter on compiler type instead of platform.
-if env.platform.name == 'windows':
+if env.compiler('c++').flavor == 'msvc':
     global_options('/EHsc', lang='c++')
 else:
     global_options('-std=c++1y -pthread', lang='c++')
