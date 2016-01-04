@@ -50,7 +50,7 @@ color_enabled(color_option opt, int fd = 1 /* STDOUT_FILENO */);
 
 struct output_options {
   std::string output;
-  color_option color = color_option::never;
+  color_option color = color_option::automatic;
   std::size_t runs = 1;
   bool show_terminal = false;
   bool show_time = false;

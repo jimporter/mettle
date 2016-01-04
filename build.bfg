@@ -6,7 +6,7 @@ if env.compiler('c++').flavor == 'msvc':
     global_options(['/EHsc'], lang='c++')
 else:
     global_options(['-std=c++1y', '-pthread'], lang='c++')
-    global_link_options('-pthread')
+    global_link_options(['-pthread'])
 
 includes = header_directory('include')
 
@@ -49,7 +49,7 @@ extra_pkgs = {
 
 driver = test_driver(
     mettle,
-    options='--color --output=verbose',
+    options=['--output=verbose'],
     environment={'TEST_DATA': 'test_data/'},
 )
 for src in find_files('test', '*.cpp'):
