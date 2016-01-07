@@ -58,7 +58,7 @@ $ ninja install
 You can specify the compiler to use and its options with the usual (Unix-style)
 environment variables, such as `CXX` and `CXXFLAGS`. For further information
 about how to use bfg9000, such as changing the build backend, see its
-[documentation](http://jimporter.github.io/bfg9000/building/).
+[documentation](http://jimporter.github.io/bfg9000/user/building/).
 
 ## Testing mettle
 
