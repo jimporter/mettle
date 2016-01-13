@@ -1,6 +1,6 @@
-**Documentation for mettle is available at http://jimporter.github.io/mettle**
-
 # mettle
+
+[![Documentation][documentation-image]][documentation-link]
 
 **mettle** is a "batteries included" unit testing framework for C++14. Its
 mission is to provide a full toolbox to address your testing needs and to look
@@ -64,3 +64,6 @@ suite<> basic("a basic suite", [](auto &_) {
 
 This library is [licensed](http://jimporter.github.io/mettle/license/) under the
 BSD 3-Clause license.
+
+[documentation-image]: https://img.shields.io/badge/docs-mettle-blue.svg
+[documentation-link]: http://jimporter.github.io/mettle/
