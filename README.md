@@ -1,6 +1,7 @@
 # mettle
 
 [![Documentation][documentation-image]][documentation-link]
+[![Travis build status][travis-image]][travis-link]
 
 **mettle** is a "batteries included" unit testing framework for C++14. Its
 mission is to provide a full toolbox to address your testing needs and to look
@@ -67,3 +68,5 @@ BSD 3-Clause license.
 
 [documentation-image]: https://img.shields.io/badge/docs-mettle-blue.svg
 [documentation-link]: http://jimporter.github.io/mettle/
+[travis-image]: https://travis-ci.org/jimporter/mettle.svg?branch=master
+[travis-link]: https://travis-ci.org/jimporter/mettle

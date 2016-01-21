@@ -1,0 +1,32 @@
+language: c++
+sudo: false
+
+matrix:
+  include:
+    - env: COMPILER=clang++-3.6
+      addons:
+        apt:
+          sources:
+            - boost-latest
+            - llvm-toolchain-precise-3.6
+            - ubuntu-toolchain-r-test
+          packages:
+            - clang-3.6
+            - g++-5
+            - libboost1.55-dev
+            - libboost-iostreams1.55-dev
+            - libboost-program-options1.55-dev
+            - ninja-build
+            - python-virtualenv
+
+install:
+  - virtualenv env
+  - source env/bin/activate
+  - pip install bfg9000
+  - git clone https://github.com/jimporter/bencode.hpp.git
+  - export CPATH=`pwd`/bencode.hpp/include
+script:
+  - |
+    CXX=${COMPILER} CXXFLAGS="-Wall -Wextra -pedantic -DMETTLE_NO_STDLIB_EXTS" bfg9000 build --backend=ninja
+    cd build
+    ninja test
