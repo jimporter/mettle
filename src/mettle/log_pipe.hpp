@@ -3,7 +3,11 @@
 
 #include <istream>
 
+#ifdef METTLE_NO_STDLIB_EXTS
+#  define BENCODE_NO_STDLIB_EXTS
+#endif
 #include <bencode.hpp>
+
 #include <mettle/driver/log/core.hpp>
 
 namespace mettle {

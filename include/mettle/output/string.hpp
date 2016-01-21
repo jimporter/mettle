@@ -1,8 +1,8 @@
 #ifndef INC_METTLE_OUTPUT_STRING_HPP
 #define INC_METTLE_OUTPUT_STRING_HPP
 
-// Try to use N4082's string_view class, or fall back to Boost's.
-#ifdef __has_include
+// Try to use N4480's string_view class, or fall back to Boost's.
+#if !defined(METTLE_NO_STDLIB_EXTS) && defined(__has_include)
 #  if __has_include(<experimental/string_view>)
 #    include <experimental/string_view>
 #    define METTLE_STRING_VIEW std::experimental::basic_string_view
