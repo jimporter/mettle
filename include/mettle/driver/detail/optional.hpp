@@ -8,10 +8,12 @@
 #    define METTLE_OPTIONAL_NS std::experimental
 #  else
 #    include <boost/optional.hpp>
+#    include <boost/optional/optional_io.hpp>
 #    define METTLE_OPTIONAL_NS boost
 #  endif
 #else
 #  include <boost/optional.hpp>
+#  include <boost/optional/optional_io.hpp>
 #  define METTLE_OPTIONAL_NS boost
 #endif
 
