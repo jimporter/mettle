@@ -80,7 +80,12 @@ suite<> test_subprocess("subprocess utilities", [](auto &_) {
       expect(f.results[1], equal_to(""));
     });
 
-    _.test("read until signal", [](read_into_fixture &f) {
+    attributes sigtest_attrs;
+#ifdef __APPLE__
+    sigtest_attrs.insert(skip("pselect(2) is buggy on OS X"));
+#endif
+
+    _.test("read until signal", sigtest_attrs, [](read_into_fixture &f) {
       scoped_sigprocmask mask;
       mask.push(SIG_BLOCK, SIGUSR1);
 
