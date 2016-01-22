@@ -1,14 +1,16 @@
-language: c++
+language: cpp
 sudo: false
 
 matrix:
   include:
-    - env: COMPILER=clang++-3.6
-      addons:
+    - compiler: clang
+      env: COMPILER=clang++-3.6 BACKEND=make
+      addons: &clang-36
         apt:
-          sources:
+          sources: &sources
             - boost-latest
             - llvm-toolchain-precise-3.6
+            - llvm-toolchain-precise-3.7
             - ubuntu-toolchain-r-test
           packages:
             - clang-3.6
@@ -18,11 +20,35 @@ matrix:
             - libboost-program-options1.55-dev
             - ninja-build
             - python-virtualenv
+    - compiler: clang
+      env: COMPILER=clang++-3.6 BACKEND=ninja
+      addons: *clang-36
+    - compiler: clang
+      env: COMPILER=clang++-3.7 BACKEND=make
+      addons: &clang-37
+        apt:
+          sources: *sources
+          packages:
+            - clang-3.7
+            - g++-5
+            - libboost1.55-dev
+            - libboost-iostreams1.55-dev
+            - libboost-program-options1.55-dev
+            - ninja-build
+            - python-virtualenv
+    - compiler: clang
+      env: COMPILER=clang++-3.7 BACKEND=ninja
+      addons: *clang-37
+
+cache:
+  apt: true
+  directories:
+    - env
 
 install:
-  - virtualenv env
+  - 'if [ ! -f "env/bin/activate" ]; then virtualenv env; fi'
   - source env/bin/activate
-  - pip install bfg9000
+  - pip install -U bfg9000
   - git clone https://github.com/jimporter/bencode.hpp.git
   - export CPATH=`pwd`/bencode.hpp/include
 script:
