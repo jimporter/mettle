@@ -4,11 +4,7 @@
 #include <cassert>
 #include <ostream>
 
-#ifdef METTLE_NO_STDLIB_EXTS
-#  define BENCODE_NO_STDLIB_EXTS
-#endif
-#include <bencode.hpp>
-
+#include "../detail/bencode.hpp"
 #include "core.hpp"
 
 namespace mettle {
