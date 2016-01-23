@@ -4,7 +4,7 @@ sudo: false
 matrix:
   include:
     - compiler: clang
-      env: COMPILER=clang++-3.6 BACKEND=make EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
+      env: COMPILER=clang++-3.6 BACKEND=make
       addons: &clang-36
         apt:
           sources: &sources
@@ -21,10 +21,10 @@ matrix:
             - ninja-build
             - python-virtualenv
     - compiler: clang
-      env: COMPILER=clang++-3.6 BACKEND=ninja EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
+      env: COMPILER=clang++-3.6 BACKEND=ninja
       addons: *clang-36
     - compiler: clang
-      env: COMPILER=clang++-3.7 BACKEND=make EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
+      env: COMPILER=clang++-3.7 BACKEND=make
       addons: &clang-37
         apt:
           sources: *sources
@@ -37,7 +37,7 @@ matrix:
             - ninja-build
             - python-virtualenv
     - compiler: clang
-      env: COMPILER=clang++-3.7 BACKEND=ninja EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
+      env: COMPILER=clang++-3.7 BACKEND=ninja
       addons: *clang-37
     - os: osx
       osx_image: xcode7.2
