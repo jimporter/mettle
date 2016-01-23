@@ -104,7 +104,7 @@ test_fork("subprocess_test_runner", bind_factory(250ms), [](auto &_) {
 
       auto then = std::chrono::steady_clock::now();
       auto result = runner(s.tests()[0], output);
-      // Try to read fromm our pipe; if the test's child process isn't killed,
+      // Try to read from our pipe; if the test's child process isn't killed,
       // this will block.
       block.close_write();
       char buf[1];
