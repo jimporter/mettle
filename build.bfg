@@ -5,9 +5,8 @@ from os.path import splitext
 if env.compiler('c++').flavor == 'msvc':
     global_options(['/EHsc'], lang='c++')
 else:
-    global_options(['-std=c++14'], lang='c++')
+    global_options(['-pthread', '-std=c++14'], lang='c++')
     if env.platform.name != 'darwin':
-        global_options(['-pthread'], lang='c++')
         global_link_options(['-pthread'])
 
 includes = header_directory('include')
