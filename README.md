@@ -2,6 +2,7 @@
 
 [![Documentation][documentation-image]][documentation-link]
 [![Travis build status][travis-image]][travis-link]
+[![Appveyor build status][appveyor-image]][appveyor-link]
 
 **mettle** is a "batteries included" unit testing framework for C++14. Its
 mission is to provide a full toolbox to address your testing needs and to look
@@ -70,3 +71,5 @@ BSD 3-Clause license.
 [documentation-link]: http://jimporter.github.io/mettle/
 [travis-image]: https://travis-ci.org/jimporter/mettle.svg?branch=master
 [travis-link]: https://travis-ci.org/jimporter/mettle
+[appveyor-image]: https://ci.appveyor.com/api/projects/status/76hye1aj81qg1nqg/branch/master?svg=true
+[appveyor-link]: https://ci.appveyor.com/project/jimporter/mettle/branch/master
