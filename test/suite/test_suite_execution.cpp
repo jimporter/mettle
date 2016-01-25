@@ -69,7 +69,7 @@ suite<> test_calling("test calling", [](auto &_) {
 
     auto result = s.tests()[0].function();
     expect(result, equal_test_result(
-      false, regex_match("(.*\n)?expected: true\nactual:   false")
+      false, regex_match("(.*\n)?expected: true\nactual:   false$")
     ));
 
     expect("test run count", test.runs(), equal_to(1));
@@ -104,7 +104,7 @@ suite<> test_calling("test calling", [](auto &_) {
 
     auto result = s.tests()[0].function();
     expect(result, equal_test_result(
-      false, regex_match("(.*\n)?expected: true\nactual:   false")
+      false, regex_match("(.*\n)?expected: true\nactual:   false$")
     ));
 
     expect("setup run count", setup.runs(), equal_to(1));
@@ -125,7 +125,7 @@ suite<> test_calling("test calling", [](auto &_) {
 
     auto result = s.tests()[0].function();
     expect(result, equal_test_result(
-      false, regex_match("(.*\n)?expected: true\nactual:   false")
+      false, regex_match("(.*\n)?expected: true\nactual:   false$")
     ));
 
     expect("setup run count", setup.runs(), equal_to(1));
@@ -146,7 +146,7 @@ suite<> test_calling("test calling", [](auto &_) {
 
     auto result = s.tests()[0].function();
     expect(result, equal_test_result(
-      false, regex_match("(.*\n)?expected: true\nactual:   false")
+      false, regex_match("(.*\n)?expected: true\nactual:   false$")
     ));
 
     expect("setup run count", setup.runs(), equal_to(1));
@@ -170,7 +170,7 @@ suite<> test_calling("test calling", [](auto &_) {
 
     auto result = s.tests()[0].function();
     expect(result, equal_test_result(
-      false, regex_match("(.*\n)?expected: \"foo\"\nactual:   \"test\"")
+      false, regex_match("(.*\n)?expected: \"foo\"\nactual:   \"test\"$")
     ));
 
     expect("setup run count", setup.runs(), equal_to(1));
