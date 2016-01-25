@@ -18,7 +18,6 @@ install:
   - cinst ninja
   - git clone https://github.com/jimporter/bencode.hpp.git
   - copy bencode.hpp\include\bencode.hpp include\bencode.hpp
-  - easy_install lxml
 test_script:
   - bfg9000 build --backend=ninja
   - cd build
