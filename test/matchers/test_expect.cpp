@@ -1,3 +1,4 @@
+
 #include <mettle.hpp>
 using namespace mettle;
 
@@ -10,7 +11,14 @@ suite<> test_expect("expect()", [](auto &_) {
     catch(const expectation_error &e) {
       message = e.what();
     }
-    expect(message, equal_to("expected: true\nactual:   false"));
+
+    std::ostringstream ss;
+#ifndef METTLE_NO_SOURCE_LOCATION
+    int line = __LINE__ - 8; // The line the expectation is on.
+    ss << __FILE__ << ":" << line << "\n";
+#endif
+    ss << "expected: true\nactual:   false";
+    expect(message, equal_to(ss.str()));
   });
 
   _.test("expect(desc, value, matcher)", []() {
@@ -21,7 +29,15 @@ suite<> test_expect("expect()", [](auto &_) {
     catch(const expectation_error &e) {
       message = e.what();
     }
-    expect(message, equal_to("description\nexpected: true\nactual:   false"));
+
+    std::ostringstream ss;
+    ss << "description";
+#ifndef METTLE_NO_SOURCE_LOCATION
+    int line = __LINE__ - 9; // The line the expectation is on.
+    ss << " (" << __FILE__ << ":" << line << ")";
+#endif
+    ss << "\nexpected: true\nactual:   false";
+    expect(message, equal_to(ss.str()));
   });
 
   _.test("METTLE_EXPECT(value, matcher)", []() {
@@ -33,6 +49,7 @@ suite<> test_expect("expect()", [](auto &_) {
     catch(const expectation_error &e) {
       message = e.what();
     }
+
     std::ostringstream ss;
     ss << __FILE__ << ":" << line << "\nexpected: true\nactual:   false";
     expect(message, equal_to(ss.str()));
@@ -47,6 +64,7 @@ suite<> test_expect("expect()", [](auto &_) {
     catch(const expectation_error &e) {
       message = e.what();
     }
+
     std::ostringstream ss;
     ss << "description (" << __FILE__ << ":" << line
        << ")\nexpected: true\nactual:   false";

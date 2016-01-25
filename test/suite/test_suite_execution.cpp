@@ -12,13 +12,19 @@ namespace mettle {
   }
 }
 
-auto equal_test_result(bool result, const std::string &message) {
+template<typename T, typename U>
+auto equal_test_result(T &&result, U &&message) {
+  auto res = ensure_matcher(std::forward<T>(result));
+  auto msg = ensure_matcher(std::forward<U>(message));
+
+  std::ostringstream ss;
+  ss << "test_result(" << res.desc() << ", " << msg.desc() << ")";
+
   return make_matcher(
-    test_result{result, message},
-    [](const auto &actual, const auto &expected) -> bool {
-      return actual.passed == expected.passed &&
-             actual.message == expected.message;
-    }, ""
+    [res = std::move(res), msg = std::move(msg)]
+    (const auto &actual) -> bool {
+      return res(actual.passed) && msg(actual.message);
+    }, ss.str()
   );
 }
 
@@ -62,7 +68,9 @@ suite<> test_calling("test calling", [](auto &_) {
     });
 
     auto result = s.tests()[0].function();
-    expect(result, equal_test_result(false, "expected: true\nactual:   false"));
+    expect(result, equal_test_result(
+      false, regex_match("(.*\n)?expected: true\nactual:   false")
+    ));
 
     expect("test run count", test.runs(), equal_to(1));
   });
@@ -95,7 +103,9 @@ suite<> test_calling("test calling", [](auto &_) {
     });
 
     auto result = s.tests()[0].function();
-    expect(result, equal_test_result(false, "expected: true\nactual:   false"));
+    expect(result, equal_test_result(
+      false, regex_match("(.*\n)?expected: true\nactual:   false")
+    ));
 
     expect("setup run count", setup.runs(), equal_to(1));
     expect("test run count", test.runs(), equal_to(1));
@@ -114,7 +124,9 @@ suite<> test_calling("test calling", [](auto &_) {
     });
 
     auto result = s.tests()[0].function();
-    expect(result, equal_test_result(false, "expected: true\nactual:   false"));
+    expect(result, equal_test_result(
+      false, regex_match("(.*\n)?expected: true\nactual:   false")
+    ));
 
     expect("setup run count", setup.runs(), equal_to(1));
     expect("test run count", test.runs(), equal_to(0));
@@ -133,7 +145,9 @@ suite<> test_calling("test calling", [](auto &_) {
     });
 
     auto result = s.tests()[0].function();
-    expect(result, equal_test_result(false, "expected: true\nactual:   false"));
+    expect(result, equal_test_result(
+      false, regex_match("(.*\n)?expected: true\nactual:   false")
+    ));
 
     expect("setup run count", setup.runs(), equal_to(1));
     expect("test run count", test.runs(), equal_to(1));
@@ -156,7 +170,7 @@ suite<> test_calling("test calling", [](auto &_) {
 
     auto result = s.tests()[0].function();
     expect(result, equal_test_result(
-      false, "expected: \"foo\"\nactual:   \"test\""
+      false, regex_match("(.*\n)?expected: \"foo\"\nactual:   \"test\"")
     ));
 
     expect("setup run count", setup.runs(), equal_to(1));

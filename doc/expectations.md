@@ -23,6 +23,7 @@ your console (with the name of the failing [test case](writing-tests.md#tests)
 preceding it):
 
 ```
+/path/to/test_file.cpp:13
 expected: 666
 actual:   123
 ```
@@ -40,22 +41,19 @@ If this expectation fails, you'll see a message like the previous failure, but
 with the description shown as well:
 
 ```
-is 'to mega therion'?
+is 'to mega therion'? (/path/to/test_file.cpp:13)
 expected: 666
 actual:   123
 ```
 
-### Getting the file and line number
+!!! note
+    Currently, only GCC supports getting the filename and line number
+    automatically for an expectation. However, as compilers add support for
+    `std::experimental::source_location`, mettle will automatically switch to
+    showing these values. However, in the meantime you can use the
+    `METTLE_EXPECT` macro in place of `mettle::expect` if you need to see the
+    filename and line number.
 
-If you'd like your expectation to print out its file and line number if it
-failed, you can replace `expect` in either example above with `METTLE_EXPECT`.
-In this case, you'll see output like:
-
-```
-is 'to mega therion'? (test_file.cpp:13)
-expected: 666
-actual:   123
-```
 
 ## Printing objects
 
