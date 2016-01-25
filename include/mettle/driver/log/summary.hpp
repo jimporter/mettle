@@ -86,7 +86,7 @@ namespace log {
 } // namespace mettle
 
 #ifdef _MSC_VER
-#   pragma warning(pop)
+#  pragma warning(pop)
 #endif
 
 #endif
