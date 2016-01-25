@@ -175,7 +175,8 @@ for the type(s) in question).  Here it is all put together:</p>
 <p>If this expectation failed, you'd see something like the following logged to
 your console (with the name of the failing <a href="../writing-tests/#tests">test case</a>
 preceding it):</p>
-<pre><code>expected: 666
+<pre><code class="plain">/path/to/test_file.cpp:13
+expected: 666
 actual:   123
 </code></pre>
 
@@ -187,20 +188,20 @@ figure out what it was testing if you get a failure:</p>
 
 <p>If this expectation fails, you'll see a message like the previous failure, but
 with the description shown as well:</p>
-<pre><code>is 'to mega therion'?
+<pre><code class="plain">is 'to mega therion'? (/path/to/test_file.cpp:13)
 expected: 666
 actual:   123
 </code></pre>
 
-<h3 id="getting-the-file-and-line-number">Getting the file and line number</h3>
-<p>If you'd like your expectation to print out its file and line number if it
-failed, you can replace <code>expect</code> in either example above with <code>METTLE_EXPECT</code>.
-In this case, you'll see output like:</p>
-<pre><code>is 'to mega therion'? (test_file.cpp:13)
-expected: 666
-actual:   123
-</code></pre>
-
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently, only GCC supports getting the filename and line number
+automatically for an expectation. However, as compilers add support for
+<code>std::experimental::source_location</code>, mettle will automatically switch to
+showing these values. However, in the meantime you can use the
+<code>METTLE_EXPECT</code> macro in place of <code>mettle::expect</code> if you need to see the
+filename and line number.</p>
+</div>
 <h2 id="printing-objects">Printing objects</h2>
 <p>In the examples above, the error output shows the expected and actual values.
 This is easy for simple types, like integers, but what about complex
