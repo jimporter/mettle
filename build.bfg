@@ -51,7 +51,7 @@ extra_pkgs = {
 driver = test_driver(
     mettle,
     options=['--output=verbose'],
-    environment={'TEST_DATA': 'test_data/'},
+    environment={'TEST_DATA': 'test_data'},
 )
 for src in find_files('test', '*.cpp'):
     test(executable(

@@ -8,6 +8,9 @@ struct int_factory {
   }
 };
 
+// XXX: Enable these tests on MSVC (they trigger an ICE somewhere).
+#if !defined(_MSC_VER) || defined(__clang__)
+
 suite<> test_string_alg("string algorithms", [](auto &_) {
   subsuite<>(_, "stringify()", [](auto &_) {
     using detail::stringify;
@@ -82,3 +85,5 @@ suite<> test_string_alg("string algorithms", [](auto &_) {
     });
   });
 });
+
+#endif

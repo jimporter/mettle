@@ -9,9 +9,11 @@ using namespace mettle;
 #ifndef _WIN32
 #  include "../../src/mettle/posix/run_test_file.hpp"
 namespace platform = mettle::posix;
+std::string pathsep = "/";
 #else
 #  include "../../src/mettle/windows/run_test_file.hpp"
 namespace platform = mettle::windows;
+std::string pathsep = "\\";
 #endif
 
 #include "../test_event_logger.hpp"
@@ -25,9 +27,11 @@ struct logger_factory {
 
 std::string test_data(const std::string &file) {
   auto path = getenv("TEST_DATA");
-  if(!path)
-    return file;
-  return path + file;
+  std::string result = path ? path + pathsep + file : file;
+#ifdef _WIN32
+  result += ".exe";
+#endif
+  return result;
 }
 
 auto passed(bool expected) {

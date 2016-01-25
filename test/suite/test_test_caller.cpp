@@ -45,6 +45,8 @@ test_test_caller("test_caller", [](auto &_) {
     expect("teardown run count", teardown.runs(), equal_to(1));
   });
 
+// XXX: Enable this test on MSVC (it triggers an ICE somewhere).
+#if !defined(_MSC_VER) || defined(__clang__)
   _.test("test with auto fixture", [](auto &tup) {
     run_counter_from_tuple<decltype(
       std::tuple_cat(tup, std::tuple<int>())
@@ -58,6 +60,7 @@ test_test_caller("test_caller", [](auto &_) {
     expect("test run count", test.runs(), equal_to(1));
     expect("teardown run count", teardown.runs(), equal_to(1));
   });
+#endif
 
   _.test("test with type-only fixture", [](auto &tup) {
     run_counter_from_tuple<Fixture> setup, teardown, test;

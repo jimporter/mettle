@@ -180,6 +180,9 @@ suite<> test_calling("test calling", [](auto &_) {
 
 });
 
+// XXX: Enable these tests on MSVC (they trigger an ICE somewhere).
+#if !defined(_MSC_VER) || defined(__clang__)
+
 suite<basic_fixture> test_fixtures("suite fixtures", [](auto &_) {
 
   _.template subsuite<int>("subsuite", type_only, [](auto &_) {
@@ -218,3 +221,5 @@ suite<basic_fixture> test_fixtures("suite fixtures", [](auto &_) {
   });
 
 });
+
+#endif

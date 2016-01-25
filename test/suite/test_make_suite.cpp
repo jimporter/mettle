@@ -67,6 +67,9 @@ auto complex_suite(int skip_level = 4) {
   );
 }
 
+// XXX: Enable these tests on MSVC (they trigger an ICE somewhere).
+#if !defined(_MSC_VER) || defined(__clang__)
+
 suite<> test_suite("suite creation", [](auto &_) {
 
   subsuite<>(_, "basic creation", [](auto &_) {
@@ -437,3 +440,5 @@ suite<> test_suite("suite creation", [](auto &_) {
   });
 
 });
+
+#endif

@@ -29,6 +29,9 @@ auto meta_matcher(int x) {
   return filter([](auto &&i) { return i / 2; }, equal_to(x));
 }
 
+// XXX: Enable these tests on MSVC (they trigger an ICE somewhere).
+#if !defined(_MSC_VER) || defined(__clang__)
+
 suite<> test_matchers("matchers", [](auto &_) {
 
   subsuite<>(_, "make_matcher()", [](auto &_) {
@@ -784,3 +787,5 @@ suite<> test_matchers("matchers", [](auto &_) {
   });
 
 });
+
+#endif

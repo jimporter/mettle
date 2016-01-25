@@ -55,6 +55,8 @@ suite<> test_capture("any_capture", [](auto &_) {
     ));
   });
 
+// MSVC doesn't support moving arrays, despite it being legal (I think).
+#if !defined(_MSC_VER) || defined(__clang__)
   _.test("capture array by move", []() {
     moveable_type t[2];
     any_capture<moveable_type[2]> capture(std::move(t));
@@ -66,4 +68,5 @@ suite<> test_capture("any_capture", [](auto &_) {
       filter([](auto &&x) { return x.moves; }, equal_to(1))
     ));
   });
+#endif
 });

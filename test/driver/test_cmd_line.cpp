@@ -163,6 +163,8 @@ suite<> test_parse_attr("parse_attr()", [](auto &_) {
   });
 });
 
+#if !defined(_MSC_VER) || defined(__clang__)
+
 suite<> test_program_options("program_options utilities", [](auto &_) {
   namespace opts = boost::program_options;
 
@@ -313,3 +315,5 @@ suite<> test_program_options("program_options utilities", [](auto &_) {
   });
 
 });
+
+#endif
