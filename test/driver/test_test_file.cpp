@@ -18,12 +18,16 @@ suite<> test_test_file("test_file", [](auto &_) {
 
     _.test("quoting", []() {
       expect(test_file("\"two words\"").args(), array("two words"));
+#ifndef _WIN32
       expect(test_file("'two words'").args(), array("two words"));
+#endif
     });
 
     _.test("escaping", []() {
+#ifndef _WIN32
       expect(test_file("arg\\ 1 arg\\ 2").args(), array("arg 1", "arg 2"));
       expect(test_file("o\\'toole").args(), array("o'toole"));
+#endif
       expect(test_file("\\\"quote\\\"").args(), array("\"quote\""));
     });
 
