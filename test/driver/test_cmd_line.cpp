@@ -163,6 +163,7 @@ suite<> test_parse_attr("parse_attr()", [](auto &_) {
   });
 });
 
+// XXX: Enable these tests on MSVC (they trigger an ICE somewhere).
 #if !defined(_MSC_VER) || defined(__clang__)
 
 suite<> test_program_options("program_options utilities", [](auto &_) {
