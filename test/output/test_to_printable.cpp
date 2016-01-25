@@ -71,8 +71,10 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
   });
 
   _.test("enums", []() {
-    expect(enum_value, stringified("my_enum(0)"));
-    expect(my_enum_class::value, stringified("my_enum_class(0)"));
+    expect(enum_value, stringified(regex_match("(enum )?my_enum\\(0\\)$")));
+    expect(my_enum_class::value, stringified(
+      regex_match("(enum )?my_enum_class\\(0\\)$")
+    ));
   });
 
   _.test("pointers", []() {
