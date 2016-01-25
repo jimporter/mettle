@@ -22,7 +22,7 @@ If this expectation failed, you'd see something like the following logged to
 your console (with the name of the failing [test case](writing-tests.md#tests)
 preceding it):
 
-```
+```plain
 /path/to/test_file.cpp:13
 expected: 666
 actual:   123
@@ -40,7 +40,7 @@ mettle::expect("is 'to mega therion'?", the_beast, mettle::equal_to(666));
 If this expectation fails, you'll see a message like the previous failure, but
 with the description shown as well:
 
-```
+```plain
 is 'to mega therion'? (/path/to/test_file.cpp:13)
 expected: 666
 actual:   123

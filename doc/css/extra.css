@@ -15,6 +15,13 @@ h1 {
   border: 1px solid #CCC;
 }
 
+/* Fix plaintext code blocks' padding. */
+
+code.plain {
+  display: block;
+  padding: 0.5em;
+}
+
 /* Fix links containing inline code. */
 
 a > code {
