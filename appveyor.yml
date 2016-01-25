@@ -22,5 +22,4 @@ install:
 test_script:
   - bfg9000 build --backend=ninja
   - cd build
-  - type build.ninja
   - ninja test
