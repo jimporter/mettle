@@ -15,10 +15,8 @@ namespace detail {
      >::type;
   };
 
-  // XXX: We could use decltype(auto) for this function, but MSVC's
-  // implementation is currently broken.
   template<typename Container, typename Element>
-  inline typename ref_if<Container, Element>::type
+  inline decltype(auto)
   forward_if(Element &&value) {
     return static_cast<typename ref_if<Container, Element>::type>(value);
   }
