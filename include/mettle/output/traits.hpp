@@ -10,10 +10,9 @@ namespace detail {
   template<typename>
   auto check_printable(...) -> std::false_type;
 
-  // XXX: Use std::declval here when Visual Studio gets with the program.
   template<typename T>
   auto check_printable(int) -> decltype(
-    *(std::ostream*)0 << *(T*)0, std::true_type()
+    std::declval<std::ostream&>() << std::declval<T>(), std::true_type()
   );
 }
 
@@ -53,10 +52,9 @@ namespace detail {
   template<typename>
   auto check_iterable(...) -> std::false_type;
 
-  // XXX: Use std::declval here when Visual Studio gets with the program.
   template<typename T>
   auto check_iterable(int) -> decltype(
-    std::begin(*(T*)0), std::end(*(T*)0), std::true_type()
+    std::begin(std::declval<T>()), std::end(std::declval<T>()), std::true_type()
   );
 }
 
