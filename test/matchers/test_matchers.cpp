@@ -29,9 +29,6 @@ auto meta_matcher(int x) {
   return filter([](auto &&i) { return i / 2; }, equal_to(x));
 }
 
-// XXX: Enable these tests on MSVC (they trigger an ICE somewhere).
-#if !defined(_MSC_VER) || defined(__clang__)
-
 suite<> test_matchers("matchers", [](auto &_) {
 
   subsuite<>(_, "make_matcher()", [](auto &_) {
@@ -134,6 +131,8 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(describe(equal_to(123), "foo").desc(), equal_to("foo"));
     });
 
+// XXX: Enable this test on MSVC (it triggers an ICE somewhere).
+#if !defined(_MSC_VER) || defined(__clang__)
     _.test("filter()", []() {
       std::pair<std::string, int> p("first", 1);
       auto first = [](auto &&x) { return x.first; };
@@ -170,6 +169,7 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(filter(second, msg_matcher(false, ""), "desc ")(p).message,
              equal_to("desc 1"));
     });
+#endif
 
     _.test("ensure_matcher()", []() {
       auto zero_matcher = ensure_matcher(0);
@@ -748,6 +748,8 @@ suite<> test_matchers("matchers", [](auto &_) {
     });
   });
 
+// XXX: Implement these matchers on Windows.
+#ifndef _WIN32
   subsuite<>(_, "death", [](auto &_) {
     _.test("killed()", []() {
       auto aborter = []() { abort(); };
@@ -785,7 +787,6 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(exited()(exiter).message, equal_to("exited with status 0"));
     });
   });
+#endif
 
 });
-
-#endif
