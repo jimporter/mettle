@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_SUITE_MAKE_SUITE_HPP
 #define INC_METTLE_SUITE_MAKE_SUITE_HPP
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <functional>
@@ -30,11 +31,6 @@ namespace detail {
   struct compiled_subsuite_helper<std::tuple<T...>> {
     using type = compiled_suite<void(T&...)>;
   };
-
-  // XXX: Remove this when MSVC's std::max is constexpr.
-  constexpr inline std::size_t max_(std::size_t a, std::size_t b) {
-    return a < b ? b : a;
-  }
 }
 
 template<typename Tuple>
@@ -112,7 +108,7 @@ make_subsuites(const std::string &name, const attributes &attrs,
 template<typename ParentFixture, typename ...Fixture, typename Factory,
          typename F>
 inline std::array<compiled_subsuite<ParentFixture>,
-                  detail::max_(sizeof...(Fixture), 1)>
+                  std::max(sizeof...(Fixture), std::size_t(1))>
 make_subsuites(const std::string &name, Factory &&factory, const F &f) {
   return make_subsuites<ParentFixture, Fixture...>(
     name, {}, std::forward<Factory>(factory), f
@@ -121,7 +117,7 @@ make_subsuites(const std::string &name, Factory &&factory, const F &f) {
 
 template<typename ParentFixture, typename ...Fixture, typename F>
 inline std::array<compiled_subsuite<ParentFixture>,
-                  detail::max_(sizeof...(Fixture), 1)>
+                  std::max(sizeof...(Fixture), std::size_t(1))>
 make_subsuites(const std::string &name, const attributes &attrs, const F &f) {
   return make_subsuites<ParentFixture, Fixture...>(
     name, attrs, auto_factory, f
@@ -130,7 +126,7 @@ make_subsuites(const std::string &name, const attributes &attrs, const F &f) {
 
 template<typename ParentFixture, typename ...Fixture, typename F>
 inline std::array<compiled_subsuite<ParentFixture>,
-                  detail::max_(sizeof...(Fixture), 1)>
+                  std::max(sizeof...(Fixture), std::size_t(1))>
 make_subsuites(const std::string &name, const F &f) {
   return make_subsuites<ParentFixture, Fixture...>(name, auto_factory, f);
 }
@@ -396,7 +392,7 @@ make_basic_suites(const std::string &name, const attributes &attrs,
 }
 
 template<typename Exception, typename ...Fixture, typename Factory, typename F>
-inline std::array<runnable_suite, detail::max_(sizeof...(Fixture), 1)>
+inline std::array<runnable_suite, std::max(sizeof...(Fixture), std::size_t(1))>
 make_basic_suites(const std::string &name, Factory &&factory, const F &f) {
   return make_basic_suites<Exception, Fixture...>(
     name, {}, std::forward<Factory>(factory), f
@@ -404,14 +400,14 @@ make_basic_suites(const std::string &name, Factory &&factory, const F &f) {
 }
 
 template<typename Exception, typename ...Fixture, typename F>
-inline std::array<runnable_suite, detail::max_(sizeof...(Fixture), 1)>
+inline std::array<runnable_suite, std::max(sizeof...(Fixture), std::size_t(1))>
 make_basic_suites(const std::string &name, const attributes &attrs,
                   const F &f) {
   return make_basic_suites<Exception, Fixture...>(name, attrs, auto_factory, f);
 }
 
 template<typename Exception, typename ...Fixture, typename F>
-inline std::array<runnable_suite, detail::max_(sizeof...(Fixture), 1)>
+inline std::array<runnable_suite, std::max(sizeof...(Fixture), std::size_t(1))>
 make_basic_suites(const std::string &name, const F &f) {
   return make_basic_suites<Exception, Fixture...>(name, auto_factory, f);
 }
@@ -451,7 +447,7 @@ make_subsuite(const Parent &, const std::string &name, Args &&...args) {
 
 template<typename ...Fixture, typename Parent, typename ...Args>
 inline std::array<compiled_subsuite<typename Parent::tuple_type>,
-                  detail::max_(sizeof...(Fixture), 1)>
+                  std::max(sizeof...(Fixture), std::size_t(1))>
 make_subsuites(const Parent &, const std::string &name, const attributes &attrs,
                Args &&...args) {
   return make_subsuites<typename Parent::tuple_type, Fixture...>(
@@ -461,7 +457,7 @@ make_subsuites(const Parent &, const std::string &name, const attributes &attrs,
 
 template<typename ...Fixture, typename Parent, typename ...Args>
 inline std::array<compiled_subsuite<typename Parent::tuple_type>,
-                  detail::max_(sizeof...(Fixture), 1)>
+                  std::max(sizeof...(Fixture), std::size_t(1))>
 make_subsuites(const Parent &, const std::string &name, Args &&...args) {
   return make_subsuites<typename Parent::tuple_type, Fixture...>(
     name, std::forward<Args>(args)...
