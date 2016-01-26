@@ -13,6 +13,7 @@ environment:
 
 install:
   - call "%VS%" x86
+  - cl.exe
   - set PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
   - pip install bfg9000
   - cinst ninja
