@@ -67,9 +67,6 @@ auto complex_suite(int skip_level = 4) {
   );
 }
 
-// XXX: Enable these tests on MSVC (they trigger an ICE somewhere).
-#if !defined(_MSC_VER) || defined(__clang__)
-
 suite<> test_suite("suite creation", [](auto &_) {
 
   subsuite<>(_, "basic creation", [](auto &_) {
@@ -143,6 +140,8 @@ suite<> test_suite("suite creation", [](auto &_) {
 
   subsuite<>(_, "subsuite creation", [](auto &_) {
 
+// XXX: Enable this test on MSVC (`.template` triggers an ICE).
+#if !defined(_MSC_VER) || defined(__clang__)
     _.test("create subsuites", []() {
       auto s = make_suite<>("test suite", [](auto &_){
         _.test("test", []() {});
@@ -161,6 +160,7 @@ suite<> test_suite("suite creation", [](auto &_) {
 
       expect(s, complex_suite());
     });
+#endif
 
     _.test("create subsuites with helper syntax", []() {
       auto s = make_suite<>("test suite", [](auto &_){
@@ -200,6 +200,9 @@ suite<> test_suite("suite creation", [](auto &_) {
       expect(s, complex_suite());
     });
 
+
+// XXX: Enable this test on MSVC (`.template` triggers an ICE).
+#if !defined(_MSC_VER) || defined(__clang__)
     _.test("create a parameterized subsuite", []() {
       auto s = make_suite<>("test suite", [](auto &_) {
         _.template subsuite<int, float>("subsuite", [](auto &_) {
@@ -218,12 +221,16 @@ suite<> test_suite("suite creation", [](auto &_) {
         simple_suite("subsuite (float)")
       ));
     });
+#endif
 
     _.test("create a parameterized subsuite with helper syntax", []() {
       auto s = make_suite<>("test suite", [](auto &_) {
         subsuite<int, float>(_, "subsuite", [](auto &_) {
+// XXX: Enable this on MSVC (it triggers an ICE).
+#if !defined(_MSC_VER) || defined(__clang__)
           using Fixture = fixture_type_t<decltype(_)>;
           (void)Fixture{};
+#endif
 
           _.test("test", [](auto &) {});
           _.test("skipped test", {skip}, [](auto &) {});
@@ -241,8 +248,11 @@ suite<> test_suite("suite creation", [](auto &_) {
     _.test("create a parameterized subsuite with make_subsuites", []() {
       auto s = make_suite<>("test suite", [](auto &_) {
         _.subsuite(make_subsuites<int, float>(_, "subsuite", [](auto &_) {
+// XXX: Enable this on MSVC (it triggers an ICE).
+#if !defined(_MSC_VER) || defined(__clang__)
           using Fixture = fixture_type_t<decltype(_)>;
           (void)Fixture{};
+#endif
 
           _.test("test", [](auto &) {});
           _.test("skipped test", {skip}, [](auto &) {});
@@ -288,6 +298,8 @@ suite<> test_suite("suite creation", [](auto &_) {
       expect(s, simple_suite("test suite", true));
     });
 
+// XXX: Enable this test on MSVC (`.template` triggers an ICE).
+#if !defined(_MSC_VER) || defined(__clang__)
     _.test("create skipped subsuites", []() {
       auto s = make_suite<>("test suite", [](auto &_){
         _.test("test", []() {});
@@ -306,6 +318,7 @@ suite<> test_suite("suite creation", [](auto &_) {
 
       expect(s, complex_suite(1));
     });
+#endif
 
     _.test("create skipped subsuites with helper syntax", []() {
       auto s = make_suite<>("test suite", [](auto &_){
@@ -390,11 +403,16 @@ suite<> test_suite("suite creation", [](auto &_) {
       ));
     });
 
+
     _.test("create a type-only parameterized test suite", []() {
       auto suites = make_suites<int, float>("test suite", type_only,
                                             [](auto &_) {
+
+// XXX: Enable this on MSVC (it triggers an ICE).
+#if !defined(_MSC_VER) || defined(__clang__)
         using Fixture = fixture_type_t<decltype(_)>;
         (void)Fixture{};
+#endif
 
         _.test("test", []() {});
         _.test("skipped test", {skip}, []() {});
@@ -408,8 +426,12 @@ suite<> test_suite("suite creation", [](auto &_) {
 
     _.test("create a skipped parameterized test suite", []() {
       auto suites = make_suites<int, float>("test suite", {skip}, [](auto &_){
+
+// XXX: Enable this on MSVC (it triggers an ICE).
+#if !defined(_MSC_VER) || defined(__clang__)
         using Fixture = fixture_type_t<decltype(_)>;
         (void)Fixture{};
+#endif
 
         _.test("test", [](auto &) {});
         _.test("skipped test", {skip}, [](auto &) {});
@@ -424,8 +446,12 @@ suite<> test_suite("suite creation", [](auto &_) {
     _.test("create a skipped type-only parameterized test suite", []() {
       auto suites = make_suites<int, float>("test suite", {skip}, type_only,
                                             [](auto &_) {
+
+// XXX: Enable this on MSVC (it triggers an ICE).
+#if !defined(_MSC_VER) || defined(__clang__)
         using Fixture = fixture_type_t<decltype(_)>;
         (void)Fixture{};
+#endif
 
         _.test("test", []() {});
         _.test("skipped test", {skip}, []() {});
@@ -441,4 +467,3 @@ suite<> test_suite("suite creation", [](auto &_) {
 
 });
 
-#endif
