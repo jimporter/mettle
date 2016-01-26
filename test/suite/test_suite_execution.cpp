@@ -37,6 +37,8 @@ struct basic_fixture {
 };
 
 struct basic_factory {
+  basic_factory(int data) : data(data) {}
+
   template<typename T>
   T make() {
     return { data };
@@ -180,12 +182,9 @@ suite<> test_calling("test calling", [](auto &_) {
 
 });
 
-// XXX: Enable these tests on MSVC (they trigger an ICE somewhere).
-#if !defined(_MSC_VER) || defined(__clang__)
-
 suite<basic_fixture> test_fixtures("suite fixtures", [](auto &_) {
 
-  _.template subsuite<int>("subsuite", type_only, [](auto &_) {
+  subsuite<int>(_, "subsuite", type_only, [](auto &_) {
     _.setup([](basic_fixture &f) {
       f.data++;
     });
@@ -194,8 +193,7 @@ suite<basic_fixture> test_fixtures("suite fixtures", [](auto &_) {
       expect(f.data, equal_to(2));
     });
 
-    _.template subsuite<basic_fixture>("sub-subsuite", basic_factory{5},
-                                       [](auto &_) {
+    subsuite<basic_fixture>(_, "sub-subsuite", basic_factory(5), [](auto &_) {
       _.setup([](basic_fixture &f, basic_fixture &) {
         f.data++;
       });
@@ -221,5 +219,3 @@ suite<basic_fixture> test_fixtures("suite fixtures", [](auto &_) {
   });
 
 });
-
-#endif
