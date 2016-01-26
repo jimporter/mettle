@@ -72,7 +72,7 @@ namespace detail {
   template<typename Iter, typename Func = identity>
   inline const string_joiner<Iter, Func>
   iter_joined(Iter begin, Iter end, const Func &func = identity{},
-         const std::string &delim = ", ") {
+              const std::string &delim = ", ") {
     return {begin, end, func, delim};
   }
 
