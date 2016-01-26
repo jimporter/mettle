@@ -46,13 +46,6 @@ namespace detail {
   struct test_caller_base {
     using function_type = std::function<void(Args&...)>;
 
-#if defined(_MSC_VER) && !defined(__clang__)
-    test_caller_base(
-      function_type setup, function_type teardown, function_type test
-    ) : setup(std::move(setup)), teardown(std::move(teardown)),
-        test(std::move(test)) {}
-#endif
-
     void call_test(Args &...args) {
       if(setup)
         setup(args...);
