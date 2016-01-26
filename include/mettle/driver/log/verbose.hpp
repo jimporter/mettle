@@ -7,7 +7,8 @@
 #include "indent.hpp"
 #include "../detail/export.hpp"
 
-#ifdef _MSC_VER
+// Ignore warnings from MSVC about DLL interfaces.
+#if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(push)
 #  pragma warning(disable:4251)
 #endif
@@ -51,7 +52,7 @@ namespace log {
 
 } // namespace mettle
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(pop)
 #endif
 

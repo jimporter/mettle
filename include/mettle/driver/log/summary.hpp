@@ -12,7 +12,8 @@
 #include "indent.hpp"
 #include "../detail/export.hpp"
 
-#ifdef _MSC_VER
+// Ignore warnings from MSVC about DLL interfaces.
+#if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(push)
 #  pragma warning(disable:4251)
 #endif
@@ -44,10 +45,7 @@ namespace log {
     void failed_file(const std::string &file, const std::string &message);
 
     void summarize() const;
-
-    bool good() const {
-      return failures_.empty();
-    }
+    bool good() const;
   private:
     struct file_info {
       std::size_t index;
@@ -85,7 +83,7 @@ namespace log {
 
 } // namespace mettle
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(pop)
 #endif
 

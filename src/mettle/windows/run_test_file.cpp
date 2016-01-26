@@ -63,13 +63,6 @@ namespace windows {
     }
   }
 
-// MSVC doesn't understand the [[noreturn]] attribute, so it thinks this can
-// exit without returning.
-#ifdef _MSC_VER
-#  pragma warning(push)
-#  pragma warning(disable:4715)
-#endif
-
   file_result run_test_file(std::vector<std::string> args, log::pipe &logger) {
     scoped_pipe message_pipe;
     if(!message_pipe.open())
@@ -137,10 +130,6 @@ namespace windows {
       return {true, ""};
     }
   }
-
-#ifdef _MSC_VER
-#  pragma warning(pop)
-#endif
 }
 
 } // namespace mettle

@@ -57,9 +57,8 @@ namespace term {
       return ios.iword(console_flag) & 0xf0;
     }
 
-// MSVC doesn't understand the [[noreturn]] attribute, so it thinks these can
-// exit without returning.
-#ifdef _MSC_VER
+// MSVC doesn't understand [[noreturn]], so just ignore the warning here.
+#if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(push)
 #  pragma warning(disable:4715)
 #endif
@@ -92,7 +91,7 @@ namespace term {
       }
     }
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(pop)
 #endif
 

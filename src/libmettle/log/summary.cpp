@@ -140,6 +140,10 @@ namespace log {
     }
   }
 
+  bool summary::good() const {
+    return failures_.empty();
+  }
+
   void summary::summarize_failure(
     const std::string &where, const std::vector<failure> &failures
   ) const {
