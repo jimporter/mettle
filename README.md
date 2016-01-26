@@ -64,11 +64,11 @@ suite<> basic("a basic suite", [](auto &_) {
 
 ## License
 
-This library is [licensed](http://jimporter.github.io/mettle/license/) under the
-BSD 3-Clause license.
+This library is [licensed](https://jimporter.github.io/mettle/license/) under
+the BSD 3-Clause license.
 
 [documentation-image]: https://img.shields.io/badge/docs-mettle-blue.svg
-[documentation-link]: http://jimporter.github.io/mettle/
+[documentation-link]: https://jimporter.github.io/mettle/
 [travis-image]: https://travis-ci.org/jimporter/mettle.svg?branch=master
 [travis-link]: https://travis-ci.org/jimporter/mettle
 [appveyor-image]: https://ci.appveyor.com/api/projects/status/76hye1aj81qg1nqg/branch/master?svg=true

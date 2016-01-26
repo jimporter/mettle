@@ -11,13 +11,12 @@ Before you get started with mettle, you'll need to install its dependencies:
 
 * A C++14-compliant compiler (for generic lambdas and various standard library
   features)
-     * [clang](http://clang.llvm.org/) + [libc++](http://libcxx.llvm.org/) 3.6+
-     * [GCC](https://gcc.gnu.org/) + [libstdc++](https://gcc.gnu.org/libstdc++/)
-       5.1+
-     * [MSVC](http://www.visualstudio.com/) 2015+
+     * [clang](http://clang.llvm.org/) 3.6+
+     * [GCC](https://gcc.gnu.org/) 5.1+
+     * [MSVC](https://www.visualstudio.com/) 2015+
 * [Boost](http://www.boost.org/) 1.55+
 * [bencode.hpp](https://github.com/jimporter/bencode.hpp)
-* [bfg9000](http://jimporter.github.io/bfg9000/)
+* [bfg9000](https://jimporter.github.io/bfg9000/)
 
 !!! note
     If you plan to use libc++, [this
@@ -43,9 +42,9 @@ includes `std::experimental::string_view`.
 
 Once you've installed all of mettle's dependencies, you can build mettle itself!
 To build mettle, you'll first need to install
-[bfg9000](http://jimporter.github.io/bfg9000/). The snippets below assume you're
-using the [Ninja](https://ninja-build.org/) backend for bfg9000, but you can
-replace this with any other build system bfg supports.
+[bfg9000](https://jimporter.github.io/bfg9000/). The snippets below assume
+you're using the [Ninja](https://ninja-build.org/) backend for bfg9000, but you
+can replace this with any other build system bfg supports.
 
 Building with bfg9000 is straightforward. Just run the following:
 
@@ -58,7 +57,7 @@ $ ninja install
 You can specify the compiler to use and its options with the usual (Unix-style)
 environment variables, such as `CXX` and `CXXFLAGS`. For further information
 about how to use bfg9000, such as changing the build backend, see its
-[documentation](http://jimporter.github.io/bfg9000/user/building/).
+[documentation](https://jimporter.github.io/bfg9000/user/building/).
 
 ## Testing mettle
 
