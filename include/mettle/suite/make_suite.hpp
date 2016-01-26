@@ -248,13 +248,7 @@ public:
     );
   }
 private:
-#if !defined(_MSC_VER) || defined(__clang__)
-  auto
-#else
-  // XXX: Remove this when MSVC can handle it (see C3779).
-  detail::test_caller<factory_type, ParentFixture, Fixture...>
-#endif
-  wrap_test(typename base::function_type test) {
+  auto wrap_test(typename base::function_type test) {
     return detail::test_caller<factory_type, ParentFixture, Fixture...>{
       factory_, base::setup_, base::teardown_, std::move(test)
     };
@@ -285,13 +279,7 @@ public:
     );
   }
 private:
-#if !defined(_MSC_VER) || defined(__clang__)
-  auto
-#else
-  // XXX: Remove this when MSVC can handle it (see C3779).
-  std::function<test_result()>
-#endif
-  wrap_test(typename base::function_type test) {
+  auto wrap_test(typename base::function_type test) {
     return [
       test_function = detail::test_caller<factory_type, std::tuple<>, T...>{
         factory_, base::setup_, base::teardown_, std::move(test)
