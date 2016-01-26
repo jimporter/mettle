@@ -5,6 +5,8 @@ using namespace mettle;
 #include <boost/program_options.hpp>
 #include "../helpers.hpp"
 
+namespace opts = boost::program_options;
+
 auto match_filter_item(attr_instance attr, bool matched) {
   std::ostringstream ss;
   ss << "filter_item(" << to_printable(attr.attribute.name()) << ") => "
@@ -163,11 +165,7 @@ suite<> test_parse_attr("parse_attr()", [](auto &_) {
   });
 });
 
-// XXX: Enable these tests on MSVC (they trigger an ICE somewhere).
-#if !defined(_MSC_VER) || defined(__clang__)
-
 suite<> test_program_options("program_options utilities", [](auto &_) {
-  namespace opts = boost::program_options;
 
   subsuite<opts::options_description>(_, "options_description utilities",
                                       [](auto &_) {
@@ -316,5 +314,3 @@ suite<> test_program_options("program_options utilities", [](auto &_) {
   });
 
 });
-
-#endif
