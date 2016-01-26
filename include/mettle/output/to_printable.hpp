@@ -13,13 +13,6 @@
 #include "../detail/string_algorithm.hpp"
 #include "../detail/tuple_algorithm.hpp"
 
-// XXX: Remove this when MSVC supports "optional" constexpr on templates.
-#if !defined(_MSC_VER) || defined(__clang__)
-#  define METTLE_CONSTEXPR constexpr
-#else
-#  define METTLE_CONSTEXPR
-#endif
-
 namespace mettle {
 
 // The to_printable overloads below are rather complicated, to say the least; we
@@ -113,7 +106,7 @@ auto to_printable_boolish(T t) -> typename std::enable_if<
 }
 
 template<typename T>
-METTLE_CONSTEXPR inline auto to_printable_boolish(const T *t) ->
+constexpr inline auto to_printable_boolish(const T *t) ->
 typename std::enable_if<!std::is_function<T>::value, const T *>::type {
   return t;
 }
@@ -165,7 +158,7 @@ auto to_printable_boolish(const T &t) -> typename std::enable_if<
 // Pass-through
 
 template<typename T>
-METTLE_CONSTEXPR auto to_printable(const T &t) -> typename std::enable_if<
+constexpr auto to_printable(const T &t) -> typename std::enable_if<
   is_printable<T>::value && !is_boolish<T>::value, const T &
 >::type {
   return t;
@@ -174,8 +167,7 @@ METTLE_CONSTEXPR auto to_printable(const T &t) -> typename std::enable_if<
 // Bool-ish types
 
 template<typename T>
-METTLE_CONSTEXPR inline auto
-to_printable(const T &t) -> typename std::enable_if<
+constexpr inline auto to_printable(const T &t) -> typename std::enable_if<
   is_printable<T>::value && is_boolish<T>::value,
   decltype(to_printable_boolish(t))
 >::type {
@@ -196,7 +188,7 @@ auto to_printable(const T &t) -> typename std::enable_if<
 // Enum classes
 
 template<typename T>
-METTLE_CONSTEXPR inline auto to_printable(T t) -> typename std::enable_if<
+constexpr inline auto to_printable(T t) -> typename std::enable_if<
   !is_printable<T>::value && std::is_enum<T>::value, std::string
 >::type {
   return to_printable_boolish(t);

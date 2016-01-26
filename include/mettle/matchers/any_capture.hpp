@@ -4,13 +4,6 @@
 #include <cstdint>
 #include <utility>
 
-// XXX: Remove this when MSVC supports "optional" constexpr on templates.
-#if !defined(_MSC_VER) || defined(__clang__)
-#  define METTLE_CONSTEXPR constexpr
-#else
-#  define METTLE_CONSTEXPR
-#endif
-
 namespace mettle {
 
 template<typename T>
@@ -18,8 +11,8 @@ class any_capture {
 public:
   using type = T;
 
-  METTLE_CONSTEXPR any_capture(const T &t) : value(t) {}
-  METTLE_CONSTEXPR any_capture(T &&t) : value(std::move(t)) {}
+  constexpr any_capture(const T &t) : value(t) {}
+  constexpr any_capture(T &&t) : value(std::move(t)) {}
 
   T value;
 };
@@ -29,19 +22,19 @@ class any_capture<T[N]> {
 public:
   using type = T[N];
 
-  METTLE_CONSTEXPR any_capture(const T (&t)[N])
+  constexpr any_capture(const T (&t)[N])
     : any_capture(t, std::make_index_sequence<N>()) {}
-  METTLE_CONSTEXPR any_capture(T (&&t)[N])
+  constexpr any_capture(T (&&t)[N])
     : any_capture(std::move(t), std::make_index_sequence<N>()) {}
 
   T value[N];
 private:
   template<std::size_t ...I>
-  METTLE_CONSTEXPR any_capture(const T (&t)[N], std::index_sequence<I...>)
+  constexpr any_capture(const T (&t)[N], std::index_sequence<I...>)
     : value{t[I]...} {}
 
   template<std::size_t ...I>
-  METTLE_CONSTEXPR any_capture(T (&&t)[N], std::index_sequence<I...>)
+  constexpr any_capture(T (&&t)[N], std::index_sequence<I...>)
     : value{std::move(t[I])...} {}
 };
 
