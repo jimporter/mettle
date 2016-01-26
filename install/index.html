@@ -167,15 +167,14 @@ it.</p>
 <ul>
 <li>A C++14-compliant compiler (for generic lambdas and various standard library
   features)<ul>
-<li><a href="http://clang.llvm.org/">clang</a> + <a href="http://libcxx.llvm.org/">libc++</a> 3.6+</li>
-<li><a href="https://gcc.gnu.org/">GCC</a> + <a href="https://gcc.gnu.org/libstdc++/">libstdc++</a>
-   5.1+</li>
-<li><a href="http://www.visualstudio.com/">MSVC</a> 2015+</li>
+<li><a href="http://clang.llvm.org/">clang</a> 3.6+</li>
+<li><a href="https://gcc.gnu.org/">GCC</a> 5.1+</li>
+<li><a href="https://www.visualstudio.com/">MSVC</a> 2015+</li>
 </ul>
 </li>
 <li><a href="http://www.boost.org/">Boost</a> 1.55+</li>
 <li><a href="https://github.com/jimporter/bencode.hpp">bencode.hpp</a></li>
-<li><a href="http://jimporter.github.io/bfg9000/">bfg9000</a></li>
+<li><a href="https://jimporter.github.io/bfg9000/">bfg9000</a></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -197,9 +196,9 @@ includes <code>std::experimental::string_view</code>.</p>
 <h2 id="building-and-installing">Building and installing</h2>
 <p>Once you've installed all of mettle's dependencies, you can build mettle itself!
 To build mettle, you'll first need to install
-<a href="http://jimporter.github.io/bfg9000/">bfg9000</a>. The snippets below assume you're
-using the <a href="https://ninja-build.org/">Ninja</a> backend for bfg9000, but you can
-replace this with any other build system bfg supports.</p>
+<a href="https://jimporter.github.io/bfg9000/">bfg9000</a>. The snippets below assume
+you're using the <a href="https://ninja-build.org/">Ninja</a> backend for bfg9000, but you
+can replace this with any other build system bfg supports.</p>
 <p>Building with bfg9000 is straightforward. Just run the following:</p>
 <pre><code class="sh">$ bfg9000 /path/to/mettle build
 $ cd build
@@ -209,7 +208,7 @@ $ ninja install
 <p>You can specify the compiler to use and its options with the usual (Unix-style)
 environment variables, such as <code>CXX</code> and <code>CXXFLAGS</code>. For further information
 about how to use bfg9000, such as changing the build backend, see its
-<a href="http://jimporter.github.io/bfg9000/user/building/">documentation</a>.</p>
+<a href="https://jimporter.github.io/bfg9000/user/building/">documentation</a>.</p>
 <h2 id="testing-mettle">Testing mettle</h2>
 <p>Mettle's own tests are written entirely in mettle. (It wouldn't be a very good
 test framework otherwise!) To build and run all the tests, just call the
