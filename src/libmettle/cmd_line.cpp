@@ -78,14 +78,14 @@ make_output_options(output_options &opts, const logger_factory &factory) {
   std::ostringstream ss;
   ss << "set output format (one of: " << detail::joined(factory, [](auto &&i) {
     return i.first;
-  }) << ")";
+  }) << "; default: " << opts.output << ")";
 
   options_description desc("Output options");
   desc.add_options()
     ("output,o", value(&opts.output)->value_name("FORMAT"), ss.str().c_str())
     ("color,c", value(&opts.color)->value_name("WHEN")
                 ->implicit_value(color_option::always, "always"),
-     "show colored output (one of: \"never\", \"auto\", or \"always\")")
+     "show colored output (one of: never, auto, always; default: auto)")
     ("runs,n", value(&opts.runs)->value_name("N"), "number of test runs")
     ("show-terminal", value(&opts.show_terminal)->zero_tokens(),
      "show terminal output for each test")
