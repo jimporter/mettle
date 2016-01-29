@@ -291,8 +291,6 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(ns, nil());
     });
 
-// XXX: These fail with unresolved symbols on MSVC. Investigate why.
-#if !defined(_MSC_VER) || defined(__clang__)
     _.test("char16_t", []() {
       expect(u'x', stringified("'x'"));
       expect(u'\n', stringified("'\\n'"));
@@ -340,6 +338,5 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       char32_t *ns = nullptr;
       expect(ns, nil());
     });
-#endif
   });
 });

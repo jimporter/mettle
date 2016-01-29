@@ -100,14 +100,35 @@ string_convert(const METTLE_STRING_VIEW<wchar_t> &s) {
 
 inline std::string
 string_convert(const METTLE_STRING_VIEW<char16_t> &s) {
+#if defined(_MSC_VER) && !defined(__clang__)
+  // MSVC 2015's codecvt expects uint16_t instead of char16_t because char16_t
+  // used to just be a typedef of uint16_t.
+  std::wstring_convert<std::codecvt_utf8_utf16<std::uint16_t>,
+                       std::uint16_t> conv;
+  return conv.to_bytes(
+    reinterpret_cast<const std::uint16_t *>(s.data()),
+    reinterpret_cast<const std::uint16_t *>(s.data() + s.size())
+  );
+#else
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
   return conv.to_bytes(s.data(), s.data() + s.size());
+#endif
 }
 
 inline std::string
 string_convert(const METTLE_STRING_VIEW<char32_t> &s) {
+#if defined(_MSC_VER) && !defined(__clang__)
+  // MSVC 2015's codecvt expects uint32_t instead of char32_t because char32_t
+  // used to just be a typedef of uint32_t.
+  std::wstring_convert<std::codecvt_utf8<std::uint32_t>, std::uint32_t> conv;
+  return conv.to_bytes(
+    reinterpret_cast<const std::uint32_t *>(s.data()),
+    reinterpret_cast<const std::uint32_t *>(s.data() + s.size())
+  );
+#else
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
   return conv.to_bytes(s.data(), s.data() + s.size());
+#endif
 }
 
 } // namespace mettle
