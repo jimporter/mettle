@@ -119,7 +119,6 @@ logger_factory make_logger_factory() {
       out, args.runs, args.show_time, args.show_terminal
     );
   });
-  f.alias("brief", "");
 
   return f;
 }

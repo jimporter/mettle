@@ -49,7 +49,7 @@ METTLE_PUBLIC bool
 color_enabled(color_option opt, int fd = 1 /* STDOUT_FILENO */);
 
 struct output_options {
-  std::string output;
+  std::string output = "brief";
   color_option color = color_option::automatic;
   std::size_t runs = 1;
   bool show_terminal = false;

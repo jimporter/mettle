@@ -24,10 +24,6 @@ public:
     registry_.emplace(std::move(name), std::move(f));
   }
 
-  void alias(const std::string &name, std::string alias) {
-    registry_.emplace(std::move(alias), registry_.at(name));
-  }
-
   template<typename ...CallArgs>
   result_type make(const std::string &name, CallArgs &&...args) {
     return registry_.at(name)(std::forward<CallArgs>(args)...);

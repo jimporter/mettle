@@ -36,16 +36,6 @@ test_object_factory("object_factory", [](auto &_) {
     }, thrown<std::out_of_range>());
   });
 
-  _.test("alias()", [](object_factory<int(int)> &f) {
-    f.alias("double", "twice");
-    auto x = f.make("twice", 1);
-    expect(x, equal_to(2));
-
-    expect([&f]() {
-      f.alias("unknown", "alias");
-    }, thrown<std::out_of_range>());
-  });
-
   _.test("iteration", [](object_factory<int(int)> &f) {
     expect(f, array( equal_factory("double", 2), equal_factory("triple", 3) ));
   });
