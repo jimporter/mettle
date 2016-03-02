@@ -1,24 +1,27 @@
 site_name: mettle
 docs_dir: doc
 repo_url: https://github.com/jimporter/mettle/
-theme: yeti
+copyright: Copyright &copy; 2014-2016 Jim Porter
 
+theme: yeti
 extra_css:
-- css/extra.css
+  - css/extra.css
 
 markdown_extensions:
-- admonition
-- attr_list
+  - admonition
+  - attr_list
+  - toc:
+      permalink: §
 
 pages:
-- Home: index.md
-- Installation: install.md
-- User Guide:
-  - Tutorial: tutorial.md
-  - Running Tests: running-tests.md
-  - Writing Tests: writing-tests.md
-  - Expectations: expectations.md
-  - Built-in Matchers: built-in-matchers.md
-  - Writing Your Own Matchers: writing-matchers.md
-- Developer Guide: developer.md
-- License: license.md
+  - Home: index.md
+  - Installation: install.md
+  - User Guide:
+      - Tutorial: tutorial.md
+      - Running Tests: running-tests.md
+      - Writing Tests: writing-tests.md
+      - Expectations: expectations.md
+      - Built-in Matchers: built-in-matchers.md
+      - Writing Your Own Matchers: writing-matchers.md
+  - Developer Guide: developer.md
+  - License: license.md

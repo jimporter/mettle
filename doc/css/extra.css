@@ -3,40 +3,8 @@
 h1 {
   padding-bottom: 21px;
   margin-bottom: 21px;
+  border-bottom: 1px solid #ddd;
   border-bottom: 1px solid #DDD;
-}
-
-/* Make the inline code blocks look like the paragraph-level ones. */
-
-*:not(pre) > code {
-  color: #333;
-  background-color: #F5F5F5;
-  padding: 1px 3px;
-  border: 1px solid #CCC;
-}
-
-/* Fix plaintext code blocks' padding. */
-
-code.plain {
-  display: block;
-  padding: 0.5em;
-}
-
-/* Fix links containing inline code. */
-
-a > code {
-  color: #008CBA !important;
-}
-
-a > code:hover,
-a > code:focus {
-  color: #00526E !important;
-}
-
-/* Reduce the padding for code blocks. */
-
-pre {
-  padding: 4px;
 }
 
 /* Add small subtitles. */
