@@ -67,29 +67,41 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                     
-                        <li >
-                            <a href="../tutorial/">Tutorial</a>
-                        </li>
+                        
+<li >
+    <a href="../tutorial/">Tutorial</a>
+</li>
+
                     
-                        <li >
-                            <a href="../running-tests/">Running Tests</a>
-                        </li>
+                        
+<li >
+    <a href="../running-tests/">Running Tests</a>
+</li>
+
                     
-                        <li >
-                            <a href="../writing-tests/">Writing Tests</a>
-                        </li>
+                        
+<li >
+    <a href="../writing-tests/">Writing Tests</a>
+</li>
+
                     
-                        <li >
-                            <a href="../expectations/">Expectations</a>
-                        </li>
+                        
+<li >
+    <a href="../expectations/">Expectations</a>
+</li>
+
                     
-                        <li class="active">
-                            <a href="./">Built-in Matchers</a>
-                        </li>
+                        
+<li class="active">
+    <a href="./">Built-in Matchers</a>
+</li>
+
                     
-                        <li >
-                            <a href="../writing-matchers/">Writing Your Own Matchers</a>
-                        </li>
+                        
+<li >
+    <a href="../writing-matchers/">Writing Your Own Matchers</a>
+</li>
+
                     
                     </ul>
                 </li>
@@ -111,6 +123,11 @@
 
             <!-- Search, Navigation and Repo links -->
             <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
                 <li >
                     <a rel="next" href="../expectations/">
                         <i class="fa fa-arrow-left"></i> Previous
@@ -163,25 +180,25 @@
 </div></div>
             <div class="col-md-9" role="main">
 
-<h1 id="built-in-matchers">Built-in Matchers</h1>
+<h1 id="built-in-matchers">Built-in Matchers<a class="headerlink" href="#built-in-matchers" title="Permanent link">§</a></h1>
 <p>Mettle comes with a set of general-purpose matchers that should cover the most
 common cases. We'll look at each of them below. The entire set of matchers can
 be included via <code>#include &lt;mettle/matchers.hpp&gt;</code>, or you can include just the
 categories you need by including the appropriate file (e.g.
 <code>#include &lt;mettle/matchers/combinatoric.hpp</code>).</p>
-<h2 id="core">Core</h2>
+<h2 id="core">Core<a class="headerlink" href="#core" title="Permanent link">§</a></h2>
 <p class="subtitle"><em>&lt;mettle/matchers/core.hpp&gt;</em></p>
-<h3 id="anything">anything()</h3>
+<h3 id="anything">anything()<a class="headerlink" href="#anything" title="Permanent link">§</a></h3>
 <p>A matcher that always returns <code>true</code>. This is useful primarily as a placeholder,
 e.g. when you can't know for sure what an expected value is going to be, but you
 still want to test it.</p>
-<h3 id="is_notmatcher">is_not(<em>matcher</em>)</h3>
+<h3 id="is_notmatcher">is_not(<em>matcher</em>)<a class="headerlink" href="#is_notmatcher" title="Permanent link">§</a></h3>
 <p>A matcher that negates another matcher.</p>
-<h3 id="describematcher-desc">describe(<em>matcher</em>, <em>desc</em>)</h3>
+<h3 id="describematcher-desc">describe(<em>matcher</em>, <em>desc</em>)<a class="headerlink" href="#describematcher-desc" title="Permanent link">§</a></h3>
 <p>A matcher that overrides the description of another matcher. <code>desc</code> is a string
 describing the resulting matcher. This can be useful for when the default
 description is unclear or overly-verbose.</p>
-<h3 id="filterfunc-matcher-desc">filter(<em>func</em>, <em>matcher</em>[, <em>desc</em>])</h3>
+<h3 id="filterfunc-matcher-desc">filter(<em>func</em>, <em>matcher</em>[, <em>desc</em>])<a class="headerlink" href="#filterfunc-matcher-desc" title="Permanent link">§</a></h3>
 <p>A matcher that filters the expected value through a function before passing it
 to another matcher. This helps when creating complex matchers that test multiple
 parts of a type, such as:</p>
@@ -192,9 +209,9 @@ parts of a type, such as:</p>
 <p>Additionally, you may pass in a string for <code>desc</code>, which will be added as a
 prefix to <code>matcher</code>'s description. This helps provide useful output explaining
 what exactly <code>func</code> is doing to the expected value.</p>
-<h2 id="relational">Relational</h2>
+<h2 id="relational">Relational<a class="headerlink" href="#relational" title="Permanent link">§</a></h2>
 <p class="subtitle"><em>&lt;mettle/matchers/relational.hpp&gt;</em></p>
-<h3 id="equal_tovalue">equal_to(<em>value</em>)</h3>
+<h3 id="equal_tovalue">equal_to(<em>value</em>)<a class="headerlink" href="#equal_tovalue" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when the actual value is equal to <code>value</code>
 according to the <code>==</code> operator.</p>
 <div class="admonition note">
@@ -204,24 +221,24 @@ matcher as an argument, you can pass in a value, and it will be implicitly
 converted to <code>equal_to(value)</code>. This doesn't work for the root matcher; you
 need to explicitly say <code>equal_to(value)</code> in that case.</p>
 </div>
-<h3 id="not_equal_tovalue">not_equal_to(<em>value</em>)</h3>
+<h3 id="not_equal_tovalue">not_equal_to(<em>value</em>)<a class="headerlink" href="#not_equal_tovalue" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when the actual value is not equal to <code>value</code>
 according to the <code>!=</code> operator.</p>
-<h3 id="greatervalue">greater(<em>value</em>)</h3>
+<h3 id="greatervalue">greater(<em>value</em>)<a class="headerlink" href="#greatervalue" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when the actual value is greater than <code>value</code>
 according to the <code>&gt;</code> operator.</p>
-<h3 id="greater_equalvalue">greater_equal(<em>value</em>)</h3>
+<h3 id="greater_equalvalue">greater_equal(<em>value</em>)<a class="headerlink" href="#greater_equalvalue" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when the actual value is greater than or equal to
 <code>value</code> according to the <code>&gt;=</code> operator.</p>
-<h3 id="lessvalue">less(<em>value</em>)</h3>
+<h3 id="lessvalue">less(<em>value</em>)<a class="headerlink" href="#lessvalue" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when the actual value is less than <code>value</code>
 according to the <code>&lt;</code> operator.</p>
-<h3 id="less_equalvalue">less_equal(<em>value</em>)</h3>
+<h3 id="less_equalvalue">less_equal(<em>value</em>)<a class="headerlink" href="#less_equalvalue" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when the actual value is less than or equal to
 <code>value</code> according to the <code>&lt;=</code> operator.</p>
-<h2 id="arithmetic">Arithmetic</h2>
+<h2 id="arithmetic">Arithmetic<a class="headerlink" href="#arithmetic" title="Permanent link">§</a></h2>
 <p class="subtitle"><em>&lt;mettle/matchers/arithmetic.hpp&gt;</em></p>
-<h3 id="near_tovalue-epsilon">near_to(<em>value</em>[, <em>epsilon</em>])</h3>
+<h3 id="near_tovalue-epsilon">near_to(<em>value</em>[, <em>epsilon</em>])<a class="headerlink" href="#near_tovalue-epsilon" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when the actual value is approximately equal to
 <code>value</code>, specifically when:</p>
 <pre><code class="c++">auto mag = std::max&lt;T&gt;(std::abs(expected), std::abs(actual));
@@ -236,16 +253,16 @@ std::abs(actual - expected) &lt;= mag * epsilon;
 approximately equal, this matcher will likely fail if one of the values is
 zero. In that case, use <code>near_to_abs</code>.</p>
 </div>
-<h3 id="near_to_absvalue-tolerance">near_to_abs(<em>value</em>, <em>tolerance</em>)</h3>
+<h3 id="near_to_absvalue-tolerance">near_to_abs(<em>value</em>, <em>tolerance</em>)<a class="headerlink" href="#near_to_absvalue-tolerance" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when the actual value is approximately equal to
 <code>value</code>, specifically when <code>std::abs(actual - expected) &lt;= tolerance</code>.</p>
-<h2 id="regular-expression">Regular expression</h2>
+<h2 id="regular-expression">Regular expression<a class="headerlink" href="#regular-expression" title="Permanent link">§</a></h2>
 <p class="subtitle"><em>&lt;mettle/matchers/regex.hpp&gt;</em></p>
-<h3 id="regex_matchex-syntax-match">regex_match(<em>ex</em>[, <em>syntax</em>, <em>match</em>])</h3>
+<h3 id="regex_matchex-syntax-match">regex_match(<em>ex</em>[, <em>syntax</em>, <em>match</em>])<a class="headerlink" href="#regex_matchex-syntax-match" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if the regex <code>ex</code> matches the entirety of the
 actual value. If <code>syntax</code> or <code>match</code> are specified, the matcher uses those for
 the regex's syntax and match flags, respectively.</p>
-<h3 id="regex_searchex-syntax-match">regex_search(<em>ex</em>[, <em>syntax</em>, <em>match</em>])</h3>
+<h3 id="regex_searchex-syntax-match">regex_search(<em>ex</em>[, <em>syntax</em>, <em>match</em>])<a class="headerlink" href="#regex_searchex-syntax-match" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if the regex <code>ex</code> matches a subsequence of the
 actual value. If <code>syntax</code> or <code>match</code> are specified, the matcher uses those for
 the regex's syntax and match flags, respectively.</p>
@@ -256,23 +273,23 @@ of the expression, the <code>ex</code> parameter in the above matchers should be
 string, not a regex. This allows the matcher to print the regex to the
 console if the matcher fails.</p>
 </div>
-<h2 id="combinatoric">Combinatoric</h2>
+<h2 id="combinatoric">Combinatoric<a class="headerlink" href="#combinatoric" title="Permanent link">§</a></h2>
 <p class="subtitle"><em>&lt;mettle/matchers/combinatoric.hpp&gt;</em></p>
-<h3 id="anymatchers">any(<em>matchers...</em>)</h3>
+<h3 id="anymatchers">any(<em>matchers...</em>)<a class="headerlink" href="#anymatchers" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when <em>any of</em> its composed matchers are true.</p>
-<h3 id="allmatchers">all(<em>matchers...</em>)</h3>
+<h3 id="allmatchers">all(<em>matchers...</em>)<a class="headerlink" href="#allmatchers" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when <em>all of</em> its composed matchers are true.</p>
-<h3 id="nonematchers">none(<em>matchers...</em>)</h3>
+<h3 id="nonematchers">none(<em>matchers...</em>)<a class="headerlink" href="#nonematchers" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when <em>none of</em> its composed matchers are true.</p>
-<h2 id="collection">Collection</h2>
+<h2 id="collection">Collection<a class="headerlink" href="#collection" title="Permanent link">§</a></h2>
 <p class="subtitle"><em>&lt;mettle/matchers/collection.hpp&gt;</em></p>
-<h3 id="membermatcher">member(<em>matcher</em>)</h3>
+<h3 id="membermatcher">member(<em>matcher</em>)<a class="headerlink" href="#membermatcher" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when an item in a collection matches the composed
 matcher.</p>
-<h3 id="eachmatcher">each(<em>matcher</em>)</h3>
+<h3 id="eachmatcher">each(<em>matcher</em>)<a class="headerlink" href="#eachmatcher" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when <em>every</em> item in a collection matches the
 composed matcher.</p>
-<h3 id="eachrange-meta_matcher">each(<em>range</em>, <em>meta_matcher</em>)</h3>
+<h3 id="eachrange-meta_matcher">each(<em>range</em>, <em>meta_matcher</em>)<a class="headerlink" href="#eachrange-meta_matcher" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when each item in a collection matches the
 corresponding item in <em>range</em> according to the matcher built from
 <code>meta_matcher</code>. <em>range</em> can be any iterable collection, including a
@@ -288,33 +305,33 @@ in. For instance, <code>equal_to&lt;int&gt;</code> will expect an rvalue-referen
 <code>int</code>. If <code>range</code> is an lvalue, you'll need to pass <code>equal_to&lt;const int &amp;&gt;</code>
 instead.</p>
 </div>
-<h3 id="eachbegin-end-meta_matcher">each(<em>begin</em>, <em>end</em>, <em>meta_matcher</em>)</h3>
+<h3 id="eachbegin-end-meta_matcher">each(<em>begin</em>, <em>end</em>, <em>meta_matcher</em>)<a class="headerlink" href="#eachbegin-end-meta_matcher" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when each item in a collection matches the
 corresponding item in the range [<code>begin</code>, <code>end</code>) according to the matcher
 built from <code>meta_matcher</code>.</p>
-<h3 id="arraymatchers">array(<em>matchers...</em>)</h3>
+<h3 id="arraymatchers">array(<em>matchers...</em>)<a class="headerlink" href="#arraymatchers" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when the <em>ith</em> item in a collection matches the
 <em>ith</em> composed matcher, <em>and</em> the number of items in the collection is equal to
 the number of composed matchers.</p>
-<h3 id="tuplematchers">tuple(<em>matchers...</em>)</h3>
+<h3 id="tuplematchers">tuple(<em>matchers...</em>)<a class="headerlink" href="#tuplematchers" title="Permanent link">§</a></h3>
 <p>Similar to <code>array</code>, but applies to tuples instead (or anything else with a
 <code>std::get&lt;I&gt;()</code> overload). This matcher returns <code>true</code> when the <em>ith</em> item in a
 tuple matches the <em>ith</em> composed matcher. Since the size of a tuple can be
 determined at compile time, a length mismatch between the tuple and the number
 of composed matchers will cause a compiler error.</p>
-<h3 id="sortedcomparator">sorted([<em>comparator</em>])</h3>
+<h3 id="sortedcomparator">sorted([<em>comparator</em>])<a class="headerlink" href="#sortedcomparator" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when the collection is sorted according to the
 binary predicate <code>comparator</code> (or the less-than operator if <code>comparator</code> isn't
 supplied).</p>
-<h3 id="permutationrange-predicate">permutation(<em>range</em>[, <em>predicate</em>])</h3>
+<h3 id="permutationrange-predicate">permutation(<em>range</em>[, <em>predicate</em>])<a class="headerlink" href="#permutationrange-predicate" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if a permutation of <code>range</code> exists that equals
 the collection according for the binary predicate <code>predicate</code> (or the equality
 operator if <code>predicate</code> isn't supplied).</p>
-<h3 id="permutationbegin-end-predicate">permutation(<em>begin</em>, <em>end</em>[, <em>predicate</em>])</h3>
+<h3 id="permutationbegin-end-predicate">permutation(<em>begin</em>, <em>end</em>[, <em>predicate</em>])<a class="headerlink" href="#permutationbegin-end-predicate" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if the range [<code>begin</code>, <code>end</code>) is a permutation
 of the collection for the binary predicate <code>predicate</code> (or the equality operator
 if <code>predicate</code> isn't supplied).</p>
-<h2 id="exception">Exception</h2>
+<h2 id="exception">Exception<a class="headerlink" href="#exception" title="Permanent link">§</a></h2>
 <p class="subtitle"><em>&lt;mettle/matchers/exception.hpp&gt;</em></p>
 <p>Exception matchers work a bit differently from other matchers. Since we can't
 catch an exception after the fact, we have to pass a function to our
@@ -323,18 +340,18 @@ expectation instead:</p>
        thrown&lt;std::runtime_error&gt;(&quot;uh oh&quot;));
 </code></pre>
 
-<h3 id="throwntypewhat_matcher">thrown&lt;<em>Type</em>&gt;(<em>what_matcher</em>)</h3>
+<h3 id="throwntypewhat_matcher">thrown&lt;<em>Type</em>&gt;(<em>what_matcher</em>)<a class="headerlink" href="#throwntypewhat_matcher" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if an exception of type <code>Type</code> (or a subclass of
 <code>Type</code>) is thrown and whose <code>what()</code> member function matches <code>what_matcher</code>.</p>
-<h3 id="throwntype">thrown&lt;<em>Type</em>&gt;()</h3>
+<h3 id="throwntype">thrown&lt;<em>Type</em>&gt;()<a class="headerlink" href="#throwntype" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if an exception of type <code>Type</code> (or a subclass of
 <code>Type</code>) is thrown; equivalent to: <code>thrown&lt;Type&gt;(anything())</code>.</p>
-<h3 id="thrown">thrown()</h3>
+<h3 id="thrown">thrown()<a class="headerlink" href="#thrown" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if an exception of <em>any</em> type <code>Type</code> is thrown.</p>
-<h3 id="thrown_rawtypematcher">thrown_raw&lt;<em>Type</em>&gt;(<em>matcher</em>)</h3>
+<h3 id="thrown_rawtypematcher">thrown_raw&lt;<em>Type</em>&gt;(<em>matcher</em>)<a class="headerlink" href="#thrown_rawtypematcher" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if an exception of type <code>Type</code> (or a subclass of
 <code>Type</code>) is thrown and whose value matches <code>matcher</code>.</p>
-<h2 id="death">Death</h2>
+<h2 id="death">Death<a class="headerlink" href="#death" title="Permanent link">§</a></h2>
 <p class="subtitle"><em>&lt;mettle/matchers/death.hpp&gt;</em></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -348,19 +365,54 @@ death matchers require a function to be passed to the expectation:</p>
 <pre><code class="c++">expect([]() { abort(); }, killed(SIGABRT));
 </code></pre>
 
-<h3 id="killedmatcher">killed([<em>matcher</em>])</h3>
+<h3 id="killedmatcher">killed([<em>matcher</em>])<a class="headerlink" href="#killedmatcher" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if the function terminated the process via a
 signal. If <code>matcher</code> is specified, <code>killed</code> will only return <code>true</code> if the
 signal that was raised matches <code>matcher</code>.</p>
-<h3 id="exitedmatcher">exited([<em>matcher</em>])</h3>
+<h3 id="exitedmatcher">exited([<em>matcher</em>])<a class="headerlink" href="#exitedmatcher" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if the function terminated the process by exiting
 (i.e. with <code>exit</code>, <code>_exit</code>, or <code>_Exit</code>). If <code>matcher</code> is specified, <code>exited</code>
 will only return <code>true</code> if the exit status matches <code>matcher</code>.</p></div>
         </div>
 
+        <footer class="col-md-12">
+            <hr>
+            
+                <center>Copyright &copy; 2014-2016 Jim Porter</center>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
         <script src="../js/jquery-1.10.2.min.js"></script>
         <script src="../js/bootstrap-3.0.3.min.js"></script>
         <script src="../js/highlight.pack.js"></script>
+        <script>var base_url = '..';</script>
+        <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
         <script src="../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

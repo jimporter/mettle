@@ -3,16 +3,16 @@
 
     
     <url>
-     <loc>None/</loc>
-     <lastmod>2016-01-26</lastmod>
+     <loc>/</loc>
+     <lastmod>2016-03-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
 
     
     <url>
-     <loc>None/install/</loc>
-     <lastmod>2016-01-26</lastmod>
+     <loc>/install/</loc>
+     <lastmod>2016-03-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -20,38 +20,38 @@
     
         
     <url>
-     <loc>None/tutorial/</loc>
-     <lastmod>2016-01-26</lastmod>
+     <loc>/tutorial/</loc>
+     <lastmod>2016-03-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc>None/running-tests/</loc>
-     <lastmod>2016-01-26</lastmod>
+     <loc>/running-tests/</loc>
+     <lastmod>2016-03-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc>None/writing-tests/</loc>
-     <lastmod>2016-01-26</lastmod>
+     <loc>/writing-tests/</loc>
+     <lastmod>2016-03-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc>None/expectations/</loc>
-     <lastmod>2016-01-26</lastmod>
+     <loc>/expectations/</loc>
+     <lastmod>2016-03-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc>None/built-in-matchers/</loc>
-     <lastmod>2016-01-26</lastmod>
+     <loc>/built-in-matchers/</loc>
+     <lastmod>2016-03-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc>None/writing-matchers/</loc>
-     <lastmod>2016-01-26</lastmod>
+     <loc>/writing-matchers/</loc>
+     <lastmod>2016-03-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -59,16 +59,16 @@
 
     
     <url>
-     <loc>None/developer/</loc>
-     <lastmod>2016-01-26</lastmod>
+     <loc>/developer/</loc>
+     <lastmod>2016-03-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
 
     
     <url>
-     <loc>None/license/</loc>
-     <lastmod>2016-01-26</lastmod>
+     <loc>/license/</loc>
+     <lastmod>2016-03-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
     

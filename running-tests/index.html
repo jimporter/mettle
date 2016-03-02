@@ -67,29 +67,41 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                     
-                        <li >
-                            <a href="../tutorial/">Tutorial</a>
-                        </li>
+                        
+<li >
+    <a href="../tutorial/">Tutorial</a>
+</li>
+
                     
-                        <li class="active">
-                            <a href="./">Running Tests</a>
-                        </li>
+                        
+<li class="active">
+    <a href="./">Running Tests</a>
+</li>
+
                     
-                        <li >
-                            <a href="../writing-tests/">Writing Tests</a>
-                        </li>
+                        
+<li >
+    <a href="../writing-tests/">Writing Tests</a>
+</li>
+
                     
-                        <li >
-                            <a href="../expectations/">Expectations</a>
-                        </li>
+                        
+<li >
+    <a href="../expectations/">Expectations</a>
+</li>
+
                     
-                        <li >
-                            <a href="../built-in-matchers/">Built-in Matchers</a>
-                        </li>
+                        
+<li >
+    <a href="../built-in-matchers/">Built-in Matchers</a>
+</li>
+
                     
-                        <li >
-                            <a href="../writing-matchers/">Writing Your Own Matchers</a>
-                        </li>
+                        
+<li >
+    <a href="../writing-matchers/">Writing Your Own Matchers</a>
+</li>
+
                     
                     </ul>
                 </li>
@@ -111,6 +123,11 @@
 
             <!-- Search, Navigation and Repo links -->
             <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
                 <li >
                     <a rel="next" href="../tutorial/">
                         <i class="fa fa-arrow-left"></i> Previous
@@ -153,11 +170,11 @@
 </div></div>
             <div class="col-md-9" role="main">
 
-<h1 id="running-tests">Running Tests</h1>
+<h1 id="running-tests">Running Tests<a class="headerlink" href="#running-tests" title="Permanent link">§</a></h1>
 <p>Once you've built an executable test (if you haven't built one, be sure to read
 the <a href="../tutorial/">tutorial</a> first), you'll find that there are a bunch of
 options for running it. There are two main ways to run a test executable.</p>
-<h2 id="running-the-test-executable-directly">Running the test executable directly</h2>
+<h2 id="running-the-test-executable-directly">Running the test executable directly<a class="headerlink" href="#running-the-test-executable-directly" title="Permanent link">§</a></h2>
 <p>For small projects, you may have only a single test executable. In this case,
 you can simply run the file directly:</p>
 <pre><code class="sh">$ ./test_my_code
@@ -165,7 +182,7 @@ you can simply run the file directly:</p>
 
 <p><a href="#command-line-options">Below</a>, we'll see a list of the options we can pass to
 the text executable, letting you tailor the output or how the tests are run.</p>
-<h2 id="using-the-mettle-universal-test-driver">Using the <em>mettle</em> universal test driver</h2>
+<h2 id="using-the-mettle-universal-test-driver">Using the <em>mettle</em> universal test driver<a class="headerlink" href="#using-the-mettle-universal-test-driver" title="Permanent link">§</a></h2>
 <p>For testing larger projects, it's generally recommended to divide your test
 suites into multiple <code>.cpp</code> files and compile them into separate binaries. This
 allows you to improve build times and to better isolate tests from each other.</p>
@@ -179,7 +196,7 @@ well. To specify which of the test binaries to run, just pass their filenames to
 
 <p>Like the individual test executables, the <code>mettle</code> driver accepts several
 <a href="#command-line-options">options</a> to modify its behavior and output.</p>
-<h3 id="forwarding-arguments">Forwarding arguments</h3>
+<h3 id="forwarding-arguments">Forwarding arguments<a class="headerlink" href="#forwarding-arguments" title="Permanent link">§</a></h3>
 <p>You can also pass along arguments to a test binary by quoting the binary:</p>
 <pre><code class="sh">$ mettle test_file1 &quot;caliber test_foo.cpp test_bar.cpp&quot;
 </code></pre>
@@ -190,21 +207,21 @@ quoted arguments:</p>
 <pre><code class="sh">$ mettle test_file1 &quot;caliber test_*.cpp&quot;
 </code></pre>
 
-<h2 id="command-line-options">Command-line options</h2>
-<h3 id="generic-options">Generic options</h3>
-<h4 id="-help-h">--help (-h)</h4>
+<h2 id="command-line-options">Command-line options<a class="headerlink" href="#command-line-options" title="Permanent link">§</a></h2>
+<h3 id="generic-options">Generic options<a class="headerlink" href="#generic-options" title="Permanent link">§</a></h3>
+<h4 id="-help-h">--help (-h)<a class="headerlink" href="#-help-h" title="Permanent link">§</a></h4>
 <p>Show help and usage information.</p>
-<h3 id="driver-options">Driver options</h3>
-<h4 id="-timeout-n-t">--timeout <em>N</em> (-t)</h4>
+<h3 id="driver-options">Driver options<a class="headerlink" href="#driver-options" title="Permanent link">§</a></h3>
+<h4 id="-timeout-n-t">--timeout <em>N</em> (-t)<a class="headerlink" href="#-timeout-n-t" title="Permanent link">§</a></h4>
 <p>Time out and fail any tests that take longer than <em>N</em> milliseconds to execute.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p><code>--no-subproc</code> can't be specified while using this option.</p>
 </div>
-<h4 id="-test-regex-t">--test <em>REGEX</em> (-T)</h4>
+<h4 id="-test-regex-t">--test <em>REGEX</em> (-T)<a class="headerlink" href="#-test-regex-t" title="Permanent link">§</a></h4>
 <p>Filter the tests that will be run to those matching a regex. If <code>--test</code> is
 specified multiple times, tests that match <em>any</em> of the regexes will be run.</p>
-<h4 id="-attr-attrvalue-a">--attr <em>ATTR[=VALUE],...</em> (-a)</h4>
+<h4 id="-attr-attrvalue-a">--attr <em>ATTR[=VALUE],...</em> (-a)<a class="headerlink" href="#-attr-attrvalue-a" title="Permanent link">§</a></h4>
 <p>Filter the tests that will be run based on the tests'
 <a href="../writing-tests/#test-attributes">attributes</a>. Tests matching each of the
 attributes (and, optionally, values) will be run by the test driver. If <code>--attr</code>
@@ -239,14 +256,14 @@ set to something other than <code>http</code>.</p>
 <p>Run tests that match either attribute.</p>
 </li>
 </ul>
-<h4 id="-no-subproc">--no-subproc</h4>
+<h4 id="-no-subproc">--no-subproc<a class="headerlink" href="#-no-subproc" title="Permanent link">§</a></h4>
 <p>By default, mettle creates a subprocess for each test, in order to detect
 crashes during the execution of a test. To disable this, you can pass
 <code>--no-subproc</code>, and all the tests will run in the same process. This option can
 only be specified for the individual test binaries, <em>not</em> for the <code>mettle</code>
 driver.</p>
-<h3 id="output-options">Output options</h3>
-<h4 id="-output-format-o">--output <em>FORMAT</em> (-o)</h4>
+<h3 id="output-options">Output options<a class="headerlink" href="#output-options" title="Permanent link">§</a></h3>
+<h4 id="-output-format-o">--output <em>FORMAT</em> (-o)<a class="headerlink" href="#-output-format-o" title="Permanent link">§</a></h4>
 <p>Set the output format for the test results. If <code>--output</code> isn't passed, the
 format is set to <em>brief</em>. The available formats are:</p>
 <ul>
@@ -256,26 +273,61 @@ format is set to <em>brief</em>. The available formats are:</p>
   test, <code>!</code> a failed test, and <code>_</code> a skipped test.</li>
 <li><code>verbose</code>: Show the full name of tests and suites as they're being run.</li>
 </ul>
-<h4 id="-color-when-c">--color <em>[WHEN]</em> (-c)</h4>
+<h4 id="-color-when-c">--color <em>[WHEN]</em> (-c)<a class="headerlink" href="#-color-when-c" title="Permanent link">§</a></h4>
 <p>Print test results in color. This is good if your terminal supports colors,
 since it makes the results much easier to read! <code>WHEN</code> can be one of <code>always</code>
 (the default if you don't explicitly specify <code>WHEN</code>), <code>never</code>, or <code>auto</code>.</p>
-<h4 id="-runs-n-n">--runs <em>N</em> (-n)</h4>
+<h4 id="-runs-n-n">--runs <em>N</em> (-n)<a class="headerlink" href="#-runs-n-n" title="Permanent link">§</a></h4>
 <p>Run the tests a total of <em>N</em> times. This is useful for catching intermittent
 failures. At the end, the summary will show the output of each failure for every
 test.</p>
-<h4 id="-show-terminal">--show-terminal</h4>
+<h4 id="-show-terminal">--show-terminal<a class="headerlink" href="#-show-terminal" title="Permanent link">§</a></h4>
 <p>Show the terminal output (stdout and stderr) of each test after it finishes. To
 enable this, <code>--no-subproc</code> can't be specified (if <code>--no-subproc</code> <em>is</em>
 specified, the terminal output will just appear in-line with the tests).</p>
-<h4 id="-show-time">--show-time</h4>
+<h4 id="-show-time">--show-time<a class="headerlink" href="#-show-time" title="Permanent link">§</a></h4>
 <p>Show the duration (in milliseconds) of each test as it runs, as well as the
 total time of the entire job.</p></div>
         </div>
 
+        <footer class="col-md-12">
+            <hr>
+            
+                <center>Copyright &copy; 2014-2016 Jim Porter</center>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
         <script src="../js/jquery-1.10.2.min.js"></script>
         <script src="../js/bootstrap-3.0.3.min.js"></script>
         <script src="../js/highlight.pack.js"></script>
+        <script>var base_url = '..';</script>
+        <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
         <script src="../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

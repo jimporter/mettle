@@ -67,29 +67,41 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                     
-                        <li >
-                            <a href="../tutorial/">Tutorial</a>
-                        </li>
+                        
+<li >
+    <a href="../tutorial/">Tutorial</a>
+</li>
+
                     
-                        <li >
-                            <a href="../running-tests/">Running Tests</a>
-                        </li>
+                        
+<li >
+    <a href="../running-tests/">Running Tests</a>
+</li>
+
                     
-                        <li class="active">
-                            <a href="./">Writing Tests</a>
-                        </li>
+                        
+<li class="active">
+    <a href="./">Writing Tests</a>
+</li>
+
                     
-                        <li >
-                            <a href="../expectations/">Expectations</a>
-                        </li>
+                        
+<li >
+    <a href="../expectations/">Expectations</a>
+</li>
+
                     
-                        <li >
-                            <a href="../built-in-matchers/">Built-in Matchers</a>
-                        </li>
+                        
+<li >
+    <a href="../built-in-matchers/">Built-in Matchers</a>
+</li>
+
                     
-                        <li >
-                            <a href="../writing-matchers/">Writing Your Own Matchers</a>
-                        </li>
+                        
+<li >
+    <a href="../writing-matchers/">Writing Your Own Matchers</a>
+</li>
+
                     
                     </ul>
                 </li>
@@ -111,6 +123,11 @@
 
             <!-- Search, Navigation and Repo links -->
             <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
                 <li >
                     <a rel="next" href="../running-tests/">
                         <i class="fa fa-arrow-left"></i> Previous
@@ -159,7 +176,7 @@
 </div></div>
             <div class="col-md-9" role="main">
 
-<h1 id="writing-tests">Writing Tests</h1>
+<h1 id="writing-tests">Writing Tests<a class="headerlink" href="#writing-tests" title="Permanent link">§</a></h1>
 <p>Below, we'll look at how test files are structured, how to create the tests
 themselves, and how to group them together to perform higher-level operations on
 them. Throughout this page, we'll assume that the following appears at the
@@ -179,7 +196,7 @@ speeds, you'll need the following to define tests and suites:</p>
 #include &lt;mettle/driver/header_driver.hpp&gt; // The header-only driver
 </code></pre>
 
-<h2 id="defining-suites">Defining suites</h2>
+<h2 id="defining-suites">Defining suites<a class="headerlink" href="#defining-suites" title="Permanent link">§</a></h2>
 <p>In mettle, all tests are grouped by suites. Suites are generally defined as
 global variables (we'll see more ways to define suites later), and take two
 arguments in the constructor: a string name, and a callback function taking a
@@ -194,7 +211,7 @@ we just define the callback as a generic lambda:</p>
 program state, you can replace <code>mettle::suite&lt;&gt;</code> with
 <code>mettle::basic_suite&lt;my_exception&gt;</code> to create a test suite using your own
 exception type as the "canonical" exception.</p>
-<h3 id="tests">Tests</h3>
+<h3 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">§</a></h3>
 <p>While we have a suite now, we still need to define some tests. Tests are,
 without a doubt, the most important part of a <em>test</em> suite. We define our tests
 inside our suite's callback function, using the <code>suite_builder</code> passed into it.
@@ -212,7 +229,7 @@ throws an exception, the test will fail; otherwise, it passes. Most of your
 tests should use <em><a href="../expectations/">expectations</a></em> (similar to assertions) to
 perform the actual tests. Expectations provide informative error messages if any
 part of your test fails.</p>
-<h2 id="setup-and-teardown">Setup and teardown</h2>
+<h2 id="setup-and-teardown">Setup and teardown<a class="headerlink" href="#setup-and-teardown" title="Permanent link">§</a></h2>
 <p>Sometimes, you'll have a bunch of tests that all have the same setup and
 teardown code. Test fixtures let you do this (mostly) automatically. If a test
 suite has a <code>setup</code> or <code>teardown</code> function set, they'll run before (or after)
@@ -232,7 +249,7 @@ each test in the suite:</p>
 });
 </code></pre>
 
-<h2 id="subsuites">Subsuites</h2>
+<h2 id="subsuites">Subsuites<a class="headerlink" href="#subsuites" title="Permanent link">§</a></h2>
 <p>When testing something particularly complex, you might find it useful to group
 test suites together. You can do this by creating a subsuite inside a parent
 suite:</p>
@@ -265,7 +282,7 @@ either redefine our lambda to no longer be generic, or just use the
 });
 </code></pre>
 
-<h3 id="nested-setup-and-teardown">Nested setup and teardown</h3>
+<h3 id="nested-setup-and-teardown">Nested setup and teardown<a class="headerlink" href="#nested-setup-and-teardown" title="Permanent link">§</a></h3>
 <p>As you might imagine, a test in a subsuite uses not only the subsuite's setup
 and teardown functions, but inherits the parent suite's as well (and so on up
 the tree). When executing a test in a subsuite, the test runner will walk down
@@ -281,7 +298,7 @@ subsuite:</p>
 <li>Call the subsuite's teardown function (if defined).</li>
 <li>Call the parent suite's teardown function (if defined).</li>
 </ol>
-<h2 id="fixtures">Fixtures</h2>
+<h2 id="fixtures">Fixtures<a class="headerlink" href="#fixtures" title="Permanent link">§</a></h2>
 <p>Setup and teardown functions are of limited use without fixtures. Fixtures allow
 you to safely write multiple, independent tests that test the same object. Each
 test gets its own instance of the fixture, preventing it from affecting any of
@@ -319,7 +336,7 @@ testing. Rather than wrapping the database in a helper, you can just add the
 test records in <code>setup</code>.</p>
 <p>Sometimes, the default constructor for a fixture isn't appropriate. In these
 cases, you can use <a href="#fixture-factories">fixture factories</a>, discussed below.</p>
-<h3 id="nested-fixtures">Nested fixtures</h3>
+<h3 id="nested-fixtures">Nested fixtures<a class="headerlink" href="#nested-fixtures" title="Permanent link">§</a></h3>
 <p>Like the nested setup and teardown functions, test fixtures are also
 inherited in subsuites. This allows a parent suite to handle common fixtures for
 a bunch of subsuites, reducing code duplication:</p>
@@ -348,7 +365,7 @@ a bunch of subsuites, reducing code duplication:</p>
 
 <p>As you can see above, subsuites inherit their parents' fixtures, much like they
 inherit their parents' setup and teardown functions.</p>
-<h3 id="fixture-factories">Fixture factories</h3>
+<h3 id="fixture-factories">Fixture factories<a class="headerlink" href="#fixture-factories" title="Permanent link">§</a></h3>
 <p>Sometimes, a fixture can't be constructed as is, e.g if the fixture isn't
 default-constructible. In these cases, you can use a <em>fixture factory</em> to create
 your fixture object with any parameters you like. For simple cases, we can use
@@ -391,7 +408,7 @@ with_auto_factory(&quot;suite&quot;, mettle::auto_factory, [](auto &amp;_) {
 
 <p>Later, we'll learn more about fixture factories and how to
 <a href="#transforming-fixture-types">transform</a> their types.</p>
-<h2 id="parameterizing-tests">Parameterizing tests</h2>
+<h2 id="parameterizing-tests">Parameterizing tests<a class="headerlink" href="#parameterizing-tests" title="Permanent link">§</a></h2>
 <p>While suites are a good way to group your tests together, sometimes you want to
 run the <em>same</em> tests on several different types of objects. In this case, all
 you need to do is specify <em>multiple</em> fixtures when defining a test suite. The
@@ -423,7 +440,7 @@ this allows the test function to accept a fixture of either an <code>int</code> 
 you don't <em>always</em> need to use <code>auto</code> here; if all of your fixtures inherit from
 a common base type, you can use an ordinary lambda that takes a reference to the
 base type.</p>
-<h3 id="transforming-fixture-types">Transforming fixture types</h3>
+<h3 id="transforming-fixture-types">Transforming fixture types<a class="headerlink" href="#transforming-fixture-types" title="Permanent link">§</a></h3>
 <p>Earlier, we learned about <a href="#fixture-factories">fixture factories</a>. We can do
 even more with them, though: a fixture factory's <code>make&lt;T&gt;()</code> can actually return
 <em>any</em> type (including <code>void</code>!), not just <code>T</code>. This can be useful for more
@@ -443,7 +460,7 @@ mettle::suite&lt;int, float&gt; vector_suite(&quot;suite&quot;, vector_factory{}
 });
 </code></pre>
 
-<h3 id="type-only-fixtures">Type-only fixtures</h3>
+<h3 id="type-only-fixtures">Type-only fixtures<a class="headerlink" href="#type-only-fixtures" title="Permanent link">§</a></h3>
 <p>As mentioned above, a fixture factory's <code>make&lt;T&gt;()</code> can return <code>void</code>. In this
 case, the suite has no fixture whatsoever. This is primarily useful when you
 want to parameterize on a list of types, but you don't want to automatically
@@ -456,7 +473,7 @@ this for you. In particular, note the parameter-less test function:</p>
 });
 </code></pre>
 
-<h3 id="getting-the-parameterized-type">Getting the parameterized type</h3>
+<h3 id="getting-the-parameterized-type">Getting the parameterized type<a class="headerlink" href="#getting-the-parameterized-type" title="Permanent link">§</a></h3>
 <p>In some cases, you may want to know the parameterized type, e.g. if you'd like
 to create your own instances of the object. You can retrieve this via the
 <code>fixture_type</code> trait (or the <code>fixture_type_t</code> alias) like so:</p>
@@ -469,12 +486,12 @@ to create your own instances of the object. You can retrieve this via the
 });
 </code></pre>
 
-<h2 id="test-attributes">Test attributes</h2>
+<h2 id="test-attributes">Test attributes<a class="headerlink" href="#test-attributes" title="Permanent link">§</a></h2>
 <p>For large projects with many tests, it can be useful to run only a subset of
 them, instead of the entire collection. While splitting up tests by file can
 help, it doesn't allow for very precise control of what tests get run. Instead,
 you can apply attributes to your tests (or whole suites!) and filter on them.</p>
-<h3 id="the-skip-attribute">The <em>skip</em> attribute</h3>
+<h3 id="the-skip-attribute">The <em>skip</em> attribute<a class="headerlink" href="#the-skip-attribute" title="Permanent link">§</a></h3>
 <p>mettle provides one built-in attribute: <code>mettle::skip</code>. As the name implies,
 this attribute causes a test to be skipped by default. This can be useful when a
 test is broken, since the test runner will keep track of the skipped tests as a
@@ -483,7 +500,7 @@ comment for the skipped test that will be shown in the test logs explaining why
 it was skipped.</p>
 <p>For more information about how to use the <code>skip</code> attribute, see <a href="#using-attributes">Using
 Attributes</a> below.</p>
-<h3 id="defining-attributes">Defining attributes</h3>
+<h3 id="defining-attributes">Defining attributes<a class="headerlink" href="#defining-attributes" title="Permanent link">§</a></h3>
 <p>In addition to the built-in <code>skip</code> attribute, you can define your own
 attributes. There are three basic kinds of attributes, differentiated by the
 number of values each can hold: <code>mettle::bool_attr</code>, which holds 0 or 1 values;
@@ -500,7 +517,7 @@ mettle::bool_attr busted(&quot;busted&quot;, attr_action::skip);
 mettle::list_attr tags(&quot;tags&quot;);
 </code></pre>
 
-<h3 id="using-attributes">Using attributes</h3>
+<h3 id="using-attributes">Using attributes<a class="headerlink" href="#using-attributes" title="Permanent link">§</a></h3>
 <p>It's easy to apply attributes to your tests: simply create instances of each
 kind of attribute you want, and pass them to the test creation function
 immediately after the test name:</p>
@@ -511,7 +528,7 @@ immediately after the test name:</p>
 <p>This creates a <code>mettle::attributes</code> object that gets stored alongside the test.
 As you might notice, <code>bool_attrs</code> can be implicitly converted to an attribute
 instance, but other types require you to call them to list their values.</p>
-<h4 id="suite-attributes">Suite attributes</h4>
+<h4 id="suite-attributes">Suite attributes<a class="headerlink" href="#suite-attributes" title="Permanent link">§</a></h4>
 <p>Like tests, whole suites can have attributes associated with them; these are
 applied the same way as for tests, and the list of attributes will automatically
 be inherited by any children (tests or subsuites). The children can set their
@@ -529,7 +546,7 @@ attr_suite(&quot;my suite&quot;, {mettle::skip(&quot;broken&quot;), tags(&quot;c
 });
 </code></pre>
 
-<h4 id="mixing-fixture-factories-and-attributes">Mixing fixture factories and attributes</h4>
+<h4 id="mixing-fixture-factories-and-attributes">Mixing fixture factories and attributes<a class="headerlink" href="#mixing-fixture-factories-and-attributes" title="Permanent link">§</a></h4>
 <p>At this point, you may be wondering how to specify <em>both</em> a fixture factory and
 a set of attributes for suite. Since they're both optional arguments that appear
 between the suite's name and its creation function, which goes first? <em>The
@@ -546,9 +563,44 @@ factories affect how the suite is <em>executed</em>, so they go near the creatio
 function, which also affects its execution.</p></div>
         </div>
 
+        <footer class="col-md-12">
+            <hr>
+            
+                <center>Copyright &copy; 2014-2016 Jim Porter</center>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
         <script src="../js/jquery-1.10.2.min.js"></script>
         <script src="../js/bootstrap-3.0.3.min.js"></script>
         <script src="../js/highlight.pack.js"></script>
+        <script>var base_url = '..';</script>
+        <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
         <script src="../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

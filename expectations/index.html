@@ -67,29 +67,41 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                     
-                        <li >
-                            <a href="../tutorial/">Tutorial</a>
-                        </li>
+                        
+<li >
+    <a href="../tutorial/">Tutorial</a>
+</li>
+
                     
-                        <li >
-                            <a href="../running-tests/">Running Tests</a>
-                        </li>
+                        
+<li >
+    <a href="../running-tests/">Running Tests</a>
+</li>
+
                     
-                        <li >
-                            <a href="../writing-tests/">Writing Tests</a>
-                        </li>
+                        
+<li >
+    <a href="../writing-tests/">Writing Tests</a>
+</li>
+
                     
-                        <li class="active">
-                            <a href="./">Expectations</a>
-                        </li>
+                        
+<li class="active">
+    <a href="./">Expectations</a>
+</li>
+
                     
-                        <li >
-                            <a href="../built-in-matchers/">Built-in Matchers</a>
-                        </li>
+                        
+<li >
+    <a href="../built-in-matchers/">Built-in Matchers</a>
+</li>
+
                     
-                        <li >
-                            <a href="../writing-matchers/">Writing Your Own Matchers</a>
-                        </li>
+                        
+<li >
+    <a href="../writing-matchers/">Writing Your Own Matchers</a>
+</li>
+
                     
                     </ul>
                 </li>
@@ -111,6 +123,11 @@
 
             <!-- Search, Navigation and Repo links -->
             <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
                 <li >
                     <a rel="next" href="../writing-tests/">
                         <i class="fa fa-arrow-left"></i> Previous
@@ -157,12 +174,12 @@
 </div></div>
             <div class="col-md-9" role="main">
 
-<h1 id="expectations">Expectations</h1>
+<h1 id="expectations">Expectations<a class="headerlink" href="#expectations" title="Permanent link">§</a></h1>
 <p>Expectations are a way of checking that the state of your code matches your
 expectation, similar to an <code>assert</code>. If the expectation is met, then everything
 proceeds as normal. Otherwise, it throws an exception and aborts the current
 test.</p>
-<h2 id="declaring-an-expectation">Declaring an expectation</h2>
+<h2 id="declaring-an-expectation">Declaring an expectation<a class="headerlink" href="#declaring-an-expectation" title="Permanent link">§</a></h2>
 <p>Expectations are easy to write. Just call <code>mettle::expect</code> with the <em>actual</em>
 value you'd like to test and a <em>matcher</em> object. We'll look at matchers in
 detail <a href="#matchers">later</a>, but for now, let's just look at a simple matcher:
@@ -180,7 +197,7 @@ expected: 666
 actual:   123
 </code></pre>
 
-<h3 id="describing-an-expectation">Describing an expectation</h3>
+<h3 id="describing-an-expectation">Describing an expectation<a class="headerlink" href="#describing-an-expectation" title="Permanent link">§</a></h3>
 <p>You can also provide an description for an expectation to make it easier to
 figure out what it was testing if you get a failure:</p>
 <pre><code class="c++">mettle::expect(&quot;is 'to mega therion'?&quot;, the_beast, mettle::equal_to(666));
@@ -202,7 +219,7 @@ showing these values. However, in the meantime you can use the
 <code>METTLE_EXPECT</code> macro in place of <code>mettle::expect</code> if you need to see the
 filename and line number.</p>
 </div>
-<h2 id="printing-objects">Printing objects</h2>
+<h2 id="printing-objects">Printing objects<a class="headerlink" href="#printing-objects" title="Permanent link">§</a></h2>
 <p>In the examples above, the error output shows the expected and actual values.
 This is easy for simple types, like integers, but what about complex
 user-defined types? We could use the stream output operator <code>&lt;&lt;</code> (and indeed,
@@ -222,7 +239,7 @@ whatever information you need to help debug test failures.</p>
 appropriate overload of <code>to_printable</code>. This is, of course, subject to all
 the usual concerns with ADL, so keep this in mind when using <code>to_printable</code>.</p>
 </div>
-<h2 id="what-is-a-matcher">What is a matcher?</h2>
+<h2 id="what-is-a-matcher">What is a matcher?<a class="headerlink" href="#what-is-a-matcher" title="Permanent link">§</a></h2>
 <p><a href="#declaring-an-expectation">Above</a>, we talked briefly about matchers and
 showed how to use the equality matcher: <code>mettle::equal_to(666)</code>. Before we
 continue any further, we should define what exactly a matcher is. <em>Matchers</em> are
@@ -235,7 +252,7 @@ from having to manually describe every expectation!</p>
 matchers</a> that can be used (or combined together) to
 perform most common tests. However, if these don't suffice, you can always
 <a href="#writing-your-own-matchers">write your own</a>.</p>
-<h3 id="how-matchers-work">How matchers work</h3>
+<h3 id="how-matchers-work">How matchers work<a class="headerlink" href="#how-matchers-work" title="Permanent link">§</a></h3>
 <p>The internals of a matcher are actually pretty simple; they're just function
 objects inheriting from <code>mettle::matcher_tag</code> and also providing a <code>desc()</code>
 member function that returns a string describing the matcher. All matchers can
@@ -254,7 +271,7 @@ is 0:</p>
 };
 </code></pre>
 
-<h2 id="composing-matchers">Composing matchers</h2>
+<h2 id="composing-matchers">Composing matchers<a class="headerlink" href="#composing-matchers" title="Permanent link">§</a></h2>
 <p>Many of the built-in matchers, such as the <a href="../built-in-matchers/#combinatoric">combinatoric
 matchers</a>, are <em>higher-order matchers</em>. That
 is, they are created by taking other matchers as arguments. This allows you to
@@ -282,7 +299,7 @@ something like this if it fails:</p>
 actual:   5
 </code></pre>
 
-<h2 id="mismatch-messages">Mismatch messages</h2>
+<h2 id="mismatch-messages">Mismatch messages<a class="headerlink" href="#mismatch-messages" title="Permanent link">§</a></h2>
 <p>As we saw above, for most simple expectations, a failure will cause the
 matcher's description to be printed out along with the actual value supplied to
 <code>expect</code>. However, for some matchers, just seeing the actual value isn't very
@@ -312,9 +329,44 @@ using the <code>is_not</code> matcher.</p>
 </div></div>
         </div>
 
+        <footer class="col-md-12">
+            <hr>
+            
+                <center>Copyright &copy; 2014-2016 Jim Porter</center>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
         <script src="../js/jquery-1.10.2.min.js"></script>
         <script src="../js/bootstrap-3.0.3.min.js"></script>
         <script src="../js/highlight.pack.js"></script>
+        <script>var base_url = '..';</script>
+        <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
         <script src="../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
