@@ -16,11 +16,9 @@ namespace log {
       : logger_(logger), file_uid_(detail::make_test_uid()) {}
 
     void operator ()(std::istream &s) {
-      using namespace BENCODE_ANY_NS;
-
       auto tmp = bencode::decode(s, bencode::no_check_eof);
-      auto &data = any_cast<bencode::dict &>(tmp);
-      auto &event = any_cast<bencode::string &>(data.at("event"));
+      auto &data = boost::get<bencode::dict &>(tmp);
+      auto &event = boost::get<bencode::string &>(data.at("event"));
 
       if(event == "started_suite") {
         logger_.started_suite(read_suites(data.at("suites")));
@@ -52,47 +50,42 @@ namespace log {
       }
     }
   private:
-    std::vector<std::string> read_suites(BENCODE_ANY_NS::any &suites) {
-      using namespace BENCODE_ANY_NS;
+    std::vector<std::string> read_suites(bencode::data &suites) {
       std::vector<std::string> result;
-      for(auto &&i : any_cast<bencode::list &>(suites))
-        result.push_back(std::move( any_cast<bencode::string &>(i) ));
+      for(auto &&i : boost::get<bencode::list &>(suites))
+        result.push_back(std::move( boost::get<bencode::string &>(i) ));
       return result;
     }
 
-    test_name read_test_name(BENCODE_ANY_NS::any &test) {
-      using namespace BENCODE_ANY_NS;
-      auto &data = any_cast<bencode::dict &>(test);
+    test_name read_test_name(bencode::data &test) {
+      auto &data = boost::get<bencode::dict &>(test);
 
       // Make sure every test has a unique ID, even if some files have
       // overlapping IDs.
       test_uid id = (file_uid_ << 32) + static_cast<test_uid>(
-        any_cast<bencode::integer>(data.at("id"))
+        boost::get<bencode::integer>(data.at("id"))
       );
       return {
         read_suites(data.at("suites")),
-        std::move(any_cast<bencode::string &>( data.at("test") )),
+        std::move(boost::get<bencode::string &>( data.at("test") )),
         id
       };
     }
 
-    log::test_output read_test_output(BENCODE_ANY_NS::any &output) {
-      using namespace BENCODE_ANY_NS;
-      auto &data = any_cast<bencode::dict &>(output);
+    log::test_output read_test_output(bencode::data &output) {
+      auto &data = boost::get<bencode::dict &>(output);
       return log::test_output{
-        std::move(any_cast<bencode::string &>( data.at("stdout_log") )),
-        std::move(any_cast<bencode::string &>( data.at("stderr_log") ))
+        std::move(boost::get<bencode::string &>( data.at("stdout_log") )),
+        std::move(boost::get<bencode::string &>( data.at("stderr_log") ))
       };
     }
 
-    log::test_duration read_test_duration(BENCODE_ANY_NS::any &duration) {
-      using namespace BENCODE_ANY_NS;
-      return log::test_duration(any_cast<bencode::integer>(duration));
+    log::test_duration read_test_duration(bencode::data &duration) {
+      return log::test_duration(boost::get<bencode::integer>(duration));
     }
 
-    std::string read_string(BENCODE_ANY_NS::any &message) {
-      using namespace BENCODE_ANY_NS;
-      return std::move(any_cast<bencode::string &>(message));
+    std::string read_string(bencode::data &message) {
+      return std::move(boost::get<bencode::string &>(message));
     }
 
     log::file_logger &logger_;

@@ -32,11 +32,11 @@ namespace posix {
         io::stream<io::file_descriptor_sink> stream(
           fd, io::never_close_handle
         );
-        bencode::encode_dict(stream,
-          "event", "failed_file",
-          "file", file,
-          "message", err
-        );
+        bencode::encode(stream, bencode::dict_view{
+          {"event", "failed_file"},
+          {"file", file},
+          {"message", err}
+        });
         stream.flush();
         _exit(exit_code::success);
       }
