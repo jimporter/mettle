@@ -449,4 +449,3 @@ suite<> test_suite("suite creation", [](auto &_) {
   });
 
 });
-
