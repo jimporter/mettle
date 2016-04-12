@@ -11,6 +11,7 @@ matrix:
             - boost-latest
             - llvm-toolchain-precise-3.6
             - llvm-toolchain-precise-3.7
+            - llvm-toolchain-precise-3.8
             - ubuntu-toolchain-r-test
           packages:
             - clang-3.6
@@ -39,6 +40,22 @@ matrix:
     - compiler: clang
       env: COMPILER=clang++-3.7 BACKEND=ninja
       addons: *clang-37
+    - compiler: clang
+      env: COMPILER=clang++-3.8 BACKEND=make
+      addons: &clang-38
+        apt:
+          sources: *sources
+          packages:
+            - clang-3.8
+            - g++-5
+            - libboost1.55-dev
+            - libboost-iostreams1.55-dev
+            - libboost-program-options1.55-dev
+            - ninja-build
+            - python-virtualenv
+    - compiler: clang
+      env: COMPILER=clang++-3.8 BACKEND=ninja
+      addons: *clang-38
     - os: osx
       osx_image: xcode7.2
       env: COMPILER=clang++ BACKEND=ninja
