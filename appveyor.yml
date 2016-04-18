@@ -21,6 +21,6 @@ install:
   - copy bencode.hpp\include\bencode.hpp include\bencode.hpp
 test_script:
   - set CPPFLAGS=/WX
-  - bfg9000 build --backend=ninja
+  - 9k build --backend=ninja
   - cd build
   - ninja test

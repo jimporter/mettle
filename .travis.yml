@@ -72,6 +72,9 @@ install:
       brew update
       brew install ninja
       brew install python
+      # For some reason, Homebrew's Python thinks msbuild will get installed by
+      # bfg9000, and so is grumpy about not having lxml.
+      pip install lxml
     else
       virtualenv env && source env/bin/activate
     fi
@@ -80,6 +83,6 @@ install:
   - export CPATH=`pwd`/bencode.hpp/include
 script:
   - |
-    CXX=${COMPILER} CXXFLAGS="-Wall -Wextra -pedantic ${EXTRAFLAGS}" bfg9000 build --backend=${BACKEND}
+    CXX=${COMPILER} CXXFLAGS="-Wall -Wextra -pedantic ${EXTRAFLAGS}" 9k build --backend=${BACKEND}
     cd build
     ${BACKEND} test

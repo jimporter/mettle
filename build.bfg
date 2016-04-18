@@ -2,14 +2,17 @@
 
 from os.path import splitext
 
-if env.compiler('c++').flavor == 'msvc':
+bfg9000_required_version('>=0.2.0')
+project('mettle', version='1.0pre')
+
+if env.builder('c++').flavor == 'msvc':
     global_options(['/EHsc'], lang='c++')
 else:
     global_options(['-pthread', '-std=c++14'], lang='c++')
     if env.platform.name != 'darwin':
         global_link_options(['-pthread'])
 
-includes = header_directory('include')
+includes = header_directory('include', include='*.hpp')
 
 boost = boost_package(version='>=1.55')
 iostreams = boost_package('iostreams', version='>=1.55')
@@ -17,13 +20,13 @@ prog_opts = boost_package('program_options', version='>=1.55')
 
 libmettle = shared_library(
     'mettle',
-    files=find_files('src/libmettle', '*.cpp'),
+    files=find_files('src/libmettle', '*.cpp', extra='*.hpp'),
     include=includes,
     packages=[iostreams, prog_opts],
 )
 
 mettle_objs = object_files(
-    files=find_files('src/mettle', '*.cpp'),
+    files=find_files('src/mettle', '*.cpp', extra='*.hpp'),
     include=includes,
     packages=boost,
 )
@@ -53,7 +56,7 @@ driver = test_driver(
     options=['--output=verbose'],
     environment={'TEST_DATA': 'test_data'},
 )
-for src in find_files('test', '*.cpp'):
+for src in find_files('test', '*.cpp', extra='*.hpp'):
     test(executable(
         splitext(src)[0],
         files=[src] + [mettle_objs[i] for i in extra_files.get(src, [])],
@@ -65,7 +68,7 @@ for src in find_files('test', '*.cpp'):
 test_data = alias('test-data', [
     executable(splitext(src)[0], files=src, include=includes, libs=libmettle,
                packages=boost)
-    for src in find_files('test_data', '*.cpp')
+    for src in find_files('test_data', '*.cpp', extra='*.hpp')
 ])
 test_deps(test_data)
 
@@ -74,7 +77,7 @@ alias('examples', [
     executable(splitext(src)[0], files=src, include=includes,
                libs=None if src in header_only_examples else libmettle,
                packages=boost)
-    for src in find_files('examples', '*.cpp')
+    for src in find_files('examples', '*.cpp', extra='*.hpp')
 ])
 
 # XXX: Don't cd once MkDocs supports building from other dirs.
@@ -82,3 +85,6 @@ mkdocs = 'cd ' + env.srcdir + ' && mkdocs '
 command('doc', cmd=mkdocs + 'build --clean')
 command('doc-serve', cmd=mkdocs + 'serve --dev-addr=0.0.0.0:8000')
 command('doc-deploy', cmd=mkdocs + 'gh-deploy --clean')
+
+# Extra files to be packaged in the source dist.
+extra_dist(files=['README.md', 'LICENSE', 'mkdocs.yml'], dirs=['doc'])
