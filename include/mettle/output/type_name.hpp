@@ -21,7 +21,11 @@ std::string type_name() {
 template<typename T>
 std::basic_string<char> type_name() {
   const auto begin = sizeof(
+#if defined(_GLIBCXX_USE_CXX11_ABI) && _GLIBCXX_USE_CXX11_ABI == 1
+    "std::__cxx11::basic_string<char> mettle::type_name() [with T = "
+#else
     "std::basic_string<char> mettle::type_name() [with T = "
+#endif
   ) - 1;
   const auto end = sizeof(__PRETTY_FUNCTION__) - sizeof("]");
   return std::string(__PRETTY_FUNCTION__ + begin, __PRETTY_FUNCTION__ + end);
