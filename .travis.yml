@@ -4,7 +4,7 @@ sudo: false
 matrix:
   include:
     - compiler: clang
-      env: COMPILER=clang++-3.6 BACKEND=make
+      env: COMPILER=clang++-3.6 BACKEND=make BUILD_ARGS="-j4"
       addons: &clang-36
         apt:
           sources: &sources
@@ -15,7 +15,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - clang-3.6
-            - g++-5
+            - libstdc++-5-dev
             - libboost1.55-dev
             - libboost-iostreams1.55-dev
             - libboost-program-options1.55-dev
@@ -24,14 +24,15 @@ matrix:
     - compiler: clang
       env: COMPILER=clang++-3.6 BACKEND=ninja
       addons: *clang-36
+
     - compiler: clang
-      env: COMPILER=clang++-3.7 BACKEND=make
+      env: COMPILER=clang++-3.7 BACKEND=make BUILD_ARGS="-j4"
       addons: &clang-37
         apt:
           sources: *sources
           packages:
             - clang-3.7
-            - g++-5
+            - libstdc++-5-dev
             - libboost1.55-dev
             - libboost-iostreams1.55-dev
             - libboost-program-options1.55-dev
@@ -40,14 +41,15 @@ matrix:
     - compiler: clang
       env: COMPILER=clang++-3.7 BACKEND=ninja
       addons: *clang-37
+
     - compiler: clang
-      env: COMPILER=clang++-3.8 BACKEND=make
+      env: COMPILER=clang++-3.8 BACKEND=make BUILD_ARGS="-j4"
       addons: &clang-38
         apt:
           sources: *sources
           packages:
             - clang-3.8
-            - g++-5
+            - libstdc++-5-dev
             - libboost1.55-dev
             - libboost-iostreams1.55-dev
             - libboost-program-options1.55-dev
@@ -56,6 +58,41 @@ matrix:
     - compiler: clang
       env: COMPILER=clang++-3.8 BACKEND=ninja
       addons: *clang-38
+
+    - compiler: gcc
+      env: COMPILER=g++-5 BACKEND=make BUILD_ARGS="-j4"
+      addons: &gcc-5
+        apt:
+          sources: *sources
+          packages:
+            - g++-5
+            - libboost1.55-dev
+            - libboost-iostreams1.55-dev
+            - libboost-program-options1.55-dev
+            - ninja-build
+            - python-virtualenv
+    - compiler: gcc
+      # GCC doesn't like building in parallel apparently. What am I doing with
+      # my life?
+      env: COMPILER=g++-5 BACKEND=ninja BUILD_ARGS="-j1"
+      addons: *gcc-5
+
+    - compiler: gcc
+      env: COMPILER=g++-6 BACKEND=make BUILD_ARGS="-j4"
+      addons: &gcc-6
+        apt:
+          sources: *sources
+          packages:
+            - g++-6
+            - libboost1.55-dev
+            - libboost-iostreams1.55-dev
+            - libboost-program-options1.55-dev
+            - ninja-build
+            - python-virtualenv
+    - compiler: gcc
+      env: COMPILER=g++-6 BACKEND=ninja BUILD_ARGS="-j1"
+      addons: *gcc-6
+
     - os: osx
       osx_image: xcode7.2
       env: COMPILER=clang++ BACKEND=ninja
@@ -85,4 +122,4 @@ script:
   - |
     CXX=${COMPILER} CXXFLAGS="-Wall -Wextra -pedantic ${EXTRAFLAGS}" 9k build --backend=${BACKEND}
     cd build
-    ${BACKEND} test
+    ${BACKEND} test ${BUILD_ARGS}
