@@ -239,6 +239,7 @@ public:
   using factory_type = Factory;
   using fixture_type = detail::first_t<Fixture...>;
   using compiled_suite_type = compiled_subsuite<ParentFixture>;
+  using function_type = typename base::function_type;
 
   subsuite_builder(const std::string &name, const attributes &attrs,
                    Factory factory)
@@ -248,11 +249,11 @@ public:
     return compiled_suite_type(
       std::move(base::name_), std::move(base::tests_),
       std::move(base::subsuites_), std::move(base::attrs_),
-      std::bind(&subsuite_builder::wrap_test, this, std::placeholders::_1)
+      [this](function_type test) { return wrap_test(test); }
     );
   }
 private:
-  auto wrap_test(typename base::function_type test) {
+  auto wrap_test(function_type test) {
     return detail::test_caller<factory_type, ParentFixture, Fixture...>{
       factory_, base::setup_, base::teardown_, std::move(test)
     };
@@ -270,20 +271,22 @@ public:
   using factory_type = Factory;
   using exception_type = Exception;
   using fixture_type = detail::first_t<T...>;
+  using compiled_suite_type = runnable_suite;
+  using function_type = typename base::function_type;
 
   suite_builder(const std::string &name, const attributes &attrs,
                 Factory factory)
     : base(name, attrs), factory_(factory) {}
 
-  runnable_suite finalize() {
-    return runnable_suite(
+  compiled_suite_type finalize() {
+    return compiled_suite_type(
       std::move(base::name_), std::move(base::tests_),
       std::move(base::subsuites_), std::move(base::attrs_),
-      std::bind(&suite_builder::wrap_test, this, std::placeholders::_1)
+      [this](function_type test) { return wrap_test(test); }
     );
   }
 private:
-  auto wrap_test(typename base::function_type test) {
+  auto wrap_test(function_type test) {
     return [
       test_function = detail::test_caller<factory_type, std::tuple<>, T...>{
         factory_, base::setup_, base::teardown_, std::move(test)
