@@ -44,15 +44,17 @@ public:
     String &&name, Tests &&tests, Subsuites &&subsuites,
     const attributes &attrs, Compile &&compile
   ) : name_(std::forward<String>(name)) {
+    using detail::forward_if;
+
     for(auto &&test : tests) {
       tests_.emplace_back(
-        detail::forward_if<Tests>(test.name),
-        compile(detail::forward_if<Tests>(test.function)),
-        unite(detail::forward_if<Tests>(test.attrs), attrs)
+        forward_if<Tests>(test.name),
+        compile(forward_if<Tests>(test.function)),
+        unite(forward_if<Tests>(test.attrs), attrs)
       );
     }
     for(auto &&ss : subsuites)
-      subsuites_.emplace_back(detail::forward_if<Subsuites>(ss), attrs, compile);
+      subsuites_.emplace_back(forward_if<Subsuites>(ss), attrs, compile);
   }
 
   template<typename Function2, typename Compile>
