@@ -49,8 +49,9 @@ can replace this with any other build system bfg supports.
 Building with bfg9000 is straightforward. Just run the following:
 
 ```sh
-$ bfg9000 /path/to/mettle build
-$ cd build
+$ cd path/to/mettle/
+$ 9k build/
+$ cd build/
 $ ninja install
 ```
 
