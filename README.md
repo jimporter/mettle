@@ -64,8 +64,7 @@ suite<> basic("a basic suite", [](auto &_) {
 
 ## License
 
-This library is [licensed](https://jimporter.github.io/mettle/license/) under
-the BSD 3-Clause license.
+This library is licensed under the BSD 3-Clause [license](LICENSE).
 
 [documentation-image]: https://img.shields.io/badge/docs-mettle-blue.svg
 [documentation-link]: https://jimporter.github.io/mettle/
