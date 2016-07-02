@@ -87,4 +87,5 @@ command('doc-serve', cmd=mkdocs + 'serve --dev-addr=0.0.0.0:8000')
 command('doc-deploy', cmd=mkdocs + 'gh-deploy --clean')
 
 # Extra files to be packaged in the source dist.
-extra_dist(files=['README.md', 'LICENSE', 'mkdocs.yml'], dirs=['doc'])
+extra_dist(files=['README.md', 'LICENSE', 'mkdocs.yml'],
+           dirs=['doc', 'scripts'])
