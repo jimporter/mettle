@@ -5,18 +5,38 @@ library (`libmettle.so` or `mettle.dll`), and a universal test driver
 (`mettle`). Before we can start using mettle, we'll need to build and install
 it.
 
+## Just show me what to type!
+
+Here are the necessary commands to build and install mettle, assuming you
+already have Boost and a C++14 compiler (we'll discuss all of these parts in
+more detail below):
+
+```sh
+$ cd path/to/mettle
+$ scripts/vendorize_bencode.py
+$ pip install bfg9000
+$ 9k build/
+$ cd build/
+$ ninja install
+```
+
 ## Dependencies
 
 Before you get started with mettle, you'll need to install its dependencies:
 
 * A C++14-compliant compiler (for generic lambdas and various standard library
   features)
-     * [clang](http://clang.llvm.org/) 3.6+
-     * [GCC](https://gcc.gnu.org/) 5.1+
-     * [MSVC](https://www.visualstudio.com/) 2015+
+    * [clang](http://clang.llvm.org/) 3.6+
+    * [GCC](https://gcc.gnu.org/) 5.1+
+    * [MSVC](https://www.visualstudio.com/) 2015+
 * [Boost](http://www.boost.org/) 1.55+
 * [bencode.hpp](https://github.com/jimporter/bencode.hpp)
 * [bfg9000](https://jimporter.github.io/bfg9000/)
+
+To simplify the installation of bencode.hpp, you can run
+`scripts/vendorize_bencode.py` from your mettle source directory. This will
+download and copy bencode.hpp to mettle's include directory, so you won't have
+to install it yourself.
 
 !!! note
     If you plan to use libc++, [this

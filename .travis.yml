@@ -119,8 +119,7 @@ before_install:
     fi
 install:
   - pip install bfg9000
-  - git clone https://github.com/jimporter/bencode.hpp.git
-  - export CPATH=`pwd`/bencode.hpp/include
+  - python scripts/vendorize_bencode.py
 script:
   - |
     CXX=${COMPILER} CXXFLAGS="-Wall -Wextra -pedantic ${EXTRAFLAGS}" 9k build --backend=${BACKEND}

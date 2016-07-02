@@ -17,8 +17,7 @@ install:
   - set PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
   - pip install bfg9000
   - cinst ninja
-  - git clone https://github.com/jimporter/bencode.hpp.git
-  - copy bencode.hpp\include\bencode.hpp include\bencode.hpp
+  - python scripts\vendorize_bencode.py
 test_script:
   - set CPPFLAGS=/WX
   - 9k build --backend=ninja
