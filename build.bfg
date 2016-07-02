@@ -72,7 +72,7 @@ test_data = alias('test-data', [
 ])
 test_deps(test_data)
 
-header_only_examples = ['examples/test_header_only.cpp']
+header_only_examples = ['examples/test_02_header_only.cpp']
 alias('examples', [
     executable(splitext(src)[0], files=src, include=includes,
                libs=None if src in header_only_examples else libmettle,
