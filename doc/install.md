@@ -12,12 +12,12 @@ already have Boost and a C++14 compiler (we'll discuss all of these parts in
 more detail below):
 
 ```sh
-$ cd path/to/mettle
-$ scripts/vendorize_bencode.py
-$ pip install bfg9000
-$ 9k build/
-$ cd build/
-$ ninja install
+cd path/to/mettle
+scripts/vendorize_bencode.py
+pip install bfg9000
+9k build/
+cd build/
+ninja install
 ```
 
 ## Dependencies
