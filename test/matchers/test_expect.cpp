@@ -70,4 +70,21 @@ suite<> test_expect("expect()", [](auto &_) {
        << ")\nexpected: true\nactual:   false";
     expect(message, equal_to(ss.str()));
   });
+
+  // This test ensures that we correctly resolve the call to mettle::expect,
+  // since one of the overloads takes a string description as the first arg.
+  _.test("METTLE_EXPECT(string, matcher)", []() {
+    std::string message;
+    int line = __LINE__ + 2; // The line the expectation is on.
+    try {
+      METTLE_EXPECT(std::string("foo"), equal_to(std::string("bar")));
+    }
+    catch(const expectation_error &e) {
+      message = e.what();
+    }
+
+    std::ostringstream ss;
+    ss << __FILE__ << ":" << line << "\nexpected: \"bar\"\nactual:   \"foo\"";
+    expect(message, equal_to(ss.str()));
+  });
 });

@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <string>
+#include <type_traits>
 
 #include "core.hpp"
 #include "result.hpp"
@@ -10,12 +11,12 @@
 
 #ifndef METTLE_NO_MACROS
 #  ifdef METTLE_NO_SOURCE_LOCATION
-#    define METTLE_EXPECT(...) mettle::expect(                       \
+#    define METTLE_EXPECT(...) ::mettle::expect(                     \
        __VA_ARGS__,                                                  \
        METTLE_SOURCE_LOCATION::current(__FILE__, __func__, __LINE__) \
      )
 #  else
-#    define METTLE_EXPECT(...) mettle::expect(__VA_ARGS__)
+#    define METTLE_EXPECT(...) ::mettle::expect(__VA_ARGS__)
 #  endif
 #endif
 
@@ -25,11 +26,10 @@ class expectation_error : public std::runtime_error {
   using std::runtime_error::runtime_error;
 };
 
-template<typename T, typename Matcher>
+template<typename T, typename Matcher,
+         typename = std::enable_if_t< is_matcher_v<Matcher> >>
 void expect(const T &value, const Matcher &matcher,
             METTLE_SOURCE_LOCATION loc = METTLE_SOURCE_LOCATION::current()) {
-  static_assert(is_matcher_v<Matcher>, "expected a matcher for argument 2");
-
   auto m = matcher(value);
   if(m == false) {
     std::ostringstream ss;
@@ -41,11 +41,10 @@ void expect(const T &value, const Matcher &matcher,
   }
 }
 
-template<typename T, typename Matcher>
+template<typename T, typename Matcher,
+         typename = std::enable_if_t< is_matcher_v<Matcher> >>
 void expect(const std::string &desc, const T &value, const Matcher &matcher,
             METTLE_SOURCE_LOCATION loc = METTLE_SOURCE_LOCATION::current()) {
-  static_assert(is_matcher_v<Matcher>, "expected a matcher for argument 3");
-
   auto m = matcher(value);
   if(m == false) {
     std::ostringstream ss;
