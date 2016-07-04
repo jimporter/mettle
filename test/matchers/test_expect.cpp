@@ -1,4 +1,3 @@
-
 #include <mettle.hpp>
 using namespace mettle;
 
