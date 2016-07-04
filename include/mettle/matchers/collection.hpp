@@ -117,7 +117,7 @@ namespace detail {
 template<typename T, typename U>
 inline auto each(T begin, T end, U &&meta_matcher) {
   using Matcher = decltype(meta_matcher(*begin));
-  static_assert(is_matcher<Matcher>::value,
+  static_assert(is_matcher_v<Matcher>,
                 "meta_matcher must be a function that returns a matcher");
   return detail::each_impl<decltype(meta_matcher(*begin))>(
     begin, end, std::forward<U>(meta_matcher)

@@ -19,18 +19,21 @@ struct is_matcher : public std::is_base_of<
   matcher_tag, typename std::remove_reference<T>::type
 > {};
 
+template<typename T>
+constexpr bool is_matcher_v = is_matcher<T>::value;
+
 namespace detail {
   template<typename T>
-  inline decltype(auto) matcher_desc(T &&matcher, typename std::enable_if<
-    is_matcher<T>::value
-  >::type* = 0) {
+  inline auto matcher_desc(T &&matcher) -> std::enable_if_t<
+    is_matcher_v<T>, decltype( std::forward<T>(matcher).desc() )
+  > {
     return std::forward<T>(matcher).desc();
   }
 
   template<typename T>
-  inline decltype(auto) matcher_desc(T &&expected, typename std::enable_if<
-    !is_matcher<T>::value
-  >::type* = 0) {
+  inline auto matcher_desc(T &&expected) -> std::enable_if_t<
+    !is_matcher_v<T>, decltype( to_printable(std::forward<T>(expected)) )
+  > {
     return to_printable(std::forward<T>(expected));
   }
 }
@@ -115,16 +118,16 @@ inline auto anything() {
 }
 
 template<typename T>
-inline auto ensure_matcher(T &&matcher) -> typename std::enable_if<
-  is_matcher<T>::value, decltype(std::forward<T>(matcher))
->::type {
+inline auto ensure_matcher(T &&matcher) -> std::enable_if_t<
+  is_matcher_v<T>, decltype( std::forward<T>(matcher) )
+> {
   return std::forward<T>(matcher);
 }
 
 template<typename T>
-inline auto ensure_matcher(T &&expected) -> typename std::enable_if<
-  !is_matcher<T>::value, decltype( equal_to(std::forward<T>(expected)) )
->::type {
+inline auto ensure_matcher(T &&expected) -> std::enable_if_t<
+  !is_matcher_v<T>, decltype( equal_to(std::forward<T>(expected)) )
+> {
   return equal_to(std::forward<T>(expected));
 }
 

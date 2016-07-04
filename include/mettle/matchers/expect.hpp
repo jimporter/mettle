@@ -28,8 +28,7 @@ class expectation_error : public std::runtime_error {
 template<typename T, typename Matcher>
 void expect(const T &value, const Matcher &matcher,
             METTLE_SOURCE_LOCATION loc = METTLE_SOURCE_LOCATION::current()) {
-  static_assert(is_matcher<Matcher>::value,
-                "expected a matcher for argument 2");
+  static_assert(is_matcher_v<Matcher>, "expected a matcher for argument 2");
 
   auto m = matcher(value);
   if(m == false) {
@@ -45,8 +44,7 @@ void expect(const T &value, const Matcher &matcher,
 template<typename T, typename Matcher>
 void expect(const std::string &desc, const T &value, const Matcher &matcher,
             METTLE_SOURCE_LOCATION loc = METTLE_SOURCE_LOCATION::current()) {
-  static_assert(is_matcher<Matcher>::value,
-                "expected a matcher for argument 3");
+  static_assert(is_matcher_v<Matcher>, "expected a matcher for argument 3");
 
   auto m = matcher(value);
   if(m == false) {
