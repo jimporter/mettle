@@ -42,6 +42,11 @@ namespace {
   [[noreturn]] inline void child_failed() {
     _exit(exit_code::fatal);
   }
+
+  int fd_to_close;
+  void atfork_close_fd() {
+    close(fd_to_close);
+  }
 }
 
 test_result subprocess_test_runner::operator ()(
@@ -172,6 +177,11 @@ test_result subprocess_test_runner::operator ()(
       return { false, strsignal(WTERMSIG(status)) };
     }
   }
+}
+
+int make_fd_private(int fd) {
+  fd_to_close = fd;
+  return pthread_atfork(nullptr, nullptr, atfork_close_fd);
 }
 
 } // namespace mettle

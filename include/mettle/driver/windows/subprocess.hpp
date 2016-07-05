@@ -19,7 +19,6 @@ namespace windows {
   METTLE_PUBLIC HANDLE
   read_into(std::vector<readhandle> &dests, DWORD timeout,
             const std::vector<HANDLE> &interrupts);
-  METTLE_PUBLIC int make_fd_private(HANDLE handle);
 }
 
 } // namespace mettle

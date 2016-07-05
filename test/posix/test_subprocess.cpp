@@ -132,30 +132,4 @@ suite<> test_subprocess("subprocess utilities", [](auto &_) {
              all( equal_to(-1), equal_errno(EIO) ));
     });
   });
-
-  _.test("make_fd_private()", []() {
-    scoped_pipe pipe;
-    expect("open pipe", pipe.open(), equal_to(0));
-    expect("make_fd_private", make_fd_private(STDOUT_FILENO),
-           equal_to(0));
-
-    pid_t pid;
-    struct {
-      int status, errnum;
-    } result;
-
-    if((pid = fork()) < 0)
-      throw std::system_error(errno, std::system_category());
-    if(pid == 0) {
-      result.status = fcntl(STDOUT_FILENO, F_GETFD);
-      result.errnum = errno;
-      write(pipe.write_fd, &result, sizeof(result));
-      _exit(0);
-    }
-
-    expect("read", read(pipe.read_fd, &result, sizeof(result)),
-           equal_to(sizeof(result)));
-    expect("fd status", result.status, equal_to(-1));
-    expect("fd errno", result.errnum, equal_to(EBADF));
-  });
 });

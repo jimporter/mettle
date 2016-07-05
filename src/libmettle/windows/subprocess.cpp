@@ -93,10 +93,6 @@ namespace windows {
     }
   }
 
-  int make_fd_private(HANDLE handle) {
-    return SetHandleInformation(handle, HANDLE_FLAG_INHERIT, 0);
-  }
-
 }
 
 } // namespace mettle

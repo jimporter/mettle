@@ -22,8 +22,6 @@ namespace posix {
 
   int send_pgid(int fd, int pgid);
   int recv_pgid(int fd, int *pgid);
-
-  int make_fd_private(int fd);
 }
 
 } // namespace mettle

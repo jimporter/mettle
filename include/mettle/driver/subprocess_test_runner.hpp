@@ -30,11 +30,19 @@ private:
   timeout_t timeout_;
 };
 
-#ifdef _WIN32
+#ifndef _WIN32
+
+int make_fd_private(int fd);
+
+#else
+
+METTLE_PUBLIC int make_fd_private(HANDLE handle);
+
 METTLE_PUBLIC const test_info *
 find_test(const suites_list &suites, test_uid id);
 
 METTLE_PUBLIC bool run_single_test(const test_info &test, HANDLE log_pipe);
+
 #endif
 
 } // namespace mettle

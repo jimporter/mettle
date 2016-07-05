@@ -17,11 +17,6 @@ namespace mettle {
 namespace posix {
 
   namespace {
-    int fd_to_close;
-    void atfork_close_fd() {
-      close(fd_to_close);
-    }
-
     [[noreturn]] void monitor_failed(std::initializer_list<int> pids = {}) {
       for(int pid : pids)
         kill(pid, SIGKILL);
@@ -110,11 +105,6 @@ namespace posix {
 
   int recv_pgid(int fd, int *pgid) {
     return size_to_status( read(fd, pgid, sizeof(*pgid)) );
-  }
-
-  int make_fd_private(int fd) {
-    fd_to_close = fd;
-    return pthread_atfork(nullptr, nullptr, atfork_close_fd);
   }
 
 }

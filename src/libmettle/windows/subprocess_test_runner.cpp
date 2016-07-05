@@ -147,4 +147,8 @@ bool run_single_test(const test_info &test, HANDLE log_pipe) {
   return result.passed;
 }
 
+int make_fd_private(HANDLE handle) {
+  return SetHandleInformation(handle, HANDLE_FLAG_INHERIT, 0);
+}
+
 } // namespace mettle

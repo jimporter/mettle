@@ -16,15 +16,6 @@
 #include <mettle/driver/detail/export.hpp>
 #include <mettle/suite/compiled_suite.hpp>
 
-
-#ifndef _WIN32
-#  include <mettle/driver/posix/subprocess.hpp>
-namespace platform = mettle::posix;
-#else
-#  include <mettle/driver/windows/subprocess.hpp>
-namespace platform = mettle::windows;
-#endif
-
 namespace mettle {
 
 namespace {
@@ -136,7 +127,7 @@ namespace detail {
         return exit_code::bad_args;
       }
 
-      platform::make_fd_private(*args.output_fd);
+      make_fd_private(*args.output_fd);
       namespace io = boost::iostreams;
       io::stream<io::file_descriptor_sink> fds(
         *args.output_fd, io::never_close_handle
