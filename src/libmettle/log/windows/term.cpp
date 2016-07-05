@@ -3,11 +3,7 @@
 #include <cassert>
 #include <string>
 
-#ifndef _WIN32
-#  include <mettle/detail/string_algorithm.hpp>
-#else
-#  include <windows.h>
-#endif
+#include <windows.h>
 
 namespace mettle {
 
@@ -15,28 +11,6 @@ namespace term {
 
   namespace {
     int enabled_flag = std::ios_base::xalloc();
-  }
-
-#ifndef _WIN32
-
-  void enable(std::ios_base &ios, bool enabled) {
-    ios.iword(enabled_flag) = enabled;
-  }
-
-  std::ostream & operator <<(std::ostream &o, const format &fmt) {
-    assert(!fmt.values_.empty());
-    if(!o.iword(enabled_flag))
-      return o;
-    return o << "\033[" << mettle::detail::joined(fmt.values_, [](sgr s) {
-      // Use to_string() to ensure that we output in decimal, no matter what the
-      // stream's state.
-      return std::to_string(static_cast<int>(s));
-    }, ";") << "m";
-  }
-
-#else
-
-  namespace {
     int console_flag = std::ios_base::xalloc();
 
     inline int current_attrs(std::ios_base &ios) {
@@ -173,7 +147,6 @@ namespace term {
     return o;
   }
 
-#endif
 }
 
 } // namespace mettle
