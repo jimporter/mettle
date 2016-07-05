@@ -8,10 +8,11 @@ using namespace mettle;
 #include <signal.h>
 
 #include <mettle/driver/run_tests.hpp>
+#include <mettle/driver/subprocess_test_runner.hpp>
 #include <mettle/driver/posix/scoped_pipe.hpp>
-#include "../../src/libmettle/posix/subprocess_test_runner.hpp"
-#include "../test_event_logger.hpp"
 using namespace mettle::posix;
+
+#include "../test_event_logger.hpp"
 
 using namespace std::literals::chrono_literals;
 

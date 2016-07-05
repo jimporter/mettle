@@ -11,7 +11,6 @@
 namespace mettle {
 
 namespace windows {
-
   struct readhandle {
     HANDLE handle;
     std::string *dest;

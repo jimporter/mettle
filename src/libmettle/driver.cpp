@@ -6,22 +6,22 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/program_options.hpp>
 
-#include <mettle/driver/run_tests.hpp>
 #include <mettle/driver/cmd_line.hpp>
 #include <mettle/driver/exit_code.hpp>
+#include <mettle/driver/run_tests.hpp>
+#include <mettle/driver/subprocess_test_runner.hpp>
 #include <mettle/driver/log/child.hpp>
 #include <mettle/driver/log/summary.hpp>
 #include <mettle/driver/log/term.hpp>
 #include <mettle/driver/detail/export.hpp>
 #include <mettle/suite/compiled_suite.hpp>
 
+
 #ifndef _WIN32
 #  include <mettle/driver/posix/subprocess.hpp>
-#  include "posix/subprocess_test_runner.hpp"
 namespace platform = mettle::posix;
 #else
 #  include <mettle/driver/windows/subprocess.hpp>
-#  include "windows/subprocess_test_runner.hpp"
 namespace platform = mettle::windows;
 #endif
 
@@ -50,7 +50,6 @@ namespace detail {
   METTLE_PUBLIC int
   drive_tests(int argc, const char *argv[], const suites_list &suites) {
     using namespace mettle;
-    using namespace platform;
     namespace opts = boost::program_options;
 
     auto factory = make_logger_factory();
@@ -137,7 +136,7 @@ namespace detail {
         return exit_code::bad_args;
       }
 
-      make_fd_private(*args.output_fd);
+      platform::make_fd_private(*args.output_fd);
       namespace io = boost::iostreams;
       io::stream<io::file_descriptor_sink> fds(
         *args.output_fd, io::never_close_handle
