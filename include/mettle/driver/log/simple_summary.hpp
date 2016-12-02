@@ -15,24 +15,26 @@ namespace log {
   public:
     simple_summary(indenting_ostream &out) : out_(out) {}
 
-    void started_run() {}
-    void ended_run() {}
+    void started_run() override {}
+    void ended_run() override {}
 
-    void started_suite(const std::vector<std::string> &) {}
-    void ended_suite(const std::vector<std::string> &) {}
+    void started_suite(const std::vector<std::string> &) override {}
+    void ended_suite(const std::vector<std::string> &) override {}
 
-    void started_test(const test_name &) {
+    void started_test(const test_name &) override {
       total_++;
     }
 
-    void passed_test(const test_name &, const test_output &, test_duration) {}
+    void passed_test(const test_name &, const test_output &,
+                     test_duration) override {}
 
     void failed_test(const test_name &test, const std::string &message,
-                     const test_output &, test_duration) {
+                     const test_output &, test_duration) override {
       failures_.push_back({test, message});
     }
 
-    void skipped_test(const test_name &test, const std::string &message) {
+    void skipped_test(const test_name &test,
+                      const std::string &message) override {
       skips_.push_back({test, message});
     }
 

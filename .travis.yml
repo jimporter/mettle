@@ -1,6 +1,10 @@
 language: cpp
 sudo: false
 
+env:
+  global:
+    - COMMONFLAGS="-Wall -Wextra -pedantic -Werror"
+
 matrix:
   include:
     - compiler: clang
@@ -60,7 +64,7 @@ matrix:
       addons: *clang-38
 
     - compiler: gcc
-      env: COMPILER=g++-5 BACKEND=make BUILD_ARGS="-j4"
+      env: COMPILER=g++-5 BACKEND=make BUILD_ARGS="-j4" EXTRAFLAGS=-Wsuggest-override
       addons: &gcc-5
         apt:
           sources: *sources
@@ -74,11 +78,11 @@ matrix:
     - compiler: gcc
       # GCC doesn't like building in parallel apparently. What am I doing with
       # my life?
-      env: COMPILER=g++-5 BACKEND=ninja BUILD_ARGS="-j1"
+      env: COMPILER=g++-5 BACKEND=ninja BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
       addons: *gcc-5
 
     - compiler: gcc
-      env: COMPILER=g++-6 BACKEND=make BUILD_ARGS="-j4"
+      env: COMPILER=g++-6 BACKEND=make BUILD_ARGS="-j4" EXTRAFLAGS=-Wsuggest-override
       addons: &gcc-6
         apt:
           sources: *sources
@@ -90,7 +94,7 @@ matrix:
             - ninja-build
             - python-virtualenv
     - compiler: gcc
-      env: COMPILER=g++-6 BACKEND=ninja BUILD_ARGS="-j1"
+      env: COMPILER=g++-6 BACKEND=ninja BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
       addons: *gcc-6
 
     - os: osx
@@ -122,6 +126,6 @@ install:
   - python scripts/vendorize_bencode.py
 script:
   - |
-    CXX=${COMPILER} CXXFLAGS="-Wall -Wextra -pedantic ${EXTRAFLAGS}" 9k build --backend=${BACKEND}
+    CXX=${COMPILER} CPPFLAGS="${COMMONFLAGS} ${EXTRAFLAGS}" 9k build --backend=${BACKEND}
     cd build
     ${BACKEND} test ${BUILD_ARGS}

@@ -33,7 +33,7 @@ public:
       indent_ += offset;
   }
 protected:
-  virtual int_type overflow(int_type ch) {
+  int_type overflow(int_type ch) override {
     if(new_line_ && ch != '\n') {
       for(std::size_t i = 0; i != indent_; i++)
         buf_->sputc(' ');
@@ -42,7 +42,7 @@ protected:
     return buf_->sputc(ch);
   }
 
-  virtual int sync() {
+  int sync() override {
     return buf_->pubsync();
   }
 private:

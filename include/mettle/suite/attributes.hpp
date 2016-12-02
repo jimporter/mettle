@@ -110,7 +110,7 @@ public:
   }
 
   const attr_instance
-  compose(const attr_instance &lhs, const attr_instance &rhs) const {
+  compose(const attr_instance &lhs, const attr_instance &rhs) const override {
     assert(&lhs.attribute == this && &rhs.attribute == this);
     attr_instance::value_type merged;
     std::set_union(

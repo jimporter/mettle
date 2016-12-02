@@ -6,39 +6,39 @@ using namespace mettle;
 #include <mettle/driver/log/child.hpp>
 
 struct recording_logger : log::file_logger {
-  void started_run() {
+  void started_run() override {
     called = "started_run";
   }
-  void ended_run() {
+  void ended_run() override {
     called = "ended_run";
   }
 
-  void started_file(const std::string &) {
+  void started_file(const std::string &) override {
     called = "started_file";
   }
-  void ended_file(const std::string &) {
+  void ended_file(const std::string &) override {
     called = "ended_file";
   }
-  void failed_file(const std::string &, const std::string &) {
+  void failed_file(const std::string &, const std::string &) override {
     called = "failed_file";
   }
 
-  void started_suite(const std::vector<std::string> &actual_suites) {
+  void started_suite(const std::vector<std::string> &actual_suites) override {
     called = "started_suite";
     suites = actual_suites;
   }
-  void ended_suite(const std::vector<std::string> &actual_suites) {
+  void ended_suite(const std::vector<std::string> &actual_suites) override {
     called = "ended_suite";
     suites = actual_suites;
   }
 
-  void started_test(const test_name &actual_test) {
+  void started_test(const test_name &actual_test) override {
     called = "started_test";
     test = actual_test;
   }
   void passed_test(const test_name &actual_test,
                    const log::test_output &actual_output,
-                   log::test_duration actual_duration) {
+                   log::test_duration actual_duration) override {
     called = "passed_test";
     test = actual_test;
     output = actual_output;
@@ -47,7 +47,7 @@ struct recording_logger : log::file_logger {
   void failed_test(const test_name &actual_test,
                    const std::string &actual_message,
                    const log::test_output &actual_output,
-                   log::test_duration actual_duration) {
+                   log::test_duration actual_duration) override {
     called = "failed_test";
     test = actual_test;
     message = actual_message;
@@ -55,7 +55,7 @@ struct recording_logger : log::file_logger {
     duration = actual_duration;
   }
   void skipped_test(const test_name &actual_test,
-                    const std::string &actual_message) {
+                    const std::string &actual_message) override {
     called = "skipped_test";
     test = actual_test;
     message = actual_message;

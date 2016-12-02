@@ -22,23 +22,26 @@ namespace log {
     verbose(indenting_ostream &out, std::size_t runs, bool show_time,
             bool show_terminal);
 
-    void started_run();
-    void ended_run();
+    void started_run() override;
+    void ended_run() override;
 
-    void started_suite(const std::vector<std::string> &suites);
-    void ended_suite(const std::vector<std::string> &suites);
+    void started_suite(const std::vector<std::string> &suites) override;
+    void ended_suite(const std::vector<std::string> &suites) override;
 
-    void started_test(const test_name &test);
+    void started_test(const test_name &test) override;
     void passed_test(const test_name &test, const test_output &output,
-                     test_duration duration);
+                     test_duration duration) override;
     void failed_test(const test_name &test, const std::string &message,
-                     const test_output &output, test_duration duration);
-    void skipped_test(const test_name &test, const std::string &message);
+                     const test_output &output,
+                     test_duration duration) override;
+    void skipped_test(const test_name &test,
+                      const std::string &message) override;
 
-    void started_file(const std::string &file);
-    void ended_file(const std::string &file);
+    void started_file(const std::string &file) override;
+    void ended_file(const std::string &file) override;
 
-    void failed_file(const std::string &file, const std::string &message);
+    void failed_file(const std::string &file,
+                     const std::string &message) override;
   private:
     void log_output(const test_output &output, bool extra_newline) const;
 
