@@ -83,9 +83,11 @@ make_output_options(output_options &opts, const logger_factory &factory) {
   options_description desc("Output options");
   desc.add_options()
     ("output,o", value(&opts.output)->value_name("FORMAT"), ss.str().c_str())
-    ("color,c", value(&opts.color)->value_name("WHEN")
-                ->implicit_value(color_option::always, "always"),
+    ("color", value(&opts.color)->value_name("WHEN"),
      "show colored output (one of: never, auto, always; default: auto)")
+    (",c", value(&opts.color)->zero_tokens()
+          ->implicit_value(color_option::always, "always"),
+     "show colored output (equivalent to `--color=always`)")
     ("runs,n", value(&opts.runs)->value_name("N"), "number of test runs")
     ("show-terminal", value(&opts.show_terminal)->zero_tokens(),
      "show terminal output for each test")
