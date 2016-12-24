@@ -81,10 +81,10 @@ alias('examples', [
 ])
 
 # XXX: Don't cd once MkDocs supports building from other dirs.
-mkdocs = 'cd ' + env.srcdir + ' && mkdocs '
-command('doc', cmd=mkdocs + 'build --clean')
-command('doc-serve', cmd=mkdocs + 'serve --dev-addr=0.0.0.0:8000')
-command('doc-deploy', cmd=mkdocs + 'gh-deploy --clean')
+cd = ['cd', directory('.')]
+command('doc', cmds=[cd, ['mkdocs', 'build', '--clean']])
+command('doc-serve', cmds=[cd, ['mkdocs', 'serve', '--dev-addr=0.0.0.0:8000']])
+command('doc-deploy', cmds=[cd, ['mkdocs', 'gh-deploy', '--clean']])
 
 # Extra files to be packaged in the source dist.
 extra_dist(files=['README.md', 'LICENSE', 'mkdocs.yml'],
