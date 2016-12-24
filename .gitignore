@@ -1,7 +1,2 @@
 /build*/
-/config.mk
-/libmettle.so
-/mettle
-/site
-*.o
-*.d
+/site/
