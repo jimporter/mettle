@@ -14,7 +14,7 @@ try:
 except ImportError:
     from urllib import urlopen
 
-srcdir = os.path.realpath(os.path.join(__file__, '..',  '..'))
+srcdir = os.path.normpath(os.path.join(__file__, '..',  '..'))
 
 bencode_version = '0.1'
 bencode_name = 'bencode_hpp-{}'.format(bencode_version)
@@ -23,8 +23,15 @@ bencode_url = ('https://github.com/jimporter/bencode.hpp/releases/download/' +
                                                   name=bencode_name)
 
 if __name__ == '__main__':
+    print('Fetching {}'.format(bencode_url))
     f = urlopen(bencode_url)
+
     with tarfile.open(mode='r:gz', fileobj=BytesIO(f.read())) as tar:
-        src = tar.extractfile('{}/include/bencode.hpp'.format(bencode_name))
-        with open(os.path.join(srcdir, 'include', 'bencode.hpp'), 'wb') as dst:
+        src_name = '{}/include/bencode.hpp'.format(bencode_name)
+        print('Extracting {}'.format(src_name))
+        src = tar.extractfile(src_name)
+
+        dst_name = os.path.join(srcdir, 'include', 'bencode.hpp')
+        with open(dst_name, 'wb') as dst:
+            print('Copying to {}'.format(dst_name))
             shutil.copyfileobj(src, dst)

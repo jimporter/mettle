@@ -1,0 +1,4 @@
+# -*- python -*-
+
+argument('vendorize', action='store_true',
+         help='vendorize the bencode library')

@@ -2,39 +2,47 @@
 
 from os.path import splitext
 
-bfg9000_required_version('>=0.2.0')
+bfg9000_required_version('>=0.3.0')
 project('mettle', version='1.0pre')
 
 if env.builder('c++').flavor == 'msvc':
     global_options(['/EHsc'], lang='c++')
 else:
-    global_options(['-pthread', '-std=c++14'], lang='c++')
-    if env.platform.name != 'darwin':
-        global_link_options(['-pthread'])
+    global_options(['-std=c++14'], lang='c++')
 
 includes = header_directory('include', include='*.hpp')
 
-boost = boost_package(version='>=1.55')
+pthread = [package('pthread')] if env.platform.flavor == 'posix' else []
+
+if find_files('include', 'bencode.hpp', flat=True):
+    bencode = []
+elif argv.vendorize:
+    bencode = []
+    env.run(source_file('scripts/vendorize_bencode.py'))
+else:
+    bencode = [package('bencode', headers='bencode.hpp', libs=None)]
+
+boost_hdrs = boost_package(version='>=1.55')
 iostreams = boost_package('iostreams', version='>=1.55')
 prog_opts = boost_package('program_options', version='>=1.55')
 
 libmettle = shared_library(
     'mettle',
     files=find_files('src/libmettle', '*.cpp', extra='*.hpp'),
-    include=includes,
-    packages=[iostreams, prog_opts],
+    includes=includes,
+    packages=pthread + bencode + [iostreams, prog_opts],
 )
 
 mettle_objs = object_files(
     files=find_files('src/mettle', '*.cpp', extra='*.hpp'),
-    include=includes,
-    packages=boost,
+    includes=includes,
+    packages=bencode + [iostreams, prog_opts],
 )
 mettle = executable(
     'mettle',
     files=mettle_objs,
     libs=[libmettle],
-    packages=[iostreams, prog_opts],
+    packages=bencode + [iostreams, prog_opts],
 )
 
 install(mettle, libmettle, includes)
@@ -49,34 +57,34 @@ extra_pkgs = {
     'test/driver/test_cmd_line.cpp': [prog_opts],
     'test/driver/test_test_file.cpp': [prog_opts],
     'test/driver/test_run_test_files.cpp': [iostreams, prog_opts],
+    'test/posix/test_subprocess.cpp': pthread,
 }
 
 driver = test_driver(
-    mettle,
-    options=['--output=verbose'],
+    [mettle, '--output=verbose'],
     environment={'TEST_DATA': 'test_data'},
 )
 for src in find_files('test', '*.cpp', extra='*.hpp'):
     test(executable(
         splitext(src)[0],
         files=[src] + [mettle_objs[i] for i in extra_files.get(src, [])],
-        include=includes,
+        includes=includes,
         libs=libmettle,
-        packages=[boost] + extra_pkgs.get(src, []),
+        packages=bencode + [boost_hdrs] + extra_pkgs.get(src, []),
     ), driver=driver)
 
 test_data = alias('test-data', [
-    executable(splitext(src)[0], files=src, include=includes, libs=libmettle,
-               packages=boost)
+    executable(splitext(src)[0], files=src, includes=includes, libs=libmettle,
+               packages=boost_hdrs)
     for src in find_files('test_data', '*.cpp', extra='*.hpp')
 ])
 test_deps(test_data)
 
 header_only_examples = ['examples/test_02_header_only.cpp']
 alias('examples', [
-    executable(splitext(src)[0], files=src, include=includes,
+    executable(splitext(src)[0], files=src, includes=includes,
                libs=None if src in header_only_examples else libmettle,
-               packages=boost)
+               packages=boost_hdrs)
     for src in find_files('examples', '*.cpp', extra='*.hpp')
 ])
 

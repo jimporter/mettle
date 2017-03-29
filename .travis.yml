@@ -187,7 +187,9 @@ matrix:
       addons: *clang-50
 
     - compiler: gcc
-      env: COMPILER=g++-7 BACKEND=make BUILD_ARGS="-j4" EXTRAFLAGS=-Wsuggest-override
+      env: >
+        COMPILER=g++-7 BACKEND=make BUILD_ARGS="-j4"
+        EXTRAFLAGS=-Wsuggest-override
       addons: *gcc-7
 
     # macOS builds
@@ -196,7 +198,9 @@ matrix:
       env: PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
 
     - os: osx
-      env: PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
+      env: >
+        PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
+        EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
 
 before_install:
   - |
@@ -210,8 +214,8 @@ before_install:
     fi
   - ${PIP} install bfg9000
 script:
-  - ${PYTHON} scripts/vendorize_bencode.py
-  - |
-    CXX=${COMPILER} CPPFLAGS="${COMMONFLAGS} ${EXTRAFLAGS}" 9k build --backend=${BACKEND}
-    cd build
-    ${BACKEND} test ${BUILD_ARGS}
+  - >
+    CXX=${COMPILER} CPPFLAGS="${COMMONFLAGS} ${EXTRAFLAGS}"
+    9k build --vendorize --backend=${BACKEND}
+  - cd build
+  - ${BACKEND} test ${BUILD_ARGS}
