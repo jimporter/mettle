@@ -25,6 +25,9 @@ cache:
 
 matrix:
   include:
+
+    # Clang builds
+
     - compiler: clang
       env: COMPILER=clang++-3.6
       addons:
@@ -97,9 +100,7 @@ matrix:
             - clang-5.0
             - libstdc++-5-dev
 
-    - compiler: clang
-      env: COMPILER=clang++-5.0 BACKEND=make BUILD_ARGS="-j4"
-      addons: *clang-50
+    # GCC builds
 
     - compiler: gcc
       # Something about Travis and/or GCC has issues building in parallel with
@@ -130,9 +131,17 @@ matrix:
             - *packages
             - g++-7
 
+    # Make-backend builds
+
+    - compiler: clang
+      env: COMPILER=clang++-5.0 BACKEND=make BUILD_ARGS="-j4"
+      addons: *clang-50
+
     - compiler: gcc
       env: COMPILER=g++-7 BACKEND=make BUILD_ARGS="-j4" EXTRAFLAGS=-Wsuggest-override
       addons: *gcc-7
+
+    # macOS builds
 
     - os: osx
       env: PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
