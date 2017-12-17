@@ -3,6 +3,7 @@ sudo: false
 
 env:
   global:
+    - BACKEND=ninja
     - COMMONFLAGS="-Wall -Wextra -pedantic -Werror"
     - PYTHON=python
     - PIP=pip
@@ -25,8 +26,8 @@ cache:
 matrix:
   include:
     - compiler: clang
-      env: COMPILER=clang++-3.6 BACKEND=ninja
-      addons: &clang-36
+      env: COMPILER=clang++-3.6
+      addons:
         apt:
           sources:
             - *sources
@@ -35,13 +36,10 @@ matrix:
             - *packages
             - clang-3.6
             - libstdc++-5-dev
-    - compiler: clang
-      env: COMPILER=clang++-3.6 BACKEND=make BUILD_ARGS="-j4"
-      addons: *clang-36
 
     - compiler: clang
-      env: COMPILER=clang++-3.7 BACKEND=ninja
-      addons: &clang-37
+      env: COMPILER=clang++-3.7
+      addons:
         apt:
           sources:
             - *sources
@@ -50,13 +48,10 @@ matrix:
             - *packages
             - clang-3.7
             - libstdc++-5-dev
-    - compiler: clang
-      env: COMPILER=clang++-3.7 BACKEND=make BUILD_ARGS="-j4"
-      addons: *clang-37
 
     - compiler: clang
-      env: COMPILER=clang++-3.8 BACKEND=ninja
-      addons: &clang-38
+      env: COMPILER=clang++-3.8
+      addons:
         apt:
           sources:
             - *sources
@@ -65,36 +60,81 @@ matrix:
             - *packages
             - clang-3.8
             - libstdc++-5-dev
+
     - compiler: clang
-      env: COMPILER=clang++-3.8 BACKEND=make BUILD_ARGS="-j4"
-      addons: *clang-38
+      env: COMPILER=clang++-3.9
+      addons:
+        apt:
+          sources:
+            - *sources
+            - llvm-toolchain-precise-3.9
+          packages:
+            - *packages
+            - clang-3.9
+            - libstdc++-5-dev
+
+    - compiler: clang
+      env: COMPILER=clang++-4.0
+      addons:
+        apt:
+          sources:
+            - *sources
+            - llvm-toolchain-trusty-4.0
+          packages:
+            - *packages
+            - clang-4.0
+            - libstdc++-5-dev
+
+    - compiler: clang
+      env: COMPILER=clang++-5.0
+      addons: &clang-50
+        apt:
+          sources:
+            - *sources
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - *packages
+            - clang-5.0
+            - libstdc++-5-dev
+
+    - compiler: clang
+      env: COMPILER=clang++-5.0 BACKEND=make BUILD_ARGS="-j4"
+      addons: *clang-50
 
     - compiler: gcc
-      env: COMPILER=g++-5 BACKEND=ninja EXTRAFLAGS=-Wsuggest-override
-      addons: &gcc-5
+      env: COMPILER=g++-5 EXTRAFLAGS=-Wsuggest-override
+      addons:
         apt:
           sources: *sources
           packages:
             - *packages
             - g++-5
-    - compiler: gcc
-      env: COMPILER=g++-5 BACKEND=make BUILD_ARGS="-j4" EXTRAFLAGS=-Wsuggest-override
-      addons: *gcc-5
 
     - compiler: gcc
-      env: COMPILER=g++-6 BACKEND=ninja EXTRAFLAGS=-Wsuggest-override
-      addons: &gcc-6
+      env: COMPILER=g++-6 EXTRAFLAGS=-Wsuggest-override
+      addons:
         apt:
           sources: *sources
           packages:
             - *packages
             - g++-6
+
     - compiler: gcc
-      env: COMPILER=g++-6 BACKEND=make BUILD_ARGS="-j4" EXTRAFLAGS=-Wsuggest-override
-      addons: *gcc-6
+      env: COMPILER=g++-7 EXTRAFLAGS=-Wsuggest-override
+      addons: &gcc-7
+        apt:
+          sources: *sources
+          packages:
+            - *packages
+            - g++-7
+
+    - compiler: gcc
+      env: COMPILER=g++-7 BACKEND=make BUILD_ARGS="-j4" EXTRAFLAGS=-Wsuggest-override
+      addons: *gcc-7
 
     - os: osx
       env: PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
+
     - os: osx
       env: PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
 
