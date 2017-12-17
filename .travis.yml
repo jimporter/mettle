@@ -7,105 +7,96 @@ env:
     - PYTHON=python
     - PIP=pip
 
+addons:
+  apt:
+    sources: &sources
+      - boost-latest
+      - ubuntu-toolchain-r-test
+    packages: &packages
+      - libboost1.55-dev
+      - libboost-iostreams1.55-dev
+      - libboost-program-options1.55-dev
+      - ninja-build
+      - python-virtualenv
+
+cache:
+  apt: true
+
 matrix:
   include:
     - compiler: clang
-      env: COMPILER=clang++-3.6 BACKEND=make BUILD_ARGS="-j4"
+      env: COMPILER=clang++-3.6 BACKEND=ninja
       addons: &clang-36
         apt:
-          sources: &sources
-            - boost-latest
+          sources:
+            - *sources
             - llvm-toolchain-precise-3.6
-            - llvm-toolchain-precise-3.7
-            - llvm-toolchain-precise-3.8
-            - ubuntu-toolchain-r-test
           packages:
+            - *packages
             - clang-3.6
             - libstdc++-5-dev
-            - libboost1.55-dev
-            - libboost-iostreams1.55-dev
-            - libboost-program-options1.55-dev
-            - ninja-build
-            - python-virtualenv
     - compiler: clang
-      env: COMPILER=clang++-3.6 BACKEND=ninja
+      env: COMPILER=clang++-3.6 BACKEND=make BUILD_ARGS="-j4"
       addons: *clang-36
 
     - compiler: clang
-      env: COMPILER=clang++-3.7 BACKEND=make BUILD_ARGS="-j4"
+      env: COMPILER=clang++-3.7 BACKEND=ninja
       addons: &clang-37
         apt:
-          sources: *sources
+          sources:
+            - *sources
+            - llvm-toolchain-precise-3.7
           packages:
+            - *packages
             - clang-3.7
             - libstdc++-5-dev
-            - libboost1.55-dev
-            - libboost-iostreams1.55-dev
-            - libboost-program-options1.55-dev
-            - ninja-build
-            - python-virtualenv
     - compiler: clang
-      env: COMPILER=clang++-3.7 BACKEND=ninja
+      env: COMPILER=clang++-3.7 BACKEND=make BUILD_ARGS="-j4"
       addons: *clang-37
 
     - compiler: clang
-      env: COMPILER=clang++-3.8 BACKEND=make BUILD_ARGS="-j4"
+      env: COMPILER=clang++-3.8 BACKEND=ninja
       addons: &clang-38
         apt:
-          sources: *sources
+          sources:
+            - *sources
+            - llvm-toolchain-precise-3.8
           packages:
+            - *packages
             - clang-3.8
             - libstdc++-5-dev
-            - libboost1.55-dev
-            - libboost-iostreams1.55-dev
-            - libboost-program-options1.55-dev
-            - ninja-build
-            - python-virtualenv
     - compiler: clang
-      env: COMPILER=clang++-3.8 BACKEND=ninja
+      env: COMPILER=clang++-3.8 BACKEND=make BUILD_ARGS="-j4"
       addons: *clang-38
 
     - compiler: gcc
-      env: COMPILER=g++-5 BACKEND=make BUILD_ARGS="-j4" EXTRAFLAGS=-Wsuggest-override
+      env: COMPILER=g++-5 BACKEND=ninja EXTRAFLAGS=-Wsuggest-override
       addons: &gcc-5
         apt:
           sources: *sources
           packages:
+            - *packages
             - g++-5
-            - libboost1.55-dev
-            - libboost-iostreams1.55-dev
-            - libboost-program-options1.55-dev
-            - ninja-build
-            - python-virtualenv
     - compiler: gcc
-      # GCC doesn't like building in parallel apparently. What am I doing with
-      # my life?
-      env: COMPILER=g++-5 BACKEND=ninja BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
+      env: COMPILER=g++-5 BACKEND=make BUILD_ARGS="-j4" EXTRAFLAGS=-Wsuggest-override
       addons: *gcc-5
 
     - compiler: gcc
-      env: COMPILER=g++-6 BACKEND=make BUILD_ARGS="-j4" EXTRAFLAGS=-Wsuggest-override
+      env: COMPILER=g++-6 BACKEND=ninja EXTRAFLAGS=-Wsuggest-override
       addons: &gcc-6
         apt:
           sources: *sources
           packages:
+            - *packages
             - g++-6
-            - libboost1.55-dev
-            - libboost-iostreams1.55-dev
-            - libboost-program-options1.55-dev
-            - ninja-build
-            - python-virtualenv
     - compiler: gcc
-      env: COMPILER=g++-6 BACKEND=ninja BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
+      env: COMPILER=g++-6 BACKEND=make BUILD_ARGS="-j4" EXTRAFLAGS=-Wsuggest-override
       addons: *gcc-6
 
     - os: osx
       env: PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
     - os: osx
       env: PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
-
-cache:
-  apt: true
 
 before_install:
   - |
