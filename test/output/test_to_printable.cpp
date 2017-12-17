@@ -161,7 +161,7 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
 
     int x = 0;
     expect([]() {}, not_boolean);
-    expect([x]() {}, not_boolean);
+    expect([x]() mutable { x = 1; }, not_boolean);
     expect(sample_function, stringified(type_name<void(void)>()));
   });
 

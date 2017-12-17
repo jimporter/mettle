@@ -102,7 +102,9 @@ matrix:
       addons: *clang-50
 
     - compiler: gcc
-      env: COMPILER=g++-5 EXTRAFLAGS=-Wsuggest-override
+      # Something about Travis and/or GCC has issues building in parallel with
+      # ninja...
+      env: COMPILER=g++-5 BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
       addons:
         apt:
           sources: *sources
@@ -111,7 +113,7 @@ matrix:
             - g++-5
 
     - compiler: gcc
-      env: COMPILER=g++-6 EXTRAFLAGS=-Wsuggest-override
+      env: COMPILER=g++-6 BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
       addons:
         apt:
           sources: *sources
@@ -120,7 +122,7 @@ matrix:
             - g++-6
 
     - compiler: gcc
-      env: COMPILER=g++-7 EXTRAFLAGS=-Wsuggest-override
+      env: COMPILER=g++-7 BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
       addons: &gcc-7
         apt:
           sources: *sources

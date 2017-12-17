@@ -18,6 +18,16 @@
 #  include <io.h>
 #endif
 
+#if __cplusplus >= 201703L
+#  define FALLTHROUGH [[fallthrough]]
+#elif defined(__clang__)
+#  define FALLTHROUGH [[clang::fallthrough]];
+#elif defined(__GNUG__) && __GNUC__ >= 7
+#  define FALLTHROUGH [[gnu::fallthrough]];
+#else
+#  define FALLTHROUGH
+#endif
+
 namespace mettle {
 
 boost::program_options::options_description
@@ -150,6 +160,7 @@ attr_filter parse_attr(const std::string &value) {
         break;
       }
       negated = false;
+      FALLTHROUGH
     case NAME_START:
       if(i == value.end())
         throw std::invalid_argument("unexpected end of string");
@@ -173,6 +184,7 @@ attr_filter parse_attr(const std::string &value) {
     case VALUE_START:
       start = i;
       state = VALUE;
+      FALLTHROUGH
     case VALUE:
       if(i == value.end() || *i == ',') {
         auto item = has_attr(

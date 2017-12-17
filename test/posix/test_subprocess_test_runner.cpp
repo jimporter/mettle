@@ -92,8 +92,8 @@ test_fork("subprocess_test_runner", bind_factory(250ms), [](auto &_) {
       scoped_pipe block;
       block.open();
 
-      auto s = make_suite<>("inner", [&block](auto &_){
-        _.test("test", [&block]() {
+      auto s = make_suite<>("inner", [](auto &_){
+        _.test("test", []() {
           int pid;
           if((pid = fork()) < 0)
             throw std::system_error(errno, std::system_category());

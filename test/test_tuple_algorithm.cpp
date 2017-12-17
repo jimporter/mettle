@@ -75,8 +75,7 @@ suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
 
     _.test("modification", []() {
       std::tuple<int, int> tup(1, 2);
-      std::size_t count = 0;
-      tuple_for_until(tup, [&count](auto &&item) {
+      tuple_for_until(tup, [](auto &&item) {
         item++;
         return false;
       });
