@@ -4,6 +4,8 @@ sudo: false
 env:
   global:
     - COMMONFLAGS="-Wall -Wextra -pedantic -Werror"
+    - PYTHON=python
+    - PIP=pip
 
 matrix:
   include:
@@ -98,11 +100,9 @@ matrix:
       addons: *gcc-6
 
     - os: osx
-      osx_image: xcode7.2
-      env: COMPILER=clang++ BACKEND=ninja
+      env: PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
     - os: osx
-      osx_image: xcode7.2
-      env: COMPILER=clang++ BACKEND=ninja EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
+      env: PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
 
 cache:
   apt: true
@@ -110,19 +110,16 @@ cache:
 before_install:
   - |
     if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
+      shell_session_update() { :; }
       brew update
-      brew install ninja
-      brew install python
-      # For some reason, Homebrew's Python thinks msbuild will get installed by
-      # bfg9000, and so is grumpy about not having lxml.
-      pip install lxml
+      brew install ${PYTHON} ninja
     else
       set -e
       virtualenv env && source env/bin/activate
     fi
-  - pip install bfg9000
+  - ${PIP} install bfg9000
 install:
-  - python scripts/vendorize_bencode.py
+  - ${PYTHON} scripts/vendorize_bencode.py
 script:
   - |
     CXX=${COMPILER} CPPFLAGS="${COMMONFLAGS} ${EXTRAFLAGS}" 9k build --backend=${BACKEND}
