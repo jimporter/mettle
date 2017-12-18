@@ -6,14 +6,13 @@ suite<> test_expect("expect()", [](auto &_) {
     std::string message;
     try {
       expect(false, equal_to(true));
-    }
-    catch(const expectation_error &e) {
+    } catch(const expectation_error &e) {
       message = e.what();
     }
 
     std::ostringstream ss;
 #ifndef METTLE_NO_SOURCE_LOCATION
-    int line = __LINE__ - 8; // The line the expectation is on.
+    int line = __LINE__ - 7; // The line the expectation is on.
     ss << __FILE__ << ":" << line << "\n";
 #endif
     ss << "expected: true\nactual:   false";
@@ -24,15 +23,14 @@ suite<> test_expect("expect()", [](auto &_) {
     std::string message;
     try {
       expect("description", false, equal_to(true));
-    }
-    catch(const expectation_error &e) {
+    } catch(const expectation_error &e) {
       message = e.what();
     }
 
     std::ostringstream ss;
     ss << "description";
 #ifndef METTLE_NO_SOURCE_LOCATION
-    int line = __LINE__ - 9; // The line the expectation is on.
+    int line = __LINE__ - 8; // The line the expectation is on.
     ss << " (" << __FILE__ << ":" << line << ")";
 #endif
     ss << "\nexpected: true\nactual:   false";
@@ -44,8 +42,7 @@ suite<> test_expect("expect()", [](auto &_) {
     int line = __LINE__ + 2; // The line the expectation is on.
     try {
       METTLE_EXPECT(false, equal_to(true));
-    }
-    catch(const expectation_error &e) {
+    } catch(const expectation_error &e) {
       message = e.what();
     }
 
@@ -59,8 +56,7 @@ suite<> test_expect("expect()", [](auto &_) {
     int line = __LINE__ + 2; // The line the expectation is on.
     try {
       METTLE_EXPECT("description", false, equal_to(true));
-    }
-    catch(const expectation_error &e) {
+    } catch(const expectation_error &e) {
       message = e.what();
     }
 
@@ -77,8 +73,7 @@ suite<> test_expect("expect()", [](auto &_) {
     int line = __LINE__ + 2; // The line the expectation is on.
     try {
       METTLE_EXPECT(std::string("foo"), equal_to(std::string("bar")));
-    }
-    catch(const expectation_error &e) {
+    } catch(const expectation_error &e) {
       message = e.what();
     }
 

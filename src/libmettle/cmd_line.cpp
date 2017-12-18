@@ -153,8 +153,7 @@ attr_filter parse_attr(const std::string &value) {
     case ITEM_START:
       if(i == value.end()) {
         throw std::invalid_argument("unexpected end of string");
-      }
-      else if(*i == '!') {
+      } else if(*i == '!') {
         negated = true;
         state = NAME_START;
         break;
@@ -174,8 +173,7 @@ attr_filter parse_attr(const std::string &value) {
         auto item = has_attr(std::string(start, i));
         result.insert(negated ? !std::move(item) : std::move(item));
         state = ITEM_START;
-      }
-      else if(*i == '=') {
+      } else if(*i == '=') {
         name_start = start;
         name_end = i;
         state = VALUE_START;
@@ -230,8 +228,7 @@ void validate(boost::any &v, const std::vector<std::string> &values,
   for(const auto &i : values) {
     try {
       filters->insert(parse_attr(i));
-    }
-    catch(...) {
+    } catch(...) {
       boost::throw_exception(invalid_option_value(i));
     }
   }
@@ -247,8 +244,7 @@ void validate(boost::any &v, const std::vector<std::string> &values,
   for(const auto &i : values) {
     try {
       filters->insert(std::regex(i));
-    }
-    catch(...) {
+    } catch(...) {
       boost::throw_exception(invalid_option_value(i));
     }
   }
@@ -266,8 +262,7 @@ void validate(boost::any &v, const std::vector<std::string> &values,
 
   try {
     v = std::chrono::milliseconds(boost::lexical_cast<std::size_t>(val));
-  }
-  catch(...) {
+  } catch(...) {
     boost::throw_exception(invalid_option_value(val));
   }
 }
@@ -284,8 +279,7 @@ void validate(boost::any &v, const std::vector<std::string> &values,
     std::istringstream is(val);
     is >> h;
     v = h;
-  }
-  catch (...) {
+  } catch (...) {
     boost::throw_exception(invalid_option_value(val));
   }
 }

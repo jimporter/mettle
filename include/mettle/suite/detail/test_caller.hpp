@@ -52,8 +52,7 @@ namespace detail {
 
       try {
         test(args...);
-      }
-      catch(...) {
+      } catch(...) {
         if(teardown) {
           try { teardown(args...); } catch(...) {}
         }

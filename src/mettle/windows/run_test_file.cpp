@@ -99,8 +99,7 @@ namespace windows {
       );
       while(fds.peek() != EOF)
         logger(fds);
-    }
-    catch(...) {
+    } catch(...) {
       except = std::current_exception();
     }
 
@@ -117,16 +116,13 @@ namespace windows {
       std::ostringstream ssi;
       ssi << "Exited with status " << exit_code;
       return {false, ssi.str()};
-    }
-    else if(except) {
+    } else if(except) {
       try {
         std::rethrow_exception(except);
-      }
-      catch(const std::exception &e) {
+      } catch(const std::exception &e) {
         return {false, e.what()};
       }
-    }
-    else {
+    } else {
       return {true, ""};
     }
   }

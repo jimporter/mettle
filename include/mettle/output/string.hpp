@@ -41,11 +41,9 @@ namespace detail {
       case '\v': os << os.widen('v'); break;
       default:   os << os.widen('x') << static_cast<unsigned long>(c);
       }
-    }
-    else if(c == delim || c == escape) {
+    } else if(c == delim || c == escape) {
       os << escape << c;
-    }
-    else {
+    } else {
       os << c;
     }
   }

@@ -66,8 +66,7 @@ namespace posix {
 
       try {
         old_masks_.emplace_back();
-      }
-      catch(...) {
+      } catch(...) {
         errno = ENOMEM;
         return -1;
       }

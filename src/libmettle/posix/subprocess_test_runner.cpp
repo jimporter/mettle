@@ -108,8 +108,7 @@ test_result subprocess_test_runner::operator ()(
     fflush(nullptr);
 
     _exit(result.passed ? exit_code::success : exit_code::failure);
-  }
-  else {
+  } else {
     scoped_sigaction sigint, sigquit, sigchld;
 
     if(stdout_pipe.close_write() < 0 ||
@@ -168,12 +167,10 @@ test_result subprocess_test_runner::operator ()(
         std::ostringstream ss;
         ss << "Timed out after " << timeout_->count() << " ms";
         return { false, ss.str() };
-      }
-      else {
+      } else {
         return { exit_status == exit_code::success, message };
       }
-    }
-    else { // WIFSIGNALED
+    } else { // WIFSIGNALED
       return { false, strsignal(WTERMSIG(status)) };
     }
   }

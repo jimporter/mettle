@@ -166,8 +166,7 @@ namespace log {
       if(!message.empty())
         out_ << message << std::endl;
       log_output(failures[0].output, !message.empty());
-    }
-    else {
+    } else {
       int run_width = static_cast<int>( std::ceil(std::log10(runs_)) );
       for(const auto &i : failures) {
         out_ << format(sgr::bold, fg(color::yellow)) << "[#"

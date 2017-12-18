@@ -298,14 +298,11 @@ private:
       try {
         test_function();
         passed = true;
-      }
-      catch(const exception_type &e) {
+      } catch(const exception_type &e) {
         message = e.what();
-      }
-      catch(const std::exception &e) {
+      } catch(const std::exception &e) {
         message = std::string("Uncaught exception: ") + to_printable(e);
-      }
-      catch(...) {
+      } catch(...) {
         message = "Unknown exception";
       }
 

@@ -44,16 +44,13 @@ namespace detail {
       try {
         value();
         return {false, "threw nothing"};
-      }
-      catch(const Exception &e) {
+      } catch(const Exception &e) {
         return base::match(e);
-      }
-      catch(const std::exception &e) {
+      } catch(const std::exception &e) {
         std::ostringstream ss;
         ss << "threw " << to_printable(e);
         return {false, ss.str()};
-      }
-      catch(...) {
+      } catch(...) {
         return {false, "threw unknown exception"};
       }
     }
@@ -71,11 +68,9 @@ namespace detail {
       try {
         value();
         return {false, "threw nothing"};
-      }
-      catch(const std::exception &e) {
+      } catch(const std::exception &e) {
         return base::match(e);
-      }
-      catch(...) {
+      } catch(...) {
         return {false, "threw unknown exception"};
       }
     }
@@ -108,13 +103,11 @@ inline auto thrown() {
     try {
       value();
       return {false, "threw nothing"};
-    }
-    catch(const std::exception &e) {
+    } catch(const std::exception &e) {
       std::ostringstream ss;
       ss << "threw " << to_printable(e);
       return {true, ss.str()};
-    }
-    catch(...) {
+    } catch(...) {
       return {true, "threw unknown exception"};
     }
   }, "threw exception");

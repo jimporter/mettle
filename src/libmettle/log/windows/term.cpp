@@ -103,8 +103,7 @@ namespace term {
           break;
         }
       }, console_flag);
-    }
-    else {
+    } else {
       CloseHandle(ios.pword(console_flag));
     }
 
@@ -119,25 +118,20 @@ namespace term {
     for(auto i : fmt.values_) {
       if(i == sgr::reset) {
         value = default_attrs(o);
-      }
-      else if(i == sgr::bold) {
+      } else if(i == sgr::bold) {
         value |= 0x08;
-      }
-      else {
+      } else {
         int val = static_cast<int>(i);
-        if(val >= 30 && val < 38) {      // Foreground
+        if(val >= 30 && val < 38) {        // Foreground
           value &= 0xf8;
           value |= ansi_to_win_fg(val);
-        }
-        else if(val == 39) {             // Default foreground
+        } else if(val == 39) {             // Default foreground
           value &= 0xf8;
           value |= default_fg(o);
-        }
-        else if(val >= 40 && val < 48) { // Background
+        } else if(val >= 40 && val < 48) { // Background
           value &= 0x8f;
           value |= ansi_to_win_bg(val);
-        }
-        else if(val == 49) {             // Default background
+        } else if(val == 49) {             // Default background
           value &= default_fg(o);
         }
       }

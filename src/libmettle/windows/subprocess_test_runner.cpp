@@ -111,8 +111,7 @@ test_result subprocess_test_runner::operator ()(
     std::ostringstream ss;
     ss << "Timed out after " << timeout_->count() << " ms";
     return { false, ss.str() };
-  }
-  else {
+  } else {
     DWORD exit_status;
     if(!GetExitCodeProcess(proc_info.hProcess, &exit_status))
       return failed();

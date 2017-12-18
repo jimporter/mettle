@@ -22,12 +22,10 @@ namespace detail {
     if(pid == 0) {
       try {
         func();
-      }
-      catch(...) {}
+      } catch(...) {}
       terminate();
       assert(false && "should never get here");
-    }
-    else {
+    } else {
       int status;
       if(waitpid(pid, &status, 0) < 0)
         throw std::system_error(errno, std::system_category());

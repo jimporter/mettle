@@ -114,8 +114,7 @@ namespace detail {
         return exit_code::bad_args;
       }
       runner = inline_test_runner;
-    }
-    else {
+    } else {
       runner = subprocess_test_runner(args.timeout);
     }
 
@@ -162,12 +161,10 @@ namespace detail {
 
       logger.summarize();
       return logger.good() ? exit_code::success : exit_code::failure;
-    }
-    catch(const std::out_of_range &e) {
+    } catch(const std::out_of_range &e) {
       report_error(argv[0], "unknown output format \"" + args.output + "\"");
       return exit_code::bad_args;
-    }
-    catch(const std::exception &e) {
+    } catch(const std::exception &e) {
       report_error(argv[0], e.what());
       return exit_code::unknown_error;
     }

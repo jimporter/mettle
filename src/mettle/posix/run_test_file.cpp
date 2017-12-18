@@ -39,8 +39,7 @@ namespace posix {
         });
         stream.flush();
         _exit(exit_code::success);
-      }
-      catch(...) {
+      } catch(...) {
         _exit(exit_code::fatal);
       }
     }
@@ -85,8 +84,7 @@ namespace posix {
 
       execvp(argv[0], argv.get());
       child_failed(max_fd, args[0]);
-    }
-    else {
+    } else {
       if(message_pipe.close_write() < 0) {
         kill(pid, SIGKILL);
         return parent_failed();
@@ -100,8 +98,7 @@ namespace posix {
         );
         while(fds.peek() != EOF)
           logger(fds);
-      }
-      catch(...) {
+      } catch(...) {
         except = std::current_exception();
       }
 
@@ -117,20 +114,16 @@ namespace posix {
           std::ostringstream ss;
           ss << "Exited with status " << exit_status;
           return {false, ss.str()};
-        }
-        else if(except) {
+        } else if(except) {
           try {
             std::rethrow_exception(except);
-          }
-          catch(const std::exception &e) {
+          } catch(const std::exception &e) {
             return {false, e.what()};
           }
-        }
-        else {
+        } else {
           return {true, ""};
         }
-      }
-      else { // WIFSIGNALED
+      } else { // WIFSIGNALED
         return {false, strsignal(WTERMSIG(status))};
       }
     }

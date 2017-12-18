@@ -22,29 +22,23 @@ namespace log {
 
       if(event == "started_suite") {
         logger_.started_suite(read_suites(data.at("suites")));
-      }
-      else if(event == "ended_suite") {
+      } else if(event == "ended_suite") {
         logger_.ended_suite(read_suites(data.at("suites")));
-      }
-      else if(event == "started_test") {
+      } else if(event == "started_test") {
         logger_.started_test(read_test_name(data.at("test")));
-      }
-      else if(event == "passed_test") {
+      } else if(event == "passed_test") {
         logger_.passed_test(read_test_name(data.at("test")),
                             read_test_output(data.at("output")),
                             read_test_duration(data.at("duration")));
-      }
-      else if(event == "failed_test") {
+      } else if(event == "failed_test") {
         logger_.failed_test(read_test_name(data.at("test")),
                             read_string(data.at("message")),
                             read_test_output(data.at("output")),
                             read_test_duration(data.at("duration")));
-      }
-      else if(event == "skipped_test") {
+      } else if(event == "skipped_test") {
         logger_.skipped_test(read_test_name(data.at("test")),
                              read_string(data.at("message")));
-      }
-      else if(event == "failed_file") {
+      } else if(event == "failed_file") {
         logger_.failed_file(read_string(data.at("file")),
                             read_string(data.at("message")));
       }
