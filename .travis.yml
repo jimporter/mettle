@@ -154,7 +154,7 @@ before_install:
     if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
       shell_session_update() { :; }
       brew update
-      brew install ${PYTHON} ninja
+      brew install ninja
     else
       set -e
       virtualenv env && source env/bin/activate
