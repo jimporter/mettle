@@ -1,6 +1,8 @@
 #ifndef INC_METTLE_SRC_LOG_PIPE_HPP
 #define INC_METTLE_SRC_LOG_PIPE_HPP
 
+#define BOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT
+
 #include <istream>
 
 #include <mettle/driver/detail/bencode.hpp>
