@@ -7,11 +7,15 @@
 import os
 import shutil
 import tarfile
-from StringIO import StringIO
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import BytesIO as StringIO
 
 try:
     from urllib.request import urlopen
-except:
+except ImportError:
     from urllib import urlopen
 
 srcdir = os.path.realpath(os.path.join(__file__, '..',  '..'))
