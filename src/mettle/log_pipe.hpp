@@ -17,8 +17,8 @@ namespace log {
 
     void operator ()(std::istream &s) {
       auto tmp = bencode::decode(s, bencode::no_check_eof);
-      auto &data = boost::get<bencode::dict &>(tmp);
-      auto &event = boost::get<bencode::string &>(data.at("event"));
+      auto &data = boost::get<bencode::dict>(tmp);
+      auto &event = boost::get<bencode::string>(data.at("event"));
 
       if(event == "started_suite") {
         logger_.started_suite(read_suites(data.at("suites")));
@@ -46,13 +46,13 @@ namespace log {
   private:
     std::vector<std::string> read_suites(bencode::data &suites) {
       std::vector<std::string> result;
-      for(auto &&i : boost::get<bencode::list &>(suites))
+      for(auto &&i : boost::get<bencode::list>(suites))
         result.push_back(std::move( boost::get<bencode::string &>(i) ));
       return result;
     }
 
     test_name read_test_name(bencode::data &test) {
-      auto &data = boost::get<bencode::dict &>(test);
+      auto &data = boost::get<bencode::dict>(test);
 
       // Make sure every test has a unique ID, even if some files have
       // overlapping IDs.
@@ -61,16 +61,16 @@ namespace log {
       );
       return {
         read_suites(data.at("suites")),
-        std::move(boost::get<bencode::string &>( data.at("test") )),
+        std::move(boost::get<bencode::string>( data.at("test") )),
         id
       };
     }
 
     log::test_output read_test_output(bencode::data &output) {
-      auto &data = boost::get<bencode::dict &>(output);
+      auto &data = boost::get<bencode::dict>(output);
       return log::test_output{
-        std::move(boost::get<bencode::string &>( data.at("stdout_log") )),
-        std::move(boost::get<bencode::string &>( data.at("stderr_log") ))
+        std::move(boost::get<bencode::string>( data.at("stdout_log") )),
+        std::move(boost::get<bencode::string>( data.at("stderr_log") ))
       };
     }
 
@@ -79,7 +79,7 @@ namespace log {
     }
 
     std::string read_string(bencode::data &message) {
-      return std::move(boost::get<bencode::string &>(message));
+      return std::move(boost::get<bencode::string>(message));
     }
 
     log::file_logger &logger_;

@@ -131,6 +131,31 @@ matrix:
             - *packages
             - g++-7
 
+    # Boost 1.66 builds
+
+    - compiler: clang
+      env: COMPILER=clang++-5.0
+      addons:
+        apt:
+          sources:
+            - *sources
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - ninja-build
+            - python-virtualenv
+            - clang-5.0
+            - libstdc++-5-dev
+      install:
+        - |
+          export BOOST_ROOT=$HOME
+          wget https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.tar.bz2
+          tar -xjf boost_1_66_0.tar.bz2
+          pushd boost_1_66_0
+          ./bootstrap.sh --prefix=$HOME --with-libraries=program_options,iostreams
+          ./b2 link=shared threading=multi variant=release -d0
+          ./b2 install -d0
+          popd
+
     # Make-backend builds
 
     - compiler: clang
@@ -160,9 +185,8 @@ before_install:
       virtualenv env && source env/bin/activate
     fi
   - ${PIP} install bfg9000
-install:
-  - ${PYTHON} scripts/vendorize_bencode.py
 script:
+  - ${PYTHON} scripts/vendorize_bencode.py
   - |
     CXX=${COMPILER} CPPFLAGS="${COMMONFLAGS} ${EXTRAFLAGS}" 9k build --backend=${BACKEND}
     cd build
