@@ -47,7 +47,7 @@ namespace log {
     std::vector<std::string> read_suites(bencode::data &suites) {
       std::vector<std::string> result;
       for(auto &&i : boost::get<bencode::list>(suites))
-        result.push_back(std::move( boost::get<bencode::string &>(i) ));
+        result.push_back(std::move( boost::get<bencode::string>(i) ));
       return result;
     }
 

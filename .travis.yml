@@ -131,10 +131,34 @@ matrix:
             - *packages
             - g++-7
 
-    # Boost 1.66 builds
+    # Builds with newer versions of Boost
+
+    # Test 1.58 specifically because it has very strict rules for Boost.Variant.
+    - compiler: clang
+      env: BOOST_VER=1.58 COMPILER=clang++-5.0
+      addons:
+        apt:
+          sources:
+            - *sources
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - ninja-build
+            - python-virtualenv
+            - clang-5.0
+            - libstdc++-5-dev
+      install:
+        - |
+          export BOOST_ROOT=$HOME
+          wget -O boost_1_58_0.tar.bz2 https://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.bz2/download
+          tar -xjf boost_1_58_0.tar.bz2
+          pushd boost_1_58_0
+          ./bootstrap.sh --prefix=$HOME --with-libraries=program_options,iostreams
+          ./b2 link=shared threading=multi variant=release -d0
+          ./b2 install -d0
+          popd
 
     - compiler: clang
-      env: COMPILER=clang++-5.0
+      env: BOOST_VER=1.66 COMPILER=clang++-5.0
       addons:
         apt:
           sources:
