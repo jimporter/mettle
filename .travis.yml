@@ -131,10 +131,21 @@ matrix:
             - *packages
             - g++-7
 
+    # macOS builds
+
+    - os: osx
+      env: PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
+
+    - os: osx
+      env: >
+        PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
+        EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
+
     # Builds with newer versions of Boost
 
-    # Test 1.58 specifically because it has very strict rules for Boost.Variant.
     - compiler: clang
+      # Test 1.58 specifically because it has very strict rules for
+      # Boost.Variant.
       env: BOOST_VER=1.58 COMPILER=clang++-5.0
       addons:
         apt:
@@ -183,24 +194,20 @@ matrix:
     # Make-backend builds
 
     - compiler: clang
-      env: COMPILER=clang++-5.0 BACKEND=make BUILD_ARGS="-j4"
+      env: BACKEND=make COMPILER=clang++-5.0 BUILD_ARGS="-j4"
       addons: *clang-50
 
     - compiler: gcc
       env: >
-        COMPILER=g++-7 BACKEND=make BUILD_ARGS="-j4"
+        BACKEND=make COMPILER=g++-7 BUILD_ARGS="-j4"
         EXTRAFLAGS=-Wsuggest-override
       addons: *gcc-7
 
-    # macOS builds
+    # Python 3 builds
 
-    - os: osx
-      env: PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
-
-    - os: osx
-      env: >
-        PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
-        EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
+    - compiler: clang
+      env: PYTHON=python3 PIP=pip3 COMPILER=clang++-5.0
+      addons: *clang-50
 
 before_install:
   - |
@@ -210,7 +217,7 @@ before_install:
       brew install ninja
     else
       set -e
-      virtualenv env && source env/bin/activate
+      virtualenv env --python=${PYTHON} && source env/bin/activate
     fi
   - ${PIP} install bfg9000
 script:
