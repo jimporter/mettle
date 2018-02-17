@@ -7,11 +7,11 @@
 import os
 import shutil
 import tarfile
-from StringIO import StringIO
+from io import BytesIO
 
 try:
     from urllib.request import urlopen
-except:
+except ImportError:
     from urllib import urlopen
 
 srcdir = os.path.realpath(os.path.join(__file__, '..',  '..'))
@@ -24,7 +24,7 @@ bencode_url = ('https://github.com/jimporter/bencode.hpp/releases/download/' +
 
 if __name__ == '__main__':
     f = urlopen(bencode_url)
-    with tarfile.open(mode='r:gz', fileobj=StringIO(f.read())) as tar:
+    with tarfile.open(mode='r:gz', fileobj=BytesIO(f.read())) as tar:
         src = tar.extractfile('{}/include/bencode.hpp'.format(bencode_name))
         with open(os.path.join(srcdir, 'include', 'bencode.hpp'), 'wb') as dst:
             shutil.copyfileobj(src, dst)
