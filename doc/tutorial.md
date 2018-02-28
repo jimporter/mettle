@@ -73,7 +73,7 @@ with a `main()` function, the above source code is all you need for a
 fully-operational test. Just compile the test like so:
 
 ```sh
-$ clang++ -std=c++14 -lmettle -o test_first test_first.cpp
+$ clang++ -std=c++14 -o test_first test_first.cpp -lmettle
 ```
 
 Remember, mettle is a C++14 library, so you'll likely need to tell the compiler
