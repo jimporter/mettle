@@ -4,71 +4,11 @@ h1 {
   padding-bottom: 21px;
   margin-bottom: 21px;
   border-bottom: 1px solid #ddd;
-  border-bottom: 1px solid #DDD;
 }
 
 /* Add small subtitles. */
 
 .subtitle {
   margin-top: -10.5px;
-  color: #BBB;
-}
-
-/* Style the admonitions. */
-
-.admonition {
-  border: 1px solid;
-  margin-bottom: 10.5px;
-}
-
-.admonition-title {
-  margin: 0;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid;
-  font-size: 17px;
-}
-
-.admonition > p {
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-.admonition > p:not(.admonition-title):first-of-type,
-.admonition > .admonition-title + p {
-  padding-top: 15px;
-}
-
-.admonition > p:last-child {
-  margin-bottom: 0;
-  padding-bottom: 15px;
-}
-
-/* Style each kind of admonition. */
-
-.admonition.note, .admonition.note > .admonition-title {
-  border-color: #3db5d8;
-}
-
-.admonition.note > .admonition-title {
-  color: #5bc0de;
-  background-color: #d9edf7;
-}
-
-.admonition.warning, .admonition.warning > .admonition-title {
-  border-color: #d08002;
-}
-
-.admonition.warning > .admonition-title {
-  color: #e99002;
-  background-color: #fcf8e3;
-}
-
-.admonition.danger, .admonition.danger > .admonition-title {
-  border-color: #ea2f10;
-}
-
-.admonition.danger > .admonition-title {
-  color: #f04124;
-  background-color: #f2dede;
+  color: #bbb;
 }
