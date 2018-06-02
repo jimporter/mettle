@@ -195,7 +195,7 @@ matrix:
 
     - compiler: clang
       env: EXTRAOPTS="--std=c++17" COMPILER=clang++-5.0
-      addons: &clang-50
+      addons:
         apt:
           sources:
             - *sources
@@ -209,12 +209,7 @@ matrix:
       env: >
         EXTRAOPTS="--std=c++17" COMPILER=g++-7 BUILD_ARGS="-j1"
         EXTRAFLAGS=-Wsuggest-override
-      addons: &gcc-7
-        apt:
-          sources: *sources
-          packages:
-            - *packages
-            - g++-7
+      addons: *gcc-7
 
     # Make-backend builds
 
