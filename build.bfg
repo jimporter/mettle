@@ -8,7 +8,7 @@ project('mettle', version='1.0pre')
 if env.builder('c++').flavor == 'msvc':
     global_options(['/EHsc'], lang='c++')
 else:
-    global_options(['-std=c++14'], lang='c++')
+    global_options(['-std={}'.format(argv.std)], lang='c++')
 
 includes = header_directory('include', include='*.hpp')
 

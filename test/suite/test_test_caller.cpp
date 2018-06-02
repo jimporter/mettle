@@ -3,6 +3,8 @@ using namespace mettle;
 
 #include "run_counter.hpp"
 
+// Check if std::apply exists, and if not, use our own implementation.
+#if __cplusplus < 201703L
 template<typename F, typename Tuple, std::size_t ...I>
 decltype(auto) apply_impl(F &&f, Tuple &&t, std::index_sequence<I...>) {
   return std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...);
@@ -15,6 +17,7 @@ decltype(auto) apply(F&& f, Tuple &&t) {
   >;
   return apply_impl(std::forward<F>(f), std::forward<Tuple>(t), Indices());
 }
+#endif
 
 template<typename Tuple>
 struct run_counter_from_tuple_t;

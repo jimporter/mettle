@@ -191,6 +191,31 @@ matrix:
           ./b2 install -d0
           popd
 
+    # C++17 builds
+
+    - compiler: clang
+      env: EXTRAOPTS="--std=c++17" COMPILER=clang++-5.0
+      addons: &clang-50
+        apt:
+          sources:
+            - *sources
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - *packages
+            - clang-5.0
+            - libstdc++-7-dev
+
+    - compiler: gcc
+      env: >
+        EXTRAOPTS="--std=c++17" COMPILER=g++-7 BUILD_ARGS="-j1"
+        EXTRAFLAGS=-Wsuggest-override
+      addons: &gcc-7
+        apt:
+          sources: *sources
+          packages:
+            - *packages
+            - g++-7
+
     # Make-backend builds
 
     - compiler: clang
@@ -223,6 +248,6 @@ before_install:
 script:
   - >
     CXX=${COMPILER} CPPFLAGS="${COMMONFLAGS} ${EXTRAFLAGS}"
-    9k build --vendorize --backend=${BACKEND}
+    9k build --vendorize --backend=${BACKEND} ${EXTRAOPTS}
   - cd build
   - ${BACKEND} test ${BUILD_ARGS}

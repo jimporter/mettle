@@ -19,7 +19,7 @@
 #endif
 
 #if __cplusplus >= 201703L
-#  define FALLTHROUGH [[fallthrough]]
+#  define FALLTHROUGH [[fallthrough]];
 #elif defined(__clang__)
 #  define FALLTHROUGH [[clang::fallthrough]];
 #elif defined(__GNUG__) && __GNUC__ >= 7

@@ -1,22 +1,7 @@
 #ifndef INC_METTLE_OUTPUT_STRING_HPP
 #define INC_METTLE_OUTPUT_STRING_HPP
 
-// Try to use N4480's string_view class, or fall back to Boost's.
-#if defined(METTLE_USE_STDLIB_EXTS)
-#  include <boost/utility/string_ref.hpp>
-#  define METTLE_STRING_VIEW boost::basic_string_ref
-#elif !defined(METTLE_NO_STDLIB_EXTS) && defined(__has_include)
-#  if __has_include(<experimental/string_view>)
-#    include <experimental/string_view>
-#    define METTLE_STRING_VIEW std::experimental::basic_string_view
-#  else
-#    include <boost/utility/string_ref.hpp>
-#    define METTLE_STRING_VIEW boost::basic_string_ref
-#  endif
-#else
-#  include <boost/utility/string_ref.hpp>
-#  define METTLE_STRING_VIEW boost::basic_string_ref
-#endif
+#include "detail/string_view.hpp"
 
 #include <codecvt>
 #include <ostream>
