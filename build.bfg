@@ -6,7 +6,7 @@ bfg9000_required_version('>=0.3.0')
 project('mettle', version='1.0pre')
 
 if env.builder('c++').flavor == 'msvc':
-    global_options(['/EHsc'], lang='c++')
+    global_options(['/EHsc', '/std:{}'.format(argv.std)], lang='c++')
 else:
     global_options(['-std={}'.format(argv.std)], lang='c++')
 

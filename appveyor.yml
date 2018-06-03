@@ -3,12 +3,27 @@ version: "{branch}-{build}"
 
 image:
   - Visual Studio 2015
+  - Visual Studio 2017
 
 environment:
-  VS: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat
-  BOOST_INCLUDEDIR: C:\Libraries\boost_1_60_0
-  BOOST_LIBRARYDIR: C:\Libraries\boost_1_60_0\lib32-msvc-14.0
   PYTHON_PATH: C:\Python27
+
+for:
+  - matrix:
+      only:
+        - image: Visual Studio 2015
+    environment:
+      VS: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat
+      BOOST_INCLUDEDIR: C:\Libraries\boost_1_60_0
+      BOOST_LIBRARYDIR: C:\Libraries\boost_1_60_0\lib32-msvc-14.0
+  - matrix:
+      only:
+        - image: Visual Studio 2017
+    environment:
+      VS: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat
+      BOOST_INCLUDEDIR: C:\Libraries\boost_1_67_0
+      BOOST_LIBRARYDIR: C:\Libraries\boost_1_67_0\lib32-msvc-14.1
+      EXTRAOPTS: --std=c++17
 
 cache:
   - C:\ProgramData\chocolatey\bin -> appveyor.yml
@@ -22,6 +37,6 @@ install:
   - pip install bfg9000
 test_script:
   - set CPPFLAGS=/WX
-  - 9k build --vendorize --backend=ninja
+  - 9k build --vendorize --backend=ninja %EXTRAOPTS%
   - cd build
   - ninja test

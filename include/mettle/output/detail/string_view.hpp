@@ -4,7 +4,8 @@
 // Try to use std::string_view, N4480's version, or fall back to Boost's.
 
 #ifdef __has_include
-#  if __has_include(<string_view>) && __cplusplus >= 201703L
+#  if __has_include(<string_view>) && (__cplusplus >= 201703L || \
+      (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
 #    include <string_view>
 #    define METTLE_STRING_VIEW std::basic_string_view
 #  elif __has_include(<experimental/string_view>) && \

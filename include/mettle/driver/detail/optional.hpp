@@ -4,7 +4,8 @@
 // Try to use std::optional, N4480's optional class, or fall back to Boost's.
 
 #ifdef __has_include
-#  if __has_include(<optional>) && __cplusplus >= 201703L
+#  if __has_include(<optional>) && (__cplusplus >= 201703L || \
+      (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
 #    include <optional>
 #    define METTLE_OPTIONAL_NS std
 #  elif __has_include(<experimental/optional>) && \
