@@ -23,6 +23,7 @@
 #    include <boost/optional.hpp>
 #    include <boost/optional/optional_io.hpp>
 #    define METTLE_OPTIONAL_NS boost
+#    define METTLE_OPTIONAL_USING_BOOST
 #  endif
 #endif
 

@@ -8,22 +8,34 @@ image:
 environment:
   PYTHON_PATH: C:\Python27
 
+  matrix:
+    - STD: c++14
+      BOOST_VER: 1_60_0
+    - STD: c++14
+      BOOST_VER: 1_67_0
+    - STD: c++17
+      BOOST_VER: 1_67_0
+
+matrix:
+  exclude:
+    - image: Visual Studio 2015
+      STD: c++17
+    - image: Visual Studio 2017
+      BOOST_VER: 1_60_0
+
 for:
   - matrix:
       only:
         - image: Visual Studio 2015
     environment:
       VS: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat
-      BOOST_INCLUDEDIR: C:\Libraries\boost_1_60_0
-      BOOST_LIBRARYDIR: C:\Libraries\boost_1_60_0\lib32-msvc-14.0
+      VCBIN_VER: 14.0
   - matrix:
       only:
         - image: Visual Studio 2017
     environment:
       VS: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat
-      BOOST_INCLUDEDIR: C:\Libraries\boost_1_67_0
-      BOOST_LIBRARYDIR: C:\Libraries\boost_1_67_0\lib32-msvc-14.1
-      EXTRAOPTS: --std=c++17
+      VCBIN_VER: 14.1
 
 cache:
   - C:\ProgramData\chocolatey\bin -> appveyor.yml
@@ -36,7 +48,9 @@ install:
   - set PATH=%PYTHON_PATH%;%PYTHON_PATH%\Scripts;%PATH%
   - pip install bfg9000
 test_script:
+  - set BOOST_INCLUDEDIR=C:\Libraries\boost_%BOOST_VER%
+  - set BOOST_LIBRARYDIR=C:\Libraries\boost_%BOOST_VER%\lib32-msvc-%VCBIN_VER%
   - set CPPFLAGS=/WX
-  - 9k build --vendorize --backend=ninja %EXTRAOPTS%
+  - 9k build --vendorize --backend=ninja --std=%STD%
   - cd build
   - ninja test

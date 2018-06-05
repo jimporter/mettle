@@ -220,33 +220,47 @@ suite<> test_program_options("program_options utilities", [](auto &_) {
 
   subsuite<>(_, "validate()", [](auto &_) {
     _.test("color_option", []() {
-      boost::any value;
-      validate(value, {"always"}, static_cast<color_option*>(nullptr), 0);
-      expect(value, any_equal(color_option::always));
+      using namespace boost::program_options;
+      {
+        boost::any value;
+        std::vector<std::string> input{"always"};
+        validate(value, input, static_cast<color_option*>(nullptr), 0);
+        expect(value, any_equal(color_option::always));
+      }
 
-      value.clear();
-      validate(value, {"never"}, static_cast<color_option*>(nullptr), 0);
-      expect(value, any_equal(color_option::never));
+      {
+        boost::any value;
+        std::vector<std::string> input{"never"};
+        validate(value, input, static_cast<color_option*>(nullptr), 0);
+        expect(value, any_equal(color_option::never));
+      }
 
-      value.clear();
-      validate(value, {"auto"}, static_cast<color_option*>(nullptr), 0);
-      expect(value, any_equal(color_option::automatic));
+      {
+        boost::any value;
+        std::vector<std::string> input{"auto"};
+        validate(value, input, static_cast<color_option*>(nullptr), 0);
+        expect(value, any_equal(color_option::automatic));
+      }
 
       expect(
         []() {
           boost::any value;
-          validate(value, {"invalid"}, static_cast<color_option*>(nullptr), 0);
+          std::vector<std::string> input{"invalid"};
+          validate(value, input, static_cast<color_option*>(nullptr), 0);
         },
         thrown<std::exception>("the argument ('invalid') for option is invalid")
       );
     });
 
     _.test("attr_filter_set", []() {
-      string_attr attr("attr");
+      using namespace boost::program_options;
 
       boost::any value;
-      validate(value, {"attr=val"}, static_cast<attr_filter_set*>(nullptr), 0);
+      std::vector<std::string> input{"attr=val"};
+      validate(value, input, static_cast<attr_filter_set*>(nullptr), 0);
       auto filter = boost::any_cast<attr_filter_set>(value);
+
+      string_attr attr("attr");
       expect(filter, array(
         array( match_filter_item(attr("val"), true) )
       ));
@@ -254,16 +268,21 @@ suite<> test_program_options("program_options utilities", [](auto &_) {
       expect(
         []() {
           boost::any value;
-          validate(value, {"!"}, static_cast<attr_filter_set*>(nullptr), 0);
+          std::vector<std::string> input{"!"};
+          validate(value, input, static_cast<attr_filter_set*>(nullptr), 0);
         },
         thrown<std::exception>("the argument ('!') for option is invalid")
       );
     });
 
     _.test("name_filter_set", []() {
+      using namespace boost::program_options;
+
       boost::any value;
-      validate(value, {"name"}, static_cast<name_filter_set*>(nullptr), 0);
+      std::vector<std::string> input{"name"};
+      validate(value, input, static_cast<name_filter_set*>(nullptr), 0);
       auto filter = boost::any_cast<name_filter_set>(value);
+
       expect(
         filter({{"suite", "subsuite"}, "name", 1}, {}),
         equal_filter_result({test_action::run, ""})
@@ -276,7 +295,8 @@ suite<> test_program_options("program_options utilities", [](auto &_) {
       expect(
         []() {
           boost::any value;
-          validate(value, {"["}, static_cast<name_filter_set*>(nullptr), 0);
+          std::vector<std::string> input{"["};
+          validate(value, input, static_cast<name_filter_set*>(nullptr), 0);
         },
         thrown<std::exception>("the argument ('[') for option is invalid")
       );
@@ -284,29 +304,37 @@ suite<> test_program_options("program_options utilities", [](auto &_) {
 
     _.test("std::chrono::milliseconds", []() {
       using ms = std::chrono::milliseconds;
+      using namespace boost::program_options;
+
       boost::any value;
-      validate(value, {"1000"}, static_cast<ms*>(nullptr), 0);
+      std::vector<std::string> input{"1000"};
+      validate(value, input, static_cast<ms*>(nullptr), 0);
       expect(value, any_equal(ms(1000)));
 
       expect(
         []() {
           boost::any value;
-          validate(value, {"invalid"}, static_cast<ms*>(nullptr), 0);
+          std::vector<std::string> input{"invalid"};
+          validate(value, input, static_cast<ms*>(nullptr), 0);
         },
         thrown<std::exception>("the argument ('invalid') for option is invalid")
       );
     });
 
-    _.test("std::experimental::optional", []() {
+    _.test("std::optional and friends", []() {
       using METTLE_OPTIONAL_NS::optional;
+      using namespace boost::program_options;
+
       boost::any value;
-      validate(value, {"1"}, static_cast<optional<int>*>(nullptr), 0);
+      std::vector<std::string> input{"1"};
+      validate(value, input, static_cast<optional<int>*>(nullptr), 0);
       expect(value, any_equal(optional<int>(1)));
 
       expect(
         []() {
           boost::any value;
-          validate(value, {"invalid"}, static_cast<optional<int>*>(nullptr), 0);
+          std::vector<std::string> input{"invalid"};
+          validate(value, input, static_cast<optional<int>*>(nullptr), 0);
         },
         thrown<std::exception>("the argument ('invalid') for option is invalid")
       );
