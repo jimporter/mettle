@@ -40,7 +40,7 @@ namespace {
   }
 
   [[noreturn]] inline void child_failed() {
-    _exit(exit_code::fatal);
+    exit(exit_code::fatal);
   }
 
   int fd_to_close;
@@ -107,7 +107,7 @@ test_result subprocess_test_runner::operator ()(
 
     fflush(nullptr);
 
-    _exit(result.passed ? exit_code::success : exit_code::failure);
+    exit(result.passed ? exit_code::success : exit_code::failure);
   } else {
     scoped_sigaction sigint, sigquit, sigchld;
 

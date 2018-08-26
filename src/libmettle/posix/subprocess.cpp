@@ -20,7 +20,7 @@ namespace posix {
     [[noreturn]] void monitor_failed(std::initializer_list<int> pids = {}) {
       for(int pid : pids)
         kill(pid, SIGKILL);
-      _exit(exit_code::fatal);
+      exit(exit_code::fatal);
     }
 
     inline int size_to_status(int size) {
@@ -39,7 +39,7 @@ namespace posix {
       monitor_failed();
     if(timer_pid == 0) {
       std::this_thread::sleep_for(timeout);
-      _exit(exit_code::timeout);
+      exit(exit_code::timeout);
     }
 
     pid_t test_pid;
@@ -58,7 +58,7 @@ namespace posix {
       wait(nullptr);
 
       if(WIFEXITED(status))
-        _exit(WEXITSTATUS(status));
+        exit(WEXITSTATUS(status));
       else // WIFSIGNALED
         raise(WTERMSIG(status));
     }
