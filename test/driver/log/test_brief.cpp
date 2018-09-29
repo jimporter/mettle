@@ -81,6 +81,11 @@ suite<logger_factory> test_brief("brief logger", [](auto &_) {
 
   _.test("failing file run", [](logger_factory &f) {
     failing_file_run(f.logger);
+    expect(f.ss.str(), equal_to("._X.\n"));
+  });
+
+  _.test("failing test and file run", [](logger_factory &f) {
+    failing_test_and_file_run(f.logger);
     expect(f.ss.str(), equal_to("._X!\n"));
   });
 });

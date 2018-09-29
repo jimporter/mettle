@@ -141,7 +141,7 @@ namespace log {
   }
 
   bool summary::good() const {
-    return failures_.empty();
+    return failures_.empty() && failed_files_.empty();
   }
 
   void summary::summarize_failure(

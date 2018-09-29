@@ -123,6 +123,26 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "  more\n"
         "\n"
         "second suite\n"
+        "  test PASSED\n"
+      ));
+    });
+
+    _.test("failing test and file run", [](logger_factory &f) {
+      failing_test_and_file_run(f.logger);
+      expect(f.ss.str(), equal_to(
+        "suite\n"
+        "  test PASSED\n"
+        "\n"
+        "  subsuite\n"
+        "    test SKIPPED\n"
+        "      message\n"
+        "      more\n"
+        "\n"
+        "`test_file` FAILED\n"
+        "  error\n"
+        "  more\n"
+        "\n"
+        "second suite\n"
         "  test FAILED\n"
         "    error\n"
         "    more\n"
@@ -196,6 +216,28 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "    more\n"
         "\n"
         "  second suite\n"
+        "    test PASSED\n"
+      ));
+    });
+
+    _.test("failing test and file run", [](logger_factory &f) {
+      failing_test_and_file_run(f.logger);
+      expect(f.ss.str(), equal_to(
+        "Test run [#1/2]\n"
+        "\n"
+        "  suite\n"
+        "    test PASSED\n"
+        "\n"
+        "    subsuite\n"
+        "      test SKIPPED\n"
+        "        message\n"
+        "        more\n"
+        "\n"
+        "  `test_file` FAILED\n"
+        "    error\n"
+        "    more\n"
+        "\n"
+        "  second suite\n"
         "    test FAILED\n"
         "      error\n"
         "      more\n"
@@ -249,6 +291,26 @@ suite<> test_verbose("verbose logger", [](auto &_) {
 
     _.test("failing file run", [](logger_factory &f) {
       failing_file_run(f.logger);
+      expect(f.ss.str(), equal_to(
+        "suite\n"
+        "  test PASSED (100 ms)\n"
+        "\n"
+        "  subsuite\n"
+        "    test SKIPPED\n"
+        "      message\n"
+        "      more\n"
+        "\n"
+        "`test_file` FAILED\n"
+        "  error\n"
+        "  more\n"
+        "\n"
+        "second suite\n"
+        "  test PASSED (100 ms)\n"
+      ));
+    });
+
+    _.test("failing test and file run", [](logger_factory &f) {
+      failing_test_and_file_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
         "  test PASSED (100 ms)\n"
@@ -342,6 +404,34 @@ suite<> test_verbose("verbose logger", [](auto &_) {
 
     _.test("failing file run", [](logger_factory &f) {
       failing_file_run(f.logger);
+      expect(f.ss.str(), equal_to(
+        "suite\n"
+        "  test PASSED\n"
+        "    stdout:\n"
+        "    standard output\n"
+        "    stderr:\n"
+        "    standard error\n"
+        "\n"
+        "  subsuite\n"
+        "    test SKIPPED\n"
+        "      message\n"
+        "      more\n"
+        "\n"
+        "`test_file` FAILED\n"
+        "  error\n"
+        "  more\n"
+        "\n"
+        "second suite\n"
+        "  test PASSED\n"
+        "    stdout:\n"
+        "    standard output\n"
+        "    stderr:\n"
+        "    standard error\n"
+      ));
+    });
+
+    _.test("failing test and file run", [](logger_factory &f) {
+      failing_test_and_file_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
         "  test PASSED\n"
