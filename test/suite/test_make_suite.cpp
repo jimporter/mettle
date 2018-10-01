@@ -71,59 +71,98 @@ suite<> test_suite("suite creation", [](auto &_) {
 
   subsuite<>(_, "basic creation", [](auto &_) {
     _.test("create a test suite", []() {
-      auto s = make_suite<>("test suite", [](auto &_){
+      auto s1 = make_suite<>("test suite", [](auto &_){
         _.test("test", []() {});
         _.test("skipped test", {skip}, []() {});
       });
 
-      expect(s, simple_suite("test suite"));
+      expect(s1, simple_suite("test suite"));
 
       auto s2 = make_suite("test suite", [](auto &_){
         _.test("test", []() {});
         _.test("skipped test", {skip}, []() {});
       });
 
-      expect(s, simple_suite("test suite"));
+      expect(s2, simple_suite("test suite"));
+
+      auto s3 = make_suite("test suite", [](auto &_){
+        test(_, "test", []() {});
+        test(_, "skipped test", {skip}, []() {});
+      });
+
+      expect(s3, simple_suite("test suite"));
     });
 
     _.test("create a test suite with fixture", []() {
-      auto s = make_suite<int>("test suite", [](auto &_){
+      auto s1 = make_suite<int>("test suite", [](auto &_){
         _.test("test", [](int &) {});
         _.test("skipped test", {skip}, [](int &) {});
       });
 
-      expect(s, simple_suite("test suite"));
+      expect(s1, simple_suite("test suite"));
+
+      auto s2 = make_suite<int>("test suite", [](auto &_){
+        test(_, "test", [](int &) {});
+        test(_, "skipped test", {skip}, [](int &) {});
+      });
+
+      expect(s2, simple_suite("test suite"));
     });
 
     _.test("create a test suite with type-only fixture", []() {
-      auto s = make_suite<int>("test suite", type_only, [](auto &_){
+      auto s1 = make_suite<int>("test suite", type_only, [](auto &_){
         _.test("test", []() {});
         _.test("skipped test", {skip}, []() {});
       });
 
-      expect(s, simple_suite("test suite"));
+      expect(s1, simple_suite("test suite"));
+
+      auto s2 = make_suite<int>("test suite", type_only, [](auto &_){
+        test(_, "test", []() {});
+        test(_, "skipped test", {skip}, []() {});
+      });
+
+      expect(s2, simple_suite("test suite"));
     });
 
     _.test("create a test suite with setup/teardown", []() {
-      auto s = make_suite<>("test suite", [](auto &_){
+      auto s1 = make_suite<>("test suite", [](auto &_){
         _.setup([]() {});
         _.teardown([]() {});
         _.test("test", []() {});
         _.test("skipped test", {skip}, []() {});
       });
 
-      expect(s, simple_suite("test suite"));
+      expect(s1, simple_suite("test suite"));
+
+      auto s2 = make_suite<>("test suite", [](auto &_){
+        setup(_, []() {});
+        teardown(_, []() {});
+        test(_, "test", []() {});
+        test(_, "skipped test", {skip}, []() {});
+      });
+
+      expect(s2, simple_suite("test suite"));
     });
 
     _.test("create a test suite with fixture and setup/teardown", []() {
-      auto s = make_suite<int>("test suite", [](auto &_){
+      auto s1 = make_suite<int>("test suite", [](auto &_){
         _.setup([](int &) {});
         _.teardown([](int &) {});
         _.test("test", [](int &) {});
         _.test("skipped test", {skip}, [](int &) {});
       });
 
-      expect(s, simple_suite("test suite"));
+      expect(s1, simple_suite("test suite"));
+
+      auto s2 = make_suite<int>("test suite", [](auto &_){
+        setup(_, [](int &) {});
+        teardown(_, [](int &) {});
+        test(_, "test", [](int &) {});
+        test(_, "skipped test", {skip}, [](int &) {});
+      });
+
+      expect(s2, simple_suite("test suite"));
     });
 
     _.test("create a test suite that throws", []() {

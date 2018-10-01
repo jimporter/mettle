@@ -88,6 +88,11 @@ mettle::suite<> with_setup("my suite", [](auto &_) {
 });
 ```
 
+!!! note
+    For symmetry with third-party test types, you can also express `_.test(...)`
+    as `mettle::test(_, ...)`. The same applies to `_.setup(...)` and
+    `_.teardown(...)`.
+
 ## Subsuites
 
 When testing something particularly complex, you might find it useful to group

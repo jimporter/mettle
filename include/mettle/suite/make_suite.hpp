@@ -445,6 +445,32 @@ subsuite(Parent &builder, const std::string &name, Args &&...args) {
 }
 
 
+template<typename Parent, typename F>
+inline void
+setup(Parent &builder, F &&f) {
+  builder.setup(std::forward<F>(f));
+}
+
+template<typename Parent, typename F>
+inline void
+teardown(Parent &builder, F &&f) {
+  builder.teardown(std::forward<F>(f));
+}
+
+
+template<typename Parent, typename F>
+inline void
+test(Parent &builder, const std::string &name, const attributes &attrs, F &&f) {
+  builder.test(name, attrs, std::forward<F>(f));
+}
+
+template<typename ...Fixture, typename Parent, typename F>
+inline void
+test(Parent &builder, const std::string &name, F &&f) {
+  builder.test(name, std::forward<F>(f));
+}
+
+
 template<typename T>
 struct fixture_type {
   using type = typename std::remove_reference_t<T>::fixture_type;
