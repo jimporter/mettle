@@ -55,6 +55,7 @@ struct output_options {
   std::size_t runs = 1;
   bool show_terminal = false;
   bool show_time = false;
+  std::string file = "mettle.xml";
 };
 
 using logger_factory = object_factory<

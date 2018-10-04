@@ -90,6 +90,37 @@ namespace detail {
     return {std::begin(t), std::end(t), func, delim};
   }
 
+  template<typename Map>
+  class string_escaper {
+  public:
+    using string_type = std::string;
+    using map_type = Map;
+
+    string_escaper(const string_type &s, const map_type &replace)
+      : s_(s), replace_(replace) {}
+    string_escaper(const string_escaper &) = delete;
+
+    friend std::ostream &
+    operator <<(std::ostream &os, const string_escaper &e) {
+      for(auto c : e.s_) {
+        auto r = e.replace_.find(c);
+        if(r != e.replace_.end())
+          os << r->second;
+        else
+          os << c;
+      }
+      return os;
+    }
+  private:
+    const string_type &s_;
+    const map_type &replace_;
+  };
+
+  template<typename Map>
+  inline auto escaped(const std::string &s, const Map &replace) ->
+  const string_escaper<Map> {
+    return {s, replace};
+  }
 }
 
 } // namespace mettle

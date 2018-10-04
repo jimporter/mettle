@@ -39,10 +39,10 @@ int main(int argc, const char *argv[]) {
 
   opts::options_description hidden("Hidden options");
   hidden.add_options()
-    ("file", opts::value(&args.files), "input file")
+    ("input-file", opts::value(&args.files), "input file")
   ;
   opts::positional_options_description pos;
-  pos.add("file", -1);
+  pos.add("input-file", -1);
 
   std::vector<std::string> child_args;
   try {

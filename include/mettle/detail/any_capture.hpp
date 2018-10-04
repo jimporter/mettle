@@ -19,6 +19,12 @@ namespace detail {
     T value;
   };
 
+// Ignore warnings from MSVC about overly-long decorated names.
+#if defined(_MSC_VER) && !defined(__clang__)
+#  pragma warning(push)
+#  pragma warning(disable:4503)
+#endif
+
   template<typename T, std::size_t N>
   class any_capture<T[N]> {
   public:
@@ -39,6 +45,10 @@ namespace detail {
     constexpr any_capture(T (&&t)[N], std::index_sequence<I...>)
       : value{std::move(t[I])...} {}
   };
+
+#if defined(_MSC_VER) && !defined(__clang__)
+#  pragma warning(pop)
+#endif
 
   template<typename Ret, typename ...Args>
   class any_capture<Ret(Args...)> : public any_capture<Ret(*)(Args...)> {

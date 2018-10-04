@@ -1,6 +1,8 @@
 #include <mettle.hpp>
 using namespace mettle;
 
+#include <map>
+
 struct int_factory {
   template<typename T>
   T make() const {
@@ -76,6 +78,29 @@ suite<> test_string_alg("string algorithms", [](auto &_) {
       ss << detail::iter_joined(container.begin(), container.end(),
                                 [](int i) { return 2 * i; }, " and ");
       expect(ss.str(), equal_to("2 and 4 and 6"));
+    });
+  });
+
+  subsuite<>(_, "escaped()", [](auto &_) {
+    _.test("no matches", []() {
+      std::ostringstream ss;
+      std::map<char, std::string> replacer = { {'a', "AAA"} };
+      ss << detail::escaped("foo", replacer);
+      expect(ss.str(), equal_to("foo"));
+    });
+
+    _.test("matched", []() {
+      std::ostringstream ss;
+      std::map<char, std::string> replacer = { {'f', "F"} };
+      ss << detail::escaped("foo", replacer);
+      expect(ss.str(), equal_to("Foo"));
+    });
+
+    _.test("replaced characters don't get matched", []() {
+      std::ostringstream ss;
+      std::map<char, std::string> replacer = { {'f', "gg"}, {'g', "h"} };
+      ss << detail::escaped("foo", replacer);
+      expect(ss.str(), equal_to("ggoo"));
     });
   });
 });

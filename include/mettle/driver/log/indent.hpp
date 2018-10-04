@@ -60,7 +60,7 @@ public:
   using base_type = std::basic_ostream<Char, Traits>;
   using streambuf_type = basic_indenting_streambuf<Char, Traits>;
 
-  basic_indenting_ostream(base_type &os, std::size_t base_indent = 2)
+  explicit basic_indenting_ostream(base_type &os, std::size_t base_indent = 2)
     : base_type(&buf), buf(os.rdbuf(), base_indent) {
     base_type::copyfmt(os);
     base_type::clear(os.rdstate());

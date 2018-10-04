@@ -10,6 +10,7 @@
 
 #include <mettle/driver/log/brief.hpp>
 #include <mettle/driver/log/verbose.hpp>
+#include <mettle/driver/log/xunit.hpp>
 #include <mettle/detail/string_algorithm.hpp>
 
 #ifndef _WIN32
@@ -103,6 +104,9 @@ make_output_options(output_options &opts, const logger_factory &factory) {
      "show terminal output for each test")
     ("show-time", value(&opts.show_time)->zero_tokens(),
      "show the duration for each test")
+    ("file,f", value(&opts.file)->value_name("FILE"),
+     ("file to print test results to (for xunit only; default: " + opts.file +
+      ")").c_str())
   ;
   return desc;
 }
@@ -130,6 +134,9 @@ logger_factory make_logger_factory() {
     return std::make_unique<log::verbose>(
       out, args.runs, args.show_time, args.show_terminal
     );
+  });
+  f.add("xunit", [](indenting_ostream &, const output_options &args) {
+    return std::make_unique<log::xunit>(args.file, args.runs);
   });
 
   return f;
