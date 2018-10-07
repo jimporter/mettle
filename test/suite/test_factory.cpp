@@ -30,6 +30,19 @@ suite<> test_factory("fixture factories", [](auto &_) {
       expect(f.make<std::vector<int>>(), array(0, 0, 0));
     });
 
+    _.test("one argument (array lvalue)", []() {
+      char s[] = "foo";
+      auto f = bind_factory(s);
+      s[0] = 'b';
+
+      expect(f.make<std::string>(), equal_to("foo"));
+    });
+
+    _.test("one argument (array rvalue)", []() {
+      auto f = bind_factory("foo");
+      expect(f.make<std::string>(), equal_to("foo"));
+    });
+
     _.test("two arguments (lvalue)", []() {
       int i = 3;
       char c = 'c';
@@ -54,6 +67,15 @@ suite<> test_factory("fixture factories", [](auto &_) {
 
       expect(g.make<int>(), equal_to(0));
       expect(h.make<int>(), equal_to(0));
+    });
+
+    _.test("copy/move array", []() {
+      auto f = bind_factory("foo");
+      auto g = f;
+      auto h = std::move(f);
+
+      expect(g.make<std::string>(), equal_to("foo"));
+      expect(h.make<std::string>(), equal_to("foo"));
     });
   });
 });

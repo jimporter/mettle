@@ -1,31 +1,31 @@
 #include <mettle.hpp>
 using namespace mettle;
 
-#include "../copy_counter.hpp"
+#include "copy_counter.hpp"
 
 void func() {}
 
 suite<> test_capture("any_capture", [](auto &_) {
   _.test("capture int", []() {
-    any_capture<int> capture1(1);
+    detail::any_capture<int> capture1(1);
     expect(capture1.value, equal_to(1));
 
     int i = 2;
-    any_capture<int> capture2(i);
+    detail::any_capture<int> capture2(i);
     expect(capture2.value, equal_to(i));
   });
 
   _.test("capture std::string", []() {
-    any_capture<std::string> capture1("foo");
+    detail::any_capture<std::string> capture1("foo");
     expect(capture1.value, equal_to("foo"));
 
     std::string s = "bar";
-    any_capture<std::string> capture2(s);
+    detail::any_capture<std::string> capture2(s);
     expect(capture2.value, equal_to(s));
   });
 
   _.test("capture function", []() {
-    any_capture<void()> capture(func);
+    detail::any_capture<void()> capture(func);
 
     expect(capture.value, equal_to(func));
     expect(capture.value, equal_to(&func));
@@ -33,14 +33,14 @@ suite<> test_capture("any_capture", [](auto &_) {
 
   _.test("capture by copy", []() {
     copyable_type t;
-    any_capture<copyable_type> capture(t);
+    detail::any_capture<copyable_type> capture(t);
 
     expect("number of copies", capture.value.copies, equal_to(1));
   });
 
   _.test("capture by move", []() {
     moveable_type t;
-    any_capture<moveable_type> capture(std::move(t));
+    detail::any_capture<moveable_type> capture(std::move(t));
 
     expect("number of copies", capture.value.copies, equal_to(0));
     expect("number of moves", capture.value.moves, equal_to(1));
@@ -48,7 +48,7 @@ suite<> test_capture("any_capture", [](auto &_) {
 
   _.test("capture array by copy", []() {
     copyable_type t[2];
-    any_capture<copyable_type[2]> capture(t);
+    detail::any_capture<copyable_type[2]> capture(t);
 
     expect("number of copies", capture.value, each(
       filter([](auto &&x) { return x.copies; }, equal_to(1))
@@ -59,7 +59,7 @@ suite<> test_capture("any_capture", [](auto &_) {
 #if !defined(_MSC_VER) || defined(__clang__)
   _.test("capture array by move", []() {
     moveable_type t[2];
-    any_capture<moveable_type[2]> capture(std::move(t));
+    detail::any_capture<moveable_type[2]> capture(std::move(t));
 
     expect("number of copies", capture.value, each(
       filter([](auto &&x) { return x.copies; }, equal_to(0))

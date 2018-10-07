@@ -5,6 +5,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "../detail/any_capture.hpp"
+
 namespace mettle {
 
 namespace detail {
@@ -27,7 +29,7 @@ namespace detail {
 
   template<typename ...Args>
   class bind_factory_t {
-    using tuple_type = std::tuple<Args...>;
+    using tuple_type = std::tuple<detail::any_capture<Args>...>;
   public:
     template<typename ...CallArgs, typename = std::enable_if_t<
       std::is_constructible<tuple_type, CallArgs...>::value
@@ -43,7 +45,7 @@ namespace detail {
   private:
     template<typename T, std::size_t ...I>
     T make_impl(std::index_sequence<I...>) const {
-      return T(std::get<I>(args_)...);
+      return T(std::get<I>(args_).value...);
     }
 
     tuple_type args_;
@@ -56,9 +58,9 @@ constexpr detail::type_only_factory_t type_only;
 
 // XXX: Work around GCC bug 65308 and don't return auto here.
 template<typename ...Args>
-detail::bind_factory_t<typename std::remove_reference<Args>::type...>
+detail::bind_factory_t<std::remove_reference_t<Args>...>
 bind_factory(Args &&...args) {
-  return detail::bind_factory_t<typename std::remove_reference<Args>::type...>(
+  return detail::bind_factory_t<std::remove_reference_t<Args>...>(
     std::forward<Args>(args)...
   );
 }

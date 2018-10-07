@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "../output.hpp"
-#include "any_capture.hpp"
+#include "../detail/any_capture.hpp"
 #include "result.hpp"
 
 namespace mettle {
@@ -41,9 +41,9 @@ namespace detail {
 template<typename T, typename F>
 class basic_matcher : public matcher_tag {
 public:
-  basic_matcher(any_capture<T> thing, F f, std::string prefix)
+  basic_matcher(detail::any_capture<T> thing, F f, std::string prefix)
     : thing_(std::move(thing)), f_(std::move(f)), prefix_(std::move(prefix)) {}
-  basic_matcher(any_capture<T> thing, F f,
+  basic_matcher(detail::any_capture<T> thing, F f,
                 std::pair<std::string, std::string> format)
     : thing_(std::move(thing)), f_(std::move(f)),
       prefix_(std::move(format.first)), suffix_(std::move(format.second)) {}
@@ -59,7 +59,7 @@ public:
     return ss.str();
   }
 private:
-  any_capture<T> thing_;
+  detail::any_capture<T> thing_;
   F f_;
   std::string prefix_, suffix_;
 };
