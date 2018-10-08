@@ -126,6 +126,8 @@ format is set to *brief*. The available formats are:
 
 * `silent`: Don't show any output during the test run; only a summary after the
   fact will be shown.
+* `counter`: Show a single line per run counting up the total number of passed,
+  failed, and skipped tests.
 * `brief`: A single character for each test will be shown. `.` means a passed
   test, `!` a failed test, and `_` a skipped test.
 * `verbose`: Show the full name of tests and suites as they're being run.

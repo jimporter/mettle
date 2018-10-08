@@ -8,6 +8,7 @@
 
 #include <boost/program_options.hpp>
 
+#include <mettle/driver/log/counter.hpp>
 #include <mettle/driver/log/brief.hpp>
 #include <mettle/driver/log/verbose.hpp>
 #include <mettle/driver/log/xunit.hpp>
@@ -126,6 +127,9 @@ logger_factory make_logger_factory() {
 
   f.add("silent", [](indenting_ostream &, const output_options &) {
     return std::unique_ptr<log::file_logger>();
+  });
+  f.add("counter", [](indenting_ostream &out, const output_options &) {
+    return std::make_unique<log::counter>(out);
   });
   f.add("brief", [](indenting_ostream &out, const output_options &) {
     return std::make_unique<log::brief>(out);
