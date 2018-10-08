@@ -200,6 +200,12 @@ each test in the suite:</p>
 });
 </code></pre>
 
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For symmetry with third-party test types, you can also express <code>_.test(...)</code>
+as <code>mettle::test(_, ...)</code>. The same applies to <code>_.setup(...)</code> and
+<code>_.teardown(...)</code>.</p>
+</div>
 <h2 id="subsuites">Subsuites<a class="headerlink" href="#subsuites" title="Permanent link">§</a></h2>
 <p>When testing something particularly complex, you might find it useful to group
 test suites together. You can do this by creating a subsuite inside a parent
@@ -516,13 +522,12 @@ function, which also affects its execution.</p></div>
 
         <footer class="col-md-12">
             <hr>
-                <p>Copyright &copy; 2014-2016 Jim Porter</p>
+                <p>Copyright &copy; 2014-2018 Jim Porter</p>
             <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
         <script>var base_url = '..';</script>
         <script src="../js/base.js"></script>
-        <script src="../search/require.js"></script>
-        <script src="../search/search.js"></script>
+        <script src="../search/main.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
     <div class="modal-dialog">

@@ -163,19 +163,20 @@ quoted arguments:</p>
 
 <h2 id="command-line-options">Command-line options<a class="headerlink" href="#command-line-options" title="Permanent link">§</a></h2>
 <h3 id="generic-options">Generic options<a class="headerlink" href="#generic-options" title="Permanent link">§</a></h3>
-<h4 id="-help-h">--help (-h)<a class="headerlink" href="#-help-h" title="Permanent link">§</a></h4>
+<h4 id="help-option">--help (-h)<a class="headerlink" href="#help-option" title="Permanent link">§</a></h4>
 <p>Show help and usage information.</p>
 <h3 id="driver-options">Driver options<a class="headerlink" href="#driver-options" title="Permanent link">§</a></h3>
-<h4 id="-timeout-n-t">--timeout <em>N</em> (-t)<a class="headerlink" href="#-timeout-n-t" title="Permanent link">§</a></h4>
+<h4 id="timeout-option">--timeout <em>N</em> (-t)<a class="headerlink" href="#timeout-option" title="Permanent link">§</a></h4>
 <p>Time out and fail any tests that take longer than <em>N</em> milliseconds to execute.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p><code>--no-subproc</code> can't be specified while using this option.</p>
+<p><a href="#no-subproc-option"><code>--no-subproc</code></a> can't be specified while using this
+option.</p>
 </div>
-<h4 id="-test-regex-t">--test <em>REGEX</em> (-T)<a class="headerlink" href="#-test-regex-t" title="Permanent link">§</a></h4>
+<h4 id="test-option">--test <em>REGEX</em> (-T)<a class="headerlink" href="#test-option" title="Permanent link">§</a></h4>
 <p>Filter the tests that will be run to those matching a regex. If <code>--test</code> is
 specified multiple times, tests that match <em>any</em> of the regexes will be run.</p>
-<h4 id="-attr-attrvalue-a">--attr <em>ATTR[=VALUE],...</em> (-a)<a class="headerlink" href="#-attr-attrvalue-a" title="Permanent link">§</a></h4>
+<h4 id="attr-option">--attr <em>ATTR[=VALUE],...</em> (-a)<a class="headerlink" href="#attr-option" title="Permanent link">§</a></h4>
 <p>Filter the tests that will be run based on the tests'
 <a href="../writing-tests/#test-attributes">attributes</a>. Tests matching each of the
 attributes (and, optionally, values) will be run by the test driver. If <code>--attr</code>
@@ -210,14 +211,14 @@ set to something other than <code>http</code>.</p>
 <p>Run tests that match either attribute.</p>
 </li>
 </ul>
-<h4 id="-no-subproc">--no-subproc<a class="headerlink" href="#-no-subproc" title="Permanent link">§</a></h4>
+<h4 id="no-subproc-option">--no-subproc<a class="headerlink" href="#no-subproc-option" title="Permanent link">§</a></h4>
 <p>By default, mettle creates a subprocess for each test, in order to detect
 crashes during the execution of a test. To disable this, you can pass
 <code>--no-subproc</code>, and all the tests will run in the same process. This option can
 only be specified for the individual test binaries, <em>not</em> for the <code>mettle</code>
 driver.</p>
 <h3 id="output-options">Output options<a class="headerlink" href="#output-options" title="Permanent link">§</a></h3>
-<h4 id="-output-format-o">--output <em>FORMAT</em> (-o)<a class="headerlink" href="#-output-format-o" title="Permanent link">§</a></h4>
+<h4 id="output-option">--output <em>FORMAT</em> (-o)<a class="headerlink" href="#output-option" title="Permanent link">§</a></h4>
 <p>Set the output format for the test results. If <code>--output</code> isn't passed, the
 format is set to <em>brief</em>. The available formats are:</p>
 <ul>
@@ -226,33 +227,38 @@ format is set to <em>brief</em>. The available formats are:</p>
 <li><code>brief</code>: A single character for each test will be shown. <code>.</code> means a passed
   test, <code>!</code> a failed test, and <code>_</code> a skipped test.</li>
 <li><code>verbose</code>: Show the full name of tests and suites as they're being run.</li>
+<li><code>xunit</code>: Log the test results in xUnit format to the file specified by
+  <a href="#file-option"><code>--file</code></a>.</li>
 </ul>
-<h4 id="-color-when-c">--color <em>[WHEN]</em> (-c)<a class="headerlink" href="#-color-when-c" title="Permanent link">§</a></h4>
+<h4 id="color-option">--color <em>[WHEN]</em> (-c)<a class="headerlink" href="#color-option" title="Permanent link">§</a></h4>
 <p>Print test results in color. This is good if your terminal supports colors,
 since it makes the results much easier to read! <code>WHEN</code> can be one of <code>always</code>
 (the default if you don't explicitly specify <code>WHEN</code>), <code>never</code>, or <code>auto</code>.</p>
-<h4 id="-runs-n-n">--runs <em>N</em> (-n)<a class="headerlink" href="#-runs-n-n" title="Permanent link">§</a></h4>
+<h4 id="runs-option">--runs <em>N</em> (-n)<a class="headerlink" href="#runs-option" title="Permanent link">§</a></h4>
 <p>Run the tests a total of <em>N</em> times. This is useful for catching intermittent
 failures. At the end, the summary will show the output of each failure for every
 test.</p>
-<h4 id="-show-terminal">--show-terminal<a class="headerlink" href="#-show-terminal" title="Permanent link">§</a></h4>
+<h4 id="show-terminal-option">--show-terminal<a class="headerlink" href="#show-terminal-option" title="Permanent link">§</a></h4>
 <p>Show the terminal output (stdout and stderr) of each test after it finishes. To
-enable this, <code>--no-subproc</code> can't be specified (if <code>--no-subproc</code> <em>is</em>
-specified, the terminal output will just appear in-line with the tests).</p>
-<h4 id="-show-time">--show-time<a class="headerlink" href="#-show-time" title="Permanent link">§</a></h4>
+enable this, <a href="#no-subproc-option"><code>--no-subproc</code></a> can't be specified (if
+<code>--no-subproc</code> <em>is</em> specified, the terminal output will just appear in-line with
+the tests).</p>
+<h4 id="show-time-option">--show-time<a class="headerlink" href="#show-time-option" title="Permanent link">§</a></h4>
 <p>Show the duration (in milliseconds) of each test as it runs, as well as the
-total time of the entire job.</p></div>
+total time of the entire job.</p>
+<h4 id="file-option">--file <em>[FILE]</em><a class="headerlink" href="#file-option" title="Permanent link">§</a></h4>
+<p>The file to print test results to; only applies to the <code>xunit</code> <a href="#output-option">output
+format</a>. Defaults to <code>mettle.xml</code>.</p></div>
         </div>
 
         <footer class="col-md-12">
             <hr>
-                <p>Copyright &copy; 2014-2016 Jim Porter</p>
+                <p>Copyright &copy; 2014-2018 Jim Porter</p>
             <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
         <script>var base_url = '..';</script>
         <script src="../js/base.js"></script>
-        <script src="../search/require.js"></script>
-        <script src="../search/search.js"></script>
+        <script src="../search/main.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
     <div class="modal-dialog">
