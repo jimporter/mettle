@@ -125,7 +125,25 @@ namespace log {
 
   void xunit::started_file(const std::string &) {}
   void xunit::ended_file(const std::string &) {}
-  void xunit::failed_file(const std::string &, const std::string &) {}
+
+  void xunit::failed_file(const std::string &file, const std::string &message) {
+    auto suite = xml::element::make("testsuite");
+    suite->attr("name", "file `" + file + "`");
+    suite->attr("tests", "1");
+    suite->attr("failures", "1");
+    suite->attr("time", "0");
+
+    auto t = xml::element::make("test");
+    t->attr("name", "<file>");
+    t->attr("time", "0");
+    t->append_child(message_element("failure", message));
+    suite->append_child(std::move(t));
+
+    doc_.root()->append_child(std::move(suite));
+
+    tests_++;
+    failures_++;
+  }
 
   xunit::suite_stack_item & xunit::current_suite() {
     if(suite_stack_.empty())

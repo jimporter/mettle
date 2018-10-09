@@ -5,11 +5,21 @@
 
 #include <mettle/detail/string_algorithm.hpp>
 
-static std::map<char, std::string> xml_replace = {
+static const std::map<char, std::string> xml_replace_text = {
   {'<', "&lt;"},
   {'>', "&gt;"},
   {'&', "&amp;"},
   {'"', "&quot;"}
+};
+
+// XML allows newlines in attributes, but it makes things look weird (and
+// doesn't play nice with `indenting_ostream`. Just escape them for simplicity.
+static const std::map<char, std::string> xml_replace_attr = {
+  {'<', "&lt;"},
+  {'>', "&gt;"},
+  {'&', "&amp;"},
+  {'"', "&quot;"},
+  {'\n', "&#10;"}
 };
 
 // Match anything that 1) starts with "xml" or anything other than a letter or
@@ -31,8 +41,8 @@ namespace log {
   void xml::element::write(indenting_ostream &out) const {
     out << "<" << tag_;
     for(auto &&i : attrs_)
-      out << " " << i.first << "=\"" << detail::escaped(i.second, xml_replace)
-          << "\"";
+      out << " " << i.first << "=\""
+          << detail::escaped(i.second, xml_replace_attr) << "\"";
     if(children_.empty()) {
       out << "/>\n";
       return;
@@ -48,7 +58,7 @@ namespace log {
   }
 
   void xml::text::write(indenting_ostream &out) const {
-    out << detail::escaped(text_content_, xml_replace) << "\n";
+    out << detail::escaped(text_content_, xml_replace_text) << "\n";
   }
 
 }

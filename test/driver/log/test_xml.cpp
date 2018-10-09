@@ -70,10 +70,10 @@ suite<> test_xml("xml writing", [](auto &_) {
     _.test("attributes", []() {
       log::xml::element e("element");
       e.attr("attr1", "value");
-      e.attr("attr2", "<my & \"value\">");
+      e.attr("attr2", "<my &\n\"value\">");
       expect(make_string(e), equal_to(
         "<element attr1=\"value\" "
-                 "attr2=\"&lt;my &amp; &quot;value&quot;&gt;\"/>\n"
+                 "attr2=\"&lt;my &amp;&#10;&quot;value&quot;&gt;\"/>\n"
       ));
     });
 
@@ -97,8 +97,8 @@ suite<> test_xml("xml writing", [](auto &_) {
     });
 
     _.test("escaped", []() {
-      log::xml::text t("<my & \"value\">");
-      expect(make_string(t), equal_to("&lt;my &amp; &quot;value&quot;&gt;\n"));
+      log::xml::text t("<my &\n\"value\">");
+      expect(make_string(t), equal_to("&lt;my &amp;\n&quot;value&quot;&gt;\n"));
     });
 
     _.test("indented", []() {
