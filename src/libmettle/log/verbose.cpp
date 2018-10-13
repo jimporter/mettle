@@ -59,10 +59,8 @@ namespace log {
                             test_duration duration) {
     using namespace term;
     out_ << format(sgr::bold, fg(color::green)) << "PASSED" << reset();
-    if(show_time_) {
-      out_ << " " << format(sgr::bold, fg(color::black)) << "("
-           << duration.count() << " ms)" << reset();
-    }
+    summarize_output(output);
+    log_time(duration);
     out_ << std::endl;
 
     scoped_indent si(out_);
@@ -73,10 +71,8 @@ namespace log {
                             const test_output &output, test_duration duration) {
     using namespace term;
     out_ << format(sgr::bold, fg(color::red)) << "FAILED" << reset();
-    if(show_time_) {
-      out_ << " " << format(sgr::bold, fg(color::black)) << "("
-           << duration.count() << " ms)" << reset();
-    }
+    summarize_output(output);
+    log_time(duration);
     out_ << std::endl;
 
     scoped_indent si(out_);
@@ -104,9 +100,9 @@ namespace log {
 
   void verbose::failed_file(const std::string &file,
                             const std::string &message) {
-    indent_.reset();
-
     using namespace term;
+
+    indent_.reset();
 
     if(!first_)
       out_ << std::endl;
@@ -118,15 +114,30 @@ namespace log {
     out_ << message << std::endl;
   }
 
+  void verbose::log_time(test_duration duration) const {
+    using namespace term;
+    if(show_time_) {
+      out_ << " " << format(sgr::bold, fg(color::black)) << "("
+           << duration.count() << " ms)" << reset();
+    }
+  }
+
+  void verbose::summarize_output(const test_output &output) const {
+    if(show_terminal_ || output.empty())
+      return;
+
+    using namespace term;
+    out_ << " " << format(fg(color::yellow)) << "[...]" << reset();
+  }
+
   void verbose::log_output(const test_output &output,
                            bool extra_newline) const {
-    if(!show_terminal_)
+    if(!show_terminal_ || output.empty())
       return;
 
     using namespace term;
 
-    bool has_output = !output.stdout_log.empty() || !output.stderr_log.empty();
-    if(extra_newline && has_output)
+    if(extra_newline)
       out_ << std::endl;
 
     if(!output.stdout_log.empty()) {

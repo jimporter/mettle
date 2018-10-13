@@ -43,6 +43,8 @@ namespace log {
     void failed_file(const std::string &file,
                      const std::string &message) override;
   private:
+    void log_time(test_duration duration) const;
+    void summarize_output(const test_output &output) const;
     void log_output(const test_output &output, bool extra_newline) const;
 
     indenting_ostream &out_;

@@ -14,6 +14,10 @@ namespace log {
 
   struct test_output {
     std::string stdout_log, stderr_log;
+
+    bool empty() const {
+      return stdout_log.empty() && stderr_log.empty();
+    }
   };
 
   using test_duration = std::chrono::milliseconds;

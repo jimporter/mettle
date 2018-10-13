@@ -13,7 +13,7 @@ inline void passing_run(log::test_logger &logger) {
 
   logger.started_suite(suites);
   logger.started_test({suites, "test", 1});
-  logger.passed_test({suites, "test", 1}, output, 100ms);
+  logger.passed_test({suites, "test", 1}, log::test_output{}, 100ms);
 
   suites.push_back("subsuite");
   logger.started_suite(suites);
