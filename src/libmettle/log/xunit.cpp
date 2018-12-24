@@ -24,7 +24,7 @@ namespace log {
   }
 
   static xml::element_ptr test_element(const test_name &test) {
-    auto e = xml::element::make("test");
+    auto e = xml::element::make("testcase");
     e->attr("name", test.test);
     return e;
   }
