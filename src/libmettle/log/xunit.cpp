@@ -24,7 +24,7 @@ namespace log {
   }
 
   static xml::element_ptr test_element(const test_name &test) {
-    auto e = xml::element::make("test");
+    auto e = xml::element::make("testcase");
     e->attr("name", test.test);
     return e;
   }
@@ -133,7 +133,7 @@ namespace log {
     suite->attr("failures", "1");
     suite->attr("time", "0");
 
-    auto t = xml::element::make("test");
+    auto t = xml::element::make("testcase");
     t->attr("name", "<file>");
     t->attr("time", "0");
     t->append_child(message_element("failure", message));
