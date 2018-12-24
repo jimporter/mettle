@@ -133,7 +133,7 @@ namespace log {
     suite->attr("failures", "1");
     suite->attr("time", "0");
 
-    auto t = xml::element::make("test");
+    auto t = xml::element::make("testcase");
     t->attr("name", "<file>");
     t->attr("time", "0");
     t->append_child(message_element("failure", message));
