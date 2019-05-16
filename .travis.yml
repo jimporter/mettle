@@ -1,5 +1,6 @@
 language: cpp
 sudo: false
+dist: xenial
 
 env:
   global:
@@ -11,12 +12,14 @@ env:
 addons:
   apt:
     sources: &sources
-      - boost-latest
       - ubuntu-toolchain-r-test
     packages: &packages
-      - libboost1.55-dev
-      - libboost-iostreams1.55-dev
-      - libboost-program-options1.55-dev
+      # Test 1.58 specifically because it has very strict rules for
+      # Boost.Variant. This is the default in Xenial, but if this changes, we
+      # may want to manually install 1.58 to test it.
+      - libboost1.58-dev
+      - libboost-iostreams1.58-dev
+      - libboost-program-options1.58-dev
       - ninja-build
       - python-virtualenv
 
@@ -27,30 +30,6 @@ matrix:
   include:
 
     # Clang builds
-
-    - compiler: clang
-      env: COMPILER=clang++-3.6
-      addons:
-        apt:
-          sources:
-            - *sources
-            - llvm-toolchain-precise-3.6
-          packages:
-            - *packages
-            - clang-3.6
-            - libstdc++-5-dev
-
-    - compiler: clang
-      env: COMPILER=clang++-3.7
-      addons:
-        apt:
-          sources:
-            - *sources
-            - llvm-toolchain-precise-3.7
-          packages:
-            - *packages
-            - clang-3.7
-            - libstdc++-5-dev
 
     - compiler: clang
       env: COMPILER=clang++-3.8
@@ -88,16 +67,42 @@ matrix:
             - clang-4.0
             - libstdc++-5-dev
 
+    # Skipping clang 5.0 since it doesn't install properly under Xenial.
+
     - compiler: clang
-      env: COMPILER=clang++-5.0
-      addons: &clang-50
+      env: COMPILER=clang++-6.0
+      addons:
         apt:
           sources:
             - *sources
-            - llvm-toolchain-trusty-5.0
+            - llvm-toolchain-xenial-6.0
           packages:
             - *packages
-            - clang-5.0
+            - clang-6.0
+            - libstdc++-5-dev
+
+    - compiler: clang
+      env: COMPILER=clang++-7
+      addons:
+        apt:
+          sources:
+            - *sources
+            - llvm-toolchain-xenial-7
+          packages:
+            - *packages
+            - clang-7
+            - libstdc++-5-dev
+
+    - compiler: clang
+      env: COMPILER=clang++-8
+      addons: &clang-8
+        apt:
+          sources:
+            - *sources
+            - llvm-toolchain-xenial-8
+          packages:
+            - *packages
+            - clang-8
             - libstdc++-5-dev
 
     # GCC builds
@@ -124,12 +129,21 @@ matrix:
 
     - compiler: gcc
       env: COMPILER=g++-7 BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
-      addons: &gcc-7
+      addons:
         apt:
           sources: *sources
           packages:
             - *packages
             - g++-7
+
+    - compiler: gcc
+      env: COMPILER=g++-8 BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
+      addons: &gcc-8
+        apt:
+          sources: *sources
+          packages:
+            - *packages
+            - g++-8
 
     # macOS builds
 
@@ -144,41 +158,16 @@ matrix:
     # Builds with newer versions of Boost
 
     - compiler: clang
-      # Test 1.58 specifically because it has very strict rules for
-      # Boost.Variant.
-      env: BOOST_VER=1.58 COMPILER=clang++-5.0
+      env: BOOST_VER=1.67 COMPILER=clang++-8
       addons:
         apt:
           sources:
             - *sources
-            - llvm-toolchain-trusty-5.0
+            - llvm-toolchain-xenial-8
           packages:
             - ninja-build
             - python-virtualenv
-            - clang-5.0
-            - libstdc++-5-dev
-      install:
-        - |
-          export BOOST_ROOT=$HOME
-          wget https://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.bz2
-          tar -xjf boost_1_58_0.tar.bz2
-          pushd boost_1_58_0
-          ./bootstrap.sh --prefix=$HOME --with-libraries=program_options,iostreams
-          ./b2 link=shared threading=multi variant=release -d0
-          ./b2 install -d0
-          popd
-
-    - compiler: clang
-      env: BOOST_VER=1.67 COMPILER=clang++-5.0
-      addons:
-        apt:
-          sources:
-            - *sources
-            - llvm-toolchain-trusty-5.0
-          packages:
-            - ninja-build
-            - python-virtualenv
-            - clang-5.0
+            - clang-8
             - libstdc++-5-dev
       install:
         - |
@@ -194,40 +183,40 @@ matrix:
     # C++17 builds
 
     - compiler: clang
-      env: EXTRAOPTS="--std=c++17" COMPILER=clang++-5.0
+      env: EXTRAOPTS="--std=c++17" COMPILER=clang++-8
       addons:
         apt:
           sources:
             - *sources
-            - llvm-toolchain-trusty-5.0
+            - llvm-toolchain-xenial-8
           packages:
             - *packages
-            - clang-5.0
+            - clang-8
             - libstdc++-7-dev
 
     - compiler: gcc
       env: >
-        EXTRAOPTS="--std=c++17" COMPILER=g++-7 BUILD_ARGS="-j1"
+        EXTRAOPTS="--std=c++17" COMPILER=g++-8 BUILD_ARGS="-j1"
         EXTRAFLAGS=-Wsuggest-override
-      addons: *gcc-7
+      addons: *gcc-8
 
     # Make-backend builds
 
     - compiler: clang
-      env: BACKEND=make COMPILER=clang++-5.0 BUILD_ARGS="-j4"
-      addons: *clang-50
+      env: BACKEND=make COMPILER=clang++-8 BUILD_ARGS="-j4"
+      addons: *clang-8
 
     - compiler: gcc
       env: >
-        BACKEND=make COMPILER=g++-7 BUILD_ARGS="-j4"
+        BACKEND=make COMPILER=g++-8 BUILD_ARGS="-j4"
         EXTRAFLAGS=-Wsuggest-override
-      addons: *gcc-7
+      addons: *gcc-8
 
     # Python 3 builds
 
     - compiler: clang
-      env: PYTHON=python3 PIP=pip3 COMPILER=clang++-5.0
-      addons: *clang-50
+      env: PYTHON=python3 PIP=pip3 COMPILER=clang++-8
+      addons: *clang-8
 
 before_install:
   - |
