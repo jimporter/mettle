@@ -3,7 +3,7 @@
 from os.path import splitext
 
 bfg9000_required_version('>=0.4.0')
-project('mettle', version='1.0pre')
+project('mettle', version='0.1-dev')
 
 global_options([opts.std(argv.std)], lang='c++')
 
