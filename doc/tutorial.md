@@ -49,7 +49,7 @@ the suite builder. Like suites, tests have both a string name and a callback
 function, but this time the callback is the code to run when the test executes:
 
 ```c++
-_.test(("my first test", []() {
+_.test("my first test", []() {
   /* ... */
 });
 ```
