@@ -2,8 +2,8 @@
 
 from os.path import splitext
 
-bfg9000_required_version('>=0.4.0')
-project('mettle', version='0.1-dev')
+bfg9000_required_version('>=0.5.0')
+project('mettle', '0.1-dev', intermediate_dirs=False)
 
 global_options([opts.std(argv.std)], lang='c++')
 
@@ -25,13 +25,15 @@ prog_opts = boost_package('program_options', version='>=1.55')
 
 libmettle = shared_library(
     'mettle',
-    files=find_files('src/libmettle', '*.cpp', extra='*.hpp'),
+    files=find_files('src/libmettle', '*.cpp', extra='*.hpp',
+                     filter=filter_by_platform),
     includes=includes,
     packages=pthread + bencode + [iostreams, prog_opts],
 )
 
 mettle_objs = object_files(
-    files=find_files('src/mettle', '*.cpp', extra='*.hpp'),
+    files=find_files('src/mettle', '*.cpp', extra='*.hpp',
+                     filter=filter_by_platform),
     includes=includes,
     packages=bencode + [iostreams, prog_opts],
 )
@@ -48,7 +50,8 @@ extra_files = {
     'test/driver/test_test_file.cpp': ['src/mettle/test_file.cpp'],
     'test/driver/test_run_test_files.cpp': [
         'src/mettle/run_test_files.cpp', 'src/mettle/test_file.cpp'
-    ] + find_files('src/mettle', 'run_test_file.cpp'),
+    ] + find_paths('src/mettle', 'run_test_file.cpp',
+                   filter=filter_by_platform),
 }
 extra_pkgs = {
     'test/driver/test_cmd_line.cpp': [prog_opts],
@@ -61,28 +64,29 @@ driver = test_driver(
     [mettle, '--output=verbose'],
     environment={'TEST_DATA': 'test_data'},
 )
-for src in find_files('test', '*.cpp', extra='*.hpp'):
+for src in find_paths('test', '*.cpp', extra='*.hpp',
+                      filter=filter_by_platform):
     test(executable(
-        splitext(src)[0],
-        files=[src] + [mettle_objs[i] for i in extra_files.get(src, [])],
+        src.stripext().suffix,
+        files=[src] + [mettle_objs[i] for i in extra_files.get(src.suffix, [])],
         includes=includes,
         libs=libmettle,
-        packages=bencode + [boost_hdrs] + extra_pkgs.get(src, []),
+        packages=bencode + [boost_hdrs] + extra_pkgs.get(src.suffix, []),
     ), driver=driver)
 
 test_data = alias('test-data', [
-    executable(splitext(src)[0], files=src, includes=includes, libs=libmettle,
-               packages=boost_hdrs)
-    for src in find_files('test_data', '*.cpp', extra='*.hpp')
+    executable(src.stripext().suffix, files=src, includes=includes,
+               libs=libmettle, packages=boost_hdrs)
+    for src in find_paths('test_data', '*.cpp', extra='*.hpp')
 ])
 test_deps(test_data)
 
 header_only_examples = ['examples/test_02_header_only.cpp']
 alias('examples', [
-    executable(splitext(src)[0], files=src, includes=includes,
-               libs=None if src in header_only_examples else libmettle,
+    executable(src.stripext().suffix, files=src, includes=includes,
+               libs=None if src.suffix in header_only_examples else libmettle,
                packages=boost_hdrs)
-    for src in find_files('examples', '*.cpp', extra='*.hpp')
+    for src in find_paths('examples', '*.cpp', extra='*.hpp')
 ])
 
 # XXX: Don't cd once MkDocs supports building from other dirs.
@@ -92,6 +96,6 @@ command('doc-serve', cmds=[cd, ['mkdocs', 'serve', '--dev-addr=0.0.0.0:8000']])
 command('doc-deploy', cmds=[cd, ['mkdocs', 'gh-deploy', '--clean']])
 
 # Extra files to be packaged in the source dist.
-find_files('src', '*.[ch]pp', flat=True)
+find_files('src', '*.[ch]pp', filter=filter_by_platform, flat=True)
 extra_dist(files=['README.md', 'LICENSE', 'mkdocs.yml'],
            dirs=['doc', 'scripts'])
