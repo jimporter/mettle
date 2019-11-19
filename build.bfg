@@ -29,6 +29,7 @@ libmettle = shared_library(
                      filter=filter_by_platform),
     includes=includes,
     packages=pthread + bencode + [iostreams, prog_opts],
+    version='0.1', soversion='1',
 )
 
 mettle_objs = object_files(
