@@ -92,5 +92,6 @@ command('doc-serve', cmds=[cd, ['mkdocs', 'serve', '--dev-addr=0.0.0.0:8000']])
 command('doc-deploy', cmds=[cd, ['mkdocs', 'gh-deploy', '--clean']])
 
 # Extra files to be packaged in the source dist.
+find_files('src', '*.[ch]pp', flat=True)
 extra_dist(files=['README.md', 'LICENSE', 'mkdocs.yml'],
            dirs=['doc', 'scripts'])
