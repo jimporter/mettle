@@ -45,6 +45,7 @@ mettle = executable(
     packages=bencode + [iostreams, prog_opts],
 )
 
+pkg_config()
 install(mettle, libmettle, includes)
 
 extra_files = {
