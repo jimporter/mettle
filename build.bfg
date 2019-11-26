@@ -1,7 +1,5 @@
 # -*- python -*-
 
-from os.path import splitext
-
 bfg9000_required_version('>=0.5.0')
 project('mettle', '0.1-dev', intermediate_dirs=False)
 
