@@ -25,4 +25,6 @@ pages:
       - Built-in Matchers: built-in-matchers.md
       - Writing Your Own Matchers: writing-matchers.md
   - Developer Guide: developer.md
-  - License: license.md
+  - About:
+      - Changes: about/changes.md
+      - License: about/license.md
