@@ -7,6 +7,9 @@ copyright: Copyright &copy; 2014-2019 Jim Porter
 theme: yeti
 extra_css:
   - css/extra.css
+  - css/version-select.css
+extra_javascript:
+  - js/version-select.js
 
 markdown_extensions:
   - admonition

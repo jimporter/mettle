@@ -1,7 +1,9 @@
 # -*- python -*-
 
 bfg9000_required_version('>=0.5.0')
-project('mettle', '0.1-dev', intermediate_dirs=False)
+
+mettle_version = '0.1-dev'
+project('mettle', mettle_version, intermediate_dirs=False)
 
 global_options([opts.std(argv.std)], lang='c++')
 
@@ -91,9 +93,9 @@ alias('examples', [
 
 # XXX: Don't cd once MkDocs supports building from other dirs.
 cd = ['cd', directory('.')]
-command('doc', cmds=[cd, ['mkdocs', 'build', '--clean']])
-command('doc-serve', cmds=[cd, ['mkdocs', 'serve', '--dev-addr=0.0.0.0:8000']])
-command('doc-deploy', cmds=[cd, ['mkdocs', 'gh-deploy', '--clean']])
+doc_deploy = source_file('scripts/doc_deploy.py')
+command('doc-serve', cmds=[cd, ['mike', 'serve', '--dev-addr=0.0.0.0:8000']])
+command('doc-deploy', cmds=[cd, [doc_deploy, mettle_version]])
 
 # Extra files to be packaged in the source dist.
 find_files('src', '*.[ch]pp', filter=filter_by_platform, flat=True)
