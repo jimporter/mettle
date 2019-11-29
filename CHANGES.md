@@ -1,8 +1,6 @@
 # Changes
 
-## v0.1
-2019-11-29
-{: .subtitle}
+## v0.1 (2019-11-29)
 
 - Initial release
 - Support for defining assertions via composable matchers
