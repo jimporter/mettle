@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Expectations - mettle</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.5.0.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+        <link href="../css/extra.css" rel="stylesheet">
+        <link href="../css/version-select.css" rel="stylesheet">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="..">mettle</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                    <li >
+                        <a href="..">Home</a>
+                    </li>
+                    <li >
+                        <a href="../install/">Installation</a>
+                    </li>
+                    <li class="dropdown active">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            
+<li >
+    <a href="../tutorial/">Tutorial</a>
+</li>
+                            
+<li >
+    <a href="../running-tests/">Running Tests</a>
+</li>
+                            
+<li >
+    <a href="../writing-tests/">Writing Tests</a>
+</li>
+                            
+<li class="active">
+    <a href="./">Expectations</a>
+</li>
+                            
+<li >
+    <a href="../built-in-matchers/">Built-in Matchers</a>
+</li>
+                            
+<li >
+    <a href="../writing-matchers/">Writing Your Own Matchers</a>
+</li>
+                        </ul>
+                    </li>
+                    <li >
+                        <a href="../developer/">Developer Guide</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            
+<li >
+    <a href="../about/changes/">Changes</a>
+</li>
+                            
+<li >
+    <a href="../about/license/">License</a>
+</li>
+                        </ul>
+                    </li>
+                </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                    <li >
+                        <a rel="next" href="../writing-tests/">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="../built-in-matchers/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/jimporter/mettle/"><i class="fa fa-github"></i> GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#expectations">Expectations</a></li>
+            <li><a href="#declaring-an-expectation">Declaring an expectation</a></li>
+            <li><a href="#printing-objects">Printing objects</a></li>
+            <li><a href="#what-is-a-matcher">What is a matcher?</a></li>
+            <li><a href="#composing-matchers">Composing matchers</a></li>
+            <li><a href="#mismatch-messages">Mismatch messages</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="expectations">Expectations<a class="headerlink" href="#expectations" title="Permanent link">§</a></h1>
+<p>Expectations are a way of checking that the state of your code matches your
+expectation, similar to an <code>assert</code>. If the expectation is met, then everything
+proceeds as normal. Otherwise, it throws an exception and aborts the current
+test.</p>
+<h2 id="declaring-an-expectation">Declaring an expectation<a class="headerlink" href="#declaring-an-expectation" title="Permanent link">§</a></h2>
+<p>Expectations are easy to write. Just call <code>mettle::expect</code> with the <em>actual</em>
+value you'd like to test and a <em>matcher</em> object. We'll look at matchers in
+detail <a href="#matchers">later</a>, but for now, let's just look at a simple matcher:
+<code>mettle::equal_to(x)</code> creates a matcher that will return <code>true</code> when the actual
+value passed to <code>expect</code> is equal to <code>x</code> (according to the definition of <code>==</code>
+for the type(s) in question).  Here it is all put together:</p>
+<pre><code class="c++">mettle::expect(the_beast, mettle::equal_to(666));
+</code></pre>
+
+<p>If this expectation failed, you'd see something like the following logged to
+your console (with the name of the failing <a href="../writing-tests/#tests">test case</a>
+preceding it):</p>
+<pre><code class="plain">/path/to/test_file.cpp:13
+expected: 666
+actual:   123
+</code></pre>
+
+<h3 id="describing-an-expectation">Describing an expectation<a class="headerlink" href="#describing-an-expectation" title="Permanent link">§</a></h3>
+<p>You can also provide an description for an expectation to make it easier to
+figure out what it was testing if you get a failure:</p>
+<pre><code class="c++">mettle::expect(&quot;is 'to mega therion'?&quot;, the_beast, mettle::equal_to(666));
+</code></pre>
+
+<p>If this expectation fails, you'll see a message like the previous failure, but
+with the description shown as well:</p>
+<pre><code class="plain">is 'to mega therion'? (/path/to/test_file.cpp:13)
+expected: 666
+actual:   123
+</code></pre>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently, only GCC supports getting the filename and line number
+automatically for an expectation. However, as compilers add support for
+<code>std::experimental::source_location</code>, mettle will automatically switch to
+showing these values. However, in the meantime you can use the
+<code>METTLE_EXPECT</code> macro in place of <code>mettle::expect</code> if you need to see the
+filename and line number.</p>
+</div>
+<h2 id="printing-objects">Printing objects<a class="headerlink" href="#printing-objects" title="Permanent link">§</a></h2>
+<p>In the examples above, the error output shows the expected and actual values.
+This is easy for simple types, like integers, but what about complex
+user-defined types? We could use the stream output operator <code>&lt;&lt;</code> (and indeed,
+this option is supported), but there are times where you might want the debug
+output to be different from the normal output. In addition, not every type has
+(or should have) an overload of <code>&lt;&lt;</code>.</p>
+<p>Instead, we use <code>mettle::to_printable</code> to ensure that our object will be
+displayed appropriately if we need to print it. This function returns an object
+(of unspecified type) that can be printed with the usual stream output operator.
+You can also pass an iterator pair to <code>to_printable</code> to print the entire range.
+Of course, feel free to overload <code>to_printable</code> for your own types to show
+whatever information you need to help debug test failures.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Much like overloaded operators and standard library functions like
+<code>std::swap</code>, mettle uses argument-dependent lookup (ADL) to find the
+appropriate overload of <code>to_printable</code>. This is, of course, subject to all
+the usual concerns with ADL, so keep this in mind when using <code>to_printable</code>.</p>
+</div>
+<h2 id="what-is-a-matcher">What is a matcher?<a class="headerlink" href="#what-is-a-matcher" title="Permanent link">§</a></h2>
+<p><a href="#declaring-an-expectation">Above</a>, we talked briefly about matchers and
+showed how to use the equality matcher: <code>mettle::equal_to(666)</code>. Before we
+continue any further, we should define what exactly a matcher is. <em>Matchers</em> are
+composable functions that let you declare what you expect a value to be. The
+composability of matchers allows you to build complex expections from a
+relatively small set of simple matchers. What's more, matchers automatically
+produce human-readable descriptions of what exactly they're testing, freeing you
+from having to manually describe every expectation!</p>
+<p>In addition, mettle comes with a collection of <a href="../built-in-matchers/">built-in
+matchers</a> that can be used (or combined together) to
+perform most common tests. However, if these don't suffice, you can always
+<a href="#writing-your-own-matchers">write your own</a>.</p>
+<h3 id="how-matchers-work">How matchers work<a class="headerlink" href="#how-matchers-work" title="Permanent link">§</a></h3>
+<p>The internals of a matcher are actually pretty simple; they're just function
+objects inheriting from <code>mettle::matcher_tag</code> and also providing a <code>desc()</code>
+member function that returns a string describing the matcher. All matchers can
+be called with a single argument (the <em>actual</em> value in the expectation) and
+returns whether the match was successful or not. To illustrate this more
+concretely, the following defines a very simple matcher that checks if an <code>int</code>
+is 0:</p>
+<pre><code class="c++">struct int_zero : matcher_tag {
+  bool operator ()(int actual) const {
+    return actual == 0;
+  }
+
+  std::string desc() const {
+    return &quot;is 0&quot;;
+  }
+};
+</code></pre>
+
+<h2 id="composing-matchers">Composing matchers<a class="headerlink" href="#composing-matchers" title="Permanent link">§</a></h2>
+<p>Many of the built-in matchers, such as the <a href="../built-in-matchers/#combinatoric">combinatoric
+matchers</a>, are <em>higher-order matchers</em>. That
+is, they are created by taking other matchers as arguments. This allows you to
+build more complex matchers that test multiple aspects of an object at once. For
+instance, you might want to check that a value is in the range [2, 4). With
+the <a href="../built-in-matchers/#all"><code>all</code></a> matcher, this is easy:</p>
+<pre><code class="c++">using namespace mettle;
+expect(x, all(greater_equal(2), less(4)));
+</code></pre>
+
+<p>Similarly, there are higher-order matchers that operate on
+<a href="../built-in-matchers/#collection">collections</a>, allowing you, for example, to
+test that all elements of a container meet a certain condition:</p>
+<pre><code class="c++">using namespace mettle;
+expect(v, each(greater(0)));
+</code></pre>
+
+<p>By composing matchers together, you can express <em>all</em> the expected state of an
+object in one place, making it clearer what exactly you're testing. Furthermore,
+since all matchers provide a description of what they match, these higher-order
+matchers can automatically tell you in human-readable form what they expect. For
+instance, our test to check if a value is between 2 and 4 above might print
+something like this if it fails:</p>
+<pre><code>expected: all(&gt;=2, &lt;4)
+actual:   5
+</code></pre>
+
+<h2 id="mismatch-messages">Mismatch messages<a class="headerlink" href="#mismatch-messages" title="Permanent link">§</a></h2>
+<p>As we saw above, for most simple expectations, a failure will cause the
+matcher's description to be printed out along with the actual value supplied to
+<code>expect</code>. However, for some matchers, just seeing the actual value isn't very
+useful. For example, with the <a href="../built-in-matchers/#exception"><code>thrown</code></a>
+matchers, you already know that the actual value is a function, so printing that
+fact out doesn't help.</p>
+<p>Instead, matchers can choose to return a mismatch message that provides a
+morer useful, special-case description of the actual value (along with the usual
+<code>bool</code> to indicate if the matcher succeeded). For the <code>thrown</code> matcher, we can
+then return a description of the exception the function <em>actually</em> threw (if
+any). In this case, the matcher returns a <code>mettle::match_result</code> object (a
+<code>bool</code> and a <code>std::string</code> description) when called instead of a solitary
+<code>bool</code>. This makes the output for a failed test much nicer in this case:</p>
+<pre><code>expected: threw std::runtime_error(what: &quot;bad&quot;)
+actual:   threw std::runtime_error(what: &quot;worse&quot;)
+</code></pre>
+
+<p>A <code>match_result</code> is implicity convertible to and from a <code>bool</code>, so matchers that
+return <code>match_result</code>s can easily be mixed with ones that return <code>bool</code>s. You
+can also use the <code>!</code> operator to invert a <code>match_result</code> and preserve its
+message.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Despite the name "mismatch message", it's useful to provide a message even
+on success, since a successful match can easily become a mismatch simply by
+using the <code>is_not</code> matcher.</p>
+</div></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2014-2019 Jim Porter</p>
+            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>var base_url = '..';</script>
+        <script src="../js/base.js"></script>
+        <script src="../js/version-select.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td><kbd>&larr;</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td><kbd>&rarr;</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    </body>
+</html>
