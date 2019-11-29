@@ -2,7 +2,7 @@
 
 bfg9000_required_version('>=0.5.0')
 
-mettle_version = '0.1'
+mettle_version = '0.2-dev'
 project('mettle', mettle_version, intermediate_dirs=False)
 
 global_options([opts.std(argv.std)], lang='c++')
