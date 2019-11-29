@@ -1,0 +1,14 @@
+/* Give the main header an underline. */
+
+h1 {
+  padding-bottom: 21px;
+  margin-bottom: 21px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Add small subtitles. */
+
+.subtitle {
+  margin-top: -10.5px;
+  color: #bbb;
+}
