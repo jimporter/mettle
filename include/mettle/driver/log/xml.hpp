@@ -11,9 +11,7 @@
 #include "indent.hpp"
 #include "../detail/export.hpp"
 
-namespace mettle {
-
-namespace log { namespace xml {
+namespace mettle::log::xml {
 
   bool METTLE_PUBLIC valid_name(const std::string &);
 
@@ -88,8 +86,6 @@ namespace log { namespace xml {
     element root_;
   };
 
-}}
-
-} // namespace mettle
+} // namespace mettle::log::xml
 
 #endif

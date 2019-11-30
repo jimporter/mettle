@@ -8,9 +8,7 @@
 #  define METTLE_NO_SOURCE_LOCATION
 #endif
 
-namespace mettle {
-
-namespace detail {
+namespace mettle::detail {
 
   class source_location {
   public:
@@ -58,8 +56,6 @@ namespace detail {
     std::uint_least32_t line_, col_;
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::detail
 
 #endif

@@ -5,9 +5,7 @@
 
 #include <mettle/detail/string_algorithm.hpp>
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   static inline std::string get_duration(test_duration duration) {
     using seconds = std::chrono::duration<
@@ -151,6 +149,4 @@ namespace log {
     return suite_stack_.top();
   }
 
-}
-
-} // namespace mettle
+} // namespace mettle::log

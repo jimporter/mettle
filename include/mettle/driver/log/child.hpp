@@ -8,9 +8,7 @@
 
 #include "core.hpp"
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   class child : public test_logger {
   public:
@@ -111,8 +109,6 @@ namespace log {
     std::ostream &out;
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::log
 
 #endif

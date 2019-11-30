@@ -7,17 +7,15 @@
 #include "../log_pipe.hpp"
 #include "../run_test_files.hpp"
 
-namespace mettle {
+namespace mettle::posix {
 
-namespace posix {
   file_result run_test_file(std::vector<std::string> args, log::pipe &logger);
 
   inline file_result
   run_test_file(std::vector<std::string> args, log::pipe &&logger) {
     return run_test_file(std::move(args), logger);
   }
-}
 
-} // namespace mettle
+} // namespace mettle::posix
 
 #endif

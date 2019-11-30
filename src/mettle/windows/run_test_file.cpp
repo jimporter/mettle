@@ -11,9 +11,7 @@
 #include "../log_pipe.hpp"
 #include "../../err_string.hpp"
 
-namespace mettle {
-
-namespace windows {
+namespace mettle::windows {
 
   namespace {
     inline file_result failed() {
@@ -126,6 +124,5 @@ namespace windows {
       return {true, ""};
     }
   }
-}
 
-} // namespace mettle
+} // namespace mettle::windows

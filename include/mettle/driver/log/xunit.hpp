@@ -17,9 +17,7 @@
 #  pragma warning(disable:4251)
 #endif
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   class METTLE_PUBLIC xunit : public file_logger {
   public:
@@ -70,9 +68,7 @@ namespace log {
     test_duration duration_{0};
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::log
 
 #if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(pop)

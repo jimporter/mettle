@@ -8,9 +8,7 @@
 
 #include <mettle/driver/windows/scoped_handle.hpp>
 
-namespace mettle {
-
-namespace windows {
+namespace mettle::windows {
 
   namespace {
     const std::size_t BUFSIZE = 4096;
@@ -93,6 +91,4 @@ namespace windows {
     }
   }
 
-}
-
-} // namespace mettle
+} // namespace mettle::windows

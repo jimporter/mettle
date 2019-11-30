@@ -8,9 +8,8 @@
 
 #include "../detail/export.hpp"
 
-namespace mettle {
+namespace mettle::windows {
 
-namespace windows {
   struct readhandle {
     HANDLE handle;
     std::string *dest;
@@ -19,8 +18,7 @@ namespace windows {
   METTLE_PUBLIC HANDLE
   read_into(std::vector<readhandle> &dests, DWORD timeout,
             const std::vector<HANDLE> &interrupts);
-}
 
-} // namespace mettle
+} // namespace mettle::windows
 
 #endif

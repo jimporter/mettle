@@ -7,9 +7,7 @@
 
 #include <mettle/driver/log/term.hpp>
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   summary::summary(indenting_ostream &out, std::unique_ptr<file_logger> &&log,
                    bool show_time, bool show_terminal)
@@ -199,6 +197,4 @@ namespace log {
     }
   }
 
-}
-
-} // namespace mettle
+} // namespace mettle::log

@@ -5,9 +5,7 @@
 
 #include <windows.h>
 
-namespace mettle {
-
-namespace term {
+namespace mettle::term {
 
   namespace {
     int enabled_flag = std::ios_base::xalloc();
@@ -141,6 +139,4 @@ namespace term {
     return o;
   }
 
-}
-
-} // namespace mettle
+} // namespace mettle::term

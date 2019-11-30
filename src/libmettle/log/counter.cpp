@@ -4,9 +4,7 @@
 
 #include <mettle/driver/log/term.hpp>
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   counter::counter(indenting_ostream &out)
     : out_(out) {}
@@ -71,6 +69,4 @@ namespace log {
          << " ]"   << std::flush;
   }
 
-}
-
-} // namespace mettle
+} // namespace mettle::log

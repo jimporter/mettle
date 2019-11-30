@@ -3,15 +3,13 @@
 
 #include "../compiled_suite.hpp"
 
-namespace mettle {
+namespace mettle::detail {
 
-namespace detail {
   inline suites_list & all_suites() {
     static suites_list all;
     return all;
   }
-}
 
-} // namespace mettle
+} // namespace mettle::detail
 
 #endif

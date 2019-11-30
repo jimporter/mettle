@@ -18,9 +18,7 @@
 #  pragma warning(disable:4251)
 #endif
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   class METTLE_PUBLIC summary : public file_logger {
   public:
@@ -82,9 +80,7 @@ namespace log {
     std::map<file_info, std::vector<failure>> failed_files_;
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::log
 
 #if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(pop)

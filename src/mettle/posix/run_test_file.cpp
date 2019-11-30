@@ -14,9 +14,7 @@
 
 #include "../../err_string.hpp"
 
-namespace mettle {
-
-namespace posix {
+namespace mettle::posix {
 
   namespace {
     inline file_result parent_failed() {
@@ -128,6 +126,5 @@ namespace posix {
       }
     }
   }
-}
 
-} // namespace mettle
+} // namespace mettle::posix

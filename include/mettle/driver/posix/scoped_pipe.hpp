@@ -6,9 +6,7 @@
 
 #include <cassert>
 
-namespace mettle {
-
-namespace posix {
+namespace mettle::posix {
 
   class scoped_pipe {
   public:
@@ -84,8 +82,6 @@ namespace posix {
     }
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::posix
 
 #endif

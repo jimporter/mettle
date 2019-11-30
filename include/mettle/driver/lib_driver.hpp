@@ -5,14 +5,12 @@
 #include "../suite/detail/all_suites.hpp"
 #include "../suite/detail/built_in_attrs.hpp"
 
-namespace mettle {
+namespace mettle::detail {
 
-namespace detail {
   METTLE_PUBLIC int
   drive_tests(int argc, const char *argv[], const suites_list &suites);
-}
 
-} // namespace mettle
+} // namespace mettle::detail
 
 int main(int argc, const char *argv[]) {
   return mettle::detail::drive_tests(argc, argv, mettle::detail::all_suites());

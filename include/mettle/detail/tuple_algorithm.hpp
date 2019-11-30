@@ -5,9 +5,7 @@
 #include <ostream>
 #include <tuple>
 
-namespace mettle {
-
-namespace detail {
+namespace mettle::detail {
 
   template<std::size_t I, std::size_t N>
   struct do_until {
@@ -60,8 +58,7 @@ namespace detail {
                const std::string &delim = ", ") {
     return {tuple, func, delim};
   }
-}
 
-} // namespace mettle
+} // namespace mettle::detail
 
 #endif

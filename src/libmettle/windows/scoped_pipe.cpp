@@ -4,9 +4,7 @@
 #include <cstdint>
 #include <sstream>
 
-namespace mettle {
-
-namespace windows {
+namespace mettle::windows {
 
   bool scoped_pipe::open(bool overlapped_read, bool overlapped_write) {
     assert(!read_handle && !write_handle);
@@ -57,6 +55,4 @@ namespace windows {
     ) != 0;
   }
 
-}
-
-} // namespace mettle
+} // namespace mettle::windows

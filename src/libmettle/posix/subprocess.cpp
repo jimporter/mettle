@@ -12,9 +12,7 @@
 
 #include <mettle/driver/exit_code.hpp>
 
-namespace mettle {
-
-namespace posix {
+namespace mettle::posix {
 
   namespace {
     [[noreturn]] void monitor_failed(std::initializer_list<int> pids = {}) {
@@ -107,6 +105,4 @@ namespace posix {
     return size_to_status( read(fd, pgid, sizeof(*pgid)) );
   }
 
-}
-
-} // namespace mettle
+} // namespace mettle::posix

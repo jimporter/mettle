@@ -2,9 +2,7 @@
 
 #include <windows.h>
 
-namespace mettle {
-
-namespace windows {
+namespace mettle::windows {
 
   bool scoped_handle::close() {
     if(!handle_) {
@@ -18,6 +16,4 @@ namespace windows {
     return success;
   }
 
-}
-
-} // namespace mettle
+} // namespace mettle::windows

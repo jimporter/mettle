@@ -13,9 +13,7 @@
 #  pragma warning(disable:4251)
 #endif
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   class METTLE_PUBLIC verbose : public file_logger {
   public:
@@ -53,9 +51,7 @@ namespace log {
     bool first_ = true, show_time_, show_terminal_;
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::log
 
 #if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(pop)

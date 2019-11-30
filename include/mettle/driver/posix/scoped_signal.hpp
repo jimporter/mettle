@@ -7,9 +7,7 @@
 #include <initializer_list>
 #include <vector>
 
-namespace mettle {
-
-namespace posix {
+namespace mettle::posix {
 
   class scoped_sigprocmask {
   public:
@@ -115,8 +113,6 @@ namespace posix {
     struct sigaction act, old_act;
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::posix
 
 #endif

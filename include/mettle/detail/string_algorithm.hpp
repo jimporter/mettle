@@ -6,9 +6,7 @@
 #include <sstream>
 #include <string>
 
-namespace mettle {
-
-namespace detail {
+namespace mettle::detail {
 
   struct identity {
     template<typename T>
@@ -121,8 +119,7 @@ namespace detail {
   const string_escaper<Map> {
     return {s, replace};
   }
-}
 
-} // namespace mettle
+} // namespace mettle::detail
 
 #endif

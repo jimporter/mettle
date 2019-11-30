@@ -5,9 +5,7 @@
 
 #include <mettle/detail/string_algorithm.hpp>
 
-namespace mettle {
-
-namespace term {
+namespace mettle::term {
 
   namespace {
     int enabled_flag = std::ios_base::xalloc();
@@ -27,6 +25,5 @@ namespace term {
       return std::to_string(static_cast<int>(s));
     }, ";") << "m";
   }
-}
 
-} // namespace mettle
+} // namespace mettle::term

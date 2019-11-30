@@ -8,9 +8,7 @@
 #include "../test_name.hpp"
 #include "../detail/export.hpp"
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   struct test_output {
     std::string stdout_log, stderr_log;
@@ -60,8 +58,6 @@ namespace log {
     failed_file(const std::string &file, const std::string &message) = 0;
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::log
 
 #endif

@@ -4,9 +4,7 @@
 #include <cstdint>
 #include <utility>
 
-namespace mettle {
-
-namespace detail {
+namespace mettle::detail {
 
   template<typename T>
   class any_capture {
@@ -61,8 +59,6 @@ namespace detail {
                   "any_capture can't be used by incomplete array types");
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::detail
 
 #endif

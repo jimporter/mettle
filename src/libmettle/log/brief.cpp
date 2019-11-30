@@ -2,9 +2,7 @@
 
 #include <mettle/driver/log/term.hpp>
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   brief::brief(indenting_ostream &out)
     : out_(out) {}
@@ -47,6 +45,4 @@ namespace log {
     out_ << format(sgr::bold, fg(color::red)) << "X" << reset() << std::flush;
   }
 
-}
-
-} // namespace mettle
+} // namespace mettle::log

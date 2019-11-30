@@ -30,9 +30,7 @@ static std::regex invalid_name_re(
   std::regex::icase
 );
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   bool xml::valid_name(const std::string &s) {
     return !s.empty() && !std::regex_search(s, invalid_name_re);
@@ -61,6 +59,4 @@ namespace log {
     out << detail::escaped(text_content_, xml_replace_text) << "\n";
   }
 
-}
-
-} // namespace mettle
+} // namespace mettle::log

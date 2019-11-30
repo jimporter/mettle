@@ -6,9 +6,7 @@
 #include "scoped_handle.hpp"
 #include "../detail/export.hpp"
 
-namespace mettle {
-
-namespace windows {
+namespace mettle::windows {
 
   class METTLE_PUBLIC scoped_pipe {
   public:
@@ -42,8 +40,6 @@ namespace windows {
     bool do_set_inherit(HANDLE &handle, bool inherit);
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::windows
 
 #endif

@@ -5,9 +5,8 @@
 #include <tuple>
 #include <utility>
 
-namespace mettle {
+namespace mettle::detail {
 
-namespace detail {
   template<typename ...>
   struct first;
 
@@ -109,8 +108,6 @@ namespace detail {
     Factory, Parent, first_t<Child...>, transform_fixture_t<Factory, Child...>
   >;
 
-}
-
-} // namespace mettle
+} // namespace mettle::detail
 
 #endif

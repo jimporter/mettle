@@ -4,9 +4,7 @@
 
 #include <mettle/driver/log/term.hpp>
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   verbose::verbose(indenting_ostream &out, std::size_t runs, bool show_time,
                    bool show_terminal)
@@ -150,6 +148,4 @@ namespace log {
     }
   }
 
-}
-
-} // namespace mettle
+} // namespace mettle::log

@@ -7,9 +7,8 @@
 #include <string>
 #include <vector>
 
-namespace mettle {
+namespace mettle::posix {
 
-namespace posix {
   struct readfd {
     int fd;
     std::string *dest;
@@ -22,8 +21,7 @@ namespace posix {
 
   int send_pgid(int fd, int pgid);
   int recv_pgid(int fd, int *pgid);
-}
 
-} // namespace mettle
+} // namespace mettle::posix
 
 #endif

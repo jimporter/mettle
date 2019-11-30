@@ -8,9 +8,7 @@
 
 #include "../detail/export.hpp"
 
-namespace mettle {
-
-namespace term {
+namespace mettle::term {
 
   namespace detail {
     template<typename T, typename ...>
@@ -75,8 +73,7 @@ namespace term {
   }
 
   METTLE_PUBLIC void enable(std::ios_base &ios, bool enabled);
-}
 
-} // namespace mettle
+} // namespace mettle::term
 
 #endif

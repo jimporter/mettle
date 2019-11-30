@@ -7,9 +7,7 @@
 
 #include "../detail/export.hpp"
 
-namespace mettle {
-
-namespace windows {
+namespace mettle::windows {
 
   class METTLE_PUBLIC scoped_handle {
   public:
@@ -51,8 +49,6 @@ namespace windows {
     HANDLE handle_;
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::windows
 
 #endif

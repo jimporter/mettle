@@ -7,9 +7,7 @@
 
 #include <mettle/driver/log/core.hpp>
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   class pipe {
   public:
@@ -87,8 +85,6 @@ namespace log {
     test_uid file_uid_;
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::log
 
 #endif

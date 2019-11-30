@@ -7,9 +7,7 @@
 #include "core.hpp"
 #include "indent.hpp"
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   class simple_summary : public test_logger {
   public:
@@ -76,8 +74,6 @@ namespace log {
     std::vector<test_details> failures_, skips_;
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::log
 
 #endif

@@ -5,9 +5,7 @@
 #include "indent.hpp"
 #include "../detail/export.hpp"
 
-namespace mettle {
-
-namespace log {
+namespace mettle::log {
 
   class METTLE_PUBLIC brief : public file_logger {
   public:
@@ -37,8 +35,6 @@ namespace log {
     indenting_ostream &out_;
   };
 
-}
-
-} // namespace mettle
+} // namespace mettle::log
 
 #endif

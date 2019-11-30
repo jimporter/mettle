@@ -3,9 +3,8 @@
 
 #include <type_traits>
 
-namespace mettle {
+namespace mettle::detail {
 
-namespace detail {
   template<typename Container, typename Element>
   struct ref_if {
     using type = typename std::conditional<
@@ -20,8 +19,7 @@ namespace detail {
   forward_if(Element &&value) {
     return static_cast<typename ref_if<Container, Element>::type>(value);
   }
-}
 
-} // namespace mettle
+} // namespace mettle::detail
 
 #endif
