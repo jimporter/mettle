@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 #include <string>
 
@@ -15,7 +16,6 @@
 #include "filters.hpp"
 #include "object_factory.hpp"
 #include "detail/export.hpp"
-#include "detail/optional.hpp"
 #include "log/core.hpp"
 #include "log/indent.hpp"
 
@@ -33,7 +33,7 @@ METTLE_PUBLIC boost::program_options::options_description
 make_generic_options(generic_options &opts);
 
 struct driver_options {
-  METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds> timeout;
+  std::optional<std::chrono::milliseconds> timeout;
   filter_set filters;
 };
 
@@ -114,12 +114,9 @@ METTLE_PUBLIC void
 validate(boost::any &v, const std::vector<std::string> &values, HANDLE*, int);
 #endif
 
-#if BOOST_VERSION < 106500 || !defined(METTLE_OPTIONAL_USING_BOOST)
 template<typename T>
 void validate(boost::any &v, const std::vector<std::string> &values,
-              METTLE_OPTIONAL_NS::optional<T>*, int) {
-  using optional_t = METTLE_OPTIONAL_NS::optional<T>;
-
+              std::optional<T>*, int) {
   boost::any a;
   {
     using namespace boost::program_options;
@@ -127,9 +124,8 @@ void validate(boost::any &v, const std::vector<std::string> &values,
     validators::get_single_string(values);
     validate(a, values, static_cast<T*>(nullptr), 0);
   }
-  v = boost::any(optional_t(boost::any_cast<T>(a)));
+  v = boost::any(std::optional<T>(boost::any_cast<T>(a)));
 }
-#endif
 
 } // namespace boost
 

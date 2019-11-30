@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #include "string.hpp"
 #include "traits.hpp"
@@ -59,7 +60,7 @@ to_printable(const std::basic_string<Char, Traits, Alloc> &s) {
 
 template<typename Char, typename Traits>
 inline std::string
-to_printable(const METTLE_STRING_VIEW<Char, Traits> &s) {
+to_printable(const std::basic_string_view<Char, Traits> &s) {
   return escape_string(string_convert(s));
 }
 

@@ -4,7 +4,8 @@
 #include <cassert>
 #include <ostream>
 
-#include "../detail/bencode.hpp"
+#include <bencode.hpp>
+
 #include "core.hpp"
 
 namespace mettle {

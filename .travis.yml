@@ -19,6 +19,7 @@ addons:
       - libboost1.58-dev
       - libboost-iostreams1.58-dev
       - libboost-program-options1.58-dev
+      - libstdc++-7-dev
       - ninja-build
       - python-virtualenv
 
@@ -29,42 +30,6 @@ matrix:
   include:
 
     # Clang builds
-
-    - compiler: clang
-      env: COMPILER=clang++-3.8
-      addons:
-        apt:
-          sources:
-            - *sources
-            - llvm-toolchain-precise-3.8
-          packages:
-            - *packages
-            - clang-3.8
-            - libstdc++-5-dev
-
-    - compiler: clang
-      env: COMPILER=clang++-3.9
-      addons:
-        apt:
-          sources:
-            - *sources
-            - llvm-toolchain-precise-3.9
-          packages:
-            - *packages
-            - clang-3.9
-            - libstdc++-5-dev
-
-    - compiler: clang
-      env: COMPILER=clang++-4.0
-      addons:
-        apt:
-          sources:
-            - *sources
-            - llvm-toolchain-trusty-4.0
-          packages:
-            - *packages
-            - clang-4.0
-            - libstdc++-5-dev
 
     # Skipping clang 5.0 since it doesn't install properly under Xenial.
 
@@ -78,7 +43,6 @@ matrix:
           packages:
             - *packages
             - clang-6.0
-            - libstdc++-5-dev
 
     - compiler: clang
       env: COMPILER=clang++-7
@@ -90,11 +54,10 @@ matrix:
           packages:
             - *packages
             - clang-7
-            - libstdc++-5-dev
 
     - compiler: clang
       env: COMPILER=clang++-8
-      addons: &clang-8
+      addons:
         apt:
           sources:
             - *sources
@@ -102,31 +65,24 @@ matrix:
           packages:
             - *packages
             - clang-8
-            - libstdc++-5-dev
+
+    - compiler: clang
+      env: COMPILER=clang++-9
+      addons: &clang-9
+        apt:
+          sources: &clang-9-sources
+            - *sources
+            - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages:
+            - *packages
+            - clang-9
 
     # GCC builds
 
     - compiler: gcc
       # Something about Travis and/or GCC has issues building in parallel with
       # ninja...
-      env: COMPILER=g++-5 BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
-      addons:
-        apt:
-          sources: *sources
-          packages:
-            - *packages
-            - g++-5
-
-    - compiler: gcc
-      env: COMPILER=g++-6 BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
-      addons:
-        apt:
-          sources: *sources
-          packages:
-            - *packages
-            - g++-6
-
-    - compiler: gcc
       env: COMPILER=g++-7 BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
       addons:
         apt:
@@ -137,19 +93,30 @@ matrix:
 
     - compiler: gcc
       env: COMPILER=g++-8 BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
-      addons: &gcc-8
+      addons:
         apt:
           sources: *sources
           packages:
             - *packages
             - g++-8
 
+    - compiler: gcc
+      env: COMPILER=g++-9 BUILD_ARGS="-j1" EXTRAFLAGS=-Wsuggest-override
+      addons: &gcc-9
+        apt:
+          sources: *sources
+          packages:
+            - *packages
+            - g++-9
+
     # macOS builds
 
     - os: osx
+      osx_image: xcode10.3
       env: PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
 
     - os: osx
+      osx_image: xcode10.3
       env: >
         PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
         EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
@@ -157,17 +124,15 @@ matrix:
     # Builds with newer versions of Boost
 
     - compiler: clang
-      env: BOOST_VER=1.67 COMPILER=clang++-8
+      env: BOOST_VER=1.67 COMPILER=clang++-9
       addons:
         apt:
-          sources:
-            - *sources
-            - llvm-toolchain-xenial-8
+          sources: *clang-9-sources
           packages:
+            - libstdc++-7-dev
             - ninja-build
             - python-virtualenv
-            - clang-8
-            - libstdc++-5-dev
+            - clang-9
       install:
         - |
           export BOOST_ROOT=$HOME
@@ -179,43 +144,35 @@ matrix:
           ./b2 install -d0
           popd
 
-    # C++17 builds
+    # C++20 builds
 
     - compiler: clang
-      env: EXTRAOPTS="--std=c++17" COMPILER=clang++-8
-      addons:
-        apt:
-          sources:
-            - *sources
-            - llvm-toolchain-xenial-8
-          packages:
-            - *packages
-            - clang-8
-            - libstdc++-7-dev
+      env: EXTRAOPTS="--std=c++2a" COMPILER=clang++-9
+      addons: *clang-9
 
     - compiler: gcc
       env: >
-        EXTRAOPTS="--std=c++17" COMPILER=g++-8 BUILD_ARGS="-j1"
+        EXTRAOPTS="--std=c++2a" COMPILER=g++-9 BUILD_ARGS="-j1"
         EXTRAFLAGS=-Wsuggest-override
-      addons: *gcc-8
+      addons: *gcc-9
 
     # Make-backend builds
 
     - compiler: clang
-      env: BACKEND=make COMPILER=clang++-8 BUILD_ARGS="-j4"
-      addons: *clang-8
+      env: BACKEND=make COMPILER=clang++-9 BUILD_ARGS="-j4"
+      addons: *clang-9
 
     - compiler: gcc
       env: >
-        BACKEND=make COMPILER=g++-8 BUILD_ARGS="-j4"
+        BACKEND=make COMPILER=g++-9 BUILD_ARGS="-j4"
         EXTRAFLAGS=-Wsuggest-override
-      addons: *gcc-8
+      addons: *gcc-9
 
     # Python 3 builds
 
     - compiler: clang
-      env: PYTHON=python3 PIP=pip3 COMPILER=clang++-8
-      addons: *clang-8
+      env: PYTHON=python3 PIP=pip3 COMPILER=clang++-9
+      addons: *clang-9
 
 before_install:
   - |

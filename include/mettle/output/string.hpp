@@ -1,11 +1,10 @@
 #ifndef INC_METTLE_OUTPUT_STRING_HPP
 #define INC_METTLE_OUTPUT_STRING_HPP
 
-#include "detail/string_view.hpp"
-
 #include <codecvt>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 namespace mettle {
 
@@ -45,7 +44,7 @@ namespace detail {
 
 template<typename Char, typename Traits, typename Alloc = std::allocator<Char>>
 std::basic_string<Char, Traits, Alloc>
-escape_string(const METTLE_STRING_VIEW<Char, Traits> &s, Char delim = '"') {
+escape_string(const std::basic_string_view<Char, Traits> &s, Char delim = '"') {
   std::basic_ostringstream<Char, Traits, Alloc> ss;
   ss << std::hex << delim;
   for(const auto &c : s)
@@ -59,7 +58,7 @@ std::basic_string<Char, Traits>
 escape_string(const std::basic_string<Char, Traits, Alloc> &s,
               Char delim = '"') {
   return escape_string<Char, Traits, Alloc>(
-    METTLE_STRING_VIEW<Char, Traits>(s), delim
+    std::basic_string_view<Char, Traits>(s), delim
   );
 }
 
@@ -67,22 +66,24 @@ template<typename Char, typename Traits = std::char_traits<Char>,
          typename Alloc = std::allocator<Char>>
 std::basic_string<Char, Traits, Alloc>
 escape_string(const Char *s, Char delim = '"') {
-  return escape_string<Char, Traits, Alloc>(METTLE_STRING_VIEW<Char>(s), delim);
+  return escape_string<Char, Traits, Alloc>(
+    std::basic_string_view<Char>(s), delim
+  );
 }
 
-inline METTLE_STRING_VIEW<char>
-string_convert(const METTLE_STRING_VIEW<char> &s) {
+inline std::string_view
+string_convert(const std::string_view &s) {
   return s;
 }
 
 inline std::string
-string_convert(const METTLE_STRING_VIEW<wchar_t> &s) {
+string_convert(const std::wstring_view &s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
   return conv.to_bytes(s.data(), s.data() + s.size());
 }
 
 inline std::string
-string_convert(const METTLE_STRING_VIEW<char16_t> &s) {
+string_convert(const std::u16string_view &s) {
 #if defined(_MSC_VER) && !defined(__clang__)
   // MSVC 2015's codecvt expects uint16_t instead of char16_t because char16_t
   // used to just be a typedef of uint16_t.
@@ -99,7 +100,7 @@ string_convert(const METTLE_STRING_VIEW<char16_t> &s) {
 }
 
 inline std::string
-string_convert(const METTLE_STRING_VIEW<char32_t> &s) {
+string_convert(const std::u32string_view &s) {
 #if defined(_MSC_VER) && !defined(__clang__)
   // MSVC 2015's codecvt expects uint32_t instead of char32_t because char32_t
   // used to just be a typedef of uint32_t.

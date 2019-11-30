@@ -2,6 +2,7 @@
 #define INC_METTLE_DRIVER_SUBPROCESS_TEST_RUNNER_HPP
 
 #include <chrono>
+#include <optional>
 
 #ifdef _WIN32
 #  include <wtypes.h>
@@ -10,13 +11,12 @@
 #include <mettle/suite/compiled_suite.hpp>
 #include <mettle/driver/log/core.hpp>
 #include <mettle/driver/detail/export.hpp>
-#include <mettle/driver/detail/optional.hpp>
 
 namespace mettle {
 
 class METTLE_PUBLIC subprocess_test_runner {
 public:
-  using timeout_t = METTLE_OPTIONAL_NS::optional<std::chrono::milliseconds>;
+  using timeout_t = std::optional<std::chrono::milliseconds>;
 
   subprocess_test_runner(timeout_t timeout = {}) : timeout_(timeout) {}
 

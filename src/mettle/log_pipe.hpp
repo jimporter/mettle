@@ -3,7 +3,8 @@
 
 #include <istream>
 
-#include <mettle/driver/detail/bencode.hpp>
+#include <bencode.hpp>
+
 #include <mettle/driver/log/core.hpp>
 
 namespace mettle {

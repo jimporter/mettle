@@ -1,6 +1,6 @@
 # mettle
 
-**mettle** is a "batteries included" unit testing framework for C++14. Its
+**mettle** is a "batteries included" unit testing framework for C++17. Its
 mission is to provide a full toolbox to address your testing needs and to look
 good doing it.
 

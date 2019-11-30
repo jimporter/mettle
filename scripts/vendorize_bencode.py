@@ -16,8 +16,8 @@ except ImportError:
 
 srcdir = os.path.normpath(os.path.join(__file__, '..',  '..'))
 
-bencode_version = '0.1'
-bencode_name = 'bencode_hpp-{}'.format(bencode_version)
+bencode_version = '0.2'
+bencode_name = 'bencodehpp-{}'.format(bencode_version)
 bencode_url = ('https://github.com/jimporter/bencode.hpp/releases/download/' +
                'v{version}/{name}.tar.gz').format(version=bencode_version,
                                                   name=bencode_name)

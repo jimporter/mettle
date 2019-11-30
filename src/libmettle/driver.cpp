@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <iostream>
+#include <optional>
 #include <vector>
 
 #include <boost/iostreams/device/file_descriptor.hpp>
@@ -21,11 +22,11 @@ namespace mettle {
 namespace {
   struct all_options : generic_options, driver_options, output_options {
 #ifndef _WIN32
-    METTLE_OPTIONAL_NS::optional<int> output_fd;
+    std::optional<int> output_fd;
 #else
-    METTLE_OPTIONAL_NS::optional<HANDLE> output_fd;
-    METTLE_OPTIONAL_NS::optional<test_uid> test_id;
-    METTLE_OPTIONAL_NS::optional<HANDLE> log_fd;
+    std::optional<HANDLE> output_fd;
+    std::optional<test_uid> test_id;
+    std::optional<HANDLE> log_fd;
 #endif
     bool no_subproc = false;
   };

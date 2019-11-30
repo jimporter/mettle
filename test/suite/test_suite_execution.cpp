@@ -30,6 +30,8 @@ auto equal_test_result(T &&result, U &&message) {
 
 struct basic_fixture {
   basic_fixture() = default;
+  basic_fixture(int data) : data(data) {}
+
   basic_fixture(const basic_fixture &) = delete;
   basic_fixture & operator =(const basic_fixture &) = delete;
 

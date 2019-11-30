@@ -8,7 +8,7 @@ it.
 ## Just show me what to type!
 
 Here are the necessary commands to build and install mettle, assuming you
-already have Boost and a C++14 compiler (we'll discuss all of these parts in
+already have Boost and a C++17 compiler (we'll discuss all of these parts in
 more detail below):
 
 ```sh
@@ -27,11 +27,11 @@ ninja install
 
 Before you get started with mettle, you'll need to install its dependencies:
 
-* A C++14-compliant compiler (for generic lambdas and various standard library
+* A C++17-compliant compiler (for generic lambdas and various standard library
   features)
-    * [clang](http://clang.llvm.org/) 3.6+
-    * [GCC](https://gcc.gnu.org/) 5.1+
-    * [MSVC](https://www.visualstudio.com/) 2015+
+    * [clang](http://clang.llvm.org/) 5+
+    * [GCC](https://gcc.gnu.org/) 7.1+
+    * [MSVC](https://www.visualstudio.com/) 2017+
 * [Boost](http://www.boost.org/) 1.55+
 * [bencode.hpp](https://github.com/jimporter/bencode.hpp)
 * [bfg9000](https://jimporter.github.io/bfg9000/)

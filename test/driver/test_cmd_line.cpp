@@ -322,19 +322,18 @@ suite<> test_program_options("program_options utilities", [](auto &_) {
     });
 
     _.test("std::optional and friends", []() {
-      using METTLE_OPTIONAL_NS::optional;
       using namespace boost::program_options;
 
       boost::any value;
       std::vector<std::string> input{"1"};
-      validate(value, input, static_cast<optional<int>*>(nullptr), 0);
-      expect(value, any_equal(optional<int>(1)));
+      validate(value, input, static_cast<std::optional<int>*>(nullptr), 0);
+      expect(value, any_equal(std::optional<int>(1)));
 
       expect(
         []() {
           boost::any value;
           std::vector<std::string> input{"invalid"};
-          validate(value, input, static_cast<optional<int>*>(nullptr), 0);
+          validate(value, input, static_cast<std::optional<int>*>(nullptr), 0);
         },
         thrown<std::exception>("the argument ('invalid') for option is invalid")
       );

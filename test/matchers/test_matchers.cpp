@@ -6,6 +6,7 @@ using namespace mettle;
 #include <vector>
 
 struct some_type {
+  some_type() = default;
   some_type(const some_type &) = delete;
   some_type & operator =(const some_type &) = delete;
 };
