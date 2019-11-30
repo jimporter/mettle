@@ -17,6 +17,7 @@
 namespace mettle::posix {
 
   namespace {
+
     inline file_result parent_failed() {
       return {false, err_string(errno)};
     }
@@ -49,6 +50,7 @@ namespace mettle::posix {
         real_argv[i] = const_cast<char*>(argv[i].c_str());
       return real_argv;
     }
+
   }
 
   file_result run_test_file(std::vector<std::string> args, log::pipe &logger) {

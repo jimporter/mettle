@@ -11,85 +11,85 @@
 
 namespace mettle {
 
-struct test_result {
-  bool passed;
-  std::string message;
-};
+  struct test_result {
+    bool passed;
+    std::string message;
+  };
 
-template<typename Function>
-struct basic_test_info {
-  using function_type = std::function<Function>;
+  template<typename Function>
+  struct basic_test_info {
+    using function_type = std::function<Function>;
 
-  basic_test_info(std::string name, function_type function, attributes attrs)
-    : name(std::move(name)), function(std::move(function)),
-      attrs(std::move(attrs)), id(detail::make_test_uid()) {}
+    basic_test_info(std::string name, function_type function, attributes attrs)
+      : name(std::move(name)), function(std::move(function)),
+        attrs(std::move(attrs)), id(detail::make_test_uid()) {}
 
-  std::string name;
-  function_type function;
-  attributes attrs;
-  test_uid id;
-};
+    std::string name;
+    function_type function;
+    attributes attrs;
+    test_uid id;
+  };
 
-template<typename Function>
-class compiled_suite {
-  template<typename>
-  friend class compiled_suite;
-public:
-  using test_info = basic_test_info<Function>;
-  using iterator = typename std::vector<test_info>::const_iterator;
+  template<typename Function>
+  class compiled_suite {
+    template<typename>
+    friend class compiled_suite;
+  public:
+    using test_info = basic_test_info<Function>;
+    using iterator = typename std::vector<test_info>::const_iterator;
 
-  template<typename String, typename Tests, typename Subsuites,
-           typename Compile>
-  compiled_suite(
-    String &&name, Tests &&tests, Subsuites &&subsuites,
-    const attributes &attrs, Compile &&compile
-  ) : name_(std::forward<String>(name)) {
-    using detail::forward_if;
+    template<typename String, typename Tests, typename Subsuites,
+             typename Compile>
+    compiled_suite(
+      String &&name, Tests &&tests, Subsuites &&subsuites,
+      const attributes &attrs, Compile &&compile
+    ) : name_(std::forward<String>(name)) {
+      using detail::forward_if;
 
-    for(auto &&test : tests) {
-      tests_.emplace_back(
-        forward_if<Tests>(test.name),
-        compile(forward_if<Tests>(test.function)),
-        unite(forward_if<Tests>(test.attrs), attrs)
-      );
+      for(auto &&test : tests) {
+        tests_.emplace_back(
+          forward_if<Tests>(test.name),
+          compile(forward_if<Tests>(test.function)),
+          unite(forward_if<Tests>(test.attrs), attrs)
+        );
+      }
+      for(auto &&ss : subsuites)
+        subsuites_.emplace_back(forward_if<Subsuites>(ss), attrs, compile);
     }
-    for(auto &&ss : subsuites)
-      subsuites_.emplace_back(forward_if<Subsuites>(ss), attrs, compile);
-  }
 
-  template<typename Function2, typename Compile>
-  compiled_suite(const compiled_suite<Function2> &suite,
-                 const attributes &attrs, Compile &&compile)
-    : compiled_suite(suite.name_, suite.tests_, suite.subsuites_, attrs,
-                     std::forward<Compile>(compile)) {}
+    template<typename Function2, typename Compile>
+    compiled_suite(const compiled_suite<Function2> &suite,
+                   const attributes &attrs, Compile &&compile)
+      : compiled_suite(suite.name_, suite.tests_, suite.subsuites_, attrs,
+                       std::forward<Compile>(compile)) {}
 
-  template<typename Function2, typename Compile>
-  compiled_suite(compiled_suite<Function2> &&suite,
-                 const attributes &attrs, Compile &&compile)
-    : compiled_suite(std::move(suite.name_), std::move(suite.tests_),
-                     std::move(suite.subsuites_), attrs,
-                     std::forward<Compile>(compile)) {}
+    template<typename Function2, typename Compile>
+    compiled_suite(compiled_suite<Function2> &&suite,
+                   const attributes &attrs, Compile &&compile)
+      : compiled_suite(std::move(suite.name_), std::move(suite.tests_),
+                       std::move(suite.subsuites_), attrs,
+                       std::forward<Compile>(compile)) {}
 
-  const std::string & name() const {
-    return name_;
-  }
+    const std::string & name() const {
+      return name_;
+    }
 
-  const std::vector<test_info> & tests() const {
-    return tests_;
-  }
+    const std::vector<test_info> & tests() const {
+      return tests_;
+    }
 
-  const std::vector<compiled_suite> & subsuites() const {
-    return subsuites_;
-  }
-private:
-  std::string name_;
-  std::vector<test_info> tests_;
-  std::vector<compiled_suite> subsuites_;
-};
+    const std::vector<compiled_suite> & subsuites() const {
+      return subsuites_;
+    }
+  private:
+    std::string name_;
+    std::vector<test_info> tests_;
+    std::vector<compiled_suite> subsuites_;
+  };
 
-using runnable_suite = compiled_suite<test_result()>;
-using suites_list = std::vector<runnable_suite>;
-using test_info = runnable_suite::test_info;
+  using runnable_suite = compiled_suite<test_result()>;
+  using suites_list = std::vector<runnable_suite>;
+  using test_info = runnable_suite::test_info;
 
 } // namespace mettle
 

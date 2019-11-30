@@ -25,79 +25,79 @@
 
 namespace mettle {
 
-struct generic_options {
-  bool show_help = false;
-};
+  struct generic_options {
+    bool show_help = false;
+  };
 
-METTLE_PUBLIC boost::program_options::options_description
-make_generic_options(generic_options &opts);
+  METTLE_PUBLIC boost::program_options::options_description
+  make_generic_options(generic_options &opts);
 
-struct driver_options {
-  std::optional<std::chrono::milliseconds> timeout;
-  filter_set filters;
-};
+  struct driver_options {
+    std::optional<std::chrono::milliseconds> timeout;
+    filter_set filters;
+  };
 
-METTLE_PUBLIC boost::program_options::options_description
-make_driver_options(driver_options &opts);
+  METTLE_PUBLIC boost::program_options::options_description
+  make_driver_options(driver_options &opts);
 
-enum class color_option {
-  never,
-  automatic,
-  always
-};
+  enum class color_option {
+    never,
+    automatic,
+    always
+  };
 
-METTLE_PUBLIC bool
-color_enabled(color_option opt, int fd = 1 /* STDOUT_FILENO */);
+  METTLE_PUBLIC bool
+  color_enabled(color_option opt, int fd = 1 /* STDOUT_FILENO */);
 
-struct output_options {
-  std::string output = "brief";
-  color_option color = color_option::automatic;
-  std::size_t runs = 1;
-  bool show_terminal = false;
-  bool show_time = false;
-  std::string file = "mettle.xml";
-};
+  struct output_options {
+    std::string output = "brief";
+    color_option color = color_option::automatic;
+    std::size_t runs = 1;
+    bool show_terminal = false;
+    bool show_time = false;
+    std::string file = "mettle.xml";
+  };
 
-using logger_factory = object_factory<
-  std::unique_ptr<log::file_logger>(indenting_ostream &, const output_options &)
->;
-METTLE_PUBLIC logger_factory make_logger_factory();
+  using logger_factory = object_factory<std::unique_ptr<log::file_logger>(
+    indenting_ostream &, const output_options &
+  )>;
+  METTLE_PUBLIC logger_factory make_logger_factory();
 
-METTLE_PUBLIC boost::program_options::options_description
-make_output_options(output_options &opts, const logger_factory &factory);
+  METTLE_PUBLIC boost::program_options::options_description
+  make_output_options(output_options &opts, const logger_factory &factory);
 
-METTLE_PUBLIC boost::program_options::option_description *
-has_option(const boost::program_options::options_description &options,
-           const boost::program_options::variables_map &args);
+  METTLE_PUBLIC boost::program_options::option_description *
+  has_option(const boost::program_options::options_description &options,
+             const boost::program_options::variables_map &args);
 
-template<typename Char>
-std::vector<std::basic_string<Char>> filter_options(
-  const boost::program_options::basic_parsed_options<Char> &parsed,
-  const boost::program_options::options_description &desc
-) {
-  std::vector<std::basic_string<Char>> filtered;
-  for(auto &&option : parsed.options) {
-    if(desc.find_nothrow(option.string_key, false)) {
-      auto &&tokens = option.original_tokens;
-      filtered.insert(filtered.end(), tokens.begin(), tokens.end());
+  template<typename Char>
+  std::vector<std::basic_string<Char>> filter_options(
+    const boost::program_options::basic_parsed_options<Char> &parsed,
+    const boost::program_options::options_description &desc
+  ) {
+    std::vector<std::basic_string<Char>> filtered;
+    for(auto &&option : parsed.options) {
+      if(desc.find_nothrow(option.string_key, false)) {
+        auto &&tokens = option.original_tokens;
+        filtered.insert(filtered.end(), tokens.begin(), tokens.end());
+      }
     }
+    return filtered;
   }
-  return filtered;
-}
 
-METTLE_PUBLIC attr_filter parse_attr(const std::string &value);
+  METTLE_PUBLIC attr_filter parse_attr(const std::string &value);
 
-METTLE_PUBLIC void
-validate(boost::any &v, const std::vector<std::string> &values,
-         color_option*, int);
+  METTLE_PUBLIC void
+  validate(boost::any &v, const std::vector<std::string> &values,
+           color_option*, int);
 
-METTLE_PUBLIC void
-validate(boost::any &v, const std::vector<std::string> &values,
-         attr_filter_set*, int);
+  METTLE_PUBLIC void
+  validate(boost::any &v, const std::vector<std::string> &values,
+           attr_filter_set*, int);
 
-METTLE_PUBLIC void
-validate(boost::any &v, const std::vector<std::string> &values,
-         name_filter_set*, int);
+  METTLE_PUBLIC void
+  validate(boost::any &v, const std::vector<std::string> &values,
+           name_filter_set*, int);
 
 } // namespace mettle
 
@@ -105,27 +105,27 @@ validate(boost::any &v, const std::vector<std::string> &values,
 // boost::any parameter).
 namespace boost {
 
-METTLE_PUBLIC void
-validate(boost::any &v, const std::vector<std::string> &values,
-         std::chrono::milliseconds*, int);
+  METTLE_PUBLIC void
+  validate(boost::any &v, const std::vector<std::string> &values,
+           std::chrono::milliseconds*, int);
 
 #ifdef _WIN32
-METTLE_PUBLIC void
-validate(boost::any &v, const std::vector<std::string> &values, HANDLE*, int);
+  METTLE_PUBLIC void
+  validate(boost::any &v, const std::vector<std::string> &values, HANDLE*, int);
 #endif
 
-template<typename T>
-void validate(boost::any &v, const std::vector<std::string> &values,
-              std::optional<T>*, int) {
-  boost::any a;
-  {
-    using namespace boost::program_options;
-    validators::check_first_occurrence(v);
-    validators::get_single_string(values);
-    validate(a, values, static_cast<T*>(nullptr), 0);
+  template<typename T>
+  void validate(boost::any &v, const std::vector<std::string> &values,
+                std::optional<T>*, int) {
+    boost::any a;
+    {
+      using namespace boost::program_options;
+      validators::check_first_occurrence(v);
+      validators::get_single_string(values);
+      validate(a, values, static_cast<T*>(nullptr), 0);
+    }
+    v = boost::any(std::optional<T>(boost::any_cast<T>(a)));
   }
-  v = boost::any(std::optional<T>(boost::any_cast<T>(a)));
-}
 
 } // namespace boost
 

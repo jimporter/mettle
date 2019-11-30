@@ -10,15 +10,15 @@
 
 namespace mettle {
 
-struct file_result {
-  bool passed;
-  std::string message;
-};
+  struct file_result {
+    bool passed;
+    std::string message;
+  };
 
-void run_test_files(
-  const std::vector<test_file> &files, log::file_logger &logger,
-  const std::vector<std::string> &args = {}
-);
+  void run_test_files(
+    const std::vector<test_file> &files, log::file_logger &logger,
+    const std::vector<std::string> &args = {}
+  );
 
 } // namespace mettle
 

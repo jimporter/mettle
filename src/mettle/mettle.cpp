@@ -13,16 +13,16 @@
 
 namespace mettle {
 
-namespace {
-  struct all_options : generic_options, driver_options, output_options {
-    std::vector<test_file> files;
-  };
+  namespace {
+    struct all_options : generic_options, driver_options, output_options {
+      std::vector<test_file> files;
+    };
 
-  const char program_name[] = "mettle";
-  void report_error(const std::string &message) {
-    std::cerr << program_name << ": " << message << std::endl;
+    const char program_name[] = "mettle";
+    void report_error(const std::string &message) {
+      std::cerr << program_name << ": " << message << std::endl;
+    }
   }
-}
 
 } // namespace mettle
 

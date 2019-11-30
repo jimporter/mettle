@@ -9,36 +9,36 @@
 
 namespace mettle {
 
-template<typename Function>
-class object_factory;
+  template<typename Function>
+  class object_factory;
 
-template<typename Result, typename ...Args>
-class object_factory<Result(Args...)> {
-public:
-  using result_type = Result;
-  using function_type = std::function<result_type(Args...)>;
-  using container_type = std::map<std::string, function_type>;
-  using iterator = typename container_type::const_iterator;
+  template<typename Result, typename ...Args>
+  class object_factory<Result(Args...)> {
+  public:
+    using result_type = Result;
+    using function_type = std::function<result_type(Args...)>;
+    using container_type = std::map<std::string, function_type>;
+    using iterator = typename container_type::const_iterator;
 
-  void add(std::string name, function_type f) {
-    registry_.emplace(std::move(name), std::move(f));
-  }
+    void add(std::string name, function_type f) {
+      registry_.emplace(std::move(name), std::move(f));
+    }
 
-  template<typename ...CallArgs>
-  result_type make(const std::string &name, CallArgs &&...args) {
-    return registry_.at(name)(std::forward<CallArgs>(args)...);
-  }
+    template<typename ...CallArgs>
+    result_type make(const std::string &name, CallArgs &&...args) {
+      return registry_.at(name)(std::forward<CallArgs>(args)...);
+    }
 
-  iterator begin() const {
-    return registry_.begin();
-  }
+    iterator begin() const {
+      return registry_.begin();
+    }
 
-  iterator end() const {
-    return registry_.end();
-  }
-private:
-  container_type registry_;
-};
+    iterator end() const {
+      return registry_.end();
+    }
+  private:
+    container_type registry_;
+  };
 
 } // namespace mettle
 

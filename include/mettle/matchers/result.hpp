@@ -8,58 +8,58 @@
 
 namespace mettle {
 
-struct match_result {
-  match_result(bool matched, std::string message = "")
-    : matched(matched), message(std::move(message)) {}
+  struct match_result {
+    match_result(bool matched, std::string message = "")
+      : matched(matched), message(std::move(message)) {}
 
-  bool matched;
-  std::string message;
+    bool matched;
+    std::string message;
 
-  operator bool() const {
-    return matched;
-  }
-};
-
-inline match_result operator !(const match_result &m) {
-  return {!m.matched, m.message};
-}
-
-inline match_result operator !(match_result &&m) {
-  return {!m.matched, std::move(m.message)};
-}
-
-namespace detail {
-  template<typename T>
-  class message_impl {
-  public:
-    message_impl(const match_result &result, const T &fallback)
-      : result(result), fallback(fallback) {}
-    message_impl(const message_impl &) = delete;
-
-    friend std::ostream &
-    operator <<(std::ostream &os, const message_impl<T> &m) {
-      if(!m.result.message.empty())
-        return os << m.result.message;
-      else
-        return os << to_printable(m.fallback);
+    operator bool() const {
+      return matched;
     }
-  private:
-    const match_result &result;
-    const T &fallback;
   };
-}
 
-template<typename T>
-inline const detail::message_impl<T>
-matcher_message(const match_result &result, const T &fallback) {
-  return {result, fallback};
-}
+  inline match_result operator !(const match_result &m) {
+    return {!m.matched, m.message};
+  }
 
-template<typename T>
-inline decltype(auto)
-matcher_message(bool, const T &fallback) {
-  return to_printable(fallback);
-}
+  inline match_result operator !(match_result &&m) {
+    return {!m.matched, std::move(m.message)};
+  }
+
+  namespace detail {
+    template<typename T>
+    class message_impl {
+    public:
+      message_impl(const match_result &result, const T &fallback)
+        : result(result), fallback(fallback) {}
+      message_impl(const message_impl &) = delete;
+
+      friend std::ostream &
+      operator <<(std::ostream &os, const message_impl<T> &m) {
+        if(!m.result.message.empty())
+          return os << m.result.message;
+        else
+          return os << to_printable(m.fallback);
+      }
+    private:
+      const match_result &result;
+      const T &fallback;
+    };
+  }
+
+  template<typename T>
+  inline const detail::message_impl<T>
+  matcher_message(const match_result &result, const T &fallback) {
+    return {result, fallback};
+  }
+
+  template<typename T>
+  inline decltype(auto)
+  matcher_message(bool, const T &fallback) {
+    return to_printable(fallback);
+  }
 
 } // namespace mettle
 

@@ -1,6 +1,7 @@
 #include <mettle/driver/filters.hpp>
 
 namespace mettle {
+
   filter_result attr_filter::operator ()(const test_name &,
                                          const attributes &attrs) const {
     using namespace detail;
@@ -65,4 +66,5 @@ namespace mettle {
     }
     return test_action::hide;
   }
-}
+
+} // namespace mettle

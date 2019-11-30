@@ -5,7 +5,7 @@
 
 namespace mettle {
 
-bool_attr skip("skip", test_action::skip);
+  bool_attr skip("skip", test_action::skip);
 
 } // namespace mettle
 
