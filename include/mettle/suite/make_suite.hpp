@@ -34,12 +34,6 @@ namespace mettle {
       using type = compiled_suite<void(T&...)>;
     };
 
-    template <typename ...T>
-    std::array<std::common_type_t<T...>, sizeof...(T)>
-    constexpr inline make_array(T &&...t) {
-      return {{t...}};
-    }
-
     template<template<typename ...> class T, typename ...Args>
     struct apply_type {
       template<typename ...Rest>
@@ -52,8 +46,7 @@ namespace mettle {
     auto
     do_build(const std::string &name, const attributes &attrs,
              Factory &&factory, const F &f) {
-      using FactoryValue = typename std::remove_reference<Factory>::type;
-      Builder<FactoryValue, Args...> builder(
+      Builder<std::remove_reference_t<Factory>, Args...> builder(
         name, attrs, std::forward<Factory>(factory)
       );
       f(builder);
@@ -66,62 +59,20 @@ namespace mettle {
       return do_build<Builder, Args...>(name, attrs, auto_factory, f);
     }
 
-    template<template<typename ...> class Builder, typename ...Args,
-             typename Factory, typename F>
-    inline auto
-    do_build(const std::string &name, Factory &&factory, const F &f) {
-      return do_build<Builder, Args...>(
-        name, {}, std::forward<Factory>(factory), f
-      );
-    }
-
-    template<template<typename ...> class Builder, typename ...Args, typename F>
-    inline auto
-    do_build(const std::string &name, const F &f) {
-      return do_build<Builder, Args...>(name, {}, auto_factory, f);
-    }
-
-
-    template<template<typename ...> class Builder, typename ...Args>
-    inline auto
-    do_builds(const std::string &name, const attributes &attrs,
-              Args &&...args) {
-      return make_array(do_build<Builder>(
-        name, attrs, std::forward<Args>(args)...
-      ));
-    }
-
-    template<template<typename ...> class Builder, typename Fixture,
-             typename ...Args>
-    inline auto
-    do_builds(const std::string &name, const attributes &attrs,
-              Args &&...args) {
-      return make_array(do_build<Builder, Fixture>(
-        name, attrs, std::forward<Args>(args)...
-      ));
-    }
-
-    template<template<typename ...> class Builder, typename First,
-             typename Second, typename ...Rest, typename ...Args>
-    inline auto
-    do_builds(const std::string &name, const attributes &attrs,
-              Args &&...args) {
-      using detail::annotate_type;
-      return make_array(
-        do_build<Builder, First> (annotate_type<First> (name), attrs, args...),
-        do_build<Builder, Second>(annotate_type<Second>(name), attrs, args...),
-        do_build<Builder, Rest>  (annotate_type<Rest>  (name), attrs, args...)
-        ...
-      );
-    }
-
     template<template<typename ...> class Builder, typename ...Fixture,
              typename ...Args>
     inline auto
-    do_builds(const std::string &name, Args &&...args) {
-      return do_builds<Builder, Fixture...>(
-        name, {}, std::forward<Args>(args)...
-      );
+    do_builds(const std::string &name, const attributes &attrs,
+              Args &&...args) {
+      if constexpr(sizeof...(Fixture) < 2) {
+        return std::array{do_build<Builder, Fixture...>(
+          name, attrs, std::forward<Args>(args)...
+        )};
+      } else {
+        return std::array{do_build<Builder, Fixture>(
+          detail::annotate_type<Fixture>(name), attrs, args...
+        )...};
+      }
     }
 
   } // namespace detail
@@ -322,7 +273,7 @@ namespace mettle {
 
 
   template<typename Exception, typename ...Fixture, typename ...Args>
-  inline runnable_suite
+  inline auto
   make_basic_suite(const std::string &name, const attributes &attrs,
                    Args &&...args) {
     using Applied = detail::apply_type<suite_builder, Exception>;
@@ -332,11 +283,11 @@ namespace mettle {
   }
 
   template<typename Exception, typename ...Fixture, typename ...Args>
-  inline runnable_suite
+  inline auto
   make_basic_suite(const std::string &name, Args &&...args) {
     using Applied = detail::apply_type<suite_builder, Exception>;
     return detail::do_build<Applied::template type, Fixture...>(
-      name, std::forward<Args>(args)...
+      name, {}, std::forward<Args>(args)...
     );
   }
 
@@ -355,7 +306,7 @@ namespace mettle {
   make_basic_suites(const std::string &name, Args &&...args) {
     using Applied = detail::apply_type<suite_builder, Exception>;
     return detail::do_builds<Applied::template type, Fixture...>(
-      name, std::forward<Args>(args)...
+      name, {}, std::forward<Args>(args)...
     );
   }
 
@@ -375,7 +326,7 @@ namespace mettle {
   make_subsuite(const std::string &name, Args &&...args) {
     using Applied = detail::apply_type<subsuite_builder, ParentFixture>;
     return detail::do_build<Applied::template type, Fixture...>(
-      name, std::forward<Args>(args)...
+      name, {}, std::forward<Args>(args)...
     );
   }
 
@@ -396,7 +347,7 @@ namespace mettle {
   make_subsuites(const std::string &name, Args &&...args) {
     using Applied = detail::apply_type<subsuite_builder, ParentFixture>;
     return detail::do_builds<Applied::template type, Fixture...>(
-      name, std::forward<Args>(args)...
+      name, {}, std::forward<Args>(args)...
     );
   }
 
