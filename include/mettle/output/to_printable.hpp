@@ -14,37 +14,10 @@
 #include "../detail/string_algorithm.hpp"
 #include "../detail/tuple_algorithm.hpp"
 
-// The to_printable overloads below are rather complicated, to say the least; we
-// need to be extra-careful to ensure that things which are convertible to bool
-// don't erroneously get printed out *as* bools. As such, if a type is
-// "bool-ish" (convertible to bool, but not a non-bool arithmetic type), we
-// delegate to to_printable_boolish. Here's the basic structure:
-//
-// to_printable:
-//   if is_printable
-//     if is_boolish -> to_printable_boolish
-//     else -> pass-through
-//   else
-//     if is_enum -> enum (class)
-//     else if is_exception -> exception
-//     else if is_iterable -> iterable
-//     else -> fallback
-//
-// to_printable_boolish:
-//   if is_bool -> bool
-//   if is_enum -> enum
-//   if is_pointer
-//     if is_any_char -> c string
-//     else if is_function -> function pointer
-//     else -> pointer
-//   if !is_scalar -> fallback
-//
-// We also have an overload for array types, which is selected if it's *not* an
-// array of char (arrays of char ultimately get selected by a const char *
-// overload). Finally, we have a few non-generic overloads for nullptrs,
-// std::strings, and std::pairs/std::tuples.
-
 namespace mettle {
+
+  template<typename T>
+  std::string to_printable(T begin, T end);
 
   // Non-generic overloads
 
@@ -88,145 +61,49 @@ namespace mettle {
     return escape_string(string_convert(std::u32string(1, c)), '\'');
   }
 
-  // Helper for bool-ish types
-
-  template<typename T>
-  inline auto to_printable_boolish(T b) -> typename std::enable_if<
-    std::is_same<typename std::remove_cv<T>::type, bool>::value, std::string
-  >::type {
-    return b ? "true" : "false";
-  }
-
-  template<typename T>
-  auto to_printable_boolish(T t) -> typename std::enable_if<
-    std::is_enum<T>::value, std::string
-  >::type {
-    return type_name<T>() + "(" + std::to_string(
-      static_cast<typename std::underlying_type<T>::type>(t)
-    ) + ")";
-  }
-
-  template<typename T>
-  constexpr inline auto to_printable_boolish(const T *t) ->
-  typename std::enable_if<!std::is_function<T>::value, const T *>::type {
-    return t;
-  }
-
-  template<typename Ret, typename ...Args>
-  inline auto to_printable_boolish(Ret (*)(Args...)) {
-    return type_name<Ret(Args...)>();
-  }
-
-  // XXX: These don't work for volatile strings.
-
-  inline std::string to_printable_boolish(const char *s) {
+  inline std::string to_printable(const char *s) {
     if(!s) return detail::null_str();
     return escape_string(s);
   }
 
-  inline std::string to_printable_boolish(const unsigned char *s) {
+  inline std::string to_printable(const unsigned char *s) {
     if(!s) return detail::null_str();
     return escape_string(reinterpret_cast<const char*>(s));
   }
 
-  inline std::string to_printable_boolish(const signed char *s) {
+  inline std::string to_printable(const signed char *s) {
     if(!s) return detail::null_str();
     return escape_string(reinterpret_cast<const char*>(s));
   }
 
-  inline std::string to_printable_boolish(const wchar_t *s) {
+  inline std::string to_printable(const wchar_t *s) {
     if(!s) return detail::null_str();
     return escape_string(string_convert(s));
   }
 
-  inline std::string to_printable_boolish(const char16_t *s) {
+  inline std::string to_printable(const char16_t *s) {
     if(!s) return detail::null_str();
     return escape_string(string_convert(s));
   }
 
-  inline std::string to_printable_boolish(const char32_t *s) {
+  inline std::string to_printable(const char32_t *s) {
     if(!s) return detail::null_str();
     return escape_string(string_convert(s));
   }
 
   template<typename T>
-  auto to_printable_boolish(const T &t) -> typename std::enable_if<
-    !std::is_scalar<typename std::remove_reference<T>::type>::value, std::string
-  >::type {
-    return type_name(t);
+  inline auto to_printable(T *t) -> std::enable_if_t<
+    is_any_char_v<T>, std::string
+  > {
+    return to_printable(const_cast<const T *>(t));
   }
 
-  // Pass-through
-
-  template<typename T>
-  constexpr auto to_printable(const T &t) -> typename std::enable_if<
-    is_printable<T>::value && !is_boolish<T>::value, const T &
-  >::type {
-    return t;
+  template<typename Ret, typename ...Args>
+  inline auto to_printable(Ret (*)(Args...)) {
+    return type_name<Ret(Args...)>();
   }
 
-  // Bool-ish types
-
-  template<typename T>
-  constexpr inline auto to_printable(const T &t) -> typename std::enable_if<
-    is_printable<T>::value && is_boolish<T>::value,
-    decltype(to_printable_boolish(t))
-  >::type {
-    return to_printable_boolish(t);
-  }
-
-  // Fallback
-
-  template<typename T>
-  auto to_printable(const T &t) -> typename std::enable_if<
-    !is_printable<T>::value && !std::is_enum<T>::value &&
-    !is_exception<T>::value && !is_iterable<T>::value,
-    std::string
-  >::type {
-    return type_name(t);
-  }
-
-  // Enum classes
-
-  template<typename T>
-  constexpr inline auto to_printable(T t) -> typename std::enable_if<
-    !is_printable<T>::value && std::is_enum<T>::value, std::string
-  >::type {
-    return to_printable_boolish(t);
-  }
-
-  // Exceptions
-
-  template<typename T>
-  inline auto to_printable(const T &e) -> typename std::enable_if<
-    !is_printable<T>::value && is_exception<T>::value, std::string
-  >::type {
-    std::ostringstream ss;
-    ss << type_name(e) << "(" << to_printable(e.what()) << ")";
-    return ss.str();
-  }
-
-  // Iterables
-
-  template<typename T>
-  std::string to_printable(T begin, T end);
-
-  template<typename T>
-  auto to_printable(const T &v) -> typename std::enable_if<
-    !is_printable<T>::value && !is_exception<T>::value && is_iterable<T>::value,
-    std::string
-  >::type {
-    return to_printable(std::begin(v), std::end(v));
-  }
-
-  template<typename T, std::size_t N>
-  auto to_printable(const T (&v)[N]) -> typename std::enable_if<
-    !is_any_char<T>::value, std::string
-  >::type {
-    return to_printable(std::begin(v), std::end(v));
-  }
-
-  // Pairs/Tuples
+  // Containers
 
   namespace detail {
     template<typename T>
@@ -242,6 +119,41 @@ namespace mettle {
   std::string to_printable(const std::tuple<T...> &tuple) {
     return detail::stringify_tuple(tuple);
   }
+
+  template<typename T, std::size_t N>
+  auto to_printable(T (&v)[N]) -> std::enable_if_t<
+    !is_any_char_v<T>, std::string
+  > {
+    return to_printable(std::begin(v), std::end(v));
+  }
+
+  // The main `to_printable` implementation. This needs to be after the
+  // non-generic versions above so that those overloads get picked up by the
+  // calls inside this function.
+
+  template<typename T>
+  inline auto to_printable(const T &t) {
+    if constexpr(std::is_enum_v<T>) {
+      return type_name<T>() + "(" + std::to_string(
+        static_cast<typename std::underlying_type<T>::type>(t)
+      ) + ")";
+    } else if constexpr(std::is_same_v<std::remove_cv_t<T>, bool>) {
+      return t ? "true" : "false";
+    } else if constexpr(is_printable_v<T>) {
+      return t;
+    } else if constexpr(is_exception_v<T>) {
+      std::ostringstream ss;
+      ss << type_name(t) << "(" << to_printable(t.what()) << ")";
+      return ss.str();
+    } else if constexpr(is_iterable_v<T>) {
+      return to_printable(std::begin(t), std::end(t));
+    } else {
+      return type_name<T>();
+    }
+  }
+
+  // These need to be last in order for the `to_printable()` calls inside to
+  // pick up all the above implementations (plus any others via ADL).
 
   template<typename T>
   std::string to_printable(T begin, T end) {

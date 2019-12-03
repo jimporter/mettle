@@ -34,6 +34,8 @@ namespace my_namespace {
   }
 }
 
+struct unprintable_type {};
+
 enum my_enum {
   enum_value = 0
 };
@@ -175,22 +177,31 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
   _.test("custom types", []() {
     expect(my_type{}, stringified("{my_type}"));
     expect(my_namespace::another_type{}, stringified("{another_type}"));
+    expect(unprintable_type{}, stringified(regex_match(
+      "(struct )?unprintable_type$"
+    )));
 
+    auto match_unprintable = stringified(regex_match(
+      "\\[(struct )?unprintable_type, (struct )?unprintable_type\\]$"
+    ));
     expect(std::vector<my_type>(2), stringified("[{my_type}, {my_type}]"));
     expect(std::vector<my_namespace::another_type>(2),
            stringified("[{another_type}, {another_type}]"));
+    expect(std::vector<unprintable_type>(2), match_unprintable);
 
     expect(std::pair<my_type, my_type>{},
            stringified("[{my_type}, {my_type}]"));
     expect(std::pair<my_namespace::another_type,
                      my_namespace::another_type>{},
            stringified("[{another_type}, {another_type}]"));
+    expect(std::pair<unprintable_type, unprintable_type>{}, match_unprintable);
 
     expect(std::tuple<my_type, my_type>{},
            stringified("[{my_type}, {my_type}]"));
     expect(std::tuple<my_namespace::another_type,
                       my_namespace::another_type>{},
            stringified("[{another_type}, {another_type}]"));
+    expect(std::tuple<unprintable_type, unprintable_type>{}, match_unprintable);
   });
 
   _.test("fallback", []() {
