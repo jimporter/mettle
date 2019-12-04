@@ -4,28 +4,39 @@
 #include <cstdint>
 #include <ostream>
 #include <tuple>
+#include <type_traits>
+
+#include "string_algorithm.hpp"
 
 namespace mettle::detail {
 
   template<std::size_t I, std::size_t N>
-  struct do_until {
+  struct do_iterate {
     template<typename Func>
-    do_until(Func &&f) {
-      if(!f(std::integral_constant<std::size_t, I>{}))
-        do_until<I+1, N>(std::forward<Func>(f));
+    do_iterate(Func &&f) {
+      constexpr std::integral_constant<std::size_t, I> index{};
+      if constexpr(std::is_same_v<decltype(f(index)), void>) {
+        f(index);
+        do_iterate<I+1, N>(std::forward<Func>(f));
+      } else {
+        if(!f(index))
+          do_iterate<I+1, N>(std::forward<Func>(f));
+      }
     }
   };
 
   template<std::size_t N>
-  struct do_until<N, N> {
-    template<typename Func>
-    do_until(Func &&) {}
+  struct do_iterate<N, N> {
+    do_iterate(...) {}
   };
 
+  template<std::size_t N>
+  using static_for = do_iterate<0, N>;
+
   template<typename Tuple, typename Func>
-  void tuple_for_until(Tuple &&tuple, Func &&f) {
+  void tuple_for_each(Tuple &&tuple, Func &&f) {
     using T = typename std::remove_reference<Tuple>::type;
-    do_until<0, std::tuple_size<T>::value>([&](auto i) {
+    static_for<std::tuple_size<T>::value>([&](auto i) {
       return f(std::get<decltype(i)::value>(tuple));
     });
   }
@@ -37,12 +48,9 @@ namespace mettle::detail {
       : tuple_(tuple), func_(func), delim_(delim) {}
 
     friend std::ostream & operator <<(std::ostream &os, const tuple_joiner &t) {
-      std::size_t i = 0;
-      tuple_for_until(t.tuple_, [&os, &i, &t](const auto &item) {
-        if(i++ != 0)
-          os << t.delim_;
-        os << t.func_(item);
-        return false;
+      ostream_list_append ola(os, t.delim_);
+      tuple_for_each(t.tuple_, [&ola, &f = t.func_](const auto &i) {
+        ola(f(i));
       });
       return os;
     }

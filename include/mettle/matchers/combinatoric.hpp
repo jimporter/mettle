@@ -21,7 +21,7 @@ namespace mettle {
       template<typename U>
       match_result operator ()(const U &value) const {
         match_result result = initial_;
-        tuple_for_until(matchers_, [&, this](const auto &matcher) {
+        tuple_for_each(matchers_, [&, this](const auto &matcher) {
           auto m = matcher(value);
           bool done = reducer_(initial_, m) != initial_;
           if(done)

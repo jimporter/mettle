@@ -56,9 +56,9 @@ namespace mettle::detail {
 
     friend std::ostream &
     operator <<(std::ostream &os, const string_joiner &t) {
-      ostream_list_append append(os, t.delim_);
+      ostream_list_append ola(os, t.delim_);
       for(auto i = t.begin_; i != t.end_; ++i)
-        append(t.func_(*i));
+        ola(t.func_(*i));
       return os;
     }
   private:

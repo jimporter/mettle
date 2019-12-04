@@ -23,7 +23,7 @@ namespace mettle {
       template<typename U>
       match_result operator ()(const U &value) const {
         std::ostringstream ss;
-        ostream_list_append append(ss);
+        ostream_list_append ola(ss);
         bool good = initial_;
 
         ss << "[";
@@ -31,7 +31,7 @@ namespace mettle {
           auto result = matcher_(i);
           if(result != initial_)
             good = result;
-          append(matcher_message(result, i));
+          ola(matcher_message(result, i));
         }
         ss << "]";
 
@@ -75,7 +75,7 @@ namespace mettle {
       template<typename U>
       match_result operator ()(const U &value) const {
         std::ostringstream ss;
-        ostream_list_append append(ss);
+        ostream_list_append ola(ss);
         bool good = true;
 
         ss << "[";
@@ -88,7 +88,7 @@ namespace mettle {
 
           match_result result = m(*i);
           good &= result;
-          append(matcher_message(result, *i));
+          ola(matcher_message(result, *i));
           ++i;
         }
 
@@ -96,7 +96,7 @@ namespace mettle {
         // list of matchers).
         good &= (i == end);
         for(; i != end; ++i)
-          append(to_printable(*i));
+          ola(to_printable(*i));
 
         ss << "]";
 
@@ -150,12 +150,12 @@ namespace mettle {
       template<typename U>
       match_result operator ()(const U &value) const {
         std::ostringstream ss;
-        ostream_list_append append(ss);
+        ostream_list_append ola(ss);
         bool good = true;
 
         ss << "[";
         auto i = std::begin(value), end = std::end(value);
-        tuple_for_until(matchers_, [&i, &end, &good, &append](const auto &m) {
+        tuple_for_each(matchers_, [&i, &end, &good, &ola](const auto &m) {
           if(i == end) {
             good = false;
             return true;
@@ -163,7 +163,7 @@ namespace mettle {
 
           auto result = m(*i);
           good &= result;
-          append(matcher_message(result, *i));
+          ola(matcher_message(result, *i));
           ++i;
           return false;
         });
@@ -172,7 +172,7 @@ namespace mettle {
         // list of matchers).
         good &= (i == end);
         for(; i != end; ++i)
-          append(to_printable(*i));
+          ola(to_printable(*i));
 
         ss << "]";
 
@@ -207,15 +207,15 @@ namespace mettle {
         static_assert(std::tuple_size<U>::value == sizeof...(T),
                       "tuple sizes mismatch");
         std::ostringstream ss;
-        ostream_list_append append(ss);
+        ostream_list_append ola(ss);
         bool good = true;
 
         ss << "[";
-        do_until<0, sizeof...(T)>([this, &value, &good, &append](auto i) {
-          auto v = std::get<decltype(i)::value>(value);
-          auto result = std::get<decltype(i)::value>(matchers_)(v);
+        static_for<sizeof...(T)>([this, &value, &good, &ola](auto i) {
+          auto v = std::get<i>(value);
+          auto result = std::get<i>(matchers_)(v);
           good &= result;
-          append(matcher_message(result, v));
+          ola(matcher_message(result, v));
           return false;
         });
         ss << "]";
