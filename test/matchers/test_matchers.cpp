@@ -132,8 +132,6 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(describe(equal_to(123), "foo").desc(), equal_to("foo"));
     });
 
-// XXX: Enable this test on MSVC (it triggers an ICE somewhere).
-#if !defined(_MSC_VER) || defined(__clang__)
     _.test("filter()", []() {
       std::pair<std::string, int> p("first", 1);
       auto first = [](auto &&x) { return x.first; };
@@ -170,7 +168,6 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(filter(second, msg_matcher(false, ""), "desc ")(p).message,
              equal_to("desc 1"));
     });
-#endif
 
     _.test("ensure_matcher()", []() {
       auto zero_matcher = ensure_matcher(0);

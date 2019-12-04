@@ -10,9 +10,6 @@ struct int_factory {
   }
 };
 
-// XXX: Enable these tests on MSVC (they trigger a stdlib error).
-#if !defined(_MSC_VER) || defined(__clang__)
-
 suite<> test_string_alg("string algorithms", [](auto &_) {
   subsuite<>(_, "stringify()", [](auto &_) {
     _.test("std::string", []() {
@@ -104,5 +101,3 @@ suite<> test_string_alg("string algorithms", [](auto &_) {
     });
   });
 });
-
-#endif

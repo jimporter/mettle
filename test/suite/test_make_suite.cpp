@@ -179,8 +179,6 @@ suite<> test_suite("suite creation", [](auto &_) {
 
   subsuite<>(_, "subsuite creation", [](auto &_) {
 
-// XXX: Enable this test on MSVC (`.template` triggers an ICE).
-#if !defined(_MSC_VER) || defined(__clang__)
     _.test("create subsuites", []() {
       auto s = make_suite<>("test suite", [](auto &_){
         _.test("test", []() {});
@@ -199,7 +197,6 @@ suite<> test_suite("suite creation", [](auto &_) {
 
       expect(s, complex_suite());
     });
-#endif
 
     _.test("create subsuites with helper syntax", []() {
       auto s = make_suite<>("test suite", [](auto &_){
@@ -239,9 +236,6 @@ suite<> test_suite("suite creation", [](auto &_) {
       expect(s, complex_suite());
     });
 
-
-// XXX: Enable this test on MSVC (`.template` triggers an ICE).
-#if !defined(_MSC_VER) || defined(__clang__)
     _.test("create a parameterized subsuite", []() {
       auto s = make_suite<>("test suite", [](auto &_) {
         _.template subsuite<int, float>("subsuite", [](auto &_) {
@@ -260,7 +254,6 @@ suite<> test_suite("suite creation", [](auto &_) {
         simple_suite("subsuite (float)")
       ));
     });
-#endif
 
     _.test("create a parameterized subsuite with helper syntax", []() {
       auto s = make_suite<>("test suite", [](auto &_) {
@@ -331,8 +324,6 @@ suite<> test_suite("suite creation", [](auto &_) {
       expect(s, simple_suite("test suite", true));
     });
 
-// XXX: Enable this test on MSVC (`.template` triggers an ICE).
-#if !defined(_MSC_VER) || defined(__clang__)
     _.test("create skipped subsuites", []() {
       auto s = make_suite<>("test suite", [](auto &_){
         _.test("test", []() {});
@@ -351,7 +342,6 @@ suite<> test_suite("suite creation", [](auto &_) {
 
       expect(s, complex_suite(1));
     });
-#endif
 
     _.test("create skipped subsuites with helper syntax", []() {
       auto s = make_suite<>("test suite", [](auto &_){
