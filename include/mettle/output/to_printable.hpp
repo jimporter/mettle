@@ -11,7 +11,7 @@
 #include "string.hpp"
 #include "traits.hpp"
 #include "type_name.hpp"
-#include "../detail/string_algorithm.hpp"
+#include "../detail/algorithm.hpp"
 #include "../detail/tuple_algorithm.hpp"
 
 namespace mettle {

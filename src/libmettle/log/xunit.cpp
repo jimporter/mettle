@@ -3,7 +3,7 @@
 #include <fstream>
 #include <stdexcept>
 
-#include <mettle/detail/string_algorithm.hpp>
+#include <mettle/detail/algorithm.hpp>
 
 namespace mettle::log {
 

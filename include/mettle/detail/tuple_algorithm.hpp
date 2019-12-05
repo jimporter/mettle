@@ -6,7 +6,7 @@
 #include <tuple>
 #include <type_traits>
 
-#include "string_algorithm.hpp"
+#include "algorithm.hpp"
 
 namespace mettle::detail {
 

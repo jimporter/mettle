@@ -3,7 +3,7 @@
 #include <map>
 #include <regex>
 
-#include <mettle/detail/string_algorithm.hpp>
+#include <mettle/detail/algorithm.hpp>
 
 static const std::map<char, std::string> xml_replace_text = {
   {'<', "&lt;"},

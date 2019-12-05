@@ -2,7 +2,7 @@
 #define INC_METTLE_DRIVER_FILTERS_CORE_HPP
 
 #include "../suite/attributes.hpp"
-#include "../detail/string_algorithm.hpp"
+#include "../detail/algorithm.hpp"
 #include "test_name.hpp"
 
 namespace mettle {

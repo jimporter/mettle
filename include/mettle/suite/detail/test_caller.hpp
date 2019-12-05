@@ -7,38 +7,21 @@
 
 namespace mettle::detail {
 
-  template<typename ...>
-  struct first;
+  struct no_fixture_t {};
 
-  template<typename First, typename ...Rest>
-  struct first<First, Rest...> {
-    using type = First;
+  template<typename Factory, typename Child>
+  struct transform_fixture {
+    using type = decltype(std::declval<Factory>().template make<Child>());
   };
-
-  template<>
-  struct first<> {
-    using type = void;
-  };
-
-  template<typename ...T>
-  using first_t = typename first<T...>::type;
-
-  template<typename Factory, typename ...Child>
-  struct transform_fixture;
 
   template<typename Factory>
-  struct transform_fixture<Factory> {
+  struct transform_fixture<Factory, no_fixture_t> {
     using type = void;
   };
 
   template<typename Factory, typename Child>
-  struct transform_fixture<Factory, Child> {
-    using type = decltype(std::declval<Factory>().template make<Child>());
-  };
-
-  template<typename Factory, typename ...Child>
   using transform_fixture_t = typename transform_fixture<
-    Factory, Child...
+    Factory, Child
   >::type;
 
   template<typename ...Args>
@@ -78,7 +61,7 @@ namespace mettle::detail {
   public:
     template<typename ...T>
     test_caller_impl(Factory f, T &&...t)
-      : base{std::forward<T>(t)...}, factory(f) {}
+      : base{std::forward<T>(t)...}, factory(std::move(f)) {}
 
     inline void operator ()(Parent &...args) {
       auto &&child = factory.template make<InChild>();
@@ -103,9 +86,9 @@ namespace mettle::detail {
     }
   };
 
-  template<typename Factory, typename Parent, typename ...Child>
+  template<typename Factory, typename Parent, typename Child>
   using test_caller = test_caller_impl<
-    Factory, Parent, first_t<Child...>, transform_fixture_t<Factory, Child...>
+    Factory, Parent, Child, transform_fixture_t<Factory, Child>
   >;
 
 } // namespace mettle::detail

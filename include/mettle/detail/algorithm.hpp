@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_DETAIL_STRING_ALGORITHM_HPP
-#define INC_METTLE_DETAIL_STRING_ALGORITHM_HPP
+#ifndef INC_METTLE_DETAIL_ALGORITHM_HPP
+#define INC_METTLE_DETAIL_ALGORITHM_HPP
 
 #include <initializer_list>
 #include <iterator>
@@ -8,6 +8,7 @@
 
 namespace mettle::detail {
 
+  // XXX: When we start requiring C++20, we can remove this.
   struct identity {
     template<typename T>
     constexpr decltype(auto) operator ()(T &&t) const {

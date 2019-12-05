@@ -12,7 +12,7 @@
 #include <mettle/driver/log/brief.hpp>
 #include <mettle/driver/log/verbose.hpp>
 #include <mettle/driver/log/xunit.hpp>
-#include <mettle/detail/string_algorithm.hpp>
+#include <mettle/detail/algorithm.hpp>
 
 #ifndef _WIN32
 #  include <unistd.h>

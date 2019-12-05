@@ -22,7 +22,7 @@ test_test_caller("test_caller", [](auto &_) {
 
   _.test("test with no fixture", [](auto &tup) {
     run_counter_from_tuple<Fixture> setup, teardown, test;
-    test_caller<auto_factory_t, Fixture> t(
+    test_caller<auto_factory_t, Fixture, no_fixture_t> t(
       auto_factory, setup, teardown, test
     );
     std::apply(t, tup);
