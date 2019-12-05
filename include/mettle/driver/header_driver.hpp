@@ -9,7 +9,6 @@
 #include "log/indent.hpp"
 #include "log/simple_summary.hpp"
 #include "../suite/detail/all_suites.hpp"
-#include "../suite/detail/built_in_attrs.hpp"
 
 int main() {
   using namespace mettle;
@@ -17,7 +16,7 @@ int main() {
   indenting_ostream out(std::cout);
 
   log::simple_summary logger(out);
-  run_tests(detail::all_suites(), logger, inline_test_runner);
+  run_tests(detail::all_suites, logger, inline_test_runner);
   logger.summarize();
   return !logger.good();
 }

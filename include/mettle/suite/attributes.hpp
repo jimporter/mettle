@@ -167,7 +167,7 @@ namespace mettle {
     return all_attrs;
   }
 
-  extern bool_attr skip;
+  inline bool_attr skip("skip", test_action::skip);
 
 } // namespace mettle
 

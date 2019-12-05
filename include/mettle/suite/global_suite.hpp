@@ -25,7 +25,7 @@ namespace mettle {
     template<typename ...Args>
     basic_suite(const std::string &name, const attributes &attrs,
                 Args &&...args)
-      : basic_suite(detail::all_suites(), name, attrs,
+      : basic_suite(detail::all_suites, name, attrs,
                     std::forward<Args>(args)...) {}
 
     template<typename ...Args>

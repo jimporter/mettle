@@ -3,7 +3,6 @@
 
 #include "detail/export.hpp"
 #include "../suite/detail/all_suites.hpp"
-#include "../suite/detail/built_in_attrs.hpp"
 
 namespace mettle::detail {
 
@@ -13,7 +12,7 @@ namespace mettle::detail {
 } // namespace mettle::detail
 
 int main(int argc, const char *argv[]) {
-  return mettle::detail::drive_tests(argc, argv, mettle::detail::all_suites());
+  return mettle::detail::drive_tests(argc, argv, mettle::detail::all_suites);
 }
 
 #endif
