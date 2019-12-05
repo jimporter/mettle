@@ -24,17 +24,12 @@ namespace mettle {
 
   namespace detail {
     template<typename T>
-    inline auto matcher_desc(T &&matcher) -> std::enable_if_t<
-      is_matcher_v<T>, decltype( std::forward<T>(matcher).desc() )
-    > {
-      return std::forward<T>(matcher).desc();
-    }
-
-    template<typename T>
-    inline auto matcher_desc(T &&expected) -> std::enable_if_t<
-      !is_matcher_v<T>, decltype( to_printable(std::forward<T>(expected)) )
-    > {
-      return to_printable(std::forward<T>(expected));
+    inline auto matcher_desc(T &&t) {
+      if constexpr(is_matcher_v<T>) {
+        return std::forward<T>(t).desc();
+      } else {
+        return to_printable(std::forward<T>(t));
+      }
     }
   }
 
@@ -119,17 +114,12 @@ namespace mettle {
   }
 
   template<typename T>
-  inline auto ensure_matcher(T &&matcher) -> std::enable_if_t<
-    is_matcher_v<T>, decltype( std::forward<T>(matcher) )
-  > {
-    return std::forward<T>(matcher);
-  }
-
-  template<typename T>
-  inline auto ensure_matcher(T &&expected) -> std::enable_if_t<
-    !is_matcher_v<T>, decltype( equal_to(std::forward<T>(expected)) )
-  > {
-    return equal_to(std::forward<T>(expected));
+  inline auto ensure_matcher(T &&t) {
+    if constexpr(is_matcher_v<T>) {
+      return std::forward<T>(t);
+    } else {
+      return equal_to(std::forward<T>(t));
+    }
   }
 
   template<typename T>
