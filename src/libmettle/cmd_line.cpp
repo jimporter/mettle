@@ -280,7 +280,7 @@ namespace boost {
       std::istringstream is(val);
       is >> h;
       v = h;
-    } catch (...) {
+    } catch(...) {
       boost::throw_exception(invalid_option_value(val));
     }
   }

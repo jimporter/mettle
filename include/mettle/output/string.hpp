@@ -89,7 +89,7 @@ namespace mettle {
   inline std::string
   string_convert(const std::u16string_view &s) {
 #if defined(_MSC_VER) && !defined(__clang__)
-    // MSVC 2015's codecvt expects uint16_t instead of char16_t because char16_t
+    // MSVC's codecvt expects uint16_t instead of char16_t because char16_t
     // used to just be a typedef of uint16_t.
     std::wstring_convert<std::codecvt_utf8_utf16<std::uint16_t>,
                          std::uint16_t> conv;
@@ -106,7 +106,7 @@ namespace mettle {
   inline std::string
   string_convert(const std::u32string_view &s) {
 #if defined(_MSC_VER) && !defined(__clang__)
-    // MSVC 2015's codecvt expects uint32_t instead of char32_t because char32_t
+    // MSVC's codecvt expects uint32_t instead of char32_t because char32_t
     // used to just be a typedef of uint32_t.
     std::wstring_convert<std::codecvt_utf8<std::uint32_t>, std::uint32_t> conv;
     return conv.to_bytes(
