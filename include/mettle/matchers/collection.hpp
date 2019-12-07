@@ -50,14 +50,14 @@ namespace mettle {
 
   template<typename T>
   auto member(T &&thing) {
-    return detail::member_impl<ensure_matcher_t<T>>(
+    return detail::member_impl(
       "member ", false, ensure_matcher(std::forward<T>(thing))
     );
   }
 
   template<typename T>
   auto each(T &&thing) {
-    return detail::member_impl<ensure_matcher_t<T>>(
+    return detail::member_impl(
       "each ", true, ensure_matcher(std::forward<T>(thing))
     );
   }
@@ -68,6 +68,8 @@ namespace mettle {
     public:
       template<typename T, typename U>
       each_impl(T begin, T end, U &&meta_matcher) {
+        static_assert(is_matcher_v<decltype(meta_matcher(*begin))>,
+                      "meta_matcher must be a function that returns a matcher");
         for(; begin != end; ++begin)
           matchers_.push_back(meta_matcher(*begin));
       }
@@ -111,16 +113,16 @@ namespace mettle {
     private:
       std::vector<Matcher> matchers_;
     };
+
+    template<typename T, typename U>
+    each_impl(T begin, T end, U &&meta_matcher) -> each_impl<
+      std::remove_reference_t<decltype(meta_matcher(*begin))>
+    >;
   }
 
   template<typename T, typename U>
   inline auto each(T begin, T end, U &&meta_matcher) {
-    using Matcher = decltype(meta_matcher(*begin));
-    static_assert(is_matcher_v<Matcher>,
-                  "meta_matcher must be a function that returns a matcher");
-    return detail::each_impl<decltype(meta_matcher(*begin))>(
-      begin, end, std::forward<U>(meta_matcher)
-    );
+    return detail::each_impl(begin, end, std::forward<U>(meta_matcher));
   }
 
   template<typename T, typename U>
@@ -191,6 +193,7 @@ namespace mettle {
 
   template<typename ...T>
   inline auto array(T &&...things) {
+    // No CTAD here to avoid deducing from the copy constructor.
     return detail::array_impl<ensure_matcher_t<T>...>(
       ensure_matcher(std::forward<T>(things))...
     );
@@ -240,20 +243,21 @@ namespace mettle {
 
   template<typename ...T>
   inline auto tuple(T &&...things) {
+    // No CTAD here to avoid deducing from the copy constructor.
     return detail::tuple_impl<ensure_matcher_t<T>...>(
       ensure_matcher(std::forward<T>(things))...
     );
   }
 
   inline auto sorted() {
-    return make_matcher([](const auto &value) {
+    return basic_matcher([](const auto &value) {
       return std::is_sorted(std::begin(value), std::end(value));
     }, "sorted");
   }
 
   template<typename T>
   auto sorted(T &&compare) {
-    return make_matcher(
+    return basic_matcher(
       std::forward<T>(compare),
       [](const auto &value, auto &&compare) {
       return std::is_sorted(std::begin(value), std::end(value), compare);
@@ -322,27 +326,24 @@ namespace mettle {
 
   template<typename T>
   inline auto permutation(T &&container) {
-    using Value = typename std::remove_reference<T>::type;
-    return detail::permutation_impl<Value>(std::forward<T>(container));
+    return detail::permutation_impl(std::forward<T>(container));
   }
 
   template<typename T, typename Pred>
   inline auto permutation(T &&container, Pred &&predicate) {
-    using Value = typename std::remove_reference<T>::type;
-    using PredValue = typename std::remove_reference<Pred>::type;
-    return detail::permutation_pred_impl<Value, PredValue>(
+    return detail::permutation_pred_impl(
       std::forward<T>(container), std::forward<Pred>(predicate)
     );
   }
 
   template<typename T>
   inline auto permutation(T begin, T end) {
-    return permutation(detail::range<T>(begin, end));
+    return permutation(detail::range(std::move(begin), std::move(end)));
   }
 
   template<typename T, typename Pred>
   inline auto permutation(T begin, T end, Pred &&predicate) {
-    return permutation(detail::range<T>(begin, end),
+    return permutation(detail::range(std::move(begin), std::move(end)),
                        std::forward<Pred>(predicate));
   }
 

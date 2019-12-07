@@ -20,7 +20,7 @@ auto equal_test_result(T &&result, U &&message) {
   std::ostringstream ss;
   ss << "test_result(" << res.desc() << ", " << msg.desc() << ")";
 
-  return make_matcher(
+  return basic_matcher(
     [res = std::move(res), msg = std::move(msg)]
     (const auto &actual) -> bool {
       return res(actual.passed) && msg(actual.message);

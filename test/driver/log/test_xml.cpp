@@ -21,7 +21,7 @@ std::string make_string(const log::xml::node &n) {
 }
 
 auto valid_name() {
-  return make_matcher([](const auto &value) -> bool {
+  return basic_matcher([](const auto &value) -> bool {
     return log::xml::valid_name(value);
   }, "valid name");
 }

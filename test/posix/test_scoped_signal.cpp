@@ -22,7 +22,7 @@ auto equal_sigprocmask(std::vector<int> mask) {
     return to_printable(strsignal(i));
   })) + "]";
 
-  return make_matcher(
+  return basic_matcher(
     [mask = std::move(mask)](const auto &actual) -> match_result {
       for(int sig : mask) {
         if(sigismember(&actual, sig) != 1) {

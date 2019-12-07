@@ -70,7 +70,7 @@ namespace mettle {
   }
 
   auto equal_attr_inst(attr_instance expected) {
-    return make_matcher(
+    return basic_matcher(
       std::move(expected),
       [](const attr_instance &actual, const attr_instance &expected) {
         return actual.attribute.name() == expected.attribute.name() &&
@@ -84,7 +84,7 @@ namespace mettle {
   }
 
   auto equal_filter_result(filter_result expected) {
-    return make_matcher(
+    return basic_matcher(
       std::move(expected),
       [](const filter_result &actual, const filter_result &expected) {
         return actual.action == expected.action &&
@@ -98,7 +98,7 @@ namespace mettle {
     ss << "test_info(" << to_printable(name) << ", " << to_printable(attrs)
        << ")";
 
-    return make_matcher(
+    return basic_matcher(
       [name = equal_to(name), attrs = equal_attributes(attrs)]
       (const auto &actual) -> bool {
         return name(actual.name) && attrs(actual.attrs);
@@ -113,7 +113,7 @@ namespace mettle {
 
   template<typename Type, typename T>
   auto match_any(T &&thing) {
-    return make_matcher(
+    return basic_matcher(
       ensure_matcher(std::forward<T>(thing)),
       [](const boost::any &actual, auto &&matcher) -> match_result {
         using ValueType = typename std::remove_reference<Type>::type;

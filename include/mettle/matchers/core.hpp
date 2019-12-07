@@ -16,7 +16,7 @@ namespace mettle {
 
   template<typename T>
   struct is_matcher : public std::is_base_of<
-    matcher_tag, typename std::remove_reference<T>::type
+    matcher_tag, std::remove_reference_t<T>
   > {};
 
   template<typename T>
@@ -36,13 +36,10 @@ namespace mettle {
   template<typename T, typename F>
   class basic_matcher : public matcher_tag {
   public:
-    basic_matcher(detail::any_capture<T> thing, F f, std::string prefix)
+    basic_matcher(detail::any_capture<T> thing, F f, std::string prefix,
+                  std::string suffix = "")
       : thing_(std::move(thing)), f_(std::move(f)),
-        prefix_(std::move(prefix)) {}
-    basic_matcher(detail::any_capture<T> thing, F f,
-                  std::pair<std::string, std::string> format)
-      : thing_(std::move(thing)), f_(std::move(f)),
-        prefix_(std::move(format.first)), suffix_(std::move(format.second)) {}
+        prefix_(std::move(prefix)), suffix_(std::move(suffix)) {}
 
     template<typename U>
     decltype(auto) operator ()(U &&actual) const {
@@ -63,9 +60,8 @@ namespace mettle {
   template<typename F>
   class basic_matcher<void, F> : public matcher_tag {
   public:
-    template<typename F2>
-    basic_matcher(F2 &&f, std::string desc)
-      : f_(std::forward<F2>(f)), desc_(std::move(desc)) {}
+    basic_matcher(F f, std::string desc)
+      : f_(std::move(f)), desc_(std::move(desc)) {}
 
     template<typename U>
     decltype(auto) operator ()(U &&actual) const {
@@ -80,35 +76,20 @@ namespace mettle {
     std::string desc_;
   };
 
-  template<typename T, typename F, typename String>
-  inline auto make_matcher(T &&thing, F &&f, String &&prefix) {
-    return basic_matcher<
-      std::remove_reference_t<T>, std::remove_reference_t<F>
-    >(std::forward<T>(thing), std::forward<F>(f), std::forward<String>(prefix));
-  }
-
   template<typename T, typename F>
-  inline auto
-  make_matcher(T &&thing, F &&f, std::pair<std::string, std::string> format) {
-    return basic_matcher<
-      std::remove_reference_t<T>, std::remove_reference_t<F>
-    >(std::forward<T>(thing), std::forward<F>(f), std::move(format));
-  }
-
-  template<typename F, typename String>
-  inline auto make_matcher(F &&f, String &&desc) {
-    return basic_matcher<
-      void, std::remove_reference_t<F>
-    >(std::forward<F>(f), std::forward<String>(desc));
-  }
+  basic_matcher(T, F, std::string) -> basic_matcher<T, F>;
+  template<typename T, typename F>
+  basic_matcher(T, F, std::string, std::string) -> basic_matcher<T, F>;
+  template<typename F>
+  basic_matcher(F, std::string) -> basic_matcher<void, F>;
 
   template<typename T>
   auto equal_to(T &&expected) {
-    return make_matcher(std::forward<T>(expected), std::equal_to<>(), "");
+    return basic_matcher(std::forward<T>(expected), std::equal_to<>(), "");
   }
 
   inline auto anything() {
-    return make_matcher([](const auto &) -> bool {
+    return basic_matcher([](const auto &) -> bool {
       return true;
     }, "anything");
   }
@@ -132,7 +113,7 @@ namespace mettle {
 
   template<typename T>
   inline auto is_not(T &&thing) {
-    return make_matcher(
+    return basic_matcher(
       ensure_matcher(std::forward<T>(thing)),
       [](const auto &value, auto &&matcher) {
         return !matcher(value);
@@ -142,12 +123,12 @@ namespace mettle {
 
   template<typename T>
   inline auto describe(T &&matcher, const std::string &desc) {
-    return make_matcher(std::forward<T>(matcher), desc);
+    return basic_matcher(std::forward<T>(matcher), desc);
   }
 
   template<typename Filter, typename Matcher>
   auto filter(Filter &&f, Matcher &&matcher, const std::string &desc = "") {
-    return make_matcher(
+    return basic_matcher(
       std::forward<Matcher>(matcher),
       [f = std::forward<Filter>(f), desc](const auto &actual, auto &&matcher) {
         auto filtered = f(actual);

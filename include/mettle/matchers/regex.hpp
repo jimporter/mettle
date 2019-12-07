@@ -17,7 +17,7 @@ namespace mettle {
     if(syntax & std::regex_constants::icase)
       ss << "i";
 
-    return make_matcher(
+    return basic_matcher(
       [ex = std::basic_regex<Char>(ex, syntax), match](const auto &actual) {
         return std::regex_match(actual, ex, match);
       }, ss.str()
@@ -42,7 +42,7 @@ namespace mettle {
     if(syntax & std::regex_constants::icase)
       ss << "i";
 
-    return make_matcher(
+    return basic_matcher(
       [ex = std::basic_regex<Char>(ex, syntax), match](const auto &actual) {
         return std::regex_search(actual, ex, match);
       }, ss.str()

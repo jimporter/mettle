@@ -70,7 +70,7 @@ struct recording_logger : log::file_logger {
 };
 
 auto equal_test_name(const test_name &expected) {
-  return make_matcher(
+  return basic_matcher(
     expected,
     [](const test_name &actual, const test_name &expected) {
       // IDs probably won't match exactly, since after being piped, the 4 high

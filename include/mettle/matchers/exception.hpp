@@ -10,8 +10,7 @@ namespace mettle {
     template<typename Exception, typename Matcher>
     class thrown_impl_base : public matcher_tag {
     public:
-      template<typename T>
-      thrown_impl_base(T &&t) : matcher(std::forward<T>(t)) {}
+      thrown_impl_base(Matcher matcher) : matcher(std::move(matcher)) {}
 
       std::string desc() const {
         std::ostringstream ss;
@@ -82,9 +81,8 @@ namespace mettle {
 
   template<typename Exception, typename T>
   auto thrown_raw(T &&thing) {
-    auto matcher = ensure_matcher(std::forward<T>(thing));
-    return detail::thrown_impl<Exception, decltype(matcher)>(
-      std::move(matcher)
+    return detail::thrown_impl<Exception, ensure_matcher_t<T>>(
+      ensure_matcher(std::forward<T>(thing))
     );
   }
 
@@ -103,7 +101,7 @@ namespace mettle {
   }
 
   inline auto thrown() {
-    return make_matcher([](auto &&value) -> match_result {
+    return basic_matcher([](auto &&value) -> match_result {
       try {
         value();
         return {false, "threw nothing"};

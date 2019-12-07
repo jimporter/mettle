@@ -6,7 +6,7 @@ using namespace mettle;
 
 template<typename T>
 auto stringified(T &&thing) {
-  return make_matcher(
+  return basic_matcher(
     ensure_matcher(std::forward<T>(thing)),
     [](const auto &value, auto &&matcher) -> bool {
       std::ostringstream ss;

@@ -5,45 +5,45 @@ built-in suite of matchers. This makes it easier to test the state of objects
 with complex properties. Once created, user-defined matchers can be composed as
 normal with built-in matchers as you'd expect.
 
-## Helper functions
+## Helper
 
-### make_matcher(*function*, *desc*)
+### basic_matcher(*function*, *desc*)
 
-The easiest way to create your own matcher is with the `make_matcher` function.
+The easiest way to create your own matcher is with the `basic_matcher` class.
 This takes two parameters: first, a function object that accepts a value of any
 type, and returns a `bool` (with `true` naturally meaning a successful match);
 and second, a string describing the matcher.
 
-`make_matcher` returns a `basic_matcher<void, F>`, where `F` is the type of the
-function, but it's easier to just deduce the return type. For instance, here's a
-simple matcher that returns `true` when the actual value is 4:
+This form of `basic_matcher` creates a `basic_matcher<void, F>`, where `F` is
+the type of the function. For instance, here's a simple matcher that returns
+`true` when the actual value is 4:
 
 ```c++
 auto match_four() {
-  return make_matcher([](const auto &value) -> bool {
+  return basic_matcher([](const auto &value) -> bool {
     return value == 4;
   }, "== 4");
 }
 ```
 
-### make_matcher(*capture*, *function*, *prefix*)
+### basic_matcher(*capture*, *function*, *prefix*, [*suffix*])
 
 You can also *capture* a value to use with your matcher; while you certainly
 *can* capture the value via a lambda, passing the variable directly to
-`make_matcher` allows it to be printed automatically when `desc()` is called. In
-this overload, `function` works as above, except that it takes a second argument
-for the captured object. The final argument, `prefix`, is a string that will be
-prepended to the printed form of `capture`.
+`basic_matcher` allows it to be printed automatically when `desc()` is called.
+In this version, `function` works as above, except that it takes a second
+argument for the captured object. The final arguments, `prefix` and `suffix`,
+are string that will be prepended (or appended) to the printed form of
+`capture`.
 
-This overload of `make_matcher` returns a `basic_matcher<T, F>`, where `T` is
-the type of the capture and `F` is the type of the function. Again, it's easier
-to just deduce the return type. Here's an example of a matcher that returns
-`true` when two numbers are off by one:
+This form of `basic_matcher` returns a `basic_matcher<T, F>`, where `T` is
+the type of the capture and `F` is the type of the function. Here's an example
+of a matcher that returns `true` when two numbers are off by one:
 
 ```c++
 template<typename T>
 auto off_by_one(T &&expected) {
-  return make_matcher(
+  return basic_matcher(
     std::forward<T>(expected),
     [](const auto &actual, const auto &expected) -> bool {
       auto x = std::minmax<T>(actual, expected);
@@ -70,7 +70,7 @@ auto either(T &&a, T &&b) {
   auto a_matcher = ensure_matcher(std::forward<T>(a));
   auto b_matcher = ensure_matcher(std::forward<T>(b));
 
-  return make_matcher([a_matcher, b_matcher](const auto &value) -> bool {
+  return basic_matcher([a_matcher, b_matcher](const auto &value) -> bool {
     return a_matcher(value) ^ b_matcher(value);
   }, a_matcher.desc() + " xor " + b_matcher.desc());
 }
@@ -78,8 +78,8 @@ auto either(T &&a, T &&b) {
 
 ## Starting from scratch
 
-For particularly complex matchers, `make_matcher` may not provide much value. In
-these cases, you can instead build your own matcher from scratch. First, and
+For particularly complex matchers, `basic_matcher` may not provide much value.
+In these cases, you can instead build your own matcher from scratch. First, and
 most importantly, all matchers must inherit from `matcher_tag`. This removes any
 ambiguity between actual matchers and types that just have a similar interface.
 

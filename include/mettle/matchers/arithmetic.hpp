@@ -12,7 +12,7 @@ namespace mettle {
 
   template<typename T, typename U>
   auto near_to(T &&expected, U &&epsilon) {
-    return make_matcher(
+    return basic_matcher(
       std::forward<T>(expected),
       [epsilon = std::forward<U>(epsilon)](
         const auto &actual, const auto &expected
@@ -37,7 +37,7 @@ namespace mettle {
 
   template<typename T, typename U>
   auto near_to_abs(T &&expected, U &&tolerance) {
-    return make_matcher(
+    return basic_matcher(
       std::forward<T>(expected),
       [tolerance = std::forward<U>(tolerance)](
         const auto &actual, const auto &expected

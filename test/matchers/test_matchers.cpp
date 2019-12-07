@@ -21,7 +21,7 @@ T about_one() {
 
 auto msg_matcher(bool match, std::string message = "message") {
   match_result result = {match, std::move(message)};
-  return make_matcher([result = std::move(result)](const auto &) {
+  return basic_matcher([result = std::move(result)](const auto &) {
     return result;
   }, "");
 }
@@ -32,9 +32,9 @@ auto meta_matcher(int x) {
 
 suite<> test_matchers("matchers", [](auto &_) {
 
-  subsuite<>(_, "make_matcher()", [](auto &_) {
-    _.test("make_matcher(f, desc) -> bool", []() {
-      auto matcher = make_matcher([](const auto &actual) -> bool {
+  subsuite<>(_, "basic_matcher()", [](auto &_) {
+    _.test("basic_matcher(f, desc) -> bool", []() {
+      auto matcher = basic_matcher([](const auto &actual) -> bool {
         return actual == 4;
       }, "is 4");
 
@@ -43,9 +43,9 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(matcher.desc(), equal_to("is 4"));
     });
 
-    _.test("make_matcher(capture, f, desc) -> bool", []() {
+    _.test("basic_matcher(capture, f, desc) -> bool", []() {
       auto matcher = [](auto &&x) {
-        return make_matcher(
+        return basic_matcher(
           std::forward<decltype(x)>(x),
           [](const auto &actual, const auto &expected) -> bool {
             return actual == expected;
@@ -58,13 +58,13 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(matcher(4).desc(), equal_to("is 4"));
     });
 
-    _.test("make_matcher(capture, f, pair) -> bool", []() {
+    _.test("basic_matcher(capture, f, prefix, suffix) -> bool", []() {
       auto matcher = [](auto &&x) {
-        return make_matcher(
+        return basic_matcher(
           std::forward<decltype(x)>(x),
           [](const auto &actual, const auto &expected) -> bool {
             return actual == expected;
-          }, {"is(", ")"}
+          }, "is(", ")"
         );
       };
 
@@ -73,8 +73,8 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(matcher(4).desc(), equal_to("is(4)"));
     });
 
-    _.test("make_matcher(f, desc) -> match_result", []() {
-      auto matcher = make_matcher([](const auto &actual) -> match_result {
+    _.test("basic_matcher(f, desc) -> match_result", []() {
+      auto matcher = basic_matcher([](const auto &actual) -> match_result {
         return {actual == 4, "message"};
       }, "is 4");
 
@@ -84,9 +84,9 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(matcher(4).message, equal_to("message"));
     });
 
-    _.test("make_matcher(capture, f, desc) -> match_result", []() {
+    _.test("basic_matcher(capture, f, desc) -> match_result", []() {
       auto matcher = [](auto &&x) {
-        return make_matcher(
+        return basic_matcher(
           std::forward<decltype(x)>(x),
           [](const auto &actual, const auto &expected) -> match_result {
             return {actual == expected, "message"};

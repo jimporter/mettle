@@ -4,14 +4,14 @@ using namespace mettle;
 #include <mettle/driver/object_factory.hpp>
 
 auto equal_factory(std::string name, int result) {
-  return make_matcher(
+  return basic_matcher(
     std::move(name),
     [result](const auto &actual, const auto &name) -> match_result {
       auto actual_result = actual.second(1);
       std::ostringstream ss;
       ss << "[name = " << actual.first << ", f(1) = " << actual_result << "]";
       return { actual.first == name && actual_result == result, ss.str() };
-    }, {"[name = ", ", f(1) = " + std::to_string(result) + "]"}
+    }, "[name = ", ", f(1) = " + std::to_string(result) + "]"
   );
 }
 

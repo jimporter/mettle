@@ -37,9 +37,8 @@ namespace mettle {
     template<typename Matcher>
     class killed_impl : public matcher_tag {
     public:
-      template<typename T>
-      killed_impl(T &&t, bool verbose = true)
-        : matcher_(std::forward<T>(t)), verbose_(verbose) {}
+      killed_impl(Matcher matcher, bool verbose = true)
+        : matcher_(std::move(matcher)), verbose_(verbose) {}
 
       template<typename U>
       match_result operator ()(U &&value) const {
@@ -71,9 +70,8 @@ namespace mettle {
     template<typename Matcher>
     class exited_impl : public matcher_tag {
     public:
-      template<typename T>
-      exited_impl(T &&t, bool verbose = true)
-        : matcher_(std::forward<T>(t)), verbose_(verbose) {}
+      exited_impl(Matcher matcher, bool verbose = true)
+        : matcher_(std::move(matcher)), verbose_(verbose) {}
 
       template<typename U>
       match_result operator ()(U &&value) const {
@@ -105,23 +103,21 @@ namespace mettle {
   } // namespace detail
 
   inline auto killed() {
-    return detail::killed_impl<decltype(anything())>(anything(), false);
+    return detail::killed_impl(anything(), false);
   }
 
   template<typename T>
   inline auto killed(T &&thing) {
-    auto matcher = ensure_matcher(std::forward<T>(thing));
-    return detail::killed_impl<decltype(matcher)>(std::move(matcher));
+    return detail::killed_impl(ensure_matcher(std::forward<T>(thing)));
   }
 
   inline auto exited() {
-    return detail::exited_impl<decltype(anything())>(anything(), false);
+    return detail::exited_impl(anything(), false);
   }
 
   template<typename T>
   inline auto exited(T &&thing) {
-    auto matcher = ensure_matcher(std::forward<T>(thing));
-    return detail::exited_impl<decltype(matcher)>(std::move(matcher));
+    return detail::exited_impl(ensure_matcher(std::forward<T>(thing)));
   }
 
 } // namespace mettle

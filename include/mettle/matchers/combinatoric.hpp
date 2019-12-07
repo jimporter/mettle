@@ -52,25 +52,20 @@ namespace mettle {
 
   template<typename ...T>
   inline auto any(T &&...things) {
-    return detail::reduce_impl<std::logical_or<bool>, ensure_matcher_t<T>...>(
-      "any of", false, std::logical_or<bool>(),
-      ensure_matcher(std::forward<T>(things))...
-    );
+    return detail::reduce_impl("any of", false, std::logical_or<bool>(),
+                               ensure_matcher(std::forward<T>(things))...);
   }
 
   template<typename ...T>
   inline auto all(T &&...things) {
-    return detail::reduce_impl<std::logical_and<bool>, ensure_matcher_t<T>...>(
-      "all of", true, std::logical_and<bool>(),
-      ensure_matcher(std::forward<T>(things))...
-    );
+    return detail::reduce_impl("all of", true, std::logical_and<bool>(),
+                               ensure_matcher(std::forward<T>(things))...);
   }
 
   template<typename ...T>
   inline auto none(T &&...things) {
-    auto reducer = [](bool a, bool b) { return a && !b; };
-    return detail::reduce_impl<decltype(reducer), ensure_matcher_t<T>...>(
-      "none of", true, std::move(reducer),
+    return detail::reduce_impl(
+      "none of", true, [](bool a, bool b) { return a && !b; },
       ensure_matcher(std::forward<T>(things))...
     );
   }

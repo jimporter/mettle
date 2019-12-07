@@ -1,5 +1,13 @@
 # Changes
 
+## v0.2 (in progress)
+
+### Breaking changes
+- Implementation updated to require C++17
+- `make_matcher` helper has been removed; use `basic_matcher` directly instead
+
+---
+
 ## v0.1 (2019-11-29)
 
 - Initial release

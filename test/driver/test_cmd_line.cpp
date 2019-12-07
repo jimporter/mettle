@@ -11,7 +11,7 @@ auto match_filter_item(attr_instance attr, bool matched) {
   std::ostringstream ss;
   ss << "filter_item(" << to_printable(attr.attribute.name()) << ") => "
      << to_printable(matched);
-  return make_matcher(
+  return basic_matcher(
     [attr = std::move(attr), matched](const attr_filter_item &actual) {
       return actual.attribute == attr.attribute.name() &&
              actual.func(&attr) == matched;
@@ -21,11 +21,11 @@ auto match_filter_item(attr_instance attr, bool matched) {
 
 auto equal_option_description(std::string name) {
   using boost::program_options::option_description;
-  return make_matcher(
+  return basic_matcher(
     std::move(name),
     [](const option_description *actual, const std::string &name) {
       return actual && actual->long_name() == name;
-    }, {"option_description(", ")"}
+    }, "option_description(", ")"
   );
 }
 
