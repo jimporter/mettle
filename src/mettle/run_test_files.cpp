@@ -13,18 +13,21 @@ namespace platform = mettle::windows;
 namespace mettle {
 
   void run_test_files(
-    const std::vector<test_file> &files, log::file_logger &logger,
+    const std::vector<test_command> &commands, log::file_logger &logger,
     const std::vector<std::string> &args
   ) {
     using namespace platform;
     logger.started_run();
 
-    for(const auto &file : files) {
+    test_uid next_file_uid = 1;
+    for(const auto &command : commands) {
+      test_file file = {command, next_file_uid++ << 32};
       logger.started_file(file);
 
-      std::vector<std::string> final_args = file.args();
+      std::vector<std::string> final_args = command.args();
       final_args.insert(final_args.end(), args.begin(), args.end());
-      auto result = run_test_file(std::move(final_args), log::pipe(logger));
+      auto result = run_test_file(std::move(final_args),
+                                  log::pipe(logger, file.id));
 
       if(result.passed)
         logger.ended_file(file);

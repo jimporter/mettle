@@ -1,4 +1,4 @@
-#include "test_file.hpp"
+#include "test_command.hpp"
 
 #include <algorithm>
 #include <cstdint>
@@ -12,7 +12,8 @@
 
 namespace mettle {
 
-  test_file::test_file(std::string command) : command_(std::move(command)) {
+  test_command::test_command(std::string command)
+    : command_(std::move(command)) {
 #ifndef _WIN32
     auto args = boost::program_options::split_unix(command_);
 #else
@@ -33,13 +34,13 @@ namespace mettle {
   }
 
   void validate(boost::any &v, const std::vector<std::string> &values,
-                test_file*, int) {
+                test_command*, int) {
     using namespace boost::program_options;
     validators::check_first_occurrence(v);
     const std::string &val = validators::get_single_string(values);
 
     try {
-      v = test_file(val);
+      v = test_command(val);
     } catch(...) {
       boost::throw_exception(invalid_option_value(val));
     }

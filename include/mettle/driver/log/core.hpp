@@ -51,11 +51,11 @@ namespace mettle::log {
     virtual ~file_logger() {}
 
     virtual void
-    started_file(const std::string &file) = 0;
+    started_file(const test_file &file) = 0;
     virtual void
-    ended_file(const std::string &file) = 0;
+    ended_file(const test_file &file) = 0;
     virtual void
-    failed_file(const std::string &file, const std::string &message) = 0;
+    failed_file(const test_file &file, const std::string &message) = 0;
   };
 
 } // namespace mettle::log

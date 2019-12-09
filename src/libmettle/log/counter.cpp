@@ -46,10 +46,10 @@ namespace mettle::log {
     print_counter();
   }
 
-  void counter::started_file(const std::string &) {}
-  void counter::ended_file(const std::string &) {}
+  void counter::started_file(const test_file &) {}
+  void counter::ended_file(const test_file &) {}
 
-  void counter::failed_file(const std::string &, const std::string &) {
+  void counter::failed_file(const test_file &, const std::string &) {
     tests_++;
     failures_++;
     print_counter();

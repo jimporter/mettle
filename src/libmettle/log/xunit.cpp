@@ -23,7 +23,7 @@ namespace mettle::log {
 
   static xml::element_ptr test_element(const test_name &test) {
     auto e = xml::element::make("testcase");
-    e->attr("name", test.test);
+    e->attr("name", test.name);
     return e;
   }
 
@@ -121,12 +121,12 @@ namespace mettle::log {
     skips_++;
   }
 
-  void xunit::started_file(const std::string &) {}
-  void xunit::ended_file(const std::string &) {}
+  void xunit::started_file(const test_file &) {}
+  void xunit::ended_file(const test_file &) {}
 
-  void xunit::failed_file(const std::string &file, const std::string &message) {
+  void xunit::failed_file(const test_file &file, const std::string &message) {
     auto suite = xml::element::make("testsuite");
-    suite->attr("name", "file `" + file + "`");
+    suite->attr("name", "file `" + file.name + "`");
     suite->attr("tests", "1");
     suite->attr("failures", "1");
     suite->attr("time", "0");

@@ -2,6 +2,10 @@
 
 ## v0.2 (in progress)
 
+### Bug fixes
+- Test failures across multiple runs are now correctly groups in the summary
+  results
+
 ### Breaking changes
 - Implementation updated to require C++17
 - `make_matcher` helper has been removed; use `basic_matcher` directly instead

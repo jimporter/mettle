@@ -50,7 +50,7 @@ namespace mettle::log {
   }
 
   void verbose::started_test(const test_name &test) {
-    out_ << test.test << " " << std::flush;
+    out_ << test.name << " " << std::flush;
   }
 
   void verbose::passed_test(const test_name &, const test_output &output,
@@ -90,13 +90,13 @@ namespace mettle::log {
     }
   }
 
-  void verbose::started_file(const std::string &) {}
+  void verbose::started_file(const test_file &) {}
 
-  void verbose::ended_file(const std::string &) {
+  void verbose::ended_file(const test_file &) {
     indent_.reset();
   }
 
-  void verbose::failed_file(const std::string &file,
+  void verbose::failed_file(const test_file &file,
                             const std::string &message) {
     using namespace term;
 
@@ -106,7 +106,7 @@ namespace mettle::log {
       out_ << std::endl;
     first_ = false;
 
-    out_ << "`" << file << "` " << format(sgr::bold, fg(color::red))
+    out_ << "`" << file.name << "` " << format(sgr::bold, fg(color::red))
          << "FAILED" << reset() << std::endl;
     scoped_indent si(out_);
     out_ << message << std::endl;

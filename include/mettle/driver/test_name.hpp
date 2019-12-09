@@ -11,14 +11,14 @@ namespace mettle {
 
   struct test_name {
     std::vector<std::string> suites;
-    std::string test;
+    std::string name;
     test_uid id;
 
     std::string full_name() const {
       std::ostringstream ss;
       for(const auto &i : suites)
         ss << i << " > ";
-      ss << test;
+      ss << name;
       return ss.str();
     }
   };
@@ -39,6 +39,30 @@ namespace mettle {
     return lhs.id > rhs.id;
   }
   inline bool operator >=(const test_name &lhs, const test_name &rhs) {
+    return lhs.id >= rhs.id;
+  }
+
+  struct test_file {
+    std::string name;
+    test_uid id;
+  };
+
+  inline bool operator ==(const test_file &lhs, const test_file &rhs) {
+    return lhs.id == rhs.id;
+  }
+  inline bool operator !=(const test_file &lhs, const test_file &rhs) {
+    return lhs.id != rhs.id;
+  }
+  inline bool operator <(const test_file &lhs, const test_file &rhs) {
+    return lhs.id < rhs.id;
+  }
+  inline bool operator <=(const test_file &lhs, const test_file &rhs) {
+    return lhs.id <= rhs.id;
+  }
+  inline bool operator >(const test_file &lhs, const test_file &rhs) {
+    return lhs.id > rhs.id;
+  }
+  inline bool operator >=(const test_file &lhs, const test_file &rhs) {
     return lhs.id >= rhs.id;
   }
 

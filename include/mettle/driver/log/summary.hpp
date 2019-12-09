@@ -40,23 +40,14 @@ namespace mettle::log {
     void skipped_test(const test_name &test,
                       const std::string &message) override;
 
-    void started_file(const std::string &file) override;
-    void ended_file(const std::string &file) override;
-    void failed_file(const std::string &file,
+    void started_file(const test_file &file) override;
+    void ended_file(const test_file &file) override;
+    void failed_file(const test_file &file,
                      const std::string &message) override;
 
     void summarize() const;
     bool good() const;
   private:
-    struct file_info {
-      std::size_t index;
-      std::string name;
-
-      bool operator <(const file_info &rhs) const {
-        return index < rhs.index;
-      }
-    };
-
     struct failure {
       std::size_t run;
       std::string message;
@@ -74,10 +65,10 @@ namespace mettle::log {
     bool show_time_, show_terminal_;
     std::chrono::steady_clock::time_point start_time_;
 
-    std::size_t total_ = 0, runs_ = 0, file_index_ = 0;
+    std::size_t total_ = 0, runs_ = 0;
     std::map<test_name, std::vector<failure>> failures_;
     std::map<test_name, std::string> skips_;
-    std::map<file_info, std::vector<failure>> failed_files_;
+    std::map<test_file, std::vector<failure>> failed_files_;
   };
 
 } // namespace mettle::log

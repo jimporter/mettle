@@ -26,10 +26,10 @@ namespace mettle::log {
     void skipped_test(const test_name &test,
                       const std::string &message) override;
 
-    void started_file(const std::string &file) override;
-    void ended_file(const std::string &file) override;
+    void started_file(const test_file &file) override;
+    void ended_file(const test_file &file) override;
 
-    void failed_file(const std::string &file,
+    void failed_file(const test_file &file,
                      const std::string &message) override;
   private:
     indenting_ostream &out_;

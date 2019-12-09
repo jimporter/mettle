@@ -15,7 +15,7 @@ namespace mettle {
 
   namespace {
     struct all_options : generic_options, driver_options, output_options {
-      std::vector<test_file> files;
+      std::vector<test_command> files;
     };
 
     const char program_name[] = "mettle";

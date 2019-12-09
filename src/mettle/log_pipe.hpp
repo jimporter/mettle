@@ -11,8 +11,8 @@ namespace mettle::log {
 
   class pipe {
   public:
-    explicit pipe(log::file_logger &logger)
-      : logger_(logger), file_uid_(detail::make_test_uid()) {}
+    pipe(log::file_logger &logger, test_uid file_uid)
+      : logger_(logger), file_uid_(file_uid) {}
 
     void operator ()(std::istream &s) {
       auto tmp = bencode::decode(s, bencode::no_check_eof);
@@ -38,7 +38,7 @@ namespace mettle::log {
         logger_.skipped_test(read_test_name(data.at("test")),
                              read_string(data.at("message")));
       } else if(event == "failed_file") {
-        logger_.failed_file(read_string(data.at("file")),
+        logger_.failed_file({read_string(data.at("file")), file_uid_},
                             read_string(data.at("message")));
       }
     }
@@ -55,7 +55,7 @@ namespace mettle::log {
 
       // Make sure every test has a unique ID, even if some files have
       // overlapping IDs.
-      test_uid id = (file_uid_ << 32) + static_cast<test_uid>(
+      test_uid id = file_uid_ + static_cast<test_uid>(
         boost::get<bencode::integer>(data.at("id"))
       );
       return {

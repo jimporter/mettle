@@ -21,7 +21,7 @@ namespace mettle::log {
       start_time_ = std::chrono::steady_clock::now();
 
     runs_++;
-    total_ = file_index_ = 0;
+    total_ = 0;
   }
 
   void summary::ended_run() {
@@ -63,21 +63,19 @@ namespace mettle::log {
     skips_.emplace(test, message);
   }
 
-  void summary::started_file(const std::string &file) {
+  void summary::started_file(const test_file &file) {
     if(log_) log_->started_file(file);
   }
 
-  void summary::ended_file(const std::string &file) {
+  void summary::ended_file(const test_file &file) {
     if(log_) log_->ended_file(file);
-
-    file_index_++;
   }
 
-  void summary::failed_file(const std::string &file,
+  void summary::failed_file(const test_file &file,
                             const std::string &message) {
     if(log_) log_->failed_file(file, message);
 
-    failed_files_[{file_index_++, file}].push_back({runs_, message, {}});
+    failed_files_[file].push_back({runs_, message, {}});
   }
 
   void summary::summarize() const {

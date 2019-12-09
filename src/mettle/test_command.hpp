@@ -1,5 +1,5 @@
-#ifndef INC_METTLE_SRC_METTLE_TEST_FILE_HPP
-#define INC_METTLE_SRC_METTLE_TEST_FILE_HPP
+#ifndef INC_METTLE_SRC_METTLE_TEST_COMMAND_HPP
+#define INC_METTLE_SRC_METTLE_TEST_COMMAND_HPP
 
 #include <memory>
 #include <string>
@@ -9,9 +9,9 @@
 
 namespace mettle {
 
-  class test_file {
+  class test_command {
   public:
-    test_file(std::string command);
+    test_command(std::string command);
 
     const std::string & command() const {
       return command_;
@@ -30,7 +30,7 @@ namespace mettle {
   };
 
   void validate(boost::any &v, const std::vector<std::string> &values,
-                test_file*, int);
+                test_command*, int);
 
 } // namespace mettle
 

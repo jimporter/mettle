@@ -6,7 +6,7 @@
 
 #include <mettle/driver/log/core.hpp>
 
-#include "test_file.hpp"
+#include "test_command.hpp"
 
 namespace mettle {
 
@@ -16,7 +16,7 @@ namespace mettle {
   };
 
   void run_test_files(
-    const std::vector<test_file> &files, log::file_logger &logger,
+    const std::vector<test_command> &commands, log::file_logger &logger,
     const std::vector<std::string> &args = {}
   );
 

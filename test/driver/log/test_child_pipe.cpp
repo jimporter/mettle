@@ -13,13 +13,13 @@ struct recording_logger : log::file_logger {
     called = "ended_run";
   }
 
-  void started_file(const std::string &) override {
+  void started_file(const test_file &) override {
     called = "started_file";
   }
-  void ended_file(const std::string &) override {
+  void ended_file(const test_file &) override {
     called = "ended_file";
   }
-  void failed_file(const std::string &, const std::string &) override {
+  void failed_file(const test_file &, const std::string &) override {
     called = "failed_file";
   }
 
@@ -73,16 +73,17 @@ auto equal_test_name(const test_name &expected) {
   return basic_matcher(
     expected,
     [](const test_name &actual, const test_name &expected) {
-      // IDs probably won't match exactly, since after being piped, the 4 high
-      // bytes are the file's UID. Thus, we only check the low 4 bytes.
-      return actual.suites == expected.suites && actual.test == expected.test &&
-             (actual.id & 0xffffffff) == (expected.id & 0xffffffff);
+      // The actual ID is the local (expected) ID plus the file ID, which is
+      // always store in the 4 high bytes. For this test, we assume it's
+      // 1 << 32.
+      return actual.suites == expected.suites && actual.name == expected.name &&
+             (actual.id == expected.id + (test_uid(1) << 32));
     }, ""
   );
 }
 
 struct fixture {
-  fixture() : pipe(parent), child(stream) {}
+  fixture() : pipe(parent, test_uid(1) << 32), child(stream) {}
 
   recording_logger parent;
   log::pipe pipe;

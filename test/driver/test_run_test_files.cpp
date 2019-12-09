@@ -19,7 +19,7 @@ std::string pathsep = "\\";
 #include "../test_event_logger.hpp"
 
 struct logger_factory {
-  logger_factory() : pipe(logger) {}
+  logger_factory() : pipe(logger, 0) {}
 
   test_event_logger logger;
   log::pipe pipe;
@@ -102,6 +102,38 @@ suite<> test_run_file("run files", [](auto &_) {
           "started_file", "failed_file",
         "ended_run"
       ));
+    });
+
+    _.test("multiple runs", [](test_event_logger &logger) {
+      for(int i = 0; i != 2; i++) {
+        run_test_files({
+          test_data("test_pass"), test_data("test_fail"),
+          test_data("test_abort")
+        }, logger);
+      }
+
+      expect(logger.events, array(
+        "started_run",
+          "started_file",
+            "started_suite", "started_test", "passed_test", "ended_suite",
+          "ended_file",
+          "started_file",
+            "started_suite", "started_test", "failed_test", "ended_suite",
+          "ended_file",
+          "started_file", "failed_file",
+        "ended_run",
+        "started_run",
+          "started_file",
+            "started_suite", "started_test", "passed_test", "ended_suite",
+          "ended_file",
+          "started_file",
+            "started_suite", "started_test", "failed_test", "ended_suite",
+          "ended_file",
+          "started_file", "failed_file",
+        "ended_run"
+      ));
+      expect(logger.files.size(), equal_to(3));
+      expect(logger.tests.size(), equal_to(2));
     });
   });
 });

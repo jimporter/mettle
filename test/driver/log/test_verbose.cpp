@@ -61,17 +61,17 @@ suite<> test_verbose("verbose logger", [](auto &_) {
     });
 
     _.test("started_file()", [](logger_factory &f) {
-      f.logger.started_file("test_file");
+      f.logger.started_file({"test_file", 100});
       expect(f.ss.str(), equal_to(""));
     });
 
     _.test("ended_file()", [](logger_factory &f) {
-      f.logger.ended_file("test_file");
+      f.logger.ended_file({"test_file", 100});
       expect(f.ss.str(), equal_to(""));
     });
 
     _.test("failed_file()", [](logger_factory &f) {
-      f.logger.failed_file("test_file", "error");
+      f.logger.failed_file({"test_file", 100}, "error");
       expect(f.ss.str(), equal_to("`test_file` FAILED\n  error\n"));
     });
 

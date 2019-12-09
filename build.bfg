@@ -49,15 +49,15 @@ pkg_config()
 install(mettle, libmettle, includes)
 
 extra_files = {
-    'test/driver/test_test_file.cpp': ['src/mettle/test_file.cpp'],
+    'test/driver/test_test_command.cpp': ['src/mettle/test_command.cpp'],
     'test/driver/test_run_test_files.cpp': [
-        'src/mettle/run_test_files.cpp', 'src/mettle/test_file.cpp'
+        'src/mettle/run_test_files.cpp', 'src/mettle/test_command.cpp'
     ] + find_paths('src/mettle', 'run_test_file.cpp',
                    filter=filter_by_platform),
 }
 extra_pkgs = {
     'test/driver/test_cmd_line.cpp': [prog_opts],
-    'test/driver/test_test_file.cpp': [prog_opts],
+    'test/driver/test_test_command.cpp': [prog_opts],
     'test/driver/test_run_test_files.cpp': [iostreams, prog_opts],
     'test/posix/test_subprocess.cpp': pthread,
 }

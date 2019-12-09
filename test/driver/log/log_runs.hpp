@@ -77,7 +77,7 @@ inline void failing_file_run(log::file_logger &logger) {
   logger.started_suite(suites);
   logger.started_test({suites, "test", 2});
   logger.skipped_test({suites, "test", 2}, "message\nmore");
-  logger.failed_file("test_file", "error\nmore");
+  logger.failed_file({"test_file", 100}, "error\nmore");
 
   suites = {"second suite"};
   logger.started_suite(suites);
@@ -104,7 +104,7 @@ inline void failing_test_and_file_run(log::file_logger &logger) {
   logger.started_suite(suites);
   logger.started_test({suites, "test", 2});
   logger.skipped_test({suites, "test", 2}, "message\nmore");
-  logger.failed_file("test_file", "error\nmore");
+  logger.failed_file({"test_file", 100}, "error\nmore");
 
   suites = {"second suite"};
   logger.started_suite(suites);

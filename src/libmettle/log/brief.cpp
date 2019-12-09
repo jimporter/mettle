@@ -37,10 +37,10 @@ namespace mettle::log {
          << std::flush;
   }
 
-  void brief::started_file(const std::string &) {}
-  void brief::ended_file(const std::string &) {}
+  void brief::started_file(const test_file &) {}
+  void brief::ended_file(const test_file &) {}
 
-  void brief::failed_file(const std::string &, const std::string &) {
+  void brief::failed_file(const test_file &, const std::string &) {
     using namespace term;
     out_ << format(sgr::bold, fg(color::red)) << "X" << reset() << std::flush;
   }
