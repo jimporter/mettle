@@ -56,10 +56,8 @@ namespace mettle {
   constexpr detail::auto_factory_t auto_factory;
   constexpr detail::type_only_factory_t type_only;
 
-  // XXX: Work around GCC bug 65308 and don't return auto here.
   template<typename ...Args>
-  detail::bind_factory_t<std::remove_reference_t<Args>...>
-  bind_factory(Args &&...args) {
+  auto bind_factory(Args &&...args) {
     return detail::bind_factory_t<std::remove_reference_t<Args>...>(
       std::forward<Args>(args)...
     );
