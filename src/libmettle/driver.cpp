@@ -86,6 +86,9 @@ namespace mettle {
         displayed.add(generic).add(driver).add(output);
         std::cout << displayed << std::endl;
         return exit_code::success;
+      } else if(args.show_version) {
+        std::cout << "mettle " << METTLE_VERSION << std::endl;
+        return exit_code::success;
       }
 
 #ifdef _WIN32

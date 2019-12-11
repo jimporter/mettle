@@ -28,6 +28,7 @@ namespace mettle {
     options_description desc("Generic options");
     desc.add_options()
       ("help,h", value(&opts.show_help)->zero_tokens(), "show help")
+      ("version", value(&opts.show_version)->zero_tokens(), "show version")
     ;
     return desc;
   }

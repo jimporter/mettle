@@ -27,6 +27,7 @@ namespace mettle {
 
   struct generic_options {
     bool show_help = false;
+    bool show_version = false;
   };
 
   METTLE_PUBLIC boost::program_options::options_description
