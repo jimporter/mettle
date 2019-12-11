@@ -99,5 +99,5 @@ command('doc-deploy', cmds=[cd, [doc_deploy, mettle_version]])
 
 # Extra files to be packaged in the source dist.
 find_files('src', '*.[ch]pp', filter=filter_by_platform, flat=True)
-extra_dist(files=['README.md', 'LICENSE', 'mkdocs.yml'],
+extra_dist(files=['README.md', 'CHANGES.md', 'LICENSE', 'mkdocs.yml'],
            dirs=['doc', 'scripts'])
