@@ -78,7 +78,8 @@ suite<logger_factory> test_verbose("counter logger", [](auto &_) {
       "\r[   0 |   0 |   0 |   0 ]"
       "\r[   1 |   1 |   0 |   0 ]"
       "\r[   2 |   2 |   0 |   0 ]"
-      "\r[   3 |   3 |   0 |   0 ]\n"
+      "\r[   3 |   3 |   0 |   0 ]"
+      "\r[   4 |   4 |   0 |   0 ]\n"
     ));
   });
 
@@ -87,8 +88,9 @@ suite<logger_factory> test_verbose("counter logger", [](auto &_) {
     expect(f.ss.str(), equal_to(
       "\r[   0 |   0 |   0 |   0 ]"
       "\r[   1 |   1 |   0 |   0 ]"
-      "\r[   2 |   1 |   1 |   0 ]"
-      "\r[   3 |   1 |   1 |   1 ]\n"
+      "\r[   2 |   1 |   0 |   1 ]"
+      "\r[   3 |   1 |   1 |   1 ]"
+      "\r[   4 |   1 |   1 |   2 ]\n"
     ));
   });
 
@@ -97,9 +99,10 @@ suite<logger_factory> test_verbose("counter logger", [](auto &_) {
     expect(f.ss.str(), equal_to(
       "\r[   0 |   0 |   0 |   0 ]"
       "\r[   1 |   1 |   0 |   0 ]"
-      "\r[   2 |   1 |   1 |   0 ]"
-      "\r[   3 |   1 |   1 |   1 ]"
-      "\r[   4 |   2 |   1 |   1 ]\n"
+      "\r[   2 |   2 |   0 |   0 ]"
+      "\r[   3 |   2 |   1 |   0 ]"
+      "\r[   4 |   2 |   1 |   1 ]"
+      "\r[   5 |   3 |   1 |   1 ]\n"
     ));
   });
 
@@ -108,9 +111,10 @@ suite<logger_factory> test_verbose("counter logger", [](auto &_) {
     expect(f.ss.str(), equal_to(
       "\r[   0 |   0 |   0 |   0 ]"
       "\r[   1 |   1 |   0 |   0 ]"
-      "\r[   2 |   1 |   1 |   0 ]"
+      "\r[   2 |   1 |   0 |   1 ]"
       "\r[   3 |   1 |   1 |   1 ]"
-      "\r[   4 |   1 |   1 |   2 ]\n"
+      "\r[   4 |   1 |   1 |   2 ]"
+      "\r[   5 |   1 |   1 |   3 ]\n"
     ));
   });
 
@@ -121,11 +125,13 @@ suite<logger_factory> test_verbose("counter logger", [](auto &_) {
       "\r[   0 |   0 |   0 |   0 ]"
       "\r[   1 |   1 |   0 |   0 ]"
       "\r[   2 |   2 |   0 |   0 ]"
-      "\r[   3 |   3 |   0 |   0 ]\n"
+      "\r[   3 |   3 |   0 |   0 ]"
+      "\r[   4 |   4 |   0 |   0 ]\n"
       "\r[   0 |   0 |   0 |   0 ]"
       "\r[   1 |   1 |   0 |   0 ]"
-      "\r[   2 |   1 |   1 |   0 ]"
-      "\r[   3 |   1 |   1 |   1 ]\n"
+      "\r[   2 |   1 |   0 |   1 ]"
+      "\r[   3 |   1 |   1 |   1 ]"
+      "\r[   4 |   1 |   1 |   2 ]\n"
     ));
   });
 });

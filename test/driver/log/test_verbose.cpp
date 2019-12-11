@@ -79,13 +79,14 @@ suite<> test_verbose("verbose logger", [](auto &_) {
       passing_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
-        "  test PASSED\n"
+        "  test 1 PASSED\n"
+        "  test 2 PASSED\n"
         "\n"
         "  subsuite\n"
-        "    test PASSED [...]\n"
+        "    test 3 PASSED [...]\n"
         "\n"
         "second suite\n"
-        "  test PASSED [...]\n"
+        "  test 4 PASSED [...]\n"
       ));
     });
 
@@ -93,15 +94,17 @@ suite<> test_verbose("verbose logger", [](auto &_) {
       failing_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
-        "  test PASSED [...]\n"
+        "  test 1 PASSED [...]\n"
+        "  test 2 FAILED\n"
+        "    error\n"
         "\n"
         "  subsuite\n"
-        "    test SKIPPED\n"
+        "    test 3 SKIPPED\n"
         "      message\n"
         "      more\n"
         "\n"
         "second suite\n"
-        "  test FAILED [...]\n"
+        "  test 4 FAILED [...]\n"
         "    error\n"
         "    more\n"
       ));
@@ -111,10 +114,11 @@ suite<> test_verbose("verbose logger", [](auto &_) {
       failing_file_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
-        "  test PASSED [...]\n"
+        "  test 1 PASSED\n"
+        "  test 2 PASSED\n"
         "\n"
         "  subsuite\n"
-        "    test SKIPPED\n"
+        "    test 3 SKIPPED\n"
         "      message\n"
         "      more\n"
         "\n"
@@ -123,7 +127,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "  more\n"
         "\n"
         "second suite\n"
-        "  test PASSED [...]\n"
+        "  test 4 PASSED [...]\n"
       ));
     });
 
@@ -131,10 +135,12 @@ suite<> test_verbose("verbose logger", [](auto &_) {
       failing_test_and_file_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
-        "  test PASSED [...]\n"
+        "  test 1 PASSED [...]\n"
+        "  test 2 FAILED\n"
+        "    error\n"
         "\n"
         "  subsuite\n"
-        "    test SKIPPED\n"
+        "    test 3 SKIPPED\n"
         "      message\n"
         "      more\n"
         "\n"
@@ -143,7 +149,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "  more\n"
         "\n"
         "second suite\n"
-        "  test FAILED [...]\n"
+        "  test 4 FAILED [...]\n"
         "    error\n"
         "    more\n"
       ));
@@ -168,13 +174,14 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "Test run [#1/2]\n"
         "\n"
         "  suite\n"
-        "    test PASSED\n"
+        "    test 1 PASSED\n"
+        "    test 2 PASSED\n"
         "\n"
         "    subsuite\n"
-        "      test PASSED [...]\n"
+        "      test 3 PASSED [...]\n"
         "\n"
         "  second suite\n"
-        "    test PASSED [...]\n"
+        "    test 4 PASSED [...]\n"
       ));
     });
 
@@ -184,15 +191,17 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "Test run [#1/2]\n"
         "\n"
         "  suite\n"
-        "    test PASSED [...]\n"
+        "    test 1 PASSED [...]\n"
+        "    test 2 FAILED\n"
+        "      error\n"
         "\n"
         "    subsuite\n"
-        "      test SKIPPED\n"
+        "      test 3 SKIPPED\n"
         "        message\n"
         "        more\n"
         "\n"
         "  second suite\n"
-        "    test FAILED [...]\n"
+        "    test 4 FAILED [...]\n"
         "      error\n"
         "      more\n"
       ));
@@ -204,10 +213,11 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "Test run [#1/2]\n"
         "\n"
         "  suite\n"
-        "    test PASSED [...]\n"
+        "    test 1 PASSED\n"
+        "    test 2 PASSED\n"
         "\n"
         "    subsuite\n"
-        "      test SKIPPED\n"
+        "      test 3 SKIPPED\n"
         "        message\n"
         "        more\n"
         "\n"
@@ -216,7 +226,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "    more\n"
         "\n"
         "  second suite\n"
-        "    test PASSED [...]\n"
+        "    test 4 PASSED [...]\n"
       ));
     });
 
@@ -226,10 +236,12 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "Test run [#1/2]\n"
         "\n"
         "  suite\n"
-        "    test PASSED [...]\n"
+        "    test 1 PASSED [...]\n"
+        "    test 2 FAILED\n"
+        "      error\n"
         "\n"
         "    subsuite\n"
-        "      test SKIPPED\n"
+        "      test 3 SKIPPED\n"
         "        message\n"
         "        more\n"
         "\n"
@@ -238,7 +250,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "    more\n"
         "\n"
         "  second suite\n"
-        "    test FAILED [...]\n"
+        "    test 4 FAILED [...]\n"
         "      error\n"
         "      more\n"
       ));
@@ -261,13 +273,14 @@ suite<> test_verbose("verbose logger", [](auto &_) {
       passing_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
-        "  test PASSED (100 ms)\n"
+        "  test 1 PASSED (100 ms)\n"
+        "  test 2 PASSED (100 ms)\n"
         "\n"
         "  subsuite\n"
-        "    test PASSED [...] (100 ms)\n"
+        "    test 3 PASSED [...] (100 ms)\n"
         "\n"
         "second suite\n"
-        "  test PASSED [...] (100 ms)\n"
+        "  test 4 PASSED [...] (100 ms)\n"
       ));
     });
 
@@ -275,15 +288,17 @@ suite<> test_verbose("verbose logger", [](auto &_) {
       failing_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
-        "  test PASSED [...] (100 ms)\n"
+        "  test 1 PASSED [...] (100 ms)\n"
+        "  test 2 FAILED (100 ms)\n"
+        "    error\n"
         "\n"
         "  subsuite\n"
-        "    test SKIPPED\n"
+        "    test 3 SKIPPED\n"
         "      message\n"
         "      more\n"
         "\n"
         "second suite\n"
-        "  test FAILED [...] (100 ms)\n"
+        "  test 4 FAILED [...] (100 ms)\n"
         "    error\n"
         "    more\n"
       ));
@@ -293,10 +308,11 @@ suite<> test_verbose("verbose logger", [](auto &_) {
       failing_file_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
-        "  test PASSED [...] (100 ms)\n"
+        "  test 1 PASSED (100 ms)\n"
+        "  test 2 PASSED (100 ms)\n"
         "\n"
         "  subsuite\n"
-        "    test SKIPPED\n"
+        "    test 3 SKIPPED\n"
         "      message\n"
         "      more\n"
         "\n"
@@ -305,7 +321,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "  more\n"
         "\n"
         "second suite\n"
-        "  test PASSED [...] (100 ms)\n"
+        "  test 4 PASSED [...] (100 ms)\n"
       ));
     });
 
@@ -313,10 +329,12 @@ suite<> test_verbose("verbose logger", [](auto &_) {
       failing_test_and_file_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
-        "  test PASSED [...] (100 ms)\n"
+        "  test 1 PASSED [...] (100 ms)\n"
+        "  test 2 FAILED (100 ms)\n"
+        "    error\n"
         "\n"
         "  subsuite\n"
-        "    test SKIPPED\n"
+        "    test 3 SKIPPED\n"
         "      message\n"
         "      more\n"
         "\n"
@@ -325,7 +343,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "  more\n"
         "\n"
         "second suite\n"
-        "  test FAILED [...] (100 ms)\n"
+        "  test 4 FAILED [...] (100 ms)\n"
         "    error\n"
         "    more\n"
       ));
@@ -353,17 +371,18 @@ suite<> test_verbose("verbose logger", [](auto &_) {
       passing_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
-        "  test PASSED\n"
+        "  test 1 PASSED\n"
+        "  test 2 PASSED\n"
         "\n"
         "  subsuite\n"
-        "    test PASSED\n"
+        "    test 3 PASSED\n"
         "      stdout:\n"
         "      standard output\n"
         "      stderr:\n"
         "      standard error\n"
         "\n"
         "second suite\n"
-        "  test PASSED\n"
+        "  test 4 PASSED\n"
         "    stdout:\n"
         "    standard output\n"
         "    stderr:\n"
@@ -375,19 +394,21 @@ suite<> test_verbose("verbose logger", [](auto &_) {
       failing_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
-        "  test PASSED\n"
+        "  test 1 PASSED\n"
         "    stdout:\n"
         "    standard output\n"
         "    stderr:\n"
         "    standard error\n"
+        "  test 2 FAILED\n"
+        "    error\n"
         "\n"
         "  subsuite\n"
-        "    test SKIPPED\n"
+        "    test 3 SKIPPED\n"
         "      message\n"
         "      more\n"
         "\n"
         "second suite\n"
-        "  test FAILED\n"
+        "  test 4 FAILED\n"
         "    error\n"
         "    more\n"
         "\n"
@@ -402,14 +423,11 @@ suite<> test_verbose("verbose logger", [](auto &_) {
       failing_file_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
-        "  test PASSED\n"
-        "    stdout:\n"
-        "    standard output\n"
-        "    stderr:\n"
-        "    standard error\n"
+        "  test 1 PASSED\n"
+        "  test 2 PASSED\n"
         "\n"
         "  subsuite\n"
-        "    test SKIPPED\n"
+        "    test 3 SKIPPED\n"
         "      message\n"
         "      more\n"
         "\n"
@@ -418,7 +436,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "  more\n"
         "\n"
         "second suite\n"
-        "  test PASSED\n"
+        "  test 4 PASSED\n"
         "    stdout:\n"
         "    standard output\n"
         "    stderr:\n"
@@ -430,14 +448,16 @@ suite<> test_verbose("verbose logger", [](auto &_) {
       failing_test_and_file_run(f.logger);
       expect(f.ss.str(), equal_to(
         "suite\n"
-        "  test PASSED\n"
+        "  test 1 PASSED\n"
         "    stdout:\n"
         "    standard output\n"
         "    stderr:\n"
         "    standard error\n"
+        "  test 2 FAILED\n"
+        "    error\n"
         "\n"
         "  subsuite\n"
-        "    test SKIPPED\n"
+        "    test 3 SKIPPED\n"
         "      message\n"
         "      more\n"
         "\n"
@@ -446,7 +466,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "  more\n"
         "\n"
         "second suite\n"
-        "  test FAILED\n"
+        "  test 4 FAILED\n"
         "    error\n"
         "    more\n"
         "\n"

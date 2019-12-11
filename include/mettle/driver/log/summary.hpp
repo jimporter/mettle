@@ -48,11 +48,25 @@ namespace mettle::log {
     void summarize() const;
     bool good() const;
   private:
+    enum unpass_type { skip, fail, file_fail };
+
     struct failure {
       std::size_t run;
       std::string message;
       log::test_output output;
     };
+
+    struct unpass {
+      unpass(std::string name, unpass_type type)
+        : name(std::move(name)), type(type) {}
+
+      std::string name;
+      unpass_type type;
+      std::string skip_message;
+      std::vector<failure> failures;
+    };
+
+    unpass & add_unpass(test_uid id, std::string name, unpass_type type);
 
     void summarize_skip(const std::string &test,
                         const std::string &message) const;
@@ -66,9 +80,8 @@ namespace mettle::log {
     std::chrono::steady_clock::time_point start_time_;
 
     std::size_t total_ = 0, runs_ = 0;
-    std::map<test_name, std::vector<failure>> failures_;
-    std::map<test_name, std::string> skips_;
-    std::map<test_file, std::vector<failure>> failed_files_;
+    std::size_t unpass_counts_[3] = {0};
+    std::map<test_uid, unpass> unpasses_;
   };
 
 } // namespace mettle::log

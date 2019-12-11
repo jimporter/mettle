@@ -51,7 +51,7 @@ namespace mettle::log {
                             const test_output &output, test_duration duration) {
     if(log_) log_->failed_test(test, message, output, duration);
 
-    failures_[test].push_back({
+    add_unpass(test.id, test.full_name(), fail).failures.push_back({
       runs_, message, show_terminal_ ? output : log::test_output()
     });
   }
@@ -60,7 +60,7 @@ namespace mettle::log {
                              const std::string &message) {
     if(log_) log_->skipped_test(test, message);
 
-    skips_.emplace(test, message);
+    add_unpass(test.id, test.full_name(), skip).skip_message = message;
   }
 
   void summary::started_file(const test_file &file) {
@@ -75,7 +75,9 @@ namespace mettle::log {
                             const std::string &message) {
     if(log_) log_->failed_file(file, message);
 
-    failed_files_[file].push_back({runs_, message, {}});
+    add_unpass(file.id, "`" + file.name + "`", file_fail).failures.push_back(
+      {runs_, message, {}}
+    );
   }
 
   void summary::summarize() const {
@@ -85,18 +87,18 @@ namespace mettle::log {
       out_ << std::endl;
 
     using namespace term;
-    std::size_t passes = total_ - skips_.size() - failures_.size();
+    std::size_t passes = total_ - unpass_counts_[skip] - unpass_counts_[fail];
     std::string test_str = total_ == 1 ? "test" : "tests";
 
     out_ << format(sgr::bold) << passes << "/" << total_ << " "
          << (passes == 1 && total_ == 1 ? "test" : "tests") << " passed";
 
-    if(!skips_.empty())
-      out_ << " (" << skips_.size() << " skipped)";
+    if(unpass_counts_[skip])
+      out_ << " (" << unpass_counts_[skip] << " skipped)";
 
-    if(!failed_files_.empty()) {
-      std::string s = failed_files_.size() > 1 ? "s" : "";
-      out_ << " [" << failed_files_.size() << " file" << s << " "
+    if(unpass_counts_[file_fail]) {
+      std::string s = unpass_counts_[file_fail] > 1 ? "s" : "";
+      out_ << " [" << unpass_counts_[file_fail] << " file" << s << " "
            << format(fg(color::red)) << "FAILED" << format(fg(color::normal))
            << "]";
     }
@@ -115,13 +117,25 @@ namespace mettle::log {
     out_ << reset() << std::endl;
 
     scoped_indent indent(out_);
-    // XXX: Interleave skips and failures in the appropriate order?
-    for(const auto &i : skips_)
-      summarize_skip(i.first.full_name(), i.second);
-    for(const auto &i : failures_)
-      summarize_failure(i.first.full_name(), i.second);
-    for(const auto &i : failed_files_)
-      summarize_failure("`" + i.first.name + "`", i.second);
+    for(const auto &i : unpasses_) {
+      if(i.second.type == skip)
+        summarize_skip(i.second.name, i.second.skip_message);
+      else
+        summarize_failure(i.second.name, i.second.failures);
+    }
+  }
+
+  bool summary::good() const {
+    return unpass_counts_[fail] == 0 && unpass_counts_[file_fail] == 0;
+  }
+
+  summary::unpass &
+  summary::add_unpass(test_uid id, std::string name, unpass_type type) {
+    assert(type >= 0 && type < 3 && "invalid type value");
+    auto [it, inserted] = unpasses_.emplace(id, unpass{std::move(name), type});
+    if(inserted)
+      unpass_counts_[type]++;
+    return it->second;
   }
 
   void summary::summarize_skip(const std::string &test,
@@ -134,10 +148,6 @@ namespace mettle::log {
       scoped_indent si(out_);
       out_ << message << std::endl;
     }
-  }
-
-  bool summary::good() const {
-    return failures_.empty() && failed_files_.empty();
   }
 
   void summary::summarize_failure(

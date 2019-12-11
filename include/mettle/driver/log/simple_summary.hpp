@@ -28,41 +28,42 @@ namespace mettle::log {
 
     void failed_test(const test_name &test, const std::string &message,
                      const test_output &, test_duration) override {
-      failures_.push_back({test, message});
+      unpasses_.push_back({test, true, message});
+      failures_++;
     }
 
     void skipped_test(const test_name &test,
                       const std::string &message) override {
-      skips_.push_back({test, message});
+      unpasses_.push_back({test, false, message});
+      skips_++;
     }
 
     void summarize() const {
-      std::size_t passes = total_ - skips_.size() - failures_.size();
+      std::size_t passes = total_ - unpasses_.size();
 
       out_ << passes << "/" << total_ << " tests passed";
-      if(!skips_.empty())
-        out_ << " (" << skips_.size() << " skipped)";
+      if(skips_)
+        out_ << " (" << skips_ << " skipped)";
       out_ << std::endl;
 
       scoped_indent indent(out_);
-      for(const auto &i : skips_)
-        summarize_test(i, false);
-      for(const auto &i : failures_)
-        summarize_test(i, true);
+      for(const auto &i : unpasses_)
+        summarize_test(i);
     }
 
     bool good() const {
-      return failures_.empty();
+      return failures_ == 0;
     }
   private:
     struct test_details {
       test_name test;
+      bool failure;
       std::string message;
     };
 
-    void summarize_test(const test_details &details, bool failure) const {
+    void summarize_test(const test_details &details) const {
       out_ << details.test.full_name() << " "
-           << (failure ? "FAILED" : "SKIPPED") << std::endl;
+           << (details.failure ? "FAILED" : "SKIPPED") << std::endl;
       if(!details.message.empty()) {
         scoped_indent si(out_);
         out_ << details.message << std::endl;
@@ -70,8 +71,8 @@ namespace mettle::log {
     }
 
     indenting_ostream &out_;
-    std::size_t total_ = 0;
-    std::vector<test_details> failures_, skips_;
+    std::size_t total_ = 0, skips_ = 0, failures_ = 0;
+    std::vector<test_details> unpasses_;
   };
 
 } // namespace mettle::log

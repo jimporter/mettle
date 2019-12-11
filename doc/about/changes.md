@@ -4,6 +4,9 @@
 in progress
 {: .subtitle}
 
+### New features
+- Interleave skipped and failed tests in their original order in the summary log
+
 ### Bug fixes
 - Test failures across multiple runs are now correctly groups in the summary
   results

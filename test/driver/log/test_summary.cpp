@@ -23,7 +23,7 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(true));
       expect(f.ss.str(), equal_to(
-        "3/3 tests passed\n"
+        "4/4 tests passed\n"
       ));
     });
 
@@ -32,11 +32,13 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(false));
       expect(f.ss.str(), equal_to(
-        "1/3 tests passed (1 skipped)\n"
-        "  suite > subsuite > test SKIPPED\n"
+        "1/4 tests passed (1 skipped)\n"
+        "  suite > test 2 FAILED\n"
+        "    error\n"
+        "  suite > subsuite > test 3 SKIPPED\n"
         "    message\n"
         "    more\n"
-        "  second suite > test FAILED\n"
+        "  second suite > test 4 FAILED\n"
         "    error\n"
         "    more\n"
       ));
@@ -47,8 +49,8 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(false));
       expect(f.ss.str(), equal_to(
-        "2/3 tests passed (1 skipped) [1 file FAILED]\n"
-        "  suite > subsuite > test SKIPPED\n"
+        "3/4 tests passed (1 skipped) [1 file FAILED]\n"
+        "  suite > subsuite > test 3 SKIPPED\n"
         "    message\n"
         "    more\n"
         "  `test_file` FAILED\n"
@@ -62,14 +64,16 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(false));
       expect(f.ss.str(), equal_to(
-        "1/3 tests passed (1 skipped) [1 file FAILED]\n"
-        "  suite > subsuite > test SKIPPED\n"
+        "1/4 tests passed (1 skipped) [1 file FAILED]\n"
+        "  suite > test 2 FAILED\n"
+        "    error\n"
+        "  suite > subsuite > test 3 SKIPPED\n"
         "    message\n"
         "    more\n"
-        "  second suite > test FAILED\n"
+        "  `test_file` FAILED\n"
         "    error\n"
         "    more\n"
-        "  `test_file` FAILED\n"
+        "  second suite > test 4 FAILED\n"
         "    error\n"
         "    more\n"
       ));
@@ -84,7 +88,7 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(true));
       expect(f.ss.str(), equal_to(
-        "3/3 tests passed\n"
+        "4/4 tests passed\n"
       ));
     });
 
@@ -94,11 +98,14 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(false));
       expect(f.ss.str(), equal_to(
-        "1/3 tests passed (1 skipped)\n"
-        "  suite > subsuite > test SKIPPED\n"
+        "1/4 tests passed (1 skipped)\n"
+        "  suite > test 2 FAILED [2/2]\n"
+        "    [#1] error\n"
+        "    [#2] error\n"
+        "  suite > subsuite > test 3 SKIPPED\n"
         "    message\n"
         "    more\n"
-        "  second suite > test FAILED [2/2]\n"
+        "  second suite > test 4 FAILED [2/2]\n"
         "    [#1] error\n"
         "         more\n"
         "    [#2] error\n"
@@ -112,8 +119,8 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(false));
       expect(f.ss.str(), equal_to(
-        "2/3 tests passed (1 skipped) [1 file FAILED]\n"
-        "  suite > subsuite > test SKIPPED\n"
+        "3/4 tests passed (1 skipped) [1 file FAILED]\n"
+        "  suite > subsuite > test 3 SKIPPED\n"
         "    message\n"
         "    more\n"
         "  `test_file` FAILED [2/2]\n"
@@ -124,22 +131,25 @@ suite<> test_summary("summary logger", [](auto &_) {
       ));
     });
 
-    _.test("failing file runs", [](logger_factory &f) {
+    _.test("failing test and file runs", [](logger_factory &f) {
       failing_test_and_file_run(f.logger);
       failing_test_and_file_run(f.logger);
       f.logger.summarize();
       expect(f.logger.good(), equal_to(false));
       expect(f.ss.str(), equal_to(
-        "1/3 tests passed (1 skipped) [1 file FAILED]\n"
-        "  suite > subsuite > test SKIPPED\n"
+        "1/4 tests passed (1 skipped) [1 file FAILED]\n"
+        "  suite > test 2 FAILED [2/2]\n"
+        "    [#1] error\n"
+        "    [#2] error\n"
+        "  suite > subsuite > test 3 SKIPPED\n"
         "    message\n"
         "    more\n"
-        "  second suite > test FAILED [2/2]\n"
+        "  `test_file` FAILED [2/2]\n"
         "    [#1] error\n"
         "         more\n"
         "    [#2] error\n"
         "         more\n"
-        "  `test_file` FAILED [2/2]\n"
+        "  second suite > test 4 FAILED [2/2]\n"
         "    [#1] error\n"
         "         more\n"
         "    [#2] error\n"
@@ -154,16 +164,19 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(false));
       expect(f.ss.str(), equal_to(
-        "1/3 tests passed (1 skipped) [1 file FAILED]\n"
-        "  suite > subsuite > test SKIPPED\n"
+        "1/4 tests passed (1 skipped) [1 file FAILED]\n"
+        "  suite > test 2 FAILED [2/3]\n"
+        "    [#2] error\n"
+        "    [#3] error\n"
+        "  suite > subsuite > test 3 SKIPPED\n"
         "    message\n"
         "    more\n"
-        "  second suite > test FAILED [2/3]\n"
-        "    [#2] error\n"
-        "         more\n"
+        "  `test_file` FAILED [1/3]\n"
         "    [#3] error\n"
         "         more\n"
-        "  `test_file` FAILED [1/3]\n"
+        "  second suite > test 4 FAILED [2/3]\n"
+        "    [#2] error\n"
+        "         more\n"
         "    [#3] error\n"
         "         more\n"
       ));
@@ -177,7 +190,7 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(true));
       expect(f.ss.str(), regex_match(
-        "3/3 tests passed \\(took [\\d\\.]+ s\\)\n"
+        "4/4 tests passed \\(took [\\d\\.]+ s\\)\n"
       ));
     });
 
@@ -186,11 +199,13 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(false));
       expect(f.ss.str(), regex_match(
-        "1/3 tests passed \\(1 skipped\\) \\(took [\\d\\.]+ s\\)\n"
-        "  suite > subsuite > test SKIPPED\n"
+        "1/4 tests passed \\(1 skipped\\) \\(took [\\d\\.]+ s\\)\n"
+        "  suite > test 2 FAILED\n"
+        "    error\n"
+        "  suite > subsuite > test 3 SKIPPED\n"
         "    message\n"
         "    more\n"
-        "  second suite > test FAILED\n"
+        "  second suite > test 4 FAILED\n"
         "    error\n"
         "    more\n"
       ));
@@ -201,9 +216,9 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(false));
       expect(f.ss.str(), regex_match(
-        "2/3 tests passed \\(1 skipped\\) \\[1 file FAILED\\] "
+        "3/4 tests passed \\(1 skipped\\) \\[1 file FAILED\\] "
           "\\(took [\\d\\.]+ s\\)\n"
-        "  suite > subsuite > test SKIPPED\n"
+        "  suite > subsuite > test 3 SKIPPED\n"
         "    message\n"
         "    more\n"
         "  `test_file` FAILED\n"
@@ -217,15 +232,17 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(false));
       expect(f.ss.str(), regex_match(
-        "1/3 tests passed \\(1 skipped\\) \\[1 file FAILED\\] "
+        "1/4 tests passed \\(1 skipped\\) \\[1 file FAILED\\] "
           "\\(took [\\d\\.]+ s\\)\n"
-        "  suite > subsuite > test SKIPPED\n"
+        "  suite > test 2 FAILED\n"
+        "    error\n"
+        "  suite > subsuite > test 3 SKIPPED\n"
         "    message\n"
         "    more\n"
-        "  second suite > test FAILED\n"
+        "  `test_file` FAILED\n"
         "    error\n"
         "    more\n"
-        "  `test_file` FAILED\n"
+        "  second suite > test 4 FAILED\n"
         "    error\n"
         "    more\n"
       ));
@@ -239,7 +256,7 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(true));
       expect(f.ss.str(), equal_to(
-        "3/3 tests passed\n"
+        "4/4 tests passed\n"
       ));
     });
 
@@ -248,11 +265,13 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(false));
       expect(f.ss.str(), equal_to(
-        "1/3 tests passed (1 skipped)\n"
-        "  suite > subsuite > test SKIPPED\n"
+        "1/4 tests passed (1 skipped)\n"
+        "  suite > test 2 FAILED\n"
+        "    error\n"
+        "  suite > subsuite > test 3 SKIPPED\n"
         "    message\n"
         "    more\n"
-        "  second suite > test FAILED\n"
+        "  second suite > test 4 FAILED\n"
         "    error\n"
         "    more\n"
         "\n"
@@ -268,8 +287,8 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(false));
       expect(f.ss.str(), equal_to(
-        "2/3 tests passed (1 skipped) [1 file FAILED]\n"
-        "  suite > subsuite > test SKIPPED\n"
+        "3/4 tests passed (1 skipped) [1 file FAILED]\n"
+        "  suite > subsuite > test 3 SKIPPED\n"
         "    message\n"
         "    more\n"
         "  `test_file` FAILED\n"
@@ -283,11 +302,16 @@ suite<> test_summary("summary logger", [](auto &_) {
       f.logger.summarize();
       expect(f.logger.good(), equal_to(false));
       expect(f.ss.str(), equal_to(
-        "1/3 tests passed (1 skipped) [1 file FAILED]\n"
-        "  suite > subsuite > test SKIPPED\n"
+        "1/4 tests passed (1 skipped) [1 file FAILED]\n"
+        "  suite > test 2 FAILED\n"
+        "    error\n"
+        "  suite > subsuite > test 3 SKIPPED\n"
         "    message\n"
         "    more\n"
-        "  second suite > test FAILED\n"
+        "  `test_file` FAILED\n"
+        "    error\n"
+        "    more\n"
+        "  second suite > test 4 FAILED\n"
         "    error\n"
         "    more\n"
         "\n"
@@ -295,9 +319,6 @@ suite<> test_summary("summary logger", [](auto &_) {
         "    standard output\n"
         "    stderr:\n"
         "    standard error\n"
-        "  `test_file` FAILED\n"
-        "    error\n"
-        "    more\n"
       ));
     });
   });

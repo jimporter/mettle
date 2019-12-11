@@ -20,7 +20,7 @@ suite<logger_factory> test_simple_summary("simple summary logger", [](auto &_) {
     passing_run(f.logger);
     f.logger.summarize();
     expect(f.ss.str(), equal_to(
-      "3/3 tests passed\n"
+      "4/4 tests passed\n"
     ));
   });
 
@@ -28,11 +28,13 @@ suite<logger_factory> test_simple_summary("simple summary logger", [](auto &_) {
     failing_run(f.logger);
     f.logger.summarize();
     expect(f.ss.str(), equal_to(
-      "1/3 tests passed (1 skipped)\n"
-      "  suite > subsuite > test SKIPPED\n"
+      "1/4 tests passed (1 skipped)\n"
+      "  suite > test 2 FAILED\n"
+      "    error\n"
+      "  suite > subsuite > test 3 SKIPPED\n"
       "    message\n"
       "    more\n"
-      "  second suite > test FAILED\n"
+      "  second suite > test 4 FAILED\n"
       "    error\n"
       "    more\n"
     ));

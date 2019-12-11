@@ -71,21 +71,21 @@ suite<logger_factory> test_brief("brief logger", [](auto &_) {
 
   _.test("passing run", [](logger_factory &f) {
     passing_run(f.logger);
-    expect(f.ss.str(), equal_to("...\n"));
+    expect(f.ss.str(), equal_to("....\n"));
   });
 
   _.test("failing run", [](logger_factory &f) {
     failing_run(f.logger);
-    expect(f.ss.str(), equal_to("._!\n"));
+    expect(f.ss.str(), equal_to(".!_!\n"));
   });
 
   _.test("failing file run", [](logger_factory &f) {
     failing_file_run(f.logger);
-    expect(f.ss.str(), equal_to("._X.\n"));
+    expect(f.ss.str(), equal_to(".._X.\n"));
   });
 
   _.test("failing test and file run", [](logger_factory &f) {
     failing_test_and_file_run(f.logger);
-    expect(f.ss.str(), equal_to("._X!\n"));
+    expect(f.ss.str(), equal_to(".!_X!\n"));
   });
 });
