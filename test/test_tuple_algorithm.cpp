@@ -4,7 +4,7 @@ using namespace mettle;
 #include <sstream>
 
 suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
-  subsuite<>(_, "tuple_for_until()", [](auto &_) {
+  subsuite<>(_, "tuple_for_each()", [](auto &_) {
     using detail::tuple_for_each;
 
     _.test("empty tuple", []() {
