@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>Changes - mettle</title>
+        <title>License - mettle</title>
         <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../css/font-awesome-4.5.0.css" rel="stylesheet">
         <link href="../../css/base.css" rel="stylesheet">
@@ -89,12 +89,12 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             
-<li class="active">
-    <a href="./">Changes</a>
+<li >
+    <a href="../changes/">Changes</a>
 </li>
                             
-<li >
-    <a href="../license/">License</a>
+<li class="active">
+    <a href="./">License</a>
 </li>
                         </ul>
                     </li>
@@ -107,12 +107,12 @@
                     </a>
                 </li>
                     <li >
-                        <a rel="next" href="../../developer/">
+                        <a rel="next" href="../changes/">
                             <i class="fa fa-arrow-left"></i> Previous
                         </a>
                     </li>
-                    <li >
-                        <a rel="prev" href="../license/">
+                    <li class="disabled">
+                        <a rel="prev" >
                             Next <i class="fa fa-arrow-right"></i>
                         </a>
                     </li>
@@ -127,41 +127,44 @@
         <div class="container">
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#changes">Changes</a></li>
-            <li><a href="#v02">v0.2</a></li>
-            <li><a href="#v01">v0.1</a></li>
+        <li class="main active"><a href="#license">License</a></li>
+            <li><a href="#bsd-3-clause-license">BSD 3-clause license</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="changes">Changes<a class="headerlink" href="#changes" title="Permanent link">§</a></h1>
-<h2 id="v02">v0.2<a class="headerlink" href="#v02" title="Permanent link">§</a></h2>
-<p class="subtitle">in progress</p>
-<h3 id="new-features">New features<a class="headerlink" href="#new-features" title="Permanent link">§</a></h3>
-<ul>
-<li>Interleave skipped and failed tests in their original order in the summary log</li>
-</ul>
-<h3 id="bug-fixes">Bug fixes<a class="headerlink" href="#bug-fixes" title="Permanent link">§</a></h3>
-<ul>
-<li>Test failures across multiple runs are now correctly groups in the summary
-  results</li>
-</ul>
-<h3 id="breaking-changes">Breaking changes<a class="headerlink" href="#breaking-changes" title="Permanent link">§</a></h3>
-<ul>
-<li>Implementation updated to require C++17</li>
-<li><code>make_matcher</code> helper has been removed; use <code>basic_matcher</code> directly instead</li>
-</ul>
-<hr />
-<h2 id="v01">v0.1<a class="headerlink" href="#v01" title="Permanent link">§</a></h2>
-<p class="subtitle">2019-11-29</p>
-<ul>
-<li>Initial release</li>
-<li>Support for defining assertions via composable matchers</li>
-<li>Tests can be groups into suites/subsuites, which can additionally be
-  parameterized by type or value</li>
-<li>Allow aggregating the output of multiple test executables via the <code>mettle</code>
-  driver</li>
-</ul></div>
+<h1 id="license">License<a class="headerlink" href="#license" title="Permanent link">§</a></h1>
+<h2 id="bsd-3-clause-license">BSD 3-clause license<a class="headerlink" href="#bsd-3-clause-license" title="Permanent link">§</a></h2>
+<p>Copyright (c) 2014-2019, Jim Porter
+All rights reserved.</p>
+<p>Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:</p>
+<ol>
+<li>
+<p>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</p>
+</li>
+<li>
+<p>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.</p>
+</li>
+<li>
+<p>Neither the name of the copyright holder nor the names of its contributors
+may be used to endorse or promote products derived from this software without
+specific prior written permission.</p>
+</li>
+</ol>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></div>
         </div>
 
         <footer class="col-md-12">
