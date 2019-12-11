@@ -10,16 +10,6 @@
 
 namespace mettle::term {
 
-  namespace detail {
-    template<typename T, typename ...>
-    struct are_same : std::true_type {};
-
-    template<typename T, typename First, typename ...Rest>
-    struct are_same<T, First, Rest...> : std::integral_constant<
-      bool, std::is_same<T, First>::value && are_same<T, Rest...>::value
-    > {};
-  }
-
   enum class sgr {
     reset       = 0,
     bold        = 1,
@@ -61,7 +51,7 @@ namespace mettle::term {
     explicit format(Args &&...args) : values_{std::forward<Args>(args)...} {
       static_assert(sizeof...(Args) > 0,
                     "term::format must have at least one argument");
-      static_assert(detail::are_same<sgr, Args...>::value,
+      static_assert(std::conjunction_v<std::is_same<sgr, Args>...>,
                     "term::format's arguments must be of type term::sgr");
     }
   private:
