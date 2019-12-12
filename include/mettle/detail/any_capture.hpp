@@ -2,11 +2,12 @@
 #define INC_METTLE_DETAIL_ANY_CAPTURE_HPP
 
 #include <cstdint>
+#include <type_traits>
 #include <utility>
 
 namespace mettle::detail {
 
-  template<typename T>
+  template<typename T, typename Enable = void>
   class any_capture {
   public:
     using type = T;
@@ -17,6 +18,23 @@ namespace mettle::detail {
     T value;
   };
 
+  template<typename T, std::size_t N>
+  class any_capture<T[N], std::enable_if_t<std::is_trivial_v<T>>> {
+  public:
+    using type = T[N];
+
+    constexpr any_capture(const T (&t)[N]) {
+      for(std::size_t i = 0; i != N; i++)
+        value[i] = t[i];
+    }
+    constexpr any_capture(T (&&t)[N]) {
+      for(std::size_t i = 0; i != N; i++)
+        value[i] = std::move(t[i]);
+    }
+
+    std::remove_const_t<T> value[N];
+  };
+
 // Ignore warnings from MSVC about overly-long decorated names.
 #if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(push)
@@ -24,7 +42,7 @@ namespace mettle::detail {
 #endif
 
   template<typename T, std::size_t N>
-  class any_capture<T[N]> {
+  class any_capture<T[N], std::enable_if_t<!std::is_trivial_v<T>>> {
   public:
     using type = T[N];
 

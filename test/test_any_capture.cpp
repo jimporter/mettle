@@ -24,6 +24,12 @@ suite<> test_capture("any_capture", [](auto &_) {
     expect(capture2.value, equal_to(s));
   });
 
+  _.test("capture char[]", []() {
+    char s[] = "foo";
+    detail::any_capture<char[4]> capture(s);
+    expect(capture.value, equal_to(std::string("foo")));
+  });
+
   _.test("capture function", []() {
     detail::any_capture<void()> capture(func);
 

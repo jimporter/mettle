@@ -4,6 +4,7 @@
 
 ### New features
 - Interleave skipped and failed tests in their original order in the summary log
+- Capturing large arrays of trivial types for matchers is now much faster
 
 ### Bug fixes
 - Test failures across multiple runs are now correctly groups in the summary
