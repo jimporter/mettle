@@ -18,6 +18,7 @@ namespace mettle {
     template<typename T, typename U>
     int get_status(T &&func, U &&terminate) {
       pid_t pid;
+      fflush(nullptr);
       if((pid = fork()) < 0)
         throw std::system_error(errno, std::system_category());
       if(pid == 0) {
