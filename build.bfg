@@ -23,14 +23,16 @@ boost_hdrs = boost_package(version='>=1.55')
 iostreams = boost_package('iostreams', version='>=1.55')
 prog_opts = boost_package('program_options', version='>=1.55')
 
-version_macro = opts.define('METTLE_VERSION', '"{}"'.format(mettle_version))
+compile_opts = [opts.define('METTLE_VERSION', '"{}"'.format(mettle_version))]
+if argv.safe_exit:
+    compile_opts.append(opts.define('METTLE_SAFE_EXIT'))
 
 libmettle = shared_library(
     'mettle',
     files=find_files('src/libmettle', '*.cpp', extra='*.hpp',
                      filter=filter_by_platform),
     includes=includes,
-    compile_options=[version_macro],
+    compile_options=compile_opts,
     packages=pthread + bencode + [iostreams, prog_opts],
     version='0.1', soversion='1',
 )
@@ -39,7 +41,7 @@ mettle_objs = object_files(
     files=find_files('src/mettle', '*.cpp', extra='*.hpp',
                      filter=filter_by_platform),
     includes=includes,
-    options=[version_macro],
+    options=compile_opts,
     packages=bencode + [iostreams, prog_opts],
 )
 mettle = executable(

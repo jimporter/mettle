@@ -12,6 +12,12 @@
 
 #include "../../err_string.hpp"
 
+#ifdef METTLE_SAFE_EXIT
+#  define EXIT_FUNC _exit
+#else
+#  define EXIT_FUNC exit
+#endif
+
 namespace mettle {
 
   using namespace posix;
@@ -107,7 +113,7 @@ namespace mettle {
 
       fflush(nullptr);
 
-      _exit(result.passed ? exit_code::success : exit_code::failure);
+      EXIT_FUNC(result.passed ? exit_code::success : exit_code::failure);
     } else {
       scoped_sigaction sigint, sigquit, sigchld;
 
