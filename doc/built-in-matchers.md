@@ -252,8 +252,11 @@ A matcher that returns `true` if an exception of type `Type` (or a subclass of
 *&lt;mettle/matchers/death.hpp&gt;*
 {: .subtitle}
 
-!!! note
-    These matchers are currently unusable on Windows. Sorry about that!
+!!! warning
+    Because these matchers deal with process creation/termination, they can
+    cause issues with software that relies on exit handlers (e.g. code coverage
+    tools). In addition, these matchers are currently unsupported on Windows.
+    Sorry about that!
 
 The most kvlt of all matchers, death matchers check that a function would cause
 the process to terminate, either by signalling or by exiting. (These matchers
