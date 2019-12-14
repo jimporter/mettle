@@ -313,9 +313,12 @@ expectation instead:</p>
 <code>Type</code>) is thrown and whose value matches <code>matcher</code>.</p>
 <h2 id="death">Death<a class="headerlink" href="#death" title="Permanent link">§</a></h2>
 <p class="subtitle"><em>&lt;mettle/matchers/death.hpp&gt;</em></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>These matchers are currently unusable on Windows. Sorry about that!</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Because these matchers deal with process creation/termination, they can
+cause issues with software that relies on exit handlers (e.g. code coverage
+tools). In addition, these matchers are currently unsupported on Windows.
+Sorry about that!</p>
 </div>
 <p>The most kvlt of all matchers, death matchers check that a function would cause
 the process to terminate, either by signalling or by exiting. (These matchers
