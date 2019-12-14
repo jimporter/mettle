@@ -21,7 +21,7 @@ struct read_into_fixture {
 
 void sighandler(int) {}
 
-suite<> test_subprocess("subprocess utilities", [](auto &_) {
+suite<> test_subprocess("posix subprocess utilities", [](auto &_) {
   subsuite<>(_, "make_timeout_monitor()", [](auto &_) {
     _.test("test process exits first", []() {
       expect([]() {

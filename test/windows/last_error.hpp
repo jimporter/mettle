@@ -1,16 +1,16 @@
-#ifndef INC_METTLE_TEST_POSIX_ERRNO_HPP
-#define INC_METTLE_TEST_POSIX_ERRNO_HPP
+#ifndef INC_METTLE_TEST_WINDOW_LAST_ERROR_HPP
+#define INC_METTLE_TEST_WINDOW_LAST_ERROR_HPP
 
 #include <mettle/matchers/core.hpp>
 #include "../../src/err_string.hpp"
 
-class equal_errno : public mettle::matcher_tag {
+class equal_last_error : public mettle::matcher_tag {
 public:
-  equal_errno(int errnum) : expected_(errnum) {}
+  equal_last_error(DWORD errnum) : expected_(errnum) {}
 
   template<typename T>
   mettle::match_result operator ()(const T &) const {
-    int errnum = errno;
+    int errnum = GetLastError();
     return {errnum == expected_, mettle::err_string(errnum)};
   }
 
@@ -18,7 +18,7 @@ public:
     return to_printable(mettle::err_string(expected_));
   }
 private:
-  int expected_;
+  DWORD expected_;
 };
 
 #endif

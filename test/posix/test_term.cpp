@@ -3,7 +3,7 @@ using namespace mettle;
 
 #include <mettle/driver/log/term.hpp>
 
-suite<> test_term("terminal output", [](auto &_) {
+suite<> test_term("posix terminal output", [](auto &_) {
   using namespace mettle::term;
 
   _.test("reset", []() {

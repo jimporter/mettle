@@ -37,7 +37,7 @@ auto equal_sigprocmask(std::vector<int> mask) {
 }
 
 suite<std::unique_ptr<scoped_sigprocmask>>
-test_sigprocmask("scoped_sigprocmask", [](auto &_) {
+test_sigprocmask("posix::scoped_sigprocmask", [](auto &_) {
   _.setup([](auto &mask) {
     mask = std::make_unique<scoped_sigprocmask>();
     expect("push sigprocmask", mask->push(SIG_SETMASK, SIGTERM), equal_to(0));
@@ -90,7 +90,7 @@ test_sigprocmask("scoped_sigprocmask", [](auto &_) {
 void sig_handler(int) {}
 
 suite<std::unique_ptr<scoped_sigaction>>
-test_sigaction("scoped_sigaction", [](auto &_) {
+test_sigaction("posix::scoped_sigaction", [](auto &_) {
   _.setup([](auto &act) {
     act = std::make_unique<scoped_sigaction>();
     expect("open sigaction", act->open(SIGTERM, sig_handler), equal_to(0));

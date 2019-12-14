@@ -11,7 +11,7 @@ using namespace mettle;
 using namespace mettle::posix;
 
 suite<std::unique_ptr<scoped_pipe>>
-test_scoped_pipe("scoped_pipe", [](auto &_) {
+test_scoped_pipe("posix::scoped_pipe", [](auto &_) {
   _.setup([](auto &pipe) {
     pipe = std::make_unique<scoped_pipe>();
     expect("open pipe", pipe->open(), equal_to(0));
@@ -25,9 +25,8 @@ test_scoped_pipe("scoped_pipe", [](auto &_) {
   });
 
   _.test("close()", [](auto &pipe) {
-    int read_fd, write_fd;
-    read_fd = pipe->read_fd;
-    write_fd = pipe->write_fd;
+    int read_fd  = pipe->read_fd;
+    int write_fd = pipe->write_fd;
 
     expect("close read fd", pipe->close_read(), equal_to(0));
     expect("read fd", pipe->read_fd, equal_to(-1));
@@ -45,7 +44,7 @@ test_scoped_pipe("scoped_pipe", [](auto &_) {
   });
 
   _.test("~scoped_pipe()", [](auto &pipe) {
-    int read_fd = pipe->read_fd;
+    int read_fd  = pipe->read_fd;
     int write_fd = pipe->write_fd;
     pipe.reset();
 

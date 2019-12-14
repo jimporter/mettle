@@ -17,7 +17,7 @@ using namespace mettle::posix;
 using namespace std::literals::chrono_literals;
 
 suite<subprocess_test_runner>
-test_fork("subprocess_test_runner", bind_factory(250ms), [](auto &_) {
+test_fork("posix::subprocess_test_runner", bind_factory(250ms), [](auto &_) {
 
   subsuite<log::test_output>(_, "run one test", [](auto &_) {
 
