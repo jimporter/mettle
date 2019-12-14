@@ -57,9 +57,7 @@ the following instead of the usual `#include <mettle.hpp>`:
 ```
 
 However, the header-only version is quite limited and doesn't support any of the
-command-line arguments described in [Running Tests](running-tests.md). In
-addition, if you don't have Boost installed, you'll need a standard library that
-includes `std::experimental::string_view`.
+command-line arguments described in [Running Tests](running-tests.md).
 
 ## Building and installing
 
