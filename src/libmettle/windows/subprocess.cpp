@@ -53,7 +53,7 @@ namespace mettle::windows {
       auto result = WaitForMultipleObjects(
         total_size, events.get(), false, timeout
       );
-      if(result == WAIT_FAILED) {
+      if(result == WAIT_FAILED || result == WAIT_TIMEOUT) {
         cancel_io(dests);
         return nullptr;
       }
