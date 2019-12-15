@@ -17,7 +17,7 @@ markdown_extensions:
   - toc:
       permalink: §
 
-pages:
+nav:
   - Home: index.md
   - Installation: install.md
   - User Guide:

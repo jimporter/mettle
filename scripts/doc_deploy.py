@@ -10,6 +10,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description="Deploy mettle's documentation to the gh-pages branch"
     )
+    parser.add_argument('-F', '--config-file',
+                        help='the MkDocs configuration file to use')
     parser.add_argument('version', help='the current mettle version number')
 
     args = parser.parse_args()
@@ -28,5 +30,6 @@ if __name__ == '__main__':
                    info['title'])
         subprocess.check_call(['mike', 'retitle', info['version'], t])
 
+    cfg_args = ['-F', args.config_file] if args.config_file else []
     subprocess.check_call(['mike', 'deploy', '-ut', title,
-                           short_version, alias])
+                           short_version, alias] + cfg_args)
