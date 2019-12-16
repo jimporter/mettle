@@ -7,11 +7,9 @@ project('mettle', mettle_version, intermediate_dirs=False)
 
 global_options([opts.std(argv.std)], lang='c++')
 
-includes = header_directory('include', include='*.hpp')
-
 pthread = [package('pthread')] if env.target_platform.family == 'posix' else []
 
-if find_files('include', 'bencode.hpp', flat=True):
+if find_files('include', 'bencode.hpp', flat=True, cache=False):
     bencode = []
 elif argv.vendorize:
     bencode = []
@@ -26,6 +24,8 @@ prog_opts = boost_package('program_options', version='>=1.55')
 compile_opts = [opts.define('METTLE_VERSION', '"{}"'.format(mettle_version))]
 if argv.safe_exit:
     compile_opts.append(opts.define('METTLE_SAFE_EXIT'))
+
+includes = header_directory('include', include='*.hpp')
 
 libmettle = shared_library(
     'mettle',

@@ -187,7 +187,7 @@ before_install:
   - ${PIP} install bfg9000
 script:
   - >
-    CXX=${COMPILER} CPPFLAGS="${COMMONFLAGS} ${EXTRAFLAGS}"
+    CXX=${COMPILER} CXXFLAGS="${COMMONFLAGS} ${EXTRAFLAGS}"
     9k build --vendorize --backend=${BACKEND} ${EXTRAOPTS}
   - cd build
   - ${BACKEND} test ${BUILD_ARGS}

@@ -9,6 +9,7 @@
 ### Bug fixes
 - Test failures across multiple runs are now correctly groups in the summary
   results
+- `bencode.hpp` is now installed alongside mettle when `--vendorize` is used
 
 ### Breaking changes
 - Implementation updated to require C++17
