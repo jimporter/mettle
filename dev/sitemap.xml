@@ -1,84 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-    
     <url>
-     <loc>/</loc>
-     <lastmod>2019-12-13</lastmod>
+     <loc>None</loc>
+     <lastmod>2019-12-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
     <url>
-     <loc>/install/</loc>
-     <lastmod>2019-12-13</lastmod>
+     <loc>None</loc>
+     <lastmod>2019-12-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
-        
     <url>
-     <loc>/tutorial/</loc>
-     <lastmod>2019-12-13</lastmod>
+     <loc>None</loc>
+     <lastmod>2019-12-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     <url>
-     <loc>/running-tests/</loc>
-     <lastmod>2019-12-13</lastmod>
+     <loc>None</loc>
+     <lastmod>2019-12-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     <url>
-     <loc>/writing-tests/</loc>
-     <lastmod>2019-12-13</lastmod>
+     <loc>None</loc>
+     <lastmod>2019-12-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     <url>
-     <loc>/expectations/</loc>
-     <lastmod>2019-12-13</lastmod>
+     <loc>None</loc>
+     <lastmod>2019-12-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     <url>
-     <loc>/built-in-matchers/</loc>
-     <lastmod>2019-12-13</lastmod>
+     <loc>None</loc>
+     <lastmod>2019-12-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     <url>
-     <loc>/writing-matchers/</loc>
-     <lastmod>2019-12-13</lastmod>
+     <loc>None</loc>
+     <lastmod>2019-12-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
-    
-
-    
     <url>
-     <loc>/developer/</loc>
-     <lastmod>2019-12-13</lastmod>
+     <loc>None</loc>
+     <lastmod>2019-12-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
-        
     <url>
-     <loc>/about/changes/</loc>
-     <lastmod>2019-12-13</lastmod>
+     <loc>None</loc>
+     <lastmod>2019-12-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     <url>
-     <loc>/about/license/</loc>
-     <lastmod>2019-12-13</lastmod>
+     <loc>None</loc>
+     <lastmod>2019-12-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
-    
-
 </urlset>
