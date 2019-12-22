@@ -59,7 +59,7 @@ suite<read_into_fixture> test_read_into("read_into()", [](auto &_) {
     std::vector<HANDLE> interrupts = {t.native_handle()};
     t.detach();
 
-    expect(read_into(f.readhandles, 10, interrupts),
+    expect(read_into(f.readhandles, 100, interrupts),
            equal_to(nullptr));
 
     expect(f.results[0], equal_to("pipe 1"));
