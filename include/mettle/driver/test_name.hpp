@@ -44,7 +44,7 @@ namespace mettle {
 
   struct test_file {
     test_file(std::string name, test_uid id)
-      : name(std::move(name)), id(detail::max_local_bits(id)) {}
+      : name(std::move(name)), id(id) {}
 
     std::string name;
     test_uid id;

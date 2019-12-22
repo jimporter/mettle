@@ -75,7 +75,10 @@ namespace mettle::log {
                             const std::string &message) {
     if(log_) log_->failed_file(file, message);
 
-    add_unpass(file.id, "`" + file.name + "`", file_fail).failures.push_back(
+    // Max out the local bits of the UID so that it sorts *after* regular
+    // file-and-test UIDs.
+    test_uid sortid = detail::max_local_bits(file.id);
+    add_unpass(sortid, "`" + file.name + "`", file_fail).failures.push_back(
       {runs_, message, {}}
     );
   }
