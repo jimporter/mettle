@@ -12,13 +12,19 @@
 
 #include "../../err_string.hpp"
 
+// XXX: Use std::source_location instead when we're able.
+#define METTLE_FAILED() failed(__FILE__, __LINE__)
+
 namespace mettle {
 
   using namespace windows;
 
   namespace {
-    inline test_result failed() {
-      return { false, err_string(GetLastError()) };
+    test_result failed(const char *file, std::size_t line) {
+      std::ostringstream ss;
+      ss << "Fatal error at " << file << ":" << line << "\n"
+         << err_string(GetLastError());
+      return {false, ss.str()};
     }
   }
 
@@ -29,16 +35,16 @@ namespace mettle {
     if(!stdout_pipe.open(true, false) ||
        !stderr_pipe.open(true, false) ||
        !log_pipe.open(true, false))
-      return failed();
+      return METTLE_FAILED();
 
     if(!stdout_pipe.set_write_inherit(true) ||
        !stderr_pipe.set_write_inherit(true) ||
        !log_pipe.set_write_inherit(true))
-      return failed();
+      return METTLE_FAILED();
 
     char file[_MAX_PATH];
     if(GetModuleFileNameA(nullptr, file, sizeof(file)) == sizeof(file))
-      return failed();
+      return METTLE_FAILED();
 
     std::ostringstream args;
     args << file << " --test-id " << test.id << " --log-fd "
@@ -54,38 +60,38 @@ namespace mettle {
 
     scoped_handle job;
     if(!(job = CreateJobObject(nullptr, nullptr)))
-      return failed();
+      return METTLE_FAILED();
 
     scoped_handle timeout_event;
     if(timeout_) {
       if(!(timeout_event = CreateWaitableTimer(nullptr, true, nullptr)))
-        return failed();
+        return METTLE_FAILED();
       LARGE_INTEGER t;
       // Convert from ms to 100s-of-nanoseconds (negative for relative time).
       t.QuadPart = -timeout_->count() * 10000;
       if(!SetWaitableTimer(timeout_event, &t, 0, nullptr, nullptr, false))
-        return failed();
+        return METTLE_FAILED();
     }
 
     if(!CreateProcessA(
          file, const_cast<char*>(args.str().c_str()), nullptr, nullptr, true,
          CREATE_SUSPENDED, nullptr, nullptr, &startup_info, &proc_info
        )) {
-      return failed();
+      return METTLE_FAILED();
     }
     scoped_handle subproc_handles[] = {proc_info.hProcess, proc_info.hThread};
 
     // Assign a job object to the child process (so we can kill the job later)
     // and then let it start running.
     if(!AssignProcessToJobObject(job, proc_info.hProcess))
-      return failed();
+      return METTLE_FAILED();
     if(!ResumeThread(proc_info.hThread))
-      return failed();
+      return METTLE_FAILED();
 
     if(!stdout_pipe.close_write() ||
        !stderr_pipe.close_write() ||
        !log_pipe.close_write())
-      return failed();
+      return METTLE_FAILED();
 
     std::string message;
     std::vector<readhandle> dests = {
@@ -99,7 +105,7 @@ namespace mettle {
 
     HANDLE finished = read_into(dests, INFINITE, interrupts);
     if(!finished)
-      return failed();
+      return METTLE_FAILED();
     // Do one last non-blocking read to get any data we might have missed.
     read_into(dests, 0, interrupts);
 
@@ -114,7 +120,7 @@ namespace mettle {
     } else {
       DWORD exit_status;
       if(!GetExitCodeProcess(proc_info.hProcess, &exit_status))
-        return failed();
+        return METTLE_FAILED();
       return {exit_status == exit_code::success, message};
     }
   }

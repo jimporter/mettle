@@ -11,11 +11,17 @@
 #include "../log_pipe.hpp"
 #include "../../err_string.hpp"
 
+// XXX: Use std::source_location instead when we're able.
+#define METTLE_FAILED() failed(__FILE__, __LINE__)
+
 namespace mettle::windows {
 
   namespace {
-    inline file_result failed() {
-      return {false, err_string(GetLastError())};
+    file_result failed(const char *file, std::size_t line) {
+      std::ostringstream ss;
+      ss << "Fatal error at " << file << ":" << line << "\n"
+         << err_string(GetLastError());
+      return {false, ss.str()};
     }
 
     class quoted_arg {
@@ -64,9 +70,9 @@ namespace mettle::windows {
   file_result run_test_file(std::vector<std::string> args, log::pipe &logger) {
     scoped_pipe message_pipe;
     if(!message_pipe.open())
-      return failed();
+      return METTLE_FAILED();
     if(!message_pipe.set_write_inherit(true))
-      return failed();
+      return METTLE_FAILED();
 
     std::ostringstream ss;
     ss << message_pipe.write_handle.handle();
@@ -80,13 +86,13 @@ namespace mettle::windows {
          args[0].c_str(), const_cast<char*>(command.c_str()), nullptr,
          nullptr, true, 0, nullptr, nullptr, &startup_info, &proc_info
        )) {
-      return failed();
+      return METTLE_FAILED();
     }
     scoped_handle subproc_handles[] = {proc_info.hProcess, proc_info.hThread};
 
     if(!message_pipe.close_write()) {
       TerminateProcess(proc_info.hProcess, 1);
-      return failed();
+      return METTLE_FAILED();
     }
 
     std::exception_ptr except;
@@ -103,12 +109,12 @@ namespace mettle::windows {
 
     if(WaitForSingleObject(proc_info.hProcess, INFINITE)) {
       TerminateProcess(proc_info.hProcess, 1);
-      return failed();
+      return METTLE_FAILED();
     }
 
     DWORD exit_code;
     if(!GetExitCodeProcess(proc_info.hProcess, &exit_code))
-      return failed();
+      return METTLE_FAILED();
 
     if(exit_code) {
       std::ostringstream ssi;

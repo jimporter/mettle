@@ -1,10 +1,11 @@
 #include "run_test_file.hpp"
 
-#include <cstdint>
-
 #include <signal.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
+
+#include <cstdint>
+#include <sstream>
 
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
@@ -14,12 +15,18 @@
 
 #include "../../err_string.hpp"
 
+// XXX: Use std::source_location instead when we're able.
+#define PARENT_FAILED() parent_failed(__FILE__, __LINE__)
+
 namespace mettle::posix {
 
   namespace {
 
-    inline file_result parent_failed() {
-      return {false, err_string(errno)};
+    file_result parent_failed(const char *file, std::size_t line) {
+      std::ostringstream ss;
+      ss << "Fatal error at " << file << ":" << line << "\n"
+         << err_string(errno);
+      return {false, ss.str()};
     }
 
     [[noreturn]] void
@@ -56,11 +63,11 @@ namespace mettle::posix {
   file_result run_test_file(std::vector<std::string> args, log::pipe &logger) {
     posix::scoped_pipe message_pipe;
     if(message_pipe.open() < 0)
-      return parent_failed();
+      return PARENT_FAILED();
 
     rlimit lim;
     if(getrlimit(RLIMIT_NOFILE, &lim) < 0)
-      return parent_failed();
+      return PARENT_FAILED();
     int max_fd = lim.rlim_cur - 1;
 
     args.insert(args.end(), { "--output-fd", std::to_string(max_fd) });
@@ -68,7 +75,7 @@ namespace mettle::posix {
 
     pid_t pid;
     if((pid = fork()) < 0)
-      return parent_failed();
+      return PARENT_FAILED();
 
     if(pid == 0) {
       if(message_pipe.close_read() < 0)
@@ -87,7 +94,7 @@ namespace mettle::posix {
     } else {
       if(message_pipe.close_write() < 0) {
         kill(pid, SIGKILL);
-        return parent_failed();
+        return PARENT_FAILED();
       }
 
       std::exception_ptr except;
@@ -105,7 +112,7 @@ namespace mettle::posix {
       int status;
       if(waitpid(pid, &status, 0) < 0) {
         kill(pid, SIGKILL);
-        return parent_failed();
+        return PARENT_FAILED();
       }
 
       if(WIFEXITED(status)) {
