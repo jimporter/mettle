@@ -21,10 +21,8 @@ namespace mettle {
 
   namespace {
     struct all_options : generic_options, driver_options, output_options {
-#ifndef _WIN32
-      std::optional<int> output_fd;
-#else
-      std::optional<HANDLE> output_fd;
+      std::optional<fd_type> output_fd;
+#ifdef _WIN32
       std::optional<test_uid> test_id;
       std::optional<HANDLE> log_fd;
 #endif

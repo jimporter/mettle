@@ -32,10 +32,12 @@ namespace mettle {
 
 #ifndef _WIN32
 
+  using fd_type = int;
   int make_fd_private(int fd);
 
 #else
 
+  using fd_type = HANDLE;
   METTLE_PUBLIC int make_fd_private(HANDLE handle);
 
   METTLE_PUBLIC const test_info *
