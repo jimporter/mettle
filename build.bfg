@@ -15,7 +15,7 @@ elif argv.vendorize:
     bencode = []
     env.run(source_file('scripts/vendorize_bencode.py'))
 else:
-    bencode = [package('bencode', headers='bencode.hpp', libs=None)]
+    bencode = [package('bencodehpp', headers='bencode.hpp', libs=None)]
 
 boost_hdrs = boost_package(version='>=1.55')
 iostreams = boost_package('iostreams', version='>=1.55')
