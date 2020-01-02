@@ -5,8 +5,8 @@ env:
   global:
     - BACKEND=ninja
     - COMMONFLAGS="-Wall -Wextra -pedantic -Werror"
-    - PYTHON=python
-    - PIP=pip
+    - PYTHON=python3
+    - PIP=pip3
 
 addons:
   apt:
@@ -167,12 +167,6 @@ matrix:
         BACKEND=make COMPILER=g++-9 BUILD_ARGS="-j4"
         EXTRAFLAGS=-Wsuggest-override
       addons: *gcc-9
-
-    # Python 3 builds
-
-    - compiler: clang
-      env: PYTHON=python3 PIP=pip3 COMPILER=clang++-9
-      addons: *clang-9
 
 before_install:
   - |

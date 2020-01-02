@@ -6,7 +6,7 @@ image:
   - Visual Studio 2019
 
 environment:
-  PYTHON_PATH: C:\Python27
+  PYTHON_PATH: C:\Python37
 
   matrix:
     - BOOST_VER: 1_67_0
