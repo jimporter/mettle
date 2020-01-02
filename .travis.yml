@@ -113,12 +113,12 @@ matrix:
 
     - os: osx
       osx_image: xcode10.3
-      env: PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
+      env: PYTHON=python3 PIP=pip3 COMPILER=clang++ BACKEND=ninja
 
     - os: osx
       osx_image: xcode10.3
       env: >
-        PYTHON=python2 PIP=pip2 COMPILER=clang++ BACKEND=ninja
+        PYTHON=python3 PIP=pip3 COMPILER=clang++ BACKEND=ninja
         EXTRAFLAGS=-DMETTLE_NO_STDLIB_EXTS
 
     # Builds with newer versions of Boost
