@@ -19,8 +19,14 @@ namespace mettle {
       ) -> bool {
         // If one of expected or actual is NaN, mag is undefined, but that's ok
         // because we'll always return false in that case, just like we should.
-        auto mag = std::max(std::abs(expected), std::abs(actual));
-        return std::abs(actual - expected) <= mag * epsilon;
+		
+		// Usually, T is a builtin scalar type supporting standard overloads
+		// std::max<T>() and std::abs<T>().  Occasionally, however, this is not
+		// true (i.e., T is a half precision float).  Koenig lookup for abs(
+		// and max() allows T to be a user defined type, with custom overloads
+		// for these functions.
+        auto mag = max(abs(expected), abs(actual));
+        return abs(actual - expected) <= mag * epsilon;
       }, "~= "
     );
   }
@@ -42,7 +48,7 @@ namespace mettle {
       [tolerance = std::forward<U>(tolerance)](
         const auto &actual, const auto &expected
       ) -> bool {
-        return std::abs(actual - expected) <= tolerance;
+        return abs(actual - expected) <= tolerance;
       }, "~= "
     );
   }
