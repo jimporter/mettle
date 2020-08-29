@@ -1,6 +1,22 @@
 #include <mettle.hpp>
 using namespace mettle;
 
+struct thing {
+  int value() {
+    return 1;
+  }
+};
+
+auto thing_value(int value) {
+  return basic_matcher(
+    ensure_matcher(value),
+    [](thing &actual, const auto &expected) -> bool {
+      return expected(actual.value());
+    }, "value() "
+  );
+}
+
+
 suite<> test_expect("expect()", [](auto &_) {
   _.test("expect(value, matcher)", []() {
     std::string message;
@@ -35,6 +51,28 @@ suite<> test_expect("expect()", [](auto &_) {
 #endif
     ss << "\nexpected: true\nactual:   false";
     expect(message, equal_to(ss.str()));
+  });
+
+  _.test("METTLE_EXPECT(value, matcher)", []() {
+    std::string message;
+    int line = __LINE__ + 2; // The line the expectation is on.
+    try {
+      METTLE_EXPECT(false, equal_to(true));
+    } catch(const expectation_error &e) {
+      message = e.what();
+    }
+
+    std::ostringstream ss;
+    ss << __FILE__ << ":" << line << "\nexpected: true\nactual:   false";
+    expect(message, equal_to(ss.str()));
+  });
+
+  _.test("expect(value, matcher) with non-const", []() {
+    expect(thing(), thing_value(1));
+  });
+
+  _.test("expect(desc, value, matcher) with non-const", []() {
+    expect("description", thing(), thing_value(1));
   });
 
   _.test("METTLE_EXPECT(value, matcher)", []() {

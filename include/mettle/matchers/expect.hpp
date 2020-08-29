@@ -28,7 +28,7 @@ namespace mettle {
 
   template<typename T, typename Matcher,
            typename = std::enable_if_t< is_matcher_v<Matcher> >>
-  void expect(const T &value, const Matcher &matcher,
+  void expect(T &&value, const Matcher &matcher,
               METTLE_SOURCE_LOCATION loc = METTLE_SOURCE_LOCATION::current()) {
     auto m = matcher(value);
     if(m == false) {
@@ -43,7 +43,7 @@ namespace mettle {
 
   template<typename T, typename Matcher,
            typename = std::enable_if_t< is_matcher_v<Matcher> >>
-  void expect(const std::string &desc, const T &value, const Matcher &matcher,
+  void expect(const std::string &desc, T &&value, const Matcher &matcher,
               METTLE_SOURCE_LOCATION loc = METTLE_SOURCE_LOCATION::current()) {
     auto m = matcher(value);
     if(m == false) {
