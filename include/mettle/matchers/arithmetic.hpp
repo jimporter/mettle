@@ -19,8 +19,10 @@ namespace mettle {
       ) -> bool {
         // If one of expected or actual is NaN, mag is undefined, but that's ok
         // because we'll always return false in that case, just like we should.
-        auto mag = std::max(std::abs(expected), std::abs(actual));
-        return std::abs(actual - expected) <= mag * epsilon;
+		
+        using std::max, std::abs;
+        auto mag = max(abs(expected), abs(actual));
+        return abs(actual - expected) <= mag * epsilon;
       }, "~= "
     );
   }
@@ -42,7 +44,8 @@ namespace mettle {
       [tolerance = std::forward<U>(tolerance)](
         const auto &actual, const auto &expected
       ) -> bool {
-        return std::abs(actual - expected) <= tolerance;
+        using std::abs;
+        return abs(actual - expected) <= tolerance;
       }, "~= "
     );
   }
