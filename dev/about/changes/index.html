@@ -142,6 +142,9 @@
 <ul>
 <li>Interleave skipped and failed tests in their original order in the summary log</li>
 <li>Capturing large arrays of trivial types for matchers is now much faster</li>
+<li><code>expect</code> now takes a universal reference for the value to test to support
+  matchers which need access to non-const objects (e.g. to call a non-const
+  member function)</li>
 </ul>
 <h3 id="bug-fixes">Bug fixes<a class="headerlink" href="#bug-fixes" title="Permanent link">§</a></h3>
 <ul>
