@@ -42,8 +42,8 @@ namespace mettle {
         : matcher_(std::move(matcher)), verbose_(verbose) {}
 
       template<typename U>
-      match_result operator ()(U &&value) const {
-        int status = get_status(std::forward<U>(value), terminate);
+      match_result operator ()(U &&actual) const {
+        int status = get_status(std::forward<U>(actual), terminate);
         if(WIFSIGNALED(status)) {
           std::ostringstream ss;
           ss << "killed with signal " << WTERMSIG(status);
@@ -75,8 +75,8 @@ namespace mettle {
         : matcher_(std::move(matcher)), verbose_(verbose) {}
 
       template<typename U>
-      match_result operator ()(U &&value) const {
-        int status = get_status(std::forward<U>(value), terminate);
+      match_result operator ()(U &&actual) const {
+        int status = get_status(std::forward<U>(actual), terminate);
         if(WIFEXITED(status)) {
           std::ostringstream ss;
           ss << "exited with status " << WEXITSTATUS(status);

@@ -18,8 +18,9 @@ namespace mettle {
       ss << "i";
 
     return basic_matcher(
-      [ex = std::basic_regex<Char>(ex, syntax), match](const auto &actual) {
-        return std::regex_match(actual, ex, match);
+      [ex = std::basic_regex<Char>(ex, syntax), match](auto &&actual) {
+        return std::regex_match(std::forward<decltype(actual)>(actual), ex,
+                                match);
       }, ss.str()
     );
   }
@@ -43,8 +44,9 @@ namespace mettle {
       ss << "i";
 
     return basic_matcher(
-      [ex = std::basic_regex<Char>(ex, syntax), match](const auto &actual) {
-        return std::regex_search(actual, ex, match);
+      [ex = std::basic_regex<Char>(ex, syntax), match](auto &&actual) {
+        return std::regex_search(std::forward<decltype(actual)>(actual), ex,
+                                 match);
       }, ss.str()
     );
   }

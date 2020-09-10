@@ -41,9 +41,9 @@ namespace mettle {
       using base::base;
 
       template<typename U>
-      match_result operator ()(U &&value) const {
+      match_result operator ()(U &&actual) const {
         try {
-          value();
+          actual();
           return {false, "threw nothing"};
         } catch(const Exception &e) {
           return base::match(e);
@@ -65,9 +65,9 @@ namespace mettle {
       using base::base;
 
       template<typename U>
-      match_result operator ()(U &&value) const {
+      match_result operator ()(U &&actual) const {
         try {
-          value();
+          actual();
           return {false, "threw nothing"};
         } catch(const std::exception &e) {
           return base::match(e);
@@ -101,9 +101,9 @@ namespace mettle {
   }
 
   inline auto thrown() {
-    return basic_matcher([](auto &&value) -> match_result {
+    return basic_matcher([](auto &&actual) -> match_result {
       try {
-        value();
+        actual();
         return {false, "threw nothing"};
       } catch(const std::exception &e) {
         std::ostringstream ss;

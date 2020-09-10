@@ -115,8 +115,8 @@ namespace mettle {
   inline auto is_not(T &&thing) {
     return basic_matcher(
       ensure_matcher(std::forward<T>(thing)),
-      [](const auto &value, auto &&matcher) {
-        return !matcher(value);
+      [](auto &&actual, auto &&matcher) {
+        return !matcher(std::forward<decltype(actual)>(actual));
       }, "not "
     );
   }
@@ -130,8 +130,8 @@ namespace mettle {
   auto filter(Filter &&f, Matcher &&matcher, const std::string &desc = "") {
     return basic_matcher(
       std::forward<Matcher>(matcher),
-      [f = std::forward<Filter>(f), desc](const auto &actual, auto &&matcher) {
-        auto filtered = f(actual);
+      [f = std::forward<Filter>(f), desc](auto &&actual, auto &&matcher) {
+        auto filtered = f(std::forward<decltype(actual)>(actual));
         auto result = matcher(filtered);
         std::ostringstream ss;
         ss << desc << matcher_message(result, filtered);

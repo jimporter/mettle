@@ -19,10 +19,10 @@ namespace mettle {
           reducer_(std::move(reducer)), matchers_(std::move(matchers)...) {}
 
       template<typename U>
-      match_result operator ()(const U &value) const {
+      match_result operator ()(U &&actual) const {
         match_result result = initial_;
         tuple_for_each(matchers_, [&, this](const auto &matcher) {
-          auto m = matcher(value);
+          auto m = matcher(actual);
           bool done = reducer_(initial_, m) != initial_;
           if(done)
             result = std::move(m);

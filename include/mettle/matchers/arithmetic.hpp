@@ -15,11 +15,10 @@ namespace mettle {
     return basic_matcher(
       std::forward<T>(expected),
       [epsilon = std::forward<U>(epsilon)](
-        const auto &actual, const auto &expected
+        auto &&actual, auto &&expected
       ) -> bool {
         // If one of expected or actual is NaN, mag is undefined, but that's ok
         // because we'll always return false in that case, just like we should.
-		
         using std::max, std::abs;
         auto mag = max(abs(expected), abs(actual));
         return abs(actual - expected) <= mag * epsilon;
@@ -42,7 +41,7 @@ namespace mettle {
     return basic_matcher(
       std::forward<T>(expected),
       [tolerance = std::forward<U>(tolerance)](
-        const auto &actual, const auto &expected
+        auto &&actual, auto &&expected
       ) -> bool {
         using std::abs;
         return abs(actual - expected) <= tolerance;

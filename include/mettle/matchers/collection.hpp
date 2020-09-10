@@ -21,13 +21,13 @@ namespace mettle {
           matcher_(std::move(matcher)) {}
 
       template<typename U>
-      match_result operator ()(const U &value) const {
+      match_result operator ()(U &&actual) const {
         std::ostringstream ss;
         ostream_list_append ola(ss);
         bool good = initial_;
 
         ss << "[";
-        for(auto &&i : value) {
+        for(auto &&i : actual) {
           auto result = matcher_(i);
           if(result != initial_)
             good = result;
@@ -75,15 +75,17 @@ namespace mettle {
       }
 
       template<typename U>
-      match_result operator ()(const U &value) const {
+      match_result operator ()(U &&actual) const {
         std::ostringstream ss;
         ostream_list_append ola(ss);
         bool good = true;
 
+        using std::begin, std::end;
+        auto i = begin(actual), end_i = end(actual);
+
         ss << "[";
-        auto i = std::begin(value), end = std::end(value);
         for(auto &&m : matchers_) {
-          if(i == end) {
+          if(i == end_i) {
             good = false;
             break;
           }
@@ -94,10 +96,10 @@ namespace mettle {
           ++i;
         }
 
-        // Print any remaining expected values (if `value` is longer than the
+        // Print any remaining expected values (if `actual` is longer than the
         // list of matchers).
-        good &= (i == end);
-        for(; i != end; ++i)
+        good &= (i == end_i);
+        for(; i != end_i; ++i)
           ola(to_printable(*i));
 
         ss << "]";
@@ -127,14 +129,16 @@ namespace mettle {
 
   template<typename T, typename U>
   inline auto each(T &thing, U &&meta_matcher) {
-    return each(std::begin(thing), std::end(thing),
+    using std::begin, std::end;
+    return each(begin(thing), end(thing),
                 std::forward<U>(meta_matcher));
   }
 
   template<typename T, typename U>
   inline auto each(T &&thing, U &&meta_matcher) {
-    return each(std::make_move_iterator(std::begin(thing)),
-                std::make_move_iterator(std::end(thing)),
+    using std::begin, std::end;
+    return each(std::make_move_iterator(begin(thing)),
+                std::make_move_iterator(end(thing)),
                 std::forward<U>(meta_matcher));
   }
 
@@ -150,15 +154,17 @@ namespace mettle {
       array_impl(T ...matchers) : matchers_(std::move(matchers)...) {}
 
       template<typename U>
-      match_result operator ()(const U &value) const {
+      match_result operator ()(U &&actual) const {
         std::ostringstream ss;
         ostream_list_append ola(ss);
         bool good = true;
 
+        using std::begin, std::end;
+        auto i = begin(actual), end_i = end(actual);
+
         ss << "[";
-        auto i = std::begin(value), end = std::end(value);
-        tuple_for_each(matchers_, [&i, &end, &good, &ola](const auto &m) {
-          if(i == end) {
+        tuple_for_each(matchers_, [&i, &end_i, &good, &ola](const auto &m) {
+          if(i == end_i) {
             good = false;
             return true;
           }
@@ -170,10 +176,10 @@ namespace mettle {
           return false;
         });
 
-        // Print any remaining expected values (if `value` is longer than the
+        // Print any remaining expected values (if `actual` is longer than the
         // list of matchers).
-        good &= (i == end);
-        for(; i != end; ++i)
+        good &= (i == end_i);
+        for(; i != end_i; ++i)
           ola(to_printable(*i));
 
         ss << "]";
@@ -206,17 +212,19 @@ namespace mettle {
       tuple_impl(T ...matchers) : matchers_(std::move(matchers)...) {}
 
       template<typename U>
-      match_result operator ()(const U &value) const {
-        static_assert(std::tuple_size<U>::value == sizeof...(T),
+      match_result operator ()(U &&actual) const {
+        using UVal = std::remove_reference_t<U>;
+        static_assert(std::tuple_size_v<UVal> == sizeof...(T),
                       "tuple sizes mismatch");
         std::ostringstream ss;
         ostream_list_append ola(ss);
         bool good = true;
 
         ss << "[";
-        static_for<sizeof...(T)>([this, &value, &good, &ola](auto i) {
-          auto v = std::get<i>(value);
-          auto result = std::get<i>(matchers_)(v);
+        static_for<sizeof...(T)>([this, &actual, &good, &ola](auto i) {
+          using std::get;
+          auto v = get<i>(actual);
+          auto result = get<i>(matchers_)(v);
           good &= result;
           ola(matcher_message(result, v));
           return false;
@@ -232,11 +240,6 @@ namespace mettle {
         })) + "]";
       }
     private:
-      template<std::size_t I, typename U>
-      auto match(const U &value) const {
-        return std::get<I>(matchers_)(std::get<I>(value));
-      }
-
       std::tuple<T...> matchers_;
     };
   }
@@ -250,8 +253,9 @@ namespace mettle {
   }
 
   inline auto sorted() {
-    return basic_matcher([](const auto &value) {
-      return std::is_sorted(std::begin(value), std::end(value));
+    return basic_matcher([](auto &&actual) {
+      using std::begin, std::end;
+      return std::is_sorted(begin(actual), end(actual));
     }, "sorted");
   }
 
@@ -259,9 +263,10 @@ namespace mettle {
   auto sorted(T &&compare) {
     return basic_matcher(
       std::forward<T>(compare),
-      [](const auto &value, auto &&compare) {
-      return std::is_sorted(std::begin(value), std::end(value), compare);
-    }, "sorted by ");
+      [](auto &&actual, auto &&compare) {
+        using std::begin, std::end;
+        return std::is_sorted(begin(actual), end(actual), compare);
+      }, "sorted by ");
   }
 
   namespace detail {
@@ -281,10 +286,11 @@ namespace mettle {
       permutation_impl(T container) : container_(std::move(container)) {}
 
       template<typename U>
-      bool operator ()(const U &actual) const {
+      bool operator ()(U &&actual) const {
+        using std::begin, std::end;
         return std::is_permutation(
-          std::begin(actual), std::end(actual),
-          std::begin(container_.value), std::end(container_.value)
+          begin(actual), end(actual),
+          begin(container_.value), end(container_.value)
         );
       }
 
@@ -304,10 +310,11 @@ namespace mettle {
         : container_(std::move(container)), predicate_(std::move(predicate)) {}
 
       template<typename U>
-      bool operator ()(const U &actual) const {
+      bool operator ()(U &&actual) const {
+        using std::begin, std::end;
         return std::is_permutation(
-          std::begin(actual), std::end(actual),
-          std::begin(container_.value), std::end(container_.value),
+          begin(actual), end(actual),
+          begin(container_.value), end(container_.value),
           predicate_
         );
       }
