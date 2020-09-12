@@ -1,6 +1,6 @@
 # -*- python -*-
 
-bfg9000_required_version('>=0.5.0')
+bfg9000_required_version('>=0.6.0')
 
 mettle_version = '0.2-dev'
 project('mettle', mettle_version, intermediate_dirs=False)
@@ -9,7 +9,7 @@ global_options([opts.std(argv.std)], lang='c++')
 
 pthread = [package('pthread')] if env.target_platform.family == 'posix' else []
 
-if find_files('include', 'bencode.hpp', flat=True, cache=False):
+if path_exists('include/bencode.hpp'):
     bencode = []
 elif argv.vendorize:
     bencode = []
@@ -25,11 +25,11 @@ compile_opts = [opts.define('METTLE_VERSION', '"{}"'.format(mettle_version))]
 if argv.safe_exit:
     compile_opts.append(opts.define('METTLE_SAFE_EXIT'))
 
-includes = header_directory('include', include='*.hpp')
+includes = header_directory('include', include='**/*.hpp')
 
 libmettle = shared_library(
     'mettle',
-    files=find_files('src/libmettle', '*.cpp', extra='*.hpp',
+    files=find_files('src/libmettle/**/*.cpp', extra='*.hpp',
                      filter=filter_by_platform),
     includes=includes,
     compile_options=compile_opts,
@@ -38,7 +38,7 @@ libmettle = shared_library(
 )
 
 mettle_objs = object_files(
-    files=find_files('src/mettle', '*.cpp', extra='*.hpp',
+    files=find_files('src/mettle/**/*.cpp', extra='*.hpp',
                      filter=filter_by_platform),
     includes=includes,
     options=compile_opts,
@@ -51,14 +51,14 @@ mettle = executable(
     packages=bencode + [iostreams, prog_opts],
 )
 
-pkg_config()
+pkg_config(auto_fill=True)
 install(mettle, libmettle, includes)
 
 extra_files = {
     'test/driver/test_test_command.cpp': ['src/mettle/test_command.cpp'],
     'test/driver/test_run_test_files.cpp': [
         'src/mettle/run_test_files.cpp', 'src/mettle/test_command.cpp'
-    ] + find_paths('src/mettle', 'run_test_file.cpp',
+    ] + find_paths('src/mettle/*/run_test_file.cpp',
                    filter=filter_by_platform),
 }
 extra_pkgs = {
@@ -72,7 +72,7 @@ driver = test_driver(
     [mettle, '--output=verbose'],
     environment={'TEST_DATA': 'test_data'},
 )
-for src in find_paths('test', '*.cpp', extra='*.hpp',
+for src in find_paths('test/**/*.cpp', extra='*.hpp',
                       filter=filter_by_platform):
     test(executable(
         src.stripext().suffix,
@@ -85,7 +85,7 @@ for src in find_paths('test', '*.cpp', extra='*.hpp',
 test_data = alias('test-data', [
     executable(src.stripext().suffix, files=src, includes=includes,
                libs=libmettle, packages=boost_hdrs)
-    for src in find_paths('test_data', '*.cpp', extra='*.hpp')
+    for src in find_paths('test_data/**/*.cpp', extra='*.hpp')
 ])
 test_deps(test_data)
 
@@ -94,7 +94,7 @@ alias('examples', [
     executable(src.stripext().suffix, files=src, includes=includes,
                libs=None if src.suffix in header_only_examples else libmettle,
                packages=boost_hdrs)
-    for src in find_paths('examples', '*.cpp', extra='*.hpp')
+    for src in find_paths('examples/**/*.cpp', extra='*.hpp')
 ])
 
 doc_deploy = source_file('scripts/doc_deploy.py')
@@ -106,6 +106,6 @@ command('doc-deploy', cmd=[doc_deploy, '--config-file', mkdocs,
                            mettle_version])
 
 # Extra files to be packaged in the source dist.
-find_files('src', '*.[ch]pp', filter=filter_by_platform, flat=True)
+find_files('src/*.[ch]pp')
 extra_dist(files=['README.md', 'CHANGES.md', 'LICENSE'],
            dirs=['doc', 'scripts'])
