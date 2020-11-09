@@ -55,22 +55,15 @@ test_scoped_pipe("windows::scoped_pipe", [](auto &_) {
   });
 
   _.test("close()", [](auto &pipe) {
-    HANDLE read_handle  = pipe->read_handle;
-    HANDLE write_handle = pipe->write_handle;
-
     expect("close read handle", pipe->close_read(), equal_to(true));
     expect("read handle", pipe->read_handle.handle(), equal_to(nullptr));
     expect("close read handle again", pipe->close_read(),
            all( equal_to(false), equal_last_error(ERROR_INVALID_HANDLE) ));
-    expect("get read handle type", GetFileType(read_handle),
-           all( equal_to(0), equal_last_error(ERROR_INVALID_HANDLE) ));
 
     expect("close write handle", pipe->close_write(), equal_to(true));
     expect("write handle", pipe->write_handle.handle(), equal_to(nullptr));
     expect("close write handle again", pipe->close_write(),
            all( equal_to(false), equal_last_error(ERROR_INVALID_HANDLE) ));
-    expect("get write handle type", GetFileType(write_handle),
-           all( equal_to(0), equal_last_error(ERROR_INVALID_HANDLE) ));
   });
 
   _.test("ReadFile()/WriteFile()", [](auto &pipe) {
