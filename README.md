@@ -1,8 +1,8 @@
 # mettle
 
+[![Latest release][release-image]][release-link]
 [![Documentation][documentation-image]][documentation-link]
-[![Travis build status][travis-image]][travis-link]
-[![Appveyor build status][appveyor-image]][appveyor-link]
+[![Build status][ci-image]][ci-link]
 
 **mettle** is a "batteries included" unit testing framework for C++17. Its
 mission is to provide a full toolbox to address your testing needs and to look
@@ -66,9 +66,9 @@ suite<> basic("a basic suite", [](auto &_) {
 
 This library is licensed under the [BSD 3-Clause license](LICENSE).
 
+[release-image]: https://img.shields.io/github/release/jimporter/mettle.svg
+[release-link]: https://github.com/jimporter/mettle/releases/latest
 [documentation-image]: https://img.shields.io/badge/docs-mettle-blue.svg
 [documentation-link]: https://jimporter.github.io/mettle/
-[travis-image]: https://travis-ci.org/jimporter/mettle.svg?branch=master
-[travis-link]: https://travis-ci.org/jimporter/mettle
-[appveyor-image]: https://ci.appveyor.com/api/projects/status/76hye1aj81qg1nqg/branch/master?svg=true
-[appveyor-link]: https://ci.appveyor.com/project/jimporter/mettle/branch/master
+[ci-image]: https://github.com/jimporter/mettle/workflows/build/badge.svg
+[ci-link]: https://github.com/jimporter/mettle/actions?query=branch%3Amaster+workflow%3Abuild
