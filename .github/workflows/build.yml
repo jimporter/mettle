@@ -73,10 +73,10 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         cinst ninja
-        $gnomebase = "https://ftp.gnome.org/pub/gnome/binaries/win32"
-        curl -LO $gnomebase/dependencies/pkg-config_0.26-1_win32.zip
-        curl -LO $gnomebase/glib/2.28/glib_2.28.8-1_win32.zip
-        curl -LO $gnomebase/dependencies/gettext-runtime_0.18.1.1-2_win32.zip
+        ${gnomebase} = "https://ftp.gnome.org/pub/gnome/binaries/win32"
+        curl -LO ${gnomebase}/dependencies/pkg-config_0.26-1_win32.zip
+        curl -LO ${gnomebase}/glib/2.28/glib_2.28.8-1_win32.zip
+        curl -LO ${gnomebase}/dependencies/gettext-runtime_0.18.1.1-2_win32.zip
         7z x -y pkg-config_0.26-1_win32.zip -oC:\pkg-config
         7z x -y glib_2.28.8-1_win32.zip -oC:\pkg-config
         7z x -y gettext-runtime_0.18.1.1-2_win32.zip -oC:\pkg-config
