@@ -3,10 +3,7 @@ on:
   pull_request:
   push:
   schedule:
-  - cron: '0 0 1 * *'
-
-env:
-  COMMONFLAGS: '-Wall -Wextra -pedantic -Werror'
+    - cron: '0 0 1 * *'
 
 jobs:
   build:
@@ -43,14 +40,23 @@ jobs:
           # (Test 1.58 specifically because it has very strict rules for
           # Boost.Variant.)
           - {os: ubuntu-16.04, compiler: gcc, version: '9',
-             boost_version: '1.58'}
+             boost: '1.58'}
 
           # C++20 builds
           - {os: ubuntu-latest, compiler: gcc, version: '10',
-             flags: '--std=c++2a -Wsuggest-override'}
+             options: '--std=c++2a', flags: '-Wsuggest-override',
+             boost-source: '1.74.0'}
           - {os: ubuntu-latest, compiler: clang, version: '10',
-             flags: '--std=c++2a'}
+             options: '--std=c++2a', boost-source: '1.74.0'}
+
+          # Make-backend builds
+          - {os: ubuntu-latest, compiler: gcc, version: '10',
+             backend: 'make', flags: '-Wsuggest-override'}
+          - {os: ubuntu-latest, compiler: clang, version: '10',
+             backend: 'make'}
       fail-fast: false
+    env:
+      COMMONFLAGS: '-Wall -Wextra -pedantic -Werror'
 
     steps:
     - uses: actions/checkout@v2
@@ -66,9 +72,9 @@ jobs:
       run: >
         sudo apt-get install
         ninja-build
-        libboost${{ matrix.boost_version }}-dev
-        libboost-iostreams${{ matrix.boost_version }}-dev
-        libboost-program-options${{ matrix.boost_version }}-dev
+        libboost${{ matrix.boost }}-dev
+        libboost-iostreams${{ matrix.boost }}-dev
+        libboost-program-options${{ matrix.boost }}-dev
     - name: Install Windows dependencies
       if: matrix.os == 'windows-latest'
       run: |
@@ -81,13 +87,27 @@ jobs:
         7z x -y glib_2.28.8-1_win32.zip -oC:\pkg-config
         7z x -y gettext-runtime_0.18.1.1-2_win32.zip -oC:\pkg-config
         echo "PKG_CONFIG=C:\pkg-config\bin\pkg-config.exe" >> ${env:GITHUB_ENV}
-        echo "BOOST_INCLUDEDIR=${env:BOOST_ROOT_${{ matrix.boost }}}\include" >> ${env:GITHUB_ENV}
-        echo "BOOST_LIBRARYDIR=${env:BOOST_ROOT_${{ matrix.boost }}}\lib" >> ${env:GITHUB_ENV}
+
+        ${boostroot} = "${env:BOOST_ROOT_${{ matrix.boost }}}"
+        echo "BOOST_INCLUDEDIR=${boostroot}\include" >> ${env:GITHUB_ENV}
+        echo "BOOST_LIBRARYDIR=${boostroot}\lib" >> ${env:GITHUB_ENV}
         echo "CXXFLAGS=/WX ${{ matrix.flags }}" >> ${env:GITHUB_ENV}
     - name: Install macOS dependencies
       if: matrix.os == 'macos-latest'
       run: |
         brew install ninja pkg-config boost
+    - name: Install Boost ${{ matrix.boost-source }}
+      if: matrix.boost-source
+      run: |
+        export SRCDIR=boost_`echo ${{ matrix.boost-source }} | sed 's/\./_/g'`
+        wget -q https://dl.bintray.com/boostorg/release/${{ matrix.boost-source }}/source/${SRCDIR}.tar.bz2
+        tar -xjf ${SRCDIR}.tar.bz2
+        pushd ${SRCDIR}
+        ./bootstrap.sh --prefix=${HOME} --with-libraries=program_options,iostreams
+        ./b2 link=shared threading=multi variant=release -d0
+        ./b2 install -d0
+        popd
+        echo "BOOST_ROOT=${HOME}" >> ${GITHUB_ENV}
     - name: Install gcc
       if: matrix.compiler == 'gcc'
       run: |
@@ -112,6 +132,6 @@ jobs:
         toolset: ${{ matrix.version }}
     - name: Run tests
       run: |
-        9k build --backend=ninja --vendorize
+        9k build --backend=${{ matrix.backend || 'ninja' }} --vendorize ${{ matrix.options }}
         cd build
-        ninja test
+        ${{ matrix.backend || 'ninja' }} test
