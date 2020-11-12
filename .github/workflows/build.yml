@@ -29,8 +29,8 @@ jobs:
           - {os: ubuntu-latest, compiler: clang, version: '10'}
 
           # Windows builds
-          - {os: windows-latest, version: '14.1', boost: '1_69_0'}
-          - {os: windows-latest, version: '14.2', boost: '1_72_0'}
+          - {os: windows-2016,   version: '14.16'}
+          - {os: windows-latest, version: '14.27'}
 
           # macOS builds
           - {os: macos-latest}
@@ -76,7 +76,7 @@ jobs:
         libboost-iostreams${{ matrix.boost }}-dev
         libboost-program-options${{ matrix.boost }}-dev
     - name: Install Windows dependencies
-      if: matrix.os == 'windows-latest'
+      if: startsWith(matrix.os, 'windows-')
       run: |
         cinst ninja
         ${gnomebase} = "https://ftp.gnome.org/pub/gnome/binaries/win32"
@@ -88,19 +88,19 @@ jobs:
         7z x -y gettext-runtime_0.18.1.1-2_win32.zip -oC:\pkg-config
         echo "PKG_CONFIG=C:\pkg-config\bin\pkg-config.exe" >> ${env:GITHUB_ENV}
 
-        ${boostroot} = "${env:BOOST_ROOT_${{ matrix.boost }}}"
+        ${boostroot} = "${env:BOOST_ROOT_1_72_0}"
         echo "BOOST_INCLUDEDIR=${boostroot}\include" >> ${env:GITHUB_ENV}
         echo "BOOST_LIBRARYDIR=${boostroot}\lib" >> ${env:GITHUB_ENV}
         echo "CXXFLAGS=/WX ${{ matrix.flags }}" >> ${env:GITHUB_ENV}
     - name: Install macOS dependencies
-      if: matrix.os == 'macos-latest'
+      if: startsWith(matrix.os, 'macos-')
       run: |
         brew install ninja pkg-config boost
     - name: Install Boost ${{ matrix.boost-source }}
       if: matrix.boost-source
       run: |
         export SRCDIR=boost_`echo ${{ matrix.boost-source }} | sed 's/\./_/g'`
-        wget -q https://dl.bintray.com/boostorg/release/${{ matrix.boost-source }}/source/${SRCDIR}.tar.bz2
+        curl -LO https://dl.bintray.com/boostorg/release/${{ matrix.boost-source }}/source/${SRCDIR}.tar.bz2
         tar -xjf ${SRCDIR}.tar.bz2
         pushd ${SRCDIR}
         ./bootstrap.sh --prefix=${HOME} --with-libraries=program_options,iostreams
@@ -126,7 +126,7 @@ jobs:
         echo "CXX=clang++-${{ matrix.version }}" >> ${GITHUB_ENV}
         echo "CXXFLAGS=${COMMONFLAGS} ${{ matrix.flags }}" >> ${GITHUB_ENV}
     - name: Initialize MSVC ${{ matrix.version }}
-      if: matrix.os == 'windows-latest'
+      if: startsWith(matrix.os, 'windows-')
       uses: ilammy/msvc-dev-cmd@v1
       with:
         toolset: ${{ matrix.version }}
