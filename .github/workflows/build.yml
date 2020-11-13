@@ -72,79 +72,79 @@ jobs:
       COMMONFLAGS: '-Wall -Wextra -pedantic -Werror'
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
-    - name: Install Python dependencies
-      run: |
-        pip install bfg9000
-    - name: Install Linux dependencies
-      if: startsWith(matrix.os, 'ubuntu-')
-      run: >
-        sudo apt-get install
-        ninja-build
-        libboost${{ matrix.boost }}-dev
-        libboost-iostreams${{ matrix.boost }}-dev
-        libboost-program-options${{ matrix.boost }}-dev
-    - name: Install Windows dependencies
-      if: startsWith(matrix.os, 'windows-')
-      run: |
-        cinst ninja
-        ${gnomebase} = "https://ftp.gnome.org/pub/gnome/binaries/win32"
-        curl -LO ${gnomebase}/dependencies/pkg-config_0.26-1_win32.zip
-        curl -LO ${gnomebase}/glib/2.28/glib_2.28.8-1_win32.zip
-        curl -LO ${gnomebase}/dependencies/gettext-runtime_0.18.1.1-2_win32.zip
-        7z x -y pkg-config_0.26-1_win32.zip -oC:\pkg-config
-        7z x -y glib_2.28.8-1_win32.zip -oC:\pkg-config
-        7z x -y gettext-runtime_0.18.1.1-2_win32.zip -oC:\pkg-config
-        echo "PKG_CONFIG=C:\pkg-config\bin\pkg-config.exe" >> ${env:GITHUB_ENV}
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install Python dependencies
+        run: |
+          pip install bfg9000
+      - name: Install Linux dependencies
+        if: startsWith(matrix.os, 'ubuntu-')
+        run: >
+          sudo apt-get install
+          ninja-build
+          libboost${{ matrix.boost }}-dev
+          libboost-iostreams${{ matrix.boost }}-dev
+          libboost-program-options${{ matrix.boost }}-dev
+      - name: Install Windows dependencies
+        if: startsWith(matrix.os, 'windows-')
+        run: |
+          cinst ninja
+          ${gnomebase} = "https://ftp.gnome.org/pub/gnome/binaries/win32"
+          curl -LO ${gnomebase}/dependencies/pkg-config_0.26-1_win32.zip
+          curl -LO ${gnomebase}/glib/2.28/glib_2.28.8-1_win32.zip
+          curl -LO ${gnomebase}/dependencies/gettext-runtime_0.18.1.1-2_win32.zip
+          7z x -y pkg-config_0.26-1_win32.zip -oC:\pkg-config
+          7z x -y glib_2.28.8-1_win32.zip -oC:\pkg-config
+          7z x -y gettext-runtime_0.18.1.1-2_win32.zip -oC:\pkg-config
+          echo "PKG_CONFIG=C:\pkg-config\bin\pkg-config.exe" >> ${env:GITHUB_ENV}
 
-        ${boostroot} = "${env:BOOST_ROOT_1_72_0}"
-        echo "BOOST_INCLUDEDIR=${boostroot}\include" >> ${env:GITHUB_ENV}
-        echo "BOOST_LIBRARYDIR=${boostroot}\lib" >> ${env:GITHUB_ENV}
-        echo "CXXFLAGS=/WX ${{ matrix.flags }}" >> ${env:GITHUB_ENV}
-    - name: Install macOS dependencies
-      if: startsWith(matrix.os, 'macos-')
-      run: |
-        brew install ninja pkg-config boost
-    - name: Install Boost ${{ matrix.boost-source }}
-      if: matrix.boost-source
-      run: |
-        export SRCDIR=boost_`echo ${{ matrix.boost-source }} | sed 's/\./_/g'`
-        curl -LO https://dl.bintray.com/boostorg/release/${{ matrix.boost-source }}/source/${SRCDIR}.tar.bz2
-        tar -xjf ${SRCDIR}.tar.bz2
-        pushd ${SRCDIR}
-        ./bootstrap.sh --prefix=${HOME} --with-libraries=program_options,iostreams
-        ./b2 link=shared threading=multi variant=release -d0
-        ./b2 install -d0
-        popd
-        echo "BOOST_ROOT=${HOME}" >> ${GITHUB_ENV}
-    - name: Install gcc
-      if: startsWith(matrix.os, 'ubuntu-') && matrix.compiler == 'gcc'
-      run: |
-        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-        sudo apt-get update
-        sudo apt-get install g++-${{ matrix.version }}
-        echo "CXX=g++-${{ matrix.version }}" >> ${GITHUB_ENV}
-        echo "CXXFLAGS=${COMMONFLAGS} ${{ matrix.flags }}" >> ${GITHUB_ENV}
-    - name: Install clang
-      if: startsWith(matrix.os, 'ubuntu-') && matrix.compiler == 'clang'
-      run: |
-        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key 2>/dev/null | sudo apt-key add -
-        sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${{ matrix.version }} main"
-        sudo apt-get update
-        sudo apt-get install clang-${{ matrix.version }}
-        echo "CXX=clang++-${{ matrix.version }}" >> ${GITHUB_ENV}
-        echo "CXXFLAGS=${COMMONFLAGS} ${{ matrix.flags }}" >> ${GITHUB_ENV}
-    - name: Initialize MSVC ${{ matrix.version }}
-      if: startsWith(matrix.os, 'windows-')
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-        toolset: ${{ matrix.version }}
-    - name: Run tests
-      run: |
-        9k build --backend=${{ matrix.backend || 'ninja' }} --vendorize ${{ matrix.options }}
-        cd build
-        ${{ matrix.backend || 'ninja' }} test
+          ${boostroot} = "${env:BOOST_ROOT_1_72_0}"
+          echo "BOOST_INCLUDEDIR=${boostroot}\include" >> ${env:GITHUB_ENV}
+          echo "BOOST_LIBRARYDIR=${boostroot}\lib" >> ${env:GITHUB_ENV}
+          echo "CXXFLAGS=/WX ${{ matrix.flags }}" >> ${env:GITHUB_ENV}
+      - name: Install macOS dependencies
+        if: startsWith(matrix.os, 'macos-')
+        run: |
+          brew install ninja pkg-config boost
+      - name: Install Boost ${{ matrix.boost-source }}
+        if: matrix.boost-source
+        run: |
+          export SRCDIR=boost_`echo ${{ matrix.boost-source }} | sed 's/\./_/g'`
+          curl -LO https://dl.bintray.com/boostorg/release/${{ matrix.boost-source }}/source/${SRCDIR}.tar.bz2
+          tar -xjf ${SRCDIR}.tar.bz2
+          pushd ${SRCDIR}
+          ./bootstrap.sh --prefix=${HOME} --with-libraries=program_options,iostreams
+          ./b2 link=shared threading=multi variant=release -d0
+          ./b2 install -d0
+          popd
+          echo "BOOST_ROOT=${HOME}" >> ${GITHUB_ENV}
+      - name: Install gcc
+        if: startsWith(matrix.os, 'ubuntu-') && matrix.compiler == 'gcc'
+        run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install g++-${{ matrix.version }}
+          echo "CXX=g++-${{ matrix.version }}" >> ${GITHUB_ENV}
+          echo "CXXFLAGS=${COMMONFLAGS} ${{ matrix.flags }}" >> ${GITHUB_ENV}
+      - name: Install clang
+        if: startsWith(matrix.os, 'ubuntu-') && matrix.compiler == 'clang'
+        run: |
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key 2>/dev/null | sudo apt-key add -
+          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${{ matrix.version }} main"
+          sudo apt-get update
+          sudo apt-get install clang-${{ matrix.version }}
+          echo "CXX=clang++-${{ matrix.version }}" >> ${GITHUB_ENV}
+          echo "CXXFLAGS=${COMMONFLAGS} ${{ matrix.flags }}" >> ${GITHUB_ENV}
+      - name: Initialize MSVC ${{ matrix.version }}
+        if: startsWith(matrix.os, 'windows-')
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: ${{ matrix.version }}
+      - name: Run tests
+        run: |
+          9k build --backend=${{ matrix.backend || 'ninja' }} --vendorize ${{ matrix.options }}
+          cd build
+          ${{ matrix.backend || 'ninja' }} test
