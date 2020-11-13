@@ -7,6 +7,17 @@ on:
 
 jobs:
   build:
+    name: >
+      ${{ matrix.os }}, ${{ matrix.compiler }}${{
+        matrix.version && format('-{0}', matrix.version) || ''
+      }}${{
+        (matrix.boost || matrix.boost-source) &&
+        format(', boost-{0}', matrix.boost || matrix.boost-source) || ''
+      }}${{
+        matrix.backend && format(', {0}', matrix.backend) || ''
+      }}${{
+        matrix.extra-desc && format(', {0}', matrix.extra-desc) || ''
+      }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -29,12 +40,13 @@ jobs:
           - {os: ubuntu-latest, compiler: clang, version: '10'}
 
           # Windows builds
-          - {os: windows-2016,   version: '14.16'}
-          - {os: windows-latest, version: '14.27'}
+          - {os: windows-2016,   compiler: msvc, version: '14.16'}
+          - {os: windows-latest, compiler: msvc, version: '14.27'}
 
           # macOS builds
-          - {os: macos-latest}
-          - {os: macos-latest, flags: '-DMETTLE_NO_STDLIB_EXTS'}
+          - {os: macos-latest, compiler: clang}
+          - {os: macos-latest, compiler: clang,
+             flags: '-DMETTLE_NO_STDLIB_EXTS', extra-desc: 'no-stdlib-exts'}
 
           # Boost 1.58 builds
           # (Test 1.58 specifically because it has very strict rules for
@@ -45,9 +57,10 @@ jobs:
           # C++20 builds
           - {os: ubuntu-latest, compiler: gcc, version: '10',
              options: '--std=c++2a', flags: '-Wsuggest-override',
-             boost-source: '1.74.0'}
+             boost-source: '1.74.0', extra-desc: 'c++20'}
           - {os: ubuntu-latest, compiler: clang, version: '10',
-             options: '--std=c++2a', boost-source: '1.74.0'}
+             options: '--std=c++2a', boost-source: '1.74.0',
+             extra-desc: 'c++20'}
 
           # Make-backend builds
           - {os: ubuntu-latest, compiler: gcc, version: '10',
@@ -109,7 +122,7 @@ jobs:
         popd
         echo "BOOST_ROOT=${HOME}" >> ${GITHUB_ENV}
     - name: Install gcc
-      if: matrix.compiler == 'gcc'
+      if: startsWith(matrix.os, 'ubuntu-') && matrix.compiler == 'gcc'
       run: |
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         sudo apt-get update
@@ -117,7 +130,7 @@ jobs:
         echo "CXX=g++-${{ matrix.version }}" >> ${GITHUB_ENV}
         echo "CXXFLAGS=${COMMONFLAGS} ${{ matrix.flags }}" >> ${GITHUB_ENV}
     - name: Install clang
-      if: matrix.compiler == 'clang'
+      if: startsWith(matrix.os, 'ubuntu-') && matrix.compiler == 'clang'
       run: |
         wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key 2>/dev/null | sudo apt-key add -
         sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${{ matrix.version }} main"
