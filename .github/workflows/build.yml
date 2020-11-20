@@ -41,7 +41,7 @@ jobs:
 
           # Windows builds
           - {os: windows-2016,   compiler: msvc, version: '14.16'}
-          - {os: windows-latest, compiler: msvc, version: '14.27'}
+          - {os: windows-latest, compiler: msvc, version: '14.28'}
 
           # macOS builds
           - {os: macos-latest, compiler: clang}
