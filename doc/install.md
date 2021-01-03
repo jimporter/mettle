@@ -27,9 +27,8 @@ ninja install
 
 Before you get started with mettle, you'll need to install its dependencies:
 
-* A C++17-compliant compiler (for generic lambdas and various standard library
-  features)
-    * [clang](http://clang.llvm.org/) 5+
+* A C++17-compliant compiler
+    * [Clang](http://clang.llvm.org/) 7.0+
     * [GCC](https://gcc.gnu.org/) 7.2+
     * [MSVC](https://www.visualstudio.com/) 2017+
 * [Boost](http://www.boost.org/) 1.55+

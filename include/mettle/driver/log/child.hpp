@@ -86,7 +86,7 @@ namespace mettle::log {
   private:
     bencode::dict_view wrap_test(const test_name &test) {
       return bencode::dict_view{
-        {"id", test.id},
+        {"id", bencode::integer(test.id)},
         {"suites", wrap_suites(test.suites)},
         {"test", test.name}
       };

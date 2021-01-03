@@ -33,7 +33,6 @@ jobs:
              flags: '-Wsuggest-override'}
 
           # Clang builds
-          - {os: ubuntu-latest, compiler: clang, version:  '6.0'}
           - {os: ubuntu-latest, compiler: clang, version:  '7'}
           - {os: ubuntu-latest, compiler: clang, version:  '8'}
           - {os: ubuntu-latest, compiler: clang, version:  '9'}

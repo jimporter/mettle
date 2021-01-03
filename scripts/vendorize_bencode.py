@@ -16,11 +16,10 @@ except ImportError:
 
 srcdir = os.path.normpath(os.path.join(__file__, '..',  '..'))
 
-bencode_version = '0.2'
-bencode_name = 'bencodehpp-{}'.format(bencode_version)
-bencode_url = ('https://github.com/jimporter/bencode.hpp/releases/download/' +
-               'v{version}/{name}.tar.gz').format(version=bencode_version,
-                                                  name=bencode_name)
+commit = '5fd0d2dc9de906e10e121e726a84a08556d6bd00'
+bencode_name = 'bencode.hpp-{}'.format(commit)
+bencode_url = ('https://github.com/jimporter/bencode.hpp/archive/{}.tar.gz'
+               .format(commit))
 
 if __name__ == '__main__':
     print('Fetching {}'.format(bencode_url))
