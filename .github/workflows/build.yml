@@ -76,11 +76,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: Cache Boost binaries
         if: startsWith(matrix.os, 'windows-') && matrix.boost-version
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.4
         id: cache-boost
         with:
-          # Use a POSIX-style path here to make `tar` happy when saving.
-          path: ~/boost-${{ matrix.boost-version }}
+          path: C:\boost-${{ matrix.boost-version }}
           key: >
             ${{ matrix.os }}-boost-${{ matrix.boost-version }}-msvc-${{
             matrix.version }}-${{ hashFiles('.github/workflows/build.yml') }}
@@ -133,7 +132,7 @@ jobs:
       - name: Install Boost ${{ matrix.boost-version }} from binaries
         if: startsWith(matrix.os, 'windows-') && matrix.boost-version
         run: |
-          ${boostroot} = "$(Resolve-Path ~)\boost-${{ matrix.boost-version }}"
+          ${boostroot} = "C:\boost-${{ matrix.boost-version }}"
           ${msvcver} = "${{ matrix.version }}" -replace '(\d+\.\d).*','$1'
           if ("${{ steps.cache-boost.outputs.cache-hit }}" -ne "true" ) {
             ${boost_ver} = "${{ matrix.boost-version }}" -replace '\.','_'
