@@ -11,8 +11,8 @@ jobs:
       ${{ matrix.os }}, ${{ matrix.compiler }}${{
         matrix.version && format('-{0}', matrix.version) || ''
       }}${{
-        (matrix.boost || matrix.boost-source) &&
-        format(', boost-{0}', matrix.boost || matrix.boost-source) || ''
+        matrix.boost-version &&
+        format(', boost-{0}', matrix.boost-version) || ''
       }}${{
         matrix.backend && format(', {0}', matrix.backend) || ''
       }}${{
@@ -33,14 +33,16 @@ jobs:
              flags: '-Wsuggest-override'}
 
           # Clang builds
-          - {os: ubuntu-latest, compiler: clang, version:  '7'}
-          - {os: ubuntu-latest, compiler: clang, version:  '8'}
+          - {os: ubuntu-18.04,  compiler: clang, version:  '7'}
+          - {os: ubuntu-18.04,  compiler: clang, version:  '8'}
           - {os: ubuntu-latest, compiler: clang, version:  '9'}
           - {os: ubuntu-latest, compiler: clang, version: '10'}
 
           # Windows builds
-          - {os: windows-2016,   compiler: msvc, version: '14.16'}
-          - {os: windows-latest, compiler: msvc, version: '14.28'}
+          - {os: windows-2016,   compiler: msvc, version: '14.16',
+             boost-version: '1.72.0'}
+          - {os: windows-latest, compiler: msvc, version: '14.28',
+             boost-version: '1.72.0'}
 
           # macOS builds
           - {os: macos-latest, compiler: clang}
@@ -50,15 +52,15 @@ jobs:
           # Boost 1.58 builds
           # (Test 1.58 specifically because it has very strict rules for
           # Boost.Variant.)
-          - {os: ubuntu-16.04, compiler: gcc, version: '9',
-             boost: '1.58'}
+          - {os: ubuntu-latest, compiler: gcc, version: '9',
+             boost-version: '1.58.0'}
 
           # C++20 builds
           - {os: ubuntu-latest, compiler: gcc, version: '10',
              options: '--std=c++2a', flags: '-Wsuggest-override',
-             boost-source: '1.74.0', extra-desc: 'c++20'}
+             boost-version: '1.74.0', extra-desc: 'c++20'}
           - {os: ubuntu-latest, compiler: clang, version: '10',
-             options: '--std=c++2a', boost-source: '1.74.0',
+             options: '--std=c++2a', boost-version: '1.74.0',
              extra-desc: 'c++20'}
 
           # Make-backend builds
@@ -72,6 +74,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Cache Boost binaries
+        if: startsWith(matrix.os, 'windows-') && matrix.boost-version
+        uses: actions/cache@v2
+        id: cache-boost
+        with:
+          # Use a POSIX-style path here to make `tar` happy when saving.
+          path: ~/boost-${{ matrix.boost-version }}
+          key: >
+            ${{ matrix.os }}-boost-${{ matrix.boost-version }}-msvc-${{
+            matrix.version }}-${{ hashFiles('.github/workflows/build.yml') }}
       - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
@@ -84,9 +96,9 @@ jobs:
         run: >
           sudo apt-get install
           ninja-build
-          libboost${{ matrix.boost }}-dev
-          libboost-iostreams${{ matrix.boost }}-dev
-          libboost-program-options${{ matrix.boost }}-dev
+          libboost-dev
+          libboost-iostreams-dev
+          libboost-program-options-dev
       - name: Install Windows dependencies
         if: startsWith(matrix.os, 'windows-')
         run: |
@@ -100,26 +112,37 @@ jobs:
           7z x -y gettext-runtime_0.18.1.1-2_win32.zip -oC:\pkg-config
           echo "PKG_CONFIG=C:\pkg-config\bin\pkg-config.exe" >> ${env:GITHUB_ENV}
 
-          ${boostroot} = "${env:BOOST_ROOT_1_72_0}"
-          echo "BOOST_INCLUDEDIR=${boostroot}\include" >> ${env:GITHUB_ENV}
-          echo "BOOST_LIBRARYDIR=${boostroot}\lib" >> ${env:GITHUB_ENV}
           echo "CXXFLAGS=/WX ${{ matrix.flags }}" >> ${env:GITHUB_ENV}
       - name: Install macOS dependencies
         if: startsWith(matrix.os, 'macos-')
         run: |
           brew install ninja pkg-config boost
-      - name: Install Boost ${{ matrix.boost-source }}
-        if: matrix.boost-source
+      - name: Install Boost ${{ matrix.boost-version }} from source
+        if: "!startsWith(matrix.os, 'windows-') && matrix.boost-version"
         run: |
-          export SRCDIR=boost_`echo ${{ matrix.boost-source }} | sed 's/\./_/g'`
-          curl -LO https://dl.bintray.com/boostorg/release/${{ matrix.boost-source }}/source/${SRCDIR}.tar.bz2
+          export BOOST_ROOT=${HOME}/boost-${{ matrix.boost-version }}
+          export SRCDIR=boost_`echo ${{ matrix.boost-version }} | sed 's/\./_/g'`
+          curl -LO https://sourceforge.net/projects/boost/files/boost/${{ matrix.boost-version }}/${SRCDIR}.tar.bz2
           tar -xjf ${SRCDIR}.tar.bz2
           pushd ${SRCDIR}
-          ./bootstrap.sh --prefix=${HOME} --with-libraries=program_options,iostreams
+          ./bootstrap.sh --prefix=${BOOST_ROOT} --with-libraries=program_options,iostreams
           ./b2 link=shared threading=multi variant=release -d0
           ./b2 install -d0
           popd
-          echo "BOOST_ROOT=${HOME}" >> ${GITHUB_ENV}
+          echo "BOOST_ROOT=${BOOST_ROOT}" >> ${GITHUB_ENV}
+      - name: Install Boost ${{ matrix.boost-version }} from binaries
+        if: startsWith(matrix.os, 'windows-') && matrix.boost-version
+        run: |
+          ${boostroot} = "$(Resolve-Path ~)\boost-${{ matrix.boost-version }}"
+          ${msvcver} = "${{ matrix.version }}" -replace '(\d+\.\d).*','$1'
+          if ("${{ steps.cache-boost.outputs.cache-hit }}" -ne "true" ) {
+            ${boost_ver} = "${{ matrix.boost-version }}" -replace '\.','_'
+            ${boostexe} = "boost_${boost_ver}-msvc-${msvcver}-64.exe"
+            curl -LO https://sourceforge.net/projects/boost/files/boost-binaries/${{ matrix.boost-version }}/${boostexe}
+            Start-Process -Wait -FilePath ".\${boostexe}" "/SILENT","/SP-","/SUPPRESSMSGBOXES","/DIR=${boostroot}"
+          }
+          echo "BOOST_INCLUDEDIR=${boostroot}" >> ${env:GITHUB_ENV}
+          echo "BOOST_LIBRARYDIR=${boostroot}\lib64-msvc-${msvcver}" >> ${env:GITHUB_ENV}
       - name: Install gcc
         if: startsWith(matrix.os, 'ubuntu-') && matrix.compiler == 'gcc'
         run: |
@@ -131,8 +154,9 @@ jobs:
       - name: Install clang
         if: startsWith(matrix.os, 'ubuntu-') && matrix.compiler == 'clang'
         run: |
+          export CODENAME=`lsb_release -c | sed 's/Codename:\t//'`
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key 2>/dev/null | sudo apt-key add -
-          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${{ matrix.version }} main"
+          sudo add-apt-repository "deb http://apt.llvm.org/${CODENAME}/ llvm-toolchain-${CODENAME}-${{ matrix.version }} main"
           sudo apt-get update
           sudo apt-get install clang-${{ matrix.version }}
           echo "CXX=clang++-${{ matrix.version }}" >> ${GITHUB_ENV}
