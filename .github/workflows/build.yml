@@ -37,6 +37,7 @@ jobs:
           - {os: ubuntu-18.04,  compiler: clang, version:  '8'}
           - {os: ubuntu-latest, compiler: clang, version:  '9'}
           - {os: ubuntu-latest, compiler: clang, version: '10'}
+          - {os: ubuntu-latest, compiler: clang, version: '11'}
 
           # Windows builds
           - {os: windows-2016,   compiler: msvc, version: '14.16',
@@ -52,15 +53,15 @@ jobs:
           # Boost 1.58 builds
           # (Test 1.58 specifically because it has very strict rules for
           # Boost.Variant.)
-          - {os: ubuntu-latest, compiler: gcc, version: '9',
+          - {os: ubuntu-latest, compiler: gcc, version: '10',
              boost-version: '1.58.0'}
 
           # C++20 builds
           - {os: ubuntu-latest, compiler: gcc, version: '10',
-             options: '--std=c++2a', flags: '-Wsuggest-override',
+             options: '--std=c++20', flags: '-Wsuggest-override',
              boost-version: '1.74.0', extra-desc: 'c++20'}
-          - {os: ubuntu-latest, compiler: clang, version: '10',
-             options: '--std=c++2a', boost-version: '1.74.0',
+          - {os: ubuntu-latest, compiler: clang, version: '11',
+             options: '--std=c++20', boost-version: '1.74.0',
              extra-desc: 'c++20'}
 
           # Make-backend builds
