@@ -47,8 +47,6 @@ jobs:
 
           # macOS builds
           - {os: macos-latest, compiler: clang}
-          - {os: macos-latest, compiler: clang,
-             flags: '-DMETTLE_NO_STDLIB_EXTS', extra-desc: 'no-stdlib-exts'}
 
           # Boost 1.58 builds
           # (Test 1.58 specifically because it has very strict rules for
@@ -63,6 +61,8 @@ jobs:
              flags: '-DNDEBUG', extra-desc: 'NDEBUG'}
           - {os: windows-latest, compiler: msvc, flags: '/DNDEBUG',
              version: '14.28', boost-version: '1.72.0', extra-desc: 'NDEBUG'}
+          - {os: macos-latest, compiler: clang, flags: '-DNDEBUG',
+             extra-desc: 'NDEBUG'}
 
           # C++20 builds
           - {os: ubuntu-latest, compiler: gcc, version: '10',
