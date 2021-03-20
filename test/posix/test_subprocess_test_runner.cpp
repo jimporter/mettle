@@ -17,7 +17,7 @@ using namespace mettle::posix;
 using namespace std::literals::chrono_literals;
 
 suite<subprocess_test_runner>
-test_fork("posix::subprocess_test_runner", bind_factory(250ms), [](auto &_) {
+test_fork("posix::subprocess_test_runner", bind_factory(500ms), [](auto &_) {
 
   subsuite<log::test_output>(_, "run one test", [](auto &_) {
 
@@ -83,7 +83,7 @@ test_fork("posix::subprocess_test_runner", bind_factory(250ms), [](auto &_) {
       auto now = std::chrono::steady_clock::now();
 
       expect(result.passed, equal_to(false));
-      expect(result.message, equal_to("Timed out after 250 ms"));
+      expect(result.message, equal_to("Timed out after 500 ms"));
       expect(now - then, less(1s));
     });
 
@@ -157,7 +157,7 @@ test_fork("posix::subprocess_test_runner", bind_factory(250ms), [](auto &_) {
       auto now = std::chrono::steady_clock::now();
 
       expect(result.passed, equal_to(false));
-      expect(result.message, equal_to("Timed out after 250 ms"));
+      expect(result.message, equal_to("Timed out after 500 ms"));
       expect(now - then, less(1s));
     });
 
