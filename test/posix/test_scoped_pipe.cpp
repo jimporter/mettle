@@ -21,7 +21,9 @@ test_scoped_pipe("posix::scoped_pipe", [](auto &_) {
     expect("read fd", pipe->read_fd, greater_equal(0));
     expect("write fd", pipe->write_fd, greater_equal(0));
 
+#ifndef NDEBUG
     expect("reopen pipe", [&pipe]() { pipe->open(); }, killed(SIGABRT));
+#endif
   });
 
   _.test("close()", [](auto &pipe) {

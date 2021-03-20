@@ -6,6 +6,9 @@
 #include <mettle/driver/filters.hpp>
 #include <mettle/driver/test_name.hpp>
 
+#include <cassert>
+#include <cstdlib>
+
 #include <boost/any.hpp>
 
 namespace mettle {
@@ -39,6 +42,7 @@ namespace mettle {
       return "attr_action::indeterminate";
     default:
       assert(false && "unexpected value");
+      std::abort();
     }
   }
 

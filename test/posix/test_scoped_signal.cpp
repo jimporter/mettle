@@ -96,13 +96,15 @@ test_sigaction("posix::scoped_sigaction", [](auto &_) {
     expect("open sigaction", act->open(SIGTERM, sig_handler), equal_to(0));
   });
 
-  _.test("open()", [](auto &act) {
+  _.test("open()", []([[maybe_unused]] auto &act) {
     struct sigaction old;
     expect("get sigaction", sigaction(SIGTERM, nullptr, &old), equal_to(0));
     expect("check handler", old.sa_handler, equal_to(sig_handler));
 
+#ifndef NDEBUG
     expect("reopen sigaction", [&act]() { act->open(SIGTERM, sig_handler); },
            killed(SIGABRT));
+#endif
   });
 
   _.test("close()", [](auto &act) {

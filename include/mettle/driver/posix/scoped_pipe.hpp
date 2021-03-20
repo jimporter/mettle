@@ -5,6 +5,7 @@
 #include <fcntl.h>
 
 #include <cassert>
+#include <cstdlib>
 
 namespace mettle::posix {
 

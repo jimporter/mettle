@@ -27,6 +27,7 @@ namespace mettle {
         } catch(...) {}
         terminate();
         assert(false && "should never get here");
+        abort();
       } else {
         int status;
         if(waitpid(pid, &status, 0) < 0)

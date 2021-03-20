@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <cstdlib>
 #include <regex>
 #include <sstream>
 #include <stdexcept>
@@ -67,6 +68,7 @@ namespace mettle {
       return true;
     default:
       assert(false && "unexpected value");
+      std::abort();
     }
   }
 
