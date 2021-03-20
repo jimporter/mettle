@@ -11,6 +11,12 @@
 #include "indent.hpp"
 #include "../detail/export.hpp"
 
+// Ignore warnings from MSVC about DLL interfaces.
+#if defined(_MSC_VER) && !defined(__clang__)
+#  pragma warning(push)
+#  pragma warning(disable:4251)
+#endif
+
 namespace mettle::log::xml {
 
   bool METTLE_PUBLIC valid_name(const std::string &);
@@ -87,5 +93,9 @@ namespace mettle::log::xml {
   };
 
 } // namespace mettle::log::xml
+
+#if defined(_MSC_VER) && !defined(__clang__)
+#  pragma warning(pop)
+#endif
 
 #endif

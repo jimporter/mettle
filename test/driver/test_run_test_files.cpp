@@ -25,14 +25,24 @@ struct logger_factory {
   log::pipe pipe;
 };
 
+// Ignore warnings from MSVC about unsafe getenv.
+#if defined(_MSC_VER) && !defined(__clang__)
+#  pragma warning(push)
+#  pragma warning(disable:4996)
+#endif
+
 std::string test_data(const std::string &file) {
-  auto path = getenv("TEST_DATA");
+  auto path = std::getenv("TEST_DATA");
   std::string result = path ? path + pathsep + file : file;
 #ifdef _WIN32
   result += ".exe";
 #endif
   return result;
 }
+
+#if defined(_MSC_VER) && !defined(__clang__)
+#  pragma warning(pop)
+#endif
 
 auto passed(bool expected) {
   return filter([](auto &&x) { return x.passed; }, equal_to(expected),

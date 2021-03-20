@@ -12,6 +12,12 @@
 #include <mettle/driver/log/core.hpp>
 #include <mettle/driver/detail/export.hpp>
 
+// Ignore warnings from MSVC about DLL interfaces.
+#if defined(_MSC_VER) && !defined(__clang__)
+#  pragma warning(push)
+#  pragma warning(disable:4251)
+#endif
+
 namespace mettle {
 
   class METTLE_PUBLIC subprocess_test_runner {
@@ -48,5 +54,9 @@ namespace mettle {
 #endif
 
 } // namespace mettle
+
+#if defined(_MSC_VER) && !defined(__clang__)
+#  pragma warning(pop)
+#endif
 
 #endif

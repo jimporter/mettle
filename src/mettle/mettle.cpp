@@ -93,7 +93,7 @@ int main(int argc, const char *argv[]) {
 
     logger.summarize();
     return logger.good() ? exit_code::success : exit_code::failure;
-  } catch(const std::out_of_range &e) {
+  } catch(const std::out_of_range &) {
     report_error("unknown output format \"" + args.output + "\"");
     return exit_code::bad_args;
   } catch(const std::exception &e) {

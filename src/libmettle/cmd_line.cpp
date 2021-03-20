@@ -48,12 +48,6 @@ namespace mettle {
     return desc;
   }
 
-// MSVC doesn't understand [[noreturn]], so just ignore the warning here.
-#if defined(_MSC_VER) && !defined(__clang__)
-#  pragma warning(push)
-#  pragma warning(disable:4715)
-#endif
-
   bool color_enabled(color_option opt, int fd) {
     switch(opt) {
     case color_option::never:
@@ -71,10 +65,6 @@ namespace mettle {
       std::abort();
     }
   }
-
-#if defined(_MSC_VER) && !defined(__clang__)
-#  pragma warning(pop)
-#endif
 
   boost::program_options::options_description
   make_output_options(output_options &opts, const logger_factory &factory) {

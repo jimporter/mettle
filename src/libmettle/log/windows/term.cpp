@@ -30,12 +30,6 @@ namespace mettle::term {
       return ios.iword(console_flag) & 0xf0;
     }
 
-// MSVC doesn't understand [[noreturn]], so just ignore the warning here.
-#if defined(_MSC_VER) && !defined(__clang__)
-#  pragma warning(push)
-#  pragma warning(disable:4715)
-#endif
-
     int ansi_to_win_fg(int val) {
       switch(val) {
       case 30: return 0;
@@ -63,10 +57,6 @@ namespace mettle::term {
       default: assert(false && "disallowed color value"); std::abort();
       }
     }
-
-#if defined(_MSC_VER) && !defined(__clang__)
-#  pragma warning(pop)
-#endif
 
     inline HANDLE dup(HANDLE h) {
       HANDLE proc = GetCurrentProcess();

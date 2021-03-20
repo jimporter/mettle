@@ -15,7 +15,7 @@ template<typename T>
 T about_one() {
   T value = 0;
   for(int i = 0; i < 10; i++)
-    value += 0.1L;
+    value += static_cast<T>(0.1L);
   return value;
 }
 

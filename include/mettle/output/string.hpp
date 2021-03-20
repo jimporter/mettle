@@ -80,6 +80,12 @@ namespace mettle {
     return s;
   }
 
+// Ignore warnings from MSVC about deprecated <codecvt>
+#if defined(_MSC_VER) && !defined(__clang__)
+#  pragma warning(push)
+#  pragma warning(disable:4996)
+#endif
+
   inline std::string
   string_convert(const std::wstring_view &s) {
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
@@ -117,6 +123,11 @@ namespace mettle {
     std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
     return conv.to_bytes(s.data(), s.data() + s.size());
 #endif
+
+#if defined(_MSC_VER) && !defined(__clang__)
+#  pragma warning(pop)
+#endif
+
   }
 
 } // namespace mettle

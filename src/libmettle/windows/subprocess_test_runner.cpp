@@ -145,8 +145,8 @@ namespace mettle {
     auto result = test.function();
 
     DWORD size;
-    if(!WriteFile(log_pipe, result.message.c_str(), result.message.size(),
-                  &size, nullptr)) {
+    if(!WriteFile(log_pipe, result.message.c_str(),
+                  static_cast<DWORD>(result.message.size()), &size, nullptr)) {
       return false;
     }
     return result.passed;

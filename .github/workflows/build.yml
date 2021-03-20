@@ -120,7 +120,7 @@ jobs:
           7z x -y gettext-runtime_0.18.1.1-2_win32.zip -oC:\pkg-config
           echo "PKG_CONFIG=C:\pkg-config\bin\pkg-config.exe" >> ${env:GITHUB_ENV}
 
-          echo "CXXFLAGS=/WX ${{ matrix.flags }}" >> ${env:GITHUB_ENV}
+          echo "CXXFLAGS=/W3 /WX ${{ matrix.flags }}" >> ${env:GITHUB_ENV}
       - name: Install macOS dependencies
         if: startsWith(matrix.os, 'macos-')
         run: |
