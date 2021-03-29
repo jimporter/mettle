@@ -29,7 +29,7 @@ Before you get started with mettle, you'll need to install its dependencies:
 
 * A C++17-compliant compiler
     * [Clang](http://clang.llvm.org/) 7.0+
-    * [GCC](https://gcc.gnu.org/) 7.2+
+    * [GCC](https://gcc.gnu.org/) 8.1+
     * [MSVC](https://www.visualstudio.com/) 2017+
 * [Boost](http://www.boost.org/) 1.55+
 * [bencode.hpp](https://github.com/jimporter/bencode.hpp)
