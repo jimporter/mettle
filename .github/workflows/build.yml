@@ -96,9 +96,14 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
+      - name: Clone bfg9000
+        uses: actions/checkout@v2
+        with:
+          repository: jimporter/bfg9000
+          path: bfg9000
       - name: Install Python dependencies
         run: |
-          pip install bfg9000
+          pip install ./bfg9000
       - name: Install Linux dependencies
         if: startsWith(matrix.os, 'ubuntu-')
         run: >
@@ -176,6 +181,6 @@ jobs:
           toolset: ${{ matrix.version }}
       - name: Run tests
         run: |
-          9k build --backend=${{ matrix.backend || 'ninja' }} --vendorize ${{ matrix.options }}
+          9k build --backend=${{ matrix.backend || 'ninja' }} ${{ matrix.options }}
           cd build
           ${{ matrix.backend || 'ninja' }} test
