@@ -23,6 +23,8 @@ jobs:
       matrix:
         include:
           # GCC builds
+          - {os: ubuntu-latest, compiler: gcc, version:  '7',
+             flags: '-Wsuggest-override'}
           - {os: ubuntu-latest, compiler: gcc, version:  '8',
              flags: '-Wsuggest-override'}
           - {os: ubuntu-latest, compiler: gcc, version:  '9',

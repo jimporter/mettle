@@ -16,7 +16,7 @@ except ImportError:
 
 srcdir = os.path.normpath(os.path.join(__file__, '..',  '..'))
 
-commit = '824d1e5dd0279257ca7276f00abdee8a180fb3e0'
+commit = '3164da8db451b434837f9be1e5ad773e6f3e6a20'
 bencode_name = 'bencode.hpp-{}'.format(commit)
 bencode_url = ('https://github.com/jimporter/bencode.hpp/archive/{}.tar.gz'
                .format(commit))
