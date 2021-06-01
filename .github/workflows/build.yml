@@ -31,6 +31,8 @@ jobs:
              flags: '-Wsuggest-override'}
           - {os: ubuntu-latest, compiler: gcc, version: '10',
              flags: '-Wsuggest-override'}
+          - {os: ubuntu-latest, compiler: gcc, version: '11',
+             flags: '-Wsuggest-override'}
 
           # Clang builds
           - {os: ubuntu-18.04,  compiler: clang, version:  '7'}
@@ -38,6 +40,7 @@ jobs:
           - {os: ubuntu-latest, compiler: clang, version:  '9'}
           - {os: ubuntu-latest, compiler: clang, version: '10'}
           - {os: ubuntu-latest, compiler: clang, version: '11'}
+          - {os: ubuntu-latest, compiler: clang, version: '12'}
 
           # Windows builds
           - {os: windows-2016,   compiler: msvc, version: '14.16',
@@ -51,13 +54,13 @@ jobs:
           # Boost 1.58 builds
           # (Test 1.58 specifically because it has very strict rules for
           # Boost.Variant.)
-          - {os: ubuntu-latest, compiler: gcc, version: '10',
+          - {os: ubuntu-latest, compiler: gcc, version: '11',
              boost-version: '1.58.0'}
 
           # NDEBUG builds
-          - {os: ubuntu-latest, compiler: gcc, version: '10',
+          - {os: ubuntu-latest, compiler: gcc, version: '11',
              flags: '-Wsuggest-override -DNDEBUG', extra-desc: 'NDEBUG'}
-          - {os: ubuntu-latest, compiler: clang, version: '11',
+          - {os: ubuntu-latest, compiler: clang, version: '12',
              flags: '-DNDEBUG', extra-desc: 'NDEBUG'}
           - {os: windows-latest, compiler: msvc, flags: '/DNDEBUG',
              version: '14.29', boost-version: '1.72.0', extra-desc: 'NDEBUG'}
@@ -65,17 +68,17 @@ jobs:
              extra-desc: 'NDEBUG'}
 
           # C++20 builds
-          - {os: ubuntu-latest, compiler: gcc, version: '10',
+          - {os: ubuntu-latest, compiler: gcc, version: '11',
              options: '--std=c++20', flags: '-Wsuggest-override',
              boost-version: '1.74.0', extra-desc: 'c++20'}
-          - {os: ubuntu-latest, compiler: clang, version: '11',
+          - {os: ubuntu-latest, compiler: clang, version: '12',
              options: '--std=c++20', boost-version: '1.74.0',
              extra-desc: 'c++20'}
 
           # Make-backend builds
-          - {os: ubuntu-latest, compiler: gcc, version: '10',
+          - {os: ubuntu-latest, compiler: gcc, version: '11',
              backend: 'make', flags: '-Wsuggest-override'}
-          - {os: ubuntu-latest, compiler: clang, version: '10',
+          - {os: ubuntu-latest, compiler: clang, version: '12',
              backend: 'make'}
       fail-fast: false
     env:
@@ -92,10 +95,10 @@ jobs:
           key: >
             ${{ matrix.os }}-boost-${{ matrix.boost-version }}-msvc-${{
             matrix.version }}-${{ hashFiles('.github/workflows/build.yml') }}
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.9
       - name: Install Python dependencies
         run: |
           pip install bfg9000
