@@ -42,7 +42,7 @@ jobs:
           # Windows builds
           - {os: windows-2016,   compiler: msvc, version: '14.16',
              boost-version: '1.72.0'}
-          - {os: windows-latest, compiler: msvc, version: '14.28',
+          - {os: windows-latest, compiler: msvc, version: '14.29',
              boost-version: '1.72.0'}
 
           # macOS builds
@@ -60,7 +60,7 @@ jobs:
           - {os: ubuntu-latest, compiler: clang, version: '11',
              flags: '-DNDEBUG', extra-desc: 'NDEBUG'}
           - {os: windows-latest, compiler: msvc, flags: '/DNDEBUG',
-             version: '14.28', boost-version: '1.72.0', extra-desc: 'NDEBUG'}
+             version: '14.29', boost-version: '1.72.0', extra-desc: 'NDEBUG'}
           - {os: macos-latest, compiler: clang, flags: '-DNDEBUG',
              extra-desc: 'NDEBUG'}
 
