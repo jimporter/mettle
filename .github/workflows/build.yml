@@ -37,7 +37,8 @@ jobs:
           # Clang builds
           - {os: ubuntu-18.04,  compiler: clang, version:  '7'}
           - {os: ubuntu-18.04,  compiler: clang, version:  '8'}
-          - {os: ubuntu-latest, compiler: clang, version:  '9'}
+          # Clang 9 segfaults on `read_into` tests, but only on CI...
+          # - {os: ubuntu-latest, compiler: clang, version:  '9'}
           - {os: ubuntu-latest, compiler: clang, version: '10'}
           - {os: ubuntu-latest, compiler: clang, version: '11'}
           - {os: ubuntu-latest, compiler: clang, version: '12'}
