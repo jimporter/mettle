@@ -55,13 +55,13 @@ $ mettle test_file1 "caliber test_*.cpp"
 
 ### Generic options
 
-#### --help (-h) { #help-option }
+#### `--help` (`-h`) { #help-option }
 
 Show help and usage information.
 
 ### Driver options
 
-#### --timeout *N* (-t) { #timeout-option }
+#### <code>--timeout *N*</code> (`-t`) { #timeout-option }
 
 Time out and fail any tests that take longer than *N* milliseconds to execute.
 
@@ -69,12 +69,12 @@ Time out and fail any tests that take longer than *N* milliseconds to execute.
     [`--no-subproc`](#no-subproc-option) can't be specified while using this
     option.
 
-#### --test *REGEX* (-T) { #test-option }
+#### <code>--test *REGEX*</code> (`-T`) { #test-option }
 
 Filter the tests that will be run to those matching a regex. If `--test` is
 specified multiple times, tests that match *any* of the regexes will be run.
 
-#### --attr *ATTR[=VALUE],...* (-a) { #attr-option }
+#### <code>--attr *ATTR*[=*VALUE*],...</code> (`-a`) { #attr-option }
 
 Filter the tests that will be run based on the tests'
 [attributes](writing-tests.md#test-attributes). Tests matching each of the
@@ -109,7 +109,7 @@ examples to get a better sense of how this works:
 
     Run tests that match either attribute.
 
-#### --no-subproc { #no-subproc-option }
+#### `--no-subproc` { #no-subproc-option }
 
 By default, mettle creates a subprocess for each test, in order to detect
 crashes during the execution of a test. To disable this, you can pass
@@ -119,7 +119,7 @@ driver.
 
 ### Output options
 
-#### --output *FORMAT* (-o) { #output-option }
+#### <code>--output *FORMAT*</code> (`-o`) { #output-option }
 
 Set the output format for the test results. If `--output` isn't passed, the
 format is set to *brief*. The available formats are:
@@ -134,31 +134,31 @@ format is set to *brief*. The available formats are:
 * `xunit`: Log the test results in xUnit format to the file specified by
   [`--file`](#file-option).
 
-#### --color *[WHEN]* (-c) { #color-option }
+#### <code>--color [*WHEN*]</code> (`-c`) { #color-option }
 
 Print test results in color. This is good if your terminal supports colors,
 since it makes the results much easier to read! `WHEN` can be one of `always`
 (the default if you don't explicitly specify `WHEN`), `never`, or `auto`.
 
-#### --runs *N* (-n) { #runs-option }
+#### <code>--runs *N*</code> (`-n`) { #runs-option }
 
 Run the tests a total of *N* times. This is useful for catching intermittent
 failures. At the end, the summary will show the output of each failure for every
 test.
 
-#### --show-terminal { #show-terminal-option }
+#### `--show-terminal` { #show-terminal-option }
 
 Show the terminal output (stdout and stderr) of each test after it finishes. To
 enable this, [`--no-subproc`](#no-subproc-option) can't be specified (if
 `--no-subproc` *is* specified, the terminal output will just appear in-line with
 the tests).
 
-#### --show-time { #show-time-option }
+#### `--show-time` { #show-time-option }
 
 Show the duration (in milliseconds) of each test as it runs, as well as the
 total time of the entire job.
 
-#### --file *[FILE]* { #file-option }
+#### <code>--file [*FILE*]</code> { #file-option }
 
 The file to print test results to; only applies to the `xunit` [output
 format](#output-option). Defaults to `mettle.xml`.
