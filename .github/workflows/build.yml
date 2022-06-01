@@ -43,11 +43,11 @@ jobs:
           - {os: ubuntu-latest, compiler: clang, version: '12'}
 
           # Windows builds
-          - {os: windows-2019, compiler: msvc, version: '14.16',    # VS 2017
+          - {os: windows-2019,   compiler: msvc, version: '14.16',  # VS 2017
              boost-version: '1.78.0'}
-          - {os: windows-2019, compiler: msvc, version: '14.29',    # VS 2019
+          - {os: windows-2019,   compiler: msvc, version: '14.29',  # VS 2019
              boost-version: '1.78.0'}
-          - {os: windows-latest, compiler: msvc, version: '14.31',  # VS 2022
+          - {os: windows-latest, compiler: msvc, version: '14.32',  # VS 2022
              boost-version: '1.78.0'}
 
           # macOS builds
