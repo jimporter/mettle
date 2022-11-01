@@ -87,20 +87,20 @@ jobs:
       COMMONFLAGS: '-Wall -Wextra -pedantic -Werror'
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Cache Boost binaries
         if: startsWith(matrix.os, 'windows-') && matrix.boost-version
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v3
         id: cache-boost
         with:
           path: C:\boost-${{ matrix.boost-version }}
           key: >
             ${{ matrix.os }}-boost-${{ matrix.boost-version }}-msvc-${{
             matrix.version }}-${{ hashFiles('.github/workflows/build.yml') }}
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v1
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: '3.10'
       - name: Install Python dependencies
         run: |
           pip install bfg9000
