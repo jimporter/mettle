@@ -302,12 +302,16 @@ expectation instead:</p>
 
 <h3 id="throwntypewhat_matcher">thrown&lt;<em>Type</em>&gt;(<em>what_matcher</em>)<a class="headerlink" href="#throwntypewhat_matcher" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if an exception of type <code>Type</code> (or a subclass of
-<code>Type</code>) is thrown and whose <code>what()</code> member function matches <code>what_matcher</code>.</p>
+<code>Type</code>) is thrown and whose <code>what()</code> member function matches <code>what_matcher</code>.
+This is equivalent to <code>thrown_raw&lt;Type&gt;(exception_what(what_matcher))</code>.</p>
 <h3 id="throwntype">thrown&lt;<em>Type</em>&gt;()<a class="headerlink" href="#throwntype" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if an exception of type <code>Type</code> (or a subclass of
 <code>Type</code>) is thrown; equivalent to: <code>thrown&lt;Type&gt;(anything())</code>.</p>
 <h3 id="thrown">thrown()<a class="headerlink" href="#thrown" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if an exception of <em>any</em> type <code>Type</code> is thrown.</p>
+<h3 id="exception_whatwhat_matcher">exception_what(<em>what_matcher</em>)<a class="headerlink" href="#exception_whatwhat_matcher" title="Permanent link">§</a></h3>
+<p>A matcher that returns <code>true</code> if the value is an exception whose <code>what()</code> member
+function matching <code>what_matcher</code>.</p>
 <h3 id="thrown_rawtypematcher">thrown_raw&lt;<em>Type</em>&gt;(<em>matcher</em>)<a class="headerlink" href="#thrown_rawtypematcher" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if an exception of type <code>Type</code> (or a subclass of
 <code>Type</code>) is thrown and whose value matches <code>matcher</code>.</p>
