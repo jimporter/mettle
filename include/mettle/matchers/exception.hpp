@@ -86,13 +86,18 @@ namespace mettle {
     );
   }
 
-  template<typename Exception, typename T>
-  auto thrown(T &&thing) {
-    return thrown_raw<Exception>(filter(
+  template<typename T>
+  auto exception_what(T &&thing) {
+    return filter(
       [](auto &&e) { return std::string(e.what()); },
       ensure_matcher(std::forward<T>(thing)),
       "what: "
-    ));
+    );
+  }
+
+  template<typename Exception, typename T>
+  auto thrown(T &&thing) {
+    return thrown_raw<Exception>(exception_what(std::forward<T>(thing)));
   }
 
   template<typename Exception>

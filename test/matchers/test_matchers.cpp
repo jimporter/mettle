@@ -724,6 +724,16 @@ suite<> test_matchers("matchers", [](auto &_) {
              equal_to("threw " + ex_name + "(what: message)"));
     });
 
+    _.test("exception_what(what)", []() {
+      std::runtime_error e("message");
+      expect(e, exception_what("message"));
+      expect(e, is_not(exception_what("wrong")));
+
+      expect(exception_what("message").desc(), equal_to("what: \"message\""));
+      expect(exception_what("wwrong")(e).message,
+             equal_to("what: \"message\""));
+    });
+
     _.test("thrown_raw<T>()", [thrower, int_thrower, noop]() {
       expect(thrower, thrown_raw<std::runtime_error>(anything()));
       expect(thrower, is_not(thrown_raw<std::logic_error>( anything() )));

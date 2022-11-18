@@ -10,6 +10,7 @@ in progress
 - `expect` now takes a universal reference for the value to test to support
   matchers which need access to non-const objects (e.g. to call a non-const
   member function)
+- New matcher `exception_what()`
 
 ### Bug fixes
 - Test failures across multiple runs are now correctly groups in the summary
