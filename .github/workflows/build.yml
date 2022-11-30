@@ -153,7 +153,7 @@ jobs:
           if ("${{ steps.cache-boost.outputs.cache-hit }}" -ne "true" ) {
             ${boost_ver} = "${{ matrix.boost-version }}" -replace '\.','_'
             ${boostexe} = "boost_${boost_ver}-msvc-${msvcver}-64.exe"
-            curl -LO https://sourceforge.net/projects/boost/files/boost-binaries/${{ matrix.boost-version }}/${boostexe}
+            curl --retry 3 --retry-all-errors -LO https://sourceforge.net/projects/boost/files/boost-binaries/${{ matrix.boost-version }}/${boostexe}
             Start-Process -Wait -FilePath ".\${boostexe}" "/SILENT","/SP-","/SUPPRESSMSGBOXES","/DIR=${boostroot}"
           }
           echo "BOOST_INCLUDEDIR=${boostroot}" >> ${env:GITHUB_ENV}
