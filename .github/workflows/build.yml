@@ -33,21 +33,23 @@ jobs:
              flags: '-Wsuggest-override'}
           - {os: ubuntu-latest, compiler: gcc, version: '11',
              flags: '-Wsuggest-override'}
+          - {os: ubuntu-22.04,  compiler: gcc, version: '12',
+             flags: '-Wsuggest-override'}
 
           # Clang builds
-          - {os: ubuntu-18.04,  compiler: clang, version:  '7'}
-          - {os: ubuntu-18.04,  compiler: clang, version:  '8'}
           - {os: ubuntu-latest, compiler: clang, version:  '9'}
           - {os: ubuntu-latest, compiler: clang, version: '10'}
           - {os: ubuntu-latest, compiler: clang, version: '11'}
           - {os: ubuntu-latest, compiler: clang, version: '12'}
+          - {os: ubuntu-latest, compiler: clang, version: '13'}
+          - {os: ubuntu-latest, compiler: clang, version: '14'}
 
           # Windows builds
           - {os: windows-2019,   compiler: msvc, version: '14.16',  # VS 2017
              boost-version: '1.78.0'}
           - {os: windows-2019,   compiler: msvc, version: '14.29',  # VS 2019
              boost-version: '1.78.0'}
-          - {os: windows-latest, compiler: msvc, version: '14.33',  # VS 2022
+          - {os: windows-latest, compiler: msvc, version: '14.34',  # VS 2022
              boost-version: '1.78.0'}
 
           # macOS builds
@@ -60,27 +62,27 @@ jobs:
              boost-version: '1.58.0'}
 
           # NDEBUG builds
-          - {os: ubuntu-latest, compiler: gcc, version: '11',
+          - {os: ubuntu-22.04, compiler: gcc, version: '12',
              flags: '-Wsuggest-override -DNDEBUG', extra-desc: 'NDEBUG'}
-          - {os: ubuntu-latest, compiler: clang, version: '12',
+          - {os: ubuntu-latest, compiler: clang, version: '14',
              flags: '-DNDEBUG', extra-desc: 'NDEBUG'}
           - {os: windows-latest, compiler: msvc, flags: '/DNDEBUG',
-             version: '14.29', boost-version: '1.72.0', extra-desc: 'NDEBUG'}
+             version: '14.34', boost-version: '1.78.0', extra-desc: 'NDEBUG'}
           - {os: macos-latest, compiler: clang, flags: '-DNDEBUG',
              extra-desc: 'NDEBUG'}
 
           # C++20 builds
-          - {os: ubuntu-latest, compiler: gcc, version: '11',
+          - {os: ubuntu-22.04, compiler: gcc, version: '12',
              options: '--std=c++20', flags: '-Wsuggest-override',
              boost-version: '1.78.0', extra-desc: 'c++20'}
-          - {os: ubuntu-latest, compiler: clang, version: '12',
+          - {os: ubuntu-latest, compiler: clang, version: '14',
              options: '--std=c++20', boost-version: '1.78.0',
              extra-desc: 'c++20'}
 
           # Make-backend builds
-          - {os: ubuntu-latest, compiler: gcc, version: '11',
+          - {os: ubuntu-22.04, compiler: gcc, version: '12',
              backend: 'make', flags: '-Wsuggest-override'}
-          - {os: ubuntu-latest, compiler: clang, version: '12',
+          - {os: ubuntu-latest, compiler: clang, version: '14',
              backend: 'make'}
       fail-fast: false
     env:
