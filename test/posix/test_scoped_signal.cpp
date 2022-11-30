@@ -6,6 +6,8 @@ using namespace mettle;
 #include <system_error>
 #include <vector>
 
+#include <string.h>
+
 #include <mettle/driver/posix/scoped_signal.hpp>
 using namespace mettle::posix;
 

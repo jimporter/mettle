@@ -86,9 +86,9 @@ struct fixture {
   fixture() : pipe(parent, test_uid(1) << 32), child(stream) {}
 
   recording_logger parent;
+  std::stringstream stream;
   log::pipe pipe;
   log::child child;
-  std::stringstream stream;
 };
 
 suite<fixture> test_child("child/pipe loggers", [](auto &_) {

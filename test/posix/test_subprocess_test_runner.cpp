@@ -6,6 +6,7 @@ using namespace mettle;
 #include <thread>
 
 #include <signal.h>
+#include <string.h>
 
 #include <mettle/driver/run_tests.hpp>
 #include <mettle/driver/subprocess_test_runner.hpp>

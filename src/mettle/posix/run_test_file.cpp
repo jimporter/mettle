@@ -1,6 +1,7 @@
 #include "run_test_file.hpp"
 
 #include <signal.h>
+#include <string.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
 
