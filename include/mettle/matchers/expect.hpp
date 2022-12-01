@@ -7,7 +7,7 @@
 
 #include "core.hpp"
 #include "result.hpp"
-#include "detail/source_location.hpp"
+#include "../detail/source_location.hpp"
 
 #ifndef METTLE_NO_MACROS
 #  ifdef METTLE_NO_SOURCE_LOCATION

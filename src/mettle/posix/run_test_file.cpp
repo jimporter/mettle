@@ -11,21 +11,28 @@
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
 
+#include <mettle/detail/source_location.hpp>
 #include <mettle/driver/exit_code.hpp>
 #include <mettle/driver/posix/scoped_pipe.hpp>
 
 #include "../../err_string.hpp"
 
-// XXX: Use std::source_location instead when we're able.
-#define PARENT_FAILED() parent_failed(__FILE__, __LINE__)
+#ifdef METTLE_NO_SOURCE_LOCATION
+#  define PARENT_FAILED() parent_failed(                           \
+     METTLE_SOURCE_LOCATION::current(__FILE__, __func__, __LINE__) \
+   )
+#else
+#  define PARENT_FAILED() parent_failed()
+#endif
 
 namespace mettle::posix {
 
   namespace {
 
-    file_result parent_failed(const char *file, std::size_t line) {
+    file_result parent_failed(METTLE_SOURCE_LOCATION loc =
+                              METTLE_SOURCE_LOCATION::current()) {
       std::ostringstream ss;
-      ss << "Fatal error at " << file << ":" << line << "\n"
+      ss << "Fatal error at " << loc.file_name() << ":" << loc.line() << "\n"
          << err_string(errno);
       return {false, ss.str()};
     }

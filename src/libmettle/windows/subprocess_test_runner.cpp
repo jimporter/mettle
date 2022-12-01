@@ -6,23 +6,30 @@
 
 #include <windows.h>
 
+#include <mettle/detail/source_location.hpp>
 #include <mettle/driver/exit_code.hpp>
 #include <mettle/driver/windows/scoped_pipe.hpp>
 #include <mettle/driver/windows/subprocess.hpp>
 
 #include "../../err_string.hpp"
 
-// XXX: Use std::source_location instead when we're able.
-#define METTLE_FAILED() failed(__FILE__, __LINE__)
+#ifdef METTLE_NO_SOURCE_LOCATION
+#  define METTLE_FAILED() failed(                                    \
+       METTLE_SOURCE_LOCATION::current(__FILE__, __func__, __LINE__) \
+   )
+#else
+#  define METTLE_FAILED() failed()
+#endif
 
 namespace mettle {
 
   using namespace windows;
 
   namespace {
-    test_result failed(const char *file, std::size_t line) {
+    test_result failed(METTLE_SOURCE_LOCATION loc =
+                       METTLE_SOURCE_LOCATION::current()) {
       std::ostringstream ss;
-      ss << "Fatal error at " << file << ":" << line << "\n"
+      ss << "Fatal error at " << loc.file_name() << ":" << loc.line() << "\n"
          << err_string(GetLastError());
       return {false, ss.str()};
     }
