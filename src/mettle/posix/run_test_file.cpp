@@ -18,8 +18,8 @@
 #include "../../err_string.hpp"
 
 #ifdef METTLE_NO_SOURCE_LOCATION
-#  define PARENT_FAILED() parent_failed(                           \
-     METTLE_SOURCE_LOCATION::current(__FILE__, __func__, __LINE__) \
+#  define PARENT_FAILED() parent_failed(                                      \
+     ::mettle::detail::source_location::current(__FILE__, __func__, __LINE__) \
    )
 #else
 #  define PARENT_FAILED() parent_failed()
@@ -29,8 +29,8 @@ namespace mettle::posix {
 
   namespace {
 
-    file_result parent_failed(METTLE_SOURCE_LOCATION loc =
-                              METTLE_SOURCE_LOCATION::current()) {
+    file_result parent_failed(detail::source_location loc =
+                                detail::source_location::current()) {
       std::ostringstream ss;
       ss << "Fatal error at " << loc.file_name() << ":" << loc.line() << "\n"
          << err_string(errno);

@@ -3,19 +3,22 @@
 
 #include <cstdint>
 
-// Only GCC has the intrinsics necessary to support this shim.
-#if !defined(__GNUG__) || defined(__clang__)
+#ifdef __has_builtin
+#  if !__has_builtin(__builtin_FILE)
+#    define METTLE_NO_SOURCE_LOCATION
+#  endif
+#else
 #  define METTLE_NO_SOURCE_LOCATION
 #endif
 
 namespace mettle::detail {
 
-  class source_location {
+  class source_location_shim {
   public:
-    constexpr source_location() noexcept :
+    constexpr source_location_shim() noexcept :
       file_("unknown"), func_("unknown"), line_(0), col_(0) {}
 
-    static source_location current(
+    static source_location_shim current(
 #ifdef METTLE_NO_SOURCE_LOCATION
       const char *file = "unknown",
       const char *func = "unknown",
@@ -28,7 +31,7 @@ namespace mettle::detail {
       std::uint_least32_t col = 0
 #endif
     ) {
-      source_location loc;
+      source_location_shim loc;
       loc.file_ = file;
       loc.func_ = func;
       loc.line_ = line;

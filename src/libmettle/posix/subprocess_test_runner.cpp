@@ -23,8 +23,8 @@
 #endif
 
 #ifdef METTLE_NO_SOURCE_LOCATION
-#  define PARENT_FAILED() parent_failed(                           \
-     METTLE_SOURCE_LOCATION::current(__FILE__, __func__, __LINE__) \
+#  define PARENT_FAILED() parent_failed(                                      \
+     ::mettle::detail::source_location::current(__FILE__, __func__, __LINE__) \
    )
 #else
 #  define PARENT_FAILED() parent_failed()
@@ -50,8 +50,8 @@ namespace mettle {
 
     void sig_chld(int) {}
 
-    test_result parent_failed(METTLE_SOURCE_LOCATION loc =
-                       METTLE_SOURCE_LOCATION::current()) {
+    test_result parent_failed(detail::source_location loc =
+                                detail::source_location::current()) {
       if(test_pgid)
         killpg(test_pgid, SIGKILL);
       test_pgid = 0;

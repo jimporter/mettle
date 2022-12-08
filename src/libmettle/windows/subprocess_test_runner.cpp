@@ -14,8 +14,8 @@
 #include "../../err_string.hpp"
 
 #ifdef METTLE_NO_SOURCE_LOCATION
-#  define METTLE_FAILED() failed(                                    \
-       METTLE_SOURCE_LOCATION::current(__FILE__, __func__, __LINE__) \
+#  define METTLE_FAILED() failed(                                             \
+     ::mettle::detail::source_location::current(__FILE__, __func__, __LINE__) \
    )
 #else
 #  define METTLE_FAILED() failed()
@@ -26,8 +26,8 @@ namespace mettle {
   using namespace windows;
 
   namespace {
-    test_result failed(METTLE_SOURCE_LOCATION loc =
-                       METTLE_SOURCE_LOCATION::current()) {
+    test_result failed(detail::source_location loc =
+                         detail::source_location::current()) {
       std::ostringstream ss;
       ss << "Fatal error at " << loc.file_name() << ":" << loc.line() << "\n"
          << err_string(GetLastError());
