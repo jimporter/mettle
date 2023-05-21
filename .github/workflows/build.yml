@@ -183,6 +183,6 @@ jobs:
           toolset: ${{ matrix.version }}
       - name: Run tests
         run: |
-          9k build --backend=${{ matrix.backend || 'ninja' }} --vendorize ${{ matrix.options }}
+          9k build --backend=${{ matrix.backend || 'ninja' }} ${{ matrix.options }}
           cd build
           ${{ matrix.backend || 'ninja' }} test

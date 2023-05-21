@@ -1,6 +1,6 @@
 # -*- python -*-
 
-bfg9000_required_version('>=0.6.0')
+bfg9000_required_version('>=0.7.0')
 
 mettle_version = '0.2-dev'
 project('mettle', mettle_version, intermediate_dirs=False)
@@ -8,18 +8,10 @@ project('mettle', mettle_version, intermediate_dirs=False)
 global_options([opts.std(argv.std)], lang='c++')
 
 pthread = [package('pthread')] if env.target_platform.family == 'posix' else []
-
-if path_exists('include/bencode.hpp'):
-    bencode = []
-elif argv.vendorize:
-    bencode = []
-    env.run(source_file('scripts/vendorize_bencode.py'))
-else:
-    bencode = [package('bencodehpp', headers='bencode.hpp', libs=None)]
-
-boost_hdrs = boost_package(version='>=1.55')
-iostreams = boost_package('iostreams', version='>=1.55')
-prog_opts = boost_package('program_options', version='>=1.55')
+bencode = package('bencodehpp')
+boost_hdrs = package('boost', version='>=1.55')
+iostreams = package('boost', 'iostreams', version='>=1.55')
+prog_opts = package('boost', 'program_options', version='>=1.55')
 
 compile_opts = [opts.define('METTLE_VERSION', '"{}"'.format(mettle_version))]
 if argv.safe_exit:
@@ -33,7 +25,7 @@ libmettle = shared_library(
                      filter=filter_by_platform),
     includes=includes,
     compile_options=compile_opts,
-    packages=pthread + bencode + [iostreams, prog_opts],
+    packages=pthread + [bencode, iostreams, prog_opts],
     version='0.2', soversion='1',
 )
 
@@ -42,13 +34,13 @@ mettle_objs = object_files(
                      filter=filter_by_platform),
     includes=includes,
     options=compile_opts,
-    packages=bencode + [iostreams, prog_opts],
+    packages=[bencode, iostreams, prog_opts],
 )
 mettle = executable(
     'mettle',
     files=mettle_objs,
     libs=[libmettle],
-    packages=bencode + [iostreams, prog_opts],
+    packages=[bencode, iostreams, prog_opts],
 )
 
 pkg_config(auto_fill=True)
@@ -79,7 +71,7 @@ for src in find_paths('test/**/*.cpp', extra='*.hpp',
         files=[src] + [mettle_objs[i] for i in extra_files.get(src.suffix, [])],
         includes=includes,
         libs=libmettle,
-        packages=bencode + [boost_hdrs] + extra_pkgs.get(src.suffix, []),
+        packages=[bencode, boost_hdrs] + extra_pkgs.get(src.suffix, []),
     ), driver=driver)
 
 test_data = alias('test-data', [

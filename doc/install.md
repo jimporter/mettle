@@ -14,14 +14,10 @@ more detail below):
 ```sh
 pip install bfg9000
 cd path/to/mettle
-9k build/ --vendorize
+9k build/
 cd build/
 ninja install
 ```
-
-!!! note
-    If you already have [bencode.hpp](https://github.com/jimporter/bencode.hpp)
-    installed, you can remove `--vendorize` from the above commands.
 
 ## Dependencies
 
@@ -34,11 +30,6 @@ Before you get started with mettle, you'll need to install its dependencies:
 * [Boost](http://www.boost.org/) 1.55+
 * [bencode.hpp](https://github.com/jimporter/bencode.hpp)
 * [bfg9000](https://jimporter.github.io/bfg9000/)
-
-To simplify the installation of bencode.hpp, you can pass `--vendorize` during
-configuration (or run `scripts/vendorize_bencode.py` directly). This will
-download and copy bencode.hpp to mettle's include directory, so you won't have
-to install it yourself.
 
 !!! note
     If you plan to use libc++, [this

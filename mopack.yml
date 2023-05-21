@@ -1,0 +1,5 @@
+packages:
+  bencodehpp:
+    origin: git
+    repository: https://github.com/jimporter/bencode.hpp.git
+    commit: 2312b988924ce178e6b5283cbb831068925fc2eb
