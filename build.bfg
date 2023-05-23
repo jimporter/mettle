@@ -1,4 +1,4 @@
-# -*- python -*-
+# -*- mode: python; mode: bfg9000 -*-
 
 bfg9000_required_version('>=0.7.0')
 
