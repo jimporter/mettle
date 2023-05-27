@@ -59,6 +59,10 @@ $ mettle test_file1 "caliber test_*.cpp"
 
 Show help and usage information.
 
+#### `--version { #version-option }
+
+Show the current version of mettle.
+
 ### Driver options
 
 #### <code>--timeout *N*</code> (`-t`) { #timeout-option }
