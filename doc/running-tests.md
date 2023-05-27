@@ -59,7 +59,7 @@ $ mettle test_file1 "caliber test_*.cpp"
 
 Show help and usage information.
 
-#### `--version { #version-option }
+#### `--version` { #version-option }
 
 Show the current version of mettle.
 
