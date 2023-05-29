@@ -39,11 +39,11 @@ namespace mettle {
     using namespace boost::program_options;
     options_description desc("Driver options");
     desc.add_options()
-      ("timeout,t", value(&opts.timeout)->value_name("TIME"), "timeout in ms")
+      ("attr,a", value(&opts.filters.by_attr)->value_name("ATTR[=VALUE]"),
+       "attributes of tests to run")
       ("test,T", value(&opts.filters.by_name)->value_name("REGEX"),
        "regex matching names of tests to run")
-      ("attr,a", value(&opts.filters.by_attr)->value_name("ATTR"),
-       "attributes of tests to run")
+      ("timeout,t", value(&opts.timeout)->value_name("MS"), "timeout in ms")
     ;
     return desc;
   }
@@ -77,20 +77,20 @@ namespace mettle {
 
     options_description desc("Output options");
     desc.add_options()
-      ("output,o", value(&opts.output)->value_name("FORMAT"), ss.str().c_str())
       ("color", value(&opts.color)->value_name("WHEN"),
        "show colored output (one of: never, auto, always; default: auto)")
       (",c", value(&opts.color)->zero_tokens()
             ->implicit_value(color_option::always, "always"),
        "show colored output (equivalent to `--color=always`)")
+      ("file,f", value(&opts.file)->value_name("FILE"),
+       ("file to print test results to (for xunit only; default: " + opts.file +
+        ")").c_str())
+      ("output,o", value(&opts.output)->value_name("FORMAT"), ss.str().c_str())
       ("runs,n", value(&opts.runs)->value_name("N"), "number of test runs")
       ("show-terminal", value(&opts.show_terminal)->zero_tokens(),
        "show terminal output for each test")
       ("show-time", value(&opts.show_time)->zero_tokens(),
        "show the duration for each test")
-      ("file,f", value(&opts.file)->value_name("FILE"),
-       ("file to print test results to (for xunit only; default: " + opts.file +
-        ")").c_str())
     ;
     return desc;
   }

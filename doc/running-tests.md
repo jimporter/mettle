@@ -65,19 +65,6 @@ Show the current version of mettle.
 
 ### Driver options
 
-#### <code>--timeout *N*</code> (`-t`) { #timeout-option }
-
-Time out and fail any tests that take longer than *N* milliseconds to execute.
-
-!!! warning
-    [`--no-subproc`](#no-subproc-option) can't be specified while using this
-    option.
-
-#### <code>--test *REGEX*</code> (`-T`) { #test-option }
-
-Filter the tests that will be run to those matching a regex. If `--test` is
-specified multiple times, tests that match *any* of the regexes will be run.
-
 #### <code>--attr *ATTR*[=*VALUE*],...</code> (`-a`) { #attr-option }
 
 Filter the tests that will be run based on the tests'
@@ -117,11 +104,38 @@ examples to get a better sense of how this works:
 
 By default, mettle creates a subprocess for each test, in order to detect
 crashes during the execution of a test. To disable this, you can pass
-`--no-subproc`, and all the tests will run in the same process. This option can
-only be specified for the individual test binaries, *not* for the `mettle`
-driver.
+`--no-subproc`, and all the tests will run in the same process.
+
+!!! note
+    This option can only be specified for the individual test binaries, *not*
+    for the `mettle` driver.
+
+#### <code>--test *REGEX*</code> (`-T`) { #test-option }
+
+Filter the tests that will be run to those matching a regex. If `--test` is
+specified multiple times, tests that match *any* of the regexes will be run.
+
+#### <code>--timeout *MS*</code> (`-t`) { #timeout-option }
+
+Time out and fail any tests that take longer than *MS* milliseconds to execute.
+
+!!! warning
+    This option is ignored when used with [`--no-subproc`](#no-subproc-option).
 
 ### Output options
+
+#### <code>--color [*WHEN*]</code> (`-c`) { #color-option }
+
+Print test results in color. This is good if your terminal supports colors,
+since it makes the results much easier to read! `WHEN` can be one of `always`
+(the default if you don't explicitly specify `WHEN`), `never`, or `auto`. The
+short `-c` form doesn't accept a value for `WHEN` and instead always colors the
+output.
+
+#### <code>--file [*FILE*]</code> { #file-option }
+
+The file to print test results to; only applies to the `xunit` [output
+format](#output-option). Defaults to `mettle.xml`.
 
 #### <code>--output *FORMAT*</code> (`-o`) { #output-option }
 
@@ -138,12 +152,6 @@ format is set to *brief*. The available formats are:
 * `xunit`: Log the test results in xUnit format to the file specified by
   [`--file`](#file-option).
 
-#### <code>--color [*WHEN*]</code> (`-c`) { #color-option }
-
-Print test results in color. This is good if your terminal supports colors,
-since it makes the results much easier to read! `WHEN` can be one of `always`
-(the default if you don't explicitly specify `WHEN`), `never`, or `auto`.
-
 #### <code>--runs *N*</code> (`-n`) { #runs-option }
 
 Run the tests a total of *N* times. This is useful for catching intermittent
@@ -152,17 +160,12 @@ test.
 
 #### `--show-terminal` { #show-terminal-option }
 
-Show the terminal output (stdout and stderr) of each test after it finishes. To
-enable this, [`--no-subproc`](#no-subproc-option) can't be specified (if
-`--no-subproc` *is* specified, the terminal output will just appear in-line with
-the tests).
+Show the terminal output (stdout and stderr) of each test after it finishes.
+
+!!! warning
+    This option is ignored when used with [`--no-subproc`](#no-subproc-option).
 
 #### `--show-time` { #show-time-option }
 
 Show the duration (in milliseconds) of each test as it runs, as well as the
 total time of the entire job.
-
-#### <code>--file [*FILE*]</code> { #file-option }
-
-The file to print test results to; only applies to the `xunit` [output
-format](#output-option). Defaults to `mettle.xml`.
