@@ -1,0 +1,150 @@
+.TH METTLE 1
+.SH NAME
+mettle \- unified test driver
+.SH SYNOPSIS
+.B mettle
+[\fB\-h\fR|\fB\-\-help\fR]
+.br
+.B mettle
+[\fB\-\-version\fR]
+.sp -1
+.ad l
+.HP 7
+.nh
+.B mettle
+[\fB\-a\fR|\fB\-\-attr\fR\ [!]\fIATTR\fP[=\fIVALUE\fP][,...]]
+[\fB\-c\fR] [\fB\-\-color\fR\ \fIWHEN\fP]
+[\fB\-\-file\fR\ \fIFILE\fP]
+[\fB\-n\fR|\fB\-\-runs\fR\ \fIN\fP]
+[\fB\-\-no\-subproc\fR]
+[\fB\-o\fR|\fB\-\-output\fR \fIFORMAT\fP]
+[\fB\-\-show\-terminal\fR]
+[\fB\-\-show\-time\fR]
+[\fB\-t\fR|\fB\-\-timeout\fR\ \fIMS\fP]
+[\fB\-T\fR|\fB\-\-test\fR\ \fIREGEX\fP]
+\fICOMMAND\fP...
+.hy
+.ad b
+.SH DESCRIPTION
+.B mettle
+is a unified test driver, letting you run multiple test commands together and
+unifying their results.  You can pass the names of binaries to execute:
+.sp
+.RS
+mettle test_file1 test_file2
+.RE
+.sp
+This executes 'test_file1' and 'test_file2' in sequence.  You can also can pass
+a command along with arguments for it:
+.sp
+.RS
+mettle test_file1 "caliber test_foo.cpp test_bar.cpp"
+.RE
+.sp
+This executes `test_file1` and then executes `caliber` with two arguments:
+`test_foo.cpp` and `test_bar.cpp`.  Further, you can pass wildcards inside
+quoted arguments:
+.sp
+.RS
+mettle test_file1 "caliber test_*.cpp"
+.RE
+.sp
+.SH OPTIONS
+.TP
+\fB\-a\fR [!]\fIATTR\fP[=\fIVALUE\fP][,...], \fB\-\-attr\fR\=[!]\fIATTR\fP[=\fIVALUE\fP][,...]
+filter tests to run based on their attributes and/or values; if specified
+multiple times, run tests matching any of the filters
+
+normally, run tests that match the attribute/value, or prepend with '!' to run
+tests that don't match; here are some examples:
+.RS
+.TP
+.B --attr slow
+run only tests with the attribute 'slow'
+.TP
+.B --attr protocol=http
+run only tests with the attribute 'protocol' having a value of 'http'
+.TP
+.B --attr '!slow'
+run only tests \fIwithout\fP the attribute 'slow' (note the use of quotation
+marks, since many shells treat '!' as a special character)
+.TP
+.B --attr '!protocol=http'
+run only tests \fIwithout\fP the attribute 'protocol', or which have 'protocol'
+set to something other than 'http'
+.TP
+.B --attr slow,protocol=http
+run only tests that match both attributes
+.TP
+.B --attr slow --attr protocol=http
+run tests that match either attribute
+.RE
+.TP
+\fB\-c\fR, \fB\-\-color\fR\=\fIWHEN\fP
+print test results in color; \fIWHEN\fP can be 'always', 'never', or 'auto'; the
+short form \fB\-c\fR is equivalent to \fB\-\-color=always\fR
+.TP
+\fB\-\-file\fR\=\fIFILE\fP
+file to write test results to; only applies to \fB\-\-format=xunit\fR and
+defaults to 'mettle.xml'
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+show help and usage information
+.TP
+\fB\-n\fR \fIN\fP, \fB\-\-runs\fR\=\fIN\fP
+run the tests a total of \fIN\fP times (useful for catching intermittent
+failures)
+.TP
+\fB\-\-no\-subproc\fR
+don't create a subprocess for each test (by default, \fBmettle\fR runs tests in
+their own subprocesses to detect crashes during the execution of a test)
+.TP
+\fB\-o\fR \fIFORMAT\fP, \fB\-\-output\fR=\fIFORMAT\fP
+output format for the results, defaulting to 'brief'; can be one of the
+following:
+.RS
+.TP
+.B silent
+don't show any output during the test run; only show a summary at the end
+.TP
+.B counter
+show a single line per run counting up the total number of passed, failed, and
+skipped tests
+.TP
+.B brief
+show a single character for each test; '.' means a passed test, '!' a failed
+test, and '_' a skipped test
+.TP
+.B verbose
+show the full name of tests and suites as they're being run
+.TP
+.B xunit
+log the test results in xUnit format to the file specified by \fB\-\-file\FR
+.RE
+.TP
+\fB\-\-show\-terminal\fR
+show the terminal output (stdout and stderr) of each test after it finishes
+(ignored when \fB\-\-no\-subproc\fR is specified)
+.TP
+\fB\-\-show\-time\fR
+show the duration (in milliseconds) of each test as it runs, plus the total time
+of the entire job
+.TP
+\fB\-t\fR \fIMS\fP, \fB\-\-timeout\fR\=\fIMS\fP
+time out and fail any tests that take longer than \fIMS\fP milliseconds to
+execute (ignored when \fB\-\-no\-subproc\fR is specified)
+.TP
+\fB\-T\fR \fIREGEX\fP, \fB\-\-test\fR\ \fIREGEX\fP
+only run tests whose name matches \fIREGEX\fP; if specified multiple times, run
+tests matching any of the regexes
+.TP
+\fB\-\-version\fR
+show the current version of \fBmettle\fR
+.SH AUTHOR
+Written by Jim Porter.
+.SH REPORTING BUGS
+Report bugs to <https://github.com/jimporter/mettle/issues>
+.SH COPYRIGHT
+Copyright \(co 2014-2023, Jim Porter.  License BSD-3-Clause.
+.SH SEE ALSO
+Full documentation at: <https://jimporter.github.io/mettle/>

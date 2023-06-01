@@ -65,7 +65,7 @@ Show the current version of mettle.
 
 ### Driver options
 
-#### <code>--attr *ATTR*[=*VALUE*],...</code> (`-a`) { #attr-option }
+#### <code>--attr [!]*ATTR*[=*VALUE*],...</code> (`-a`) { #attr-option }
 
 Filter the tests that will be run based on the tests'
 [attributes](writing-tests.md#test-attributes). Tests matching each of the
@@ -124,7 +124,7 @@ Time out and fail any tests that take longer than *MS* milliseconds to execute.
 
 ### Output options
 
-#### <code>--color [*WHEN*]</code> (`-c`) { #color-option }
+#### <code>--color *WHEN*</code> (`-c`) { #color-option }
 
 Print test results in color. This is good if your terminal supports colors,
 since it makes the results much easier to read! `WHEN` can be one of `always`

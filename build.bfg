@@ -45,6 +45,7 @@ mettle = executable(
 
 pkg_config(auto_fill=True)
 install(mettle, libmettle, includes)
+install(man_page('man/mettle.1'))
 
 extra_files = {
     'test/driver/test_test_command.cpp': ['src/mettle/test_command.cpp'],
