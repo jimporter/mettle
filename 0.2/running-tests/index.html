@@ -179,7 +179,7 @@ quoted arguments:</p>
 <h4 id="version-option"><code>--version</code><a class="headerlink" href="#version-option" title="Permanent link">§</a></h4>
 <p>Show the current version of mettle.</p>
 <h3 id="driver-options">Driver options<a class="headerlink" href="#driver-options" title="Permanent link">§</a></h3>
-<h4 id="attr-option"><code>--attr <em>ATTR</em>[=<em>VALUE</em>],...</code> (<code>-a</code>)<a class="headerlink" href="#attr-option" title="Permanent link">§</a></h4>
+<h4 id="attr-option"><code>--attr [!]<em>ATTR</em>[=<em>VALUE</em>],...</code> (<code>-a</code>)<a class="headerlink" href="#attr-option" title="Permanent link">§</a></h4>
 <p>Filter the tests that will be run based on the tests'
 <a href="../writing-tests/#test-attributes">attributes</a>. Tests matching each of the
 attributes (and, optionally, values) will be run by the test driver. If <code>--attr</code>
@@ -233,7 +233,7 @@ specified multiple times, tests that match <em>any</em> of the regexes will be r
 <p>This option is ignored when used with <a href="#no-subproc-option"><code>--no-subproc</code></a>.</p>
 </div>
 <h3 id="output-options">Output options<a class="headerlink" href="#output-options" title="Permanent link">§</a></h3>
-<h4 id="color-option"><code>--color [<em>WHEN</em>]</code> (<code>-c</code>)<a class="headerlink" href="#color-option" title="Permanent link">§</a></h4>
+<h4 id="color-option"><code>--color <em>WHEN</em></code> (<code>-c</code>)<a class="headerlink" href="#color-option" title="Permanent link">§</a></h4>
 <p>Print test results in color. This is good if your terminal supports colors,
 since it makes the results much easier to read! <code>WHEN</code> can be one of <code>always</code>
 (the default if you don't explicitly specify <code>WHEN</code>), <code>never</code>, or <code>auto</code>. The
