@@ -11,7 +11,7 @@ beginning of our examples:
 
 This includes *all* the headers necessary to use mettle. Alternately, you can
 `#include <mettle/header_only.hpp>` if you prefer to use mettle without
-compiling `libmettle.so` and the `mettle` universal driver.
+compiling `libmettle.so` and the `mettle` unified driver.
 
 If you'd rather include a smaller subset of headers, e.g. to improve compilation
 speeds, you'll need the following to define tests and suites:

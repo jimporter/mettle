@@ -28,9 +28,9 @@ to multiple implementations or preconditions.
 
 #### Aggregate everything
 
-The `mettle` universal test runner makes it a snap to write multiple,
-independent test files – even ones running completely different kinds of tests –
-and aggregate them into a single list of results.
+The `mettle` unified test runner makes it a snap to write multiple, independent
+test files – even ones running completely different kinds of tests – and
+aggregate them into a single list of results.
 
 ## A Brief Example
 

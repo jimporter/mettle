@@ -16,7 +16,7 @@ $ ./test_my_code
 [Below](#command-line-options), we'll see a list of the options we can pass to
 the text executable, letting you tailor the output or how the tests are run.
 
-## Using the *mettle* universal test driver
+## Using the *mettle* unifieid test driver
 
 For testing larger projects, it's generally recommended to divide your test
 suites into multiple `.cpp` files and compile them into separate binaries. This
