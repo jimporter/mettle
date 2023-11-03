@@ -15,6 +15,7 @@ if __name__ == '__main__':
     parser.add_argument('version', help='the current mettle version number')
 
     args = parser.parse_args()
+    cfg_args = ['-F', args.config_file] if args.config_file else []
 
     v = Version(args.version)
     alias = 'dev' if v.is_devrelease else 'latest'
@@ -22,7 +23,7 @@ if __name__ == '__main__':
     short_version = '{}.{}'.format(*v.release[:2])
 
     info = json.loads(subprocess.check_output(
-        ['mike', 'list', '-j', alias],
+        ['mike', 'list', '-j', alias] + cfg_args,
         universal_newlines=True
     ))
     if info['version'] != short_version:
@@ -30,6 +31,5 @@ if __name__ == '__main__':
                    info['title'])
         subprocess.check_call(['mike', 'retitle', info['version'], t])
 
-    cfg_args = ['-F', args.config_file] if args.config_file else []
     subprocess.check_call(['mike', 'deploy', '-ut', title,
                            short_version, alias] + cfg_args)

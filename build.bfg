@@ -92,7 +92,8 @@ alias('examples', [
 
 doc_deploy = source_file('scripts/doc_deploy.py')
 mkdocs = generic_file('mkdocs.yml')
-command('doc-serve', cmd=['mike', 'serve', '--dev-addr=0.0.0.0:8000'])
+command('doc-serve', cmd=['mike', 'serve', '--config-file', mkdocs,
+                          '--dev-addr=0.0.0.0:8000'])
 command('doc-serve-working', cmd=['mkdocs', 'serve', '--config-file', mkdocs,
                                   '--dev-addr=0.0.0.0:8000'])
 command('doc-deploy', cmd=[doc_deploy, '--config-file', mkdocs,
