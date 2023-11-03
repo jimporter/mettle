@@ -143,32 +143,29 @@
 themselves, and how to group them together to perform higher-level operations on
 them. Throughout this page, we'll assume that the following appears at the
 beginning of our examples:</p>
-<pre><code class="c++">#include &lt;mettle.hpp&gt;
+<pre><code class="language-c++">#include &lt;mettle.hpp&gt;
 </code></pre>
-
 <p>This includes <em>all</em> the headers necessary to use mettle. Alternately, you can
 <code>#include &lt;mettle/header_only.hpp&gt;</code> if you prefer to use mettle without
 compiling <code>libmettle.so</code> and the <code>mettle</code> unified driver.</p>
 <p>If you'd rather include a smaller subset of headers, e.g. to improve compilation
 speeds, you'll need the following to define tests and suites:</p>
-<pre><code class="c++">#include &lt;mettle/suite.hpp&gt;
+<pre><code class="language-c++">#include &lt;mettle/suite.hpp&gt;
 
 // Choose only one of these:
 #include &lt;mettle/driver/lib_driver.hpp&gt;    // The driver to go with libmettle.so
 #include &lt;mettle/driver/header_driver.hpp&gt; // The header-only driver
 </code></pre>
-
 <h2 id="defining-suites">Defining suites<a class="headerlink" href="#defining-suites" title="Permanent link">§</a></h2>
 <p>In mettle, all tests are grouped by suites. Suites are generally defined as
 global variables (we'll see more ways to define suites later), and take two
 arguments in the constructor: a string name, and a callback function taking a
 reference to a <code>mettle::suite_builder&lt;mettle::expectation_failure&gt;</code>. Generally,
 we just define the callback as a generic lambda:</p>
-<pre><code class="c++">mettle::suite&lt;&gt; my_suite(&quot;my suite&quot;, [](auto &amp;_) {
+<pre><code class="language-c++">mettle::suite&lt;&gt; my_suite(&quot;my suite&quot;, [](auto &amp;_) {
   /* ... */
 });
 </code></pre>
-
 <p>If you don't plan to use mettle's <a href="../expectations/">expectations</a> for checking
 program state, you can replace <code>mettle::suite&lt;&gt;</code> with
 <code>mettle::basic_suite&lt;my_exception&gt;</code> to create a test suite using your own
@@ -179,13 +176,12 @@ without a doubt, the most important part of a <em>test</em> suite. We define our
 inside our suite's callback function, using the <code>suite_builder</code> passed into it.
 Like our suite, each test takes two arguments: a string name, and a callback
 function defining the test. However, the test's callback takes no arguments:</p>
-<pre><code class="c++">mettle::suite&lt;&gt; my_suite(&quot;my suite&quot;, [](auto &amp;_) {
+<pre><code class="language-c++">mettle::suite&lt;&gt; my_suite(&quot;my suite&quot;, [](auto &amp;_) {
   _.test(&quot;my test&quot;, []() {
     /* ... */
   });
 });
 </code></pre>
-
 <p>Inside the test's callback function, we can write our actual test. If our code
 throws an exception, the test will fail; otherwise, it passes. Most of your
 tests should use <em><a href="../expectations/">expectations</a></em> (similar to assertions) to
@@ -196,7 +192,7 @@ part of your test fails.</p>
 teardown code. Test fixtures let you do this (mostly) automatically. If a test
 suite has a <code>setup</code> or <code>teardown</code> function set, they'll run before (or after)
 each test in the suite:</p>
-<pre><code class="c++">mettle::suite&lt;&gt; with_setup(&quot;my suite&quot;, [](auto &amp;_) {
+<pre><code class="language-c++">mettle::suite&lt;&gt; with_setup(&quot;my suite&quot;, [](auto &amp;_) {
   _.setup([]() {
     /* ... */
   });
@@ -210,7 +206,6 @@ each test in the suite:</p>
   });
 });
 </code></pre>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For symmetry with third-party test types, you can also express <code>_.test(...)</code>
@@ -221,7 +216,7 @@ as <code>mettle::test(_, ...)</code>. The same applies to <code>_.setup(...)</co
 <p>When testing something particularly complex, you might find it useful to group
 test suites together. You can do this by creating a subsuite inside a parent
 suite:</p>
-<pre><code class="c++">mettle::suite&lt;&gt; with_subsuites(&quot;suite with subsuites&quot;, [](auto &amp;_) {
+<pre><code class="language-c++">mettle::suite&lt;&gt; with_subsuites(&quot;suite with subsuites&quot;, [](auto &amp;_) {
   _.subsuite(&quot;subsuite&quot;, [](auto &amp;_) {
     _.test(&quot;my subtest&quot;, []() {
       /* ... */
@@ -229,7 +224,6 @@ suite:</p>
   });
 });
 </code></pre>
-
 <p>You might have noticed above that, unlike for the root suite, our subsuite
 doesn't contain an empty template parameter list (read: there's no <code>&lt;&gt;</code>). Since
 <code>subsuite</code> is just a member function, the angle brackets aren't necessary, but
@@ -237,19 +231,17 @@ what if you want to supply a fixture for your subsuite? That's where it gets a
 bit more complex. As you may recall, our suite's callback uses a generic lambda,
 and so <code>_</code> is a <em>dependent type</em>. Template member functions of a dependent type
 must be prefixed with the <code>template</code> keyword, like so:</p>
-<pre><code class="c++">_.template subsuite&lt;int&gt;(&quot;subsuite&quot;, [](auto &amp;_) {
+<pre><code class="language-c++">_.template subsuite&lt;int&gt;(&quot;subsuite&quot;, [](auto &amp;_) {
   /* ... */
 });
 </code></pre>
-
 <p>However, this is rather ugly. To eliminate the <code>template</code> keyword, we could
 either redefine our lambda to no longer be generic, or just use the
 <code>mettle::subsuite</code> helper:</p>
-<pre><code class="c++">mettle::subsuite&lt;&gt;(_, &quot;subsuite&quot;, [](auto &amp;_) {
+<pre><code class="language-c++">mettle::subsuite&lt;&gt;(_, &quot;subsuite&quot;, [](auto &amp;_) {
   /* ... */
 });
 </code></pre>
-
 <h3 id="nested-setup-and-teardown">Nested setup and teardown<a class="headerlink" href="#nested-setup-and-teardown" title="Permanent link">§</a></h3>
 <p>As you might imagine, a test in a subsuite uses not only the subsuite's setup
 and teardown functions, but inherits the parent suite's as well (and so on up
@@ -280,7 +272,7 @@ the other tests. A fixture's lifetime is as follows:</p>
 </ol>
 <p>Declaring a fixture is simple. Just pass the type of your fixture in the
 template parameters of your <code>mettle::suite</code> object:</p>
-<pre><code class="c++">struct my_fixture {
+<pre><code class="language-c++">struct my_fixture {
   int i;
 };
 
@@ -294,7 +286,6 @@ mettle::suite&lt;my_fixture&gt; with_fixture(&quot;suite with a fixture&quot;, [
   });
 });
 </code></pre>
-
 <p>Astute readers will notice that a test fixture could easily be used to replace
 the <code>setup</code> and <code>teardown</code> functions by using RAII. However, both options are
 supported, since it's often simpler to write a setup/teardown code than to write
@@ -308,7 +299,7 @@ cases, you can use <a href="#fixture-factories">fixture factories</a>, discussed
 <p>Like the nested setup and teardown functions, test fixtures are also
 inherited in subsuites. This allows a parent suite to handle common fixtures for
 a bunch of subsuites, reducing code duplication:</p>
-<pre><code class="c++">mettle::suite&lt;int&gt; nested_fixtures(&quot;suite with subsuites&quot;, [](auto &amp;_) {
+<pre><code class="language-c++">mettle::suite&lt;int&gt; nested_fixtures(&quot;suite with subsuites&quot;, [](auto &amp;_) {
   _.setup([](int &amp;i) {
     i = 1;
   });
@@ -330,7 +321,6 @@ a bunch of subsuites, reducing code duplication:</p>
   });
 });
 </code></pre>
-
 <p>As you can see above, subsuites inherit their parents' fixtures, much like they
 inherit their parents' setup and teardown functions.</p>
 <h3 id="fixture-factories">Fixture factories<a class="headerlink" href="#fixture-factories" title="Permanent link">§</a></h3>
@@ -339,17 +329,16 @@ default-constructible. In these cases, you can use a <em>fixture factory</em> to
 your fixture object with any parameters you like. For simple cases, we can use
 <code>mettle::bind_factory</code>, which takes a list of arguments and constructs an object
 of your fixture's type with those arguments:</p>
-<pre><code class="c++">mettle::suite&lt;int&gt;
+<pre><code class="language-c++">mettle::suite&lt;int&gt;
 bound_fixture(&quot;using bind_factory&quot;, mettle::bind_factory(3), [](auto &amp;_) {
   _.test([](int &amp;i) {
     mettle::expect(i, equal_to(3));
   });
 });
 </code></pre>
-
 <p>For more complex fixtures, you can create your own factories from scratch. A
 fixture factory is simply an object with a templated <code>make&lt;T&gt;()</code> function:</p>
-<pre><code class="c++">struct my_factory {
+<pre><code class="language-c++">struct my_factory {
   template&lt;typename T&gt;
   T make() {
     return T(12);
@@ -360,10 +349,9 @@ mettle::suite&lt;my_fixture&gt; with_factory(&quot;suite&quot;, my_factory{}, []
   /* ... */
 });
 </code></pre>
-
 <p>In fact, even "ordinary" fixtures use their own factory: <code>auto_factory</code>. The
 following code snippets are equivalent:</p>
-<pre><code class="c++">mettle::suite&lt;my_fixture&gt;
+<pre><code class="language-c++">mettle::suite&lt;my_fixture&gt;
 without_auto_factory(&quot;suite&quot;, [](auto &amp;_) {
   /* ... */
 });
@@ -373,7 +361,6 @@ with_auto_factory(&quot;suite&quot;, mettle::auto_factory, [](auto &amp;_) {
   /* ... */
 });
 </code></pre>
-
 <p>Later, we'll learn more about fixture factories and how to
 <a href="#transforming-fixture-types">transform</a> their types.</p>
 <h2 id="parameterizing-tests">Parameterizing tests<a class="headerlink" href="#parameterizing-tests" title="Permanent link">§</a></h2>
@@ -382,15 +369,14 @@ run the <em>same</em> tests on several different types of objects. In this case,
 you need to do is specify <em>multiple</em> fixtures when defining a test suite. The
 example below creates two test suites, one with a fixture of <code>int</code> and one with
 a fixture of <code>float</code>:</p>
-<pre><code class="c++">mettle::suite&lt;int, float&gt; param_test(&quot;parameterized suite&quot;, [](auto &amp;_) {
+<pre><code class="language-c++">mettle::suite&lt;int, float&gt; param_test(&quot;parameterized suite&quot;, [](auto &amp;_) {
   _.test(&quot;my test&quot;, [](auto &amp;fixture) {
     /* ... */
   });
 });
 </code></pre>
-
 <p>This works just the same for subsuites as well:</p>
-<pre><code class="c++">mettle::suite&lt;&gt; param_sub_test(&quot;parameterized subsuites&quot;, [](auto &amp;_) {
+<pre><code class="language-c++">mettle::suite&lt;&gt; param_sub_test(&quot;parameterized subsuites&quot;, [](auto &amp;_) {
   mettle::subsuite&lt;int, float&gt;(_, &quot;parameterized suite 1&quot;, [](auto &amp;_) {
     /* ... */
   });
@@ -400,7 +386,6 @@ a fixture of <code>float</code>:</p>
   });
 });
 </code></pre>
-
 <p>One subtle difference you may have noticed is that now, our test definitions
 use a generic lambda: <code>[](auto &amp;fixture) { /* ... */ }</code>. As you might imagine,
 this allows the test function to accept a fixture of either an <code>int</code> or a
@@ -414,7 +399,7 @@ even more with them, though: a fixture factory's <code>make&lt;T&gt;()</code> ca
 <em>any</em> type (including <code>void</code>!), not just <code>T</code>. This can be useful for more
 complex tests, like testing a container type with several different element
 types:</p>
-<pre><code class="c++">struct vector_factory {
+<pre><code class="language-c++">struct vector_factory {
   template&lt;typename T&gt;
   std::vector&lt;T&gt; make() {
     return {};
@@ -427,25 +412,23 @@ mettle::suite&lt;int, float&gt; vector_suite(&quot;suite&quot;, vector_factory{}
   });
 });
 </code></pre>
-
 <h3 id="type-only-fixtures">Type-only fixtures<a class="headerlink" href="#type-only-fixtures" title="Permanent link">§</a></h3>
 <p>As mentioned above, a fixture factory's <code>make&lt;T&gt;()</code> can return <code>void</code>. In this
 case, the suite has no fixture whatsoever. This is primarily useful when you
 want to parameterize on a list of types, but you don't want to automatically
 instantiate the fixture object. The built-in fixture factory <code>type_only</code> handles
 this for you. In particular, note the parameter-less test function:</p>
-<pre><code class="c++">mettle::suite&lt;int, float&gt; type_only(&quot;suite&quot;, mettle::type_only, [](auto &amp;_) {
+<pre><code class="language-c++">mettle::suite&lt;int, float&gt; type_only(&quot;suite&quot;, mettle::type_only, [](auto &amp;_) {
   _.test(&quot;empty()&quot;, []() {
     /* ... */
   });
 });
 </code></pre>
-
 <h3 id="getting-the-parameterized-type">Getting the parameterized type<a class="headerlink" href="#getting-the-parameterized-type" title="Permanent link">§</a></h3>
 <p>In some cases, you may want to know the parameterized type, e.g. if you'd like
 to create your own instances of the object. You can retrieve this via the
 <code>fixture_type</code> trait (or the <code>fixture_type_t</code> alias) like so:</p>
-<pre><code class="c++">mettle::suite&lt;int, float&gt; param_type(&quot;suite&quot;, mettle::type_only, [](auto &amp;_) {
+<pre><code class="language-c++">mettle::suite&lt;int, float&gt; param_type(&quot;suite&quot;, mettle::type_only, [](auto &amp;_) {
   using Fixture = mettle::fixture_type_t&lt;decltype(_)&gt;;
 
   _.test(&quot;my test&quot;, []() {
@@ -453,7 +436,6 @@ to create your own instances of the object. You can retrieve this via the
   });
 });
 </code></pre>
-
 <h2 id="test-attributes">Test attributes<a class="headerlink" href="#test-attributes" title="Permanent link">§</a></h2>
 <p>For large projects with many tests, it can be useful to run only a subset of
 them, instead of the entire collection. While splitting up tests by file can
@@ -480,19 +462,17 @@ when they're encountered (either <code>mettle::attr_action::run</code> or
 <code>skip</code> attribute is just a <code>bool_attr</code> whose action is <code>attr_action::skip</code>.</p>
 <p>To define an attribute, you just need to create a global instance of one of the
 aforementioned attribute kinds:</p>
-<pre><code class="c++">mettle::bool_attr slow(&quot;slow&quot;);
+<pre><code class="language-c++">mettle::bool_attr slow(&quot;slow&quot;);
 mettle::bool_attr busted(&quot;busted&quot;, attr_action::skip);
 mettle::list_attr tags(&quot;tags&quot;);
 </code></pre>
-
 <h3 id="using-attributes">Using attributes<a class="headerlink" href="#using-attributes" title="Permanent link">§</a></h3>
 <p>It's easy to apply attributes to your tests: simply create instances of each
 kind of attribute you want, and pass them to the test creation function
 immediately after the test name:</p>
-<pre><code class="c++">_.test(&quot;my test&quot;, {mettle::skip, slow(&quot;takes too long&quot;), tags(&quot;cat&quot;, &quot;goat&quot;)},
+<pre><code class="language-c++">_.test(&quot;my test&quot;, {mettle::skip, slow(&quot;takes too long&quot;), tags(&quot;cat&quot;, &quot;goat&quot;)},
        [](auto &amp;fixture) { /* ... */ });
 </code></pre>
-
 <p>This creates a <code>mettle::attributes</code> object that gets stored alongside the test.
 As you might notice, <code>bool_attrs</code> can be implicitly converted to an attribute
 instance, but other types require you to call them to list their values.</p>
@@ -505,7 +485,7 @@ together for each test.</p>
 <p>For <code>bool_attr</code>s and <code>string_attr</code>s, children with the same attribute as their
 parents will <em>override</em> the parent's attribute, but for <code>list_attr</code>s, the
 values from the parent and child will be merged:</p>
-<pre><code class="c++">mettle::suite&lt;&gt;
+<pre><code class="language-c++">mettle::suite&lt;&gt;
 attr_suite(&quot;my suite&quot;, {mettle::skip(&quot;broken&quot;), tags(&quot;cat&quot;)}, [](auto &amp;_) {
   _.test(&quot;my test&quot;, {slow, mettle::skip(&quot;fixme&quot;), tags(&quot;dog&quot;)}, []() {
     /* This test has the following attributes: slow, skip(&quot;fixme&quot;), and
@@ -513,18 +493,16 @@ attr_suite(&quot;my suite&quot;, {mettle::skip(&quot;broken&quot;), tags(&quot;c
   });
 });
 </code></pre>
-
 <h4 id="mixing-fixture-factories-and-attributes">Mixing fixture factories and attributes<a class="headerlink" href="#mixing-fixture-factories-and-attributes" title="Permanent link">§</a></h4>
 <p>At this point, you may be wondering how to specify <em>both</em> a fixture factory and
 a set of attributes for suite. Since they're both optional arguments that appear
 between the suite's name and its creation function, which goes first? <em>The
 attributes always go first</em>:</p>
-<pre><code class="c++">mettle::suite&lt;int&gt;
+<pre><code class="language-c++">mettle::suite&lt;int&gt;
 the_works(&quot;my complicated suite&quot;, {mettle::skip}, type_only, [](auto &amp;_) {
   /* ... */
 });
 </code></pre>
-
 <p>There's an easy rule to remember this: since attributes are a way of identifying
 the suite, they go near the other identifier: the name. Likewise, fixture
 factories affect how the suite is <em>executed</em>, so they go near the creation
@@ -541,8 +519,8 @@ function, which also affects its execution.</p></div>
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
         <script src="../js/base.js" defer></script>
-        <script src="../js/version-select.js" defer></script>
         <script src="../search/main.js" defer></script>
+        <script src="../js/version-select.js" defer></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
     <div class="modal-dialog">

@@ -141,7 +141,7 @@ steps needed to write, build, and run a simple test.</p>
 <h2 id="your-first-test">Your first test<a class="headerlink" href="#your-first-test" title="Permanent link">§</a></h2>
 <p>Let's get started by taking a look at the test file we used when <a href="../running-tests/">running
 tests</a>. We'll discuss each part in detail below:</p>
-<pre><code class="c++">#include &lt;mettle.hpp&gt;
+<pre><code class="language-c++">#include &lt;mettle.hpp&gt;
 using namespace mettle;
 
 suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
@@ -150,7 +150,6 @@ suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
   });
 });
 </code></pre>
-
 <h3 id="dissecting-the-test-file">Dissecting the test file<a class="headerlink" href="#dissecting-the-test-file" title="Permanent link">§</a></h3>
 <p>First up, the obvious: we <code>#include &lt;mettle.hpp&gt;</code>, which imports all the code we
 need to build and run simple tests: test suites, matchers, and a test runner.
@@ -161,11 +160,10 @@ the type <code>mettle::suite&lt;&gt;</code>, and take a string name and a callba
 takes a single argument, a reference to a
 <code>mettle::suite_builder&lt;mettle::expectation_failure&gt;</code>, but since that's pretty
 long, we conventionally just say <code>auto &amp;</code> and use a generic lambda instead:</p>
-<pre><code class="c++">suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
+<pre><code class="language-c++">suite&lt;&gt; first(&quot;my first suite&quot;, [](auto &amp;_) {
   /* ... */
 });
 </code></pre>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>There are lots of other options you can pass to the suite's constructor,
@@ -176,15 +174,13 @@ later.</p>
 <p>With the suite defined, now we just need to write our tests and add them via
 the suite builder. Like suites, tests have both a string name and a callback
 function, but this time the callback is the code to run when the test executes:</p>
-<pre><code class="c++">_.test(&quot;my first test&quot;, []() {
+<pre><code class="language-c++">_.test(&quot;my first test&quot;, []() {
   /* ... */
 });
 </code></pre>
-
 <p>Inside our test function, we need to write some test code:</p>
-<pre><code class="c++">expect(true, equal_to(true));
+<pre><code class="language-c++">expect(true, equal_to(true));
 </code></pre>
-
 <p>This is an <em>expectation</em>. We'll discuss them in more detail
 <a href="../expectations/">later</a>, but in short, they define the things we actually want
 to <em>test</em> in our tests. This expectation makes sure that <code>true</code> is equal to
@@ -194,24 +190,22 @@ to <em>test</em> in our tests. This expectation makes sure that <code>true</code
 <p>Building a test is straightforward. Since mettle provides its own test runner
 with a <code>main()</code> function, the above source code is all you need for a
 fully-operational test. Just compile the test like so:</p>
-<pre><code class="sh">$ clang++ -std=c++17 -o test_first test_first.cpp -lmettle
+<pre><code class="language-sh">$ clang++ -std=c++17 -o test_first test_first.cpp -lmettle
 </code></pre>
-
 <p>Remember, mettle is a C++17 library, so you'll likely need to tell the compiler
 to use C++17 mode (or C++1z mode for slightly older compilers).</p>
 <h2 id="running-the-test">Running the test<a class="headerlink" href="#running-the-test" title="Permanent link">§</a></h2>
 <p>Once you've built the test, you just need to run the binary and observe the
 results. In this case, the results will look like:</p>
-<pre><code class="sh">$ ./test_first
+<pre><code class="language-sh">$ ./test_first
 .
 
 1/1 test passed
 </code></pre>
-
 <p>The single dot (<code>.</code>) shows that our one and only test passed, which the summary
 confirms. However, if the unthinkable has happened and our test fails, we'd see
 something like this instead:</p>
-<pre><code class="sh">$ ./test_first
+<pre><code class="language-sh">$ ./test_first
 !
 
 0/1 tests passed
@@ -219,7 +213,6 @@ something like this instead:</p>
     expected: true
     actual:   false
 </code></pre>
-
 <p>Here, we see an exclamation point (<code>!</code>) instead of a dot, to indicate a failed
 test. At the end of the output, the details of the failure are shown. With this
 information, we can hopefully diagnose the failure and fix the bug.</p>
@@ -238,8 +231,8 @@ Tests</a>.</p></div>
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
         <script src="../js/base.js" defer></script>
-        <script src="../js/version-select.js" defer></script>
         <script src="../search/main.js" defer></script>
+        <script src="../js/version-select.js" defer></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
     <div class="modal-dialog">

@@ -149,13 +149,12 @@ and second, a string describing the matcher.</p>
 <p>This form of <code>basic_matcher</code> creates a <code>basic_matcher&lt;void, F&gt;</code>, where <code>F</code> is
 the type of the function. For instance, here's a simple matcher that returns
 <code>true</code> when the actual value is 4:</p>
-<pre><code class="c++">auto match_four() {
+<pre><code class="language-c++">auto match_four() {
   return basic_matcher([](const auto &amp;value) -&gt; bool {
     return value == 4;
   }, &quot;== 4&quot;);
 }
 </code></pre>
-
 <h3 id="basic_matchercapture-function-prefix-suffix">basic_matcher(<em>capture</em>, <em>function</em>, <em>prefix</em>, [<em>suffix</em>])<a class="headerlink" href="#basic_matchercapture-function-prefix-suffix" title="Permanent link">§</a></h3>
 <p>You can also <em>capture</em> a value to use with your matcher; while you certainly
 <em>can</em> capture the value via a lambda, passing the variable directly to
@@ -167,7 +166,7 @@ are string that will be prepended (or appended) to the printed form of
 <p>This form of <code>basic_matcher</code> returns a <code>basic_matcher&lt;T, F&gt;</code>, where <code>T</code> is
 the type of the capture and <code>F</code> is the type of the function. Here's an example
 of a matcher that returns <code>true</code> when two numbers are off by one:</p>
-<pre><code class="c++">template&lt;typename T&gt;
+<pre><code class="language-c++">template&lt;typename T&gt;
 auto off_by_one(T &amp;&amp;expected) {
   return basic_matcher(
     std::forward&lt;T&gt;(expected),
@@ -178,7 +177,6 @@ auto off_by_one(T &amp;&amp;expected) {
   );
 }
 </code></pre>
-
 <h3 id="ensure_matcherthing">ensure_matcher(<em>thing</em>)<a class="headerlink" href="#ensure_matcherthing" title="Permanent link">§</a></h3>
 <p>Sometimes, a matcher should be able to accept other matchers as an argument.
 However, we also typically want to be able to pass in arbitrary objects as a
@@ -187,7 +185,7 @@ shorthand to implicitly call the <code>equal_to</code> matcher. In this case, we
 <p><code>ensure_matcher</code> wraps an object with the <code>equal_to</code> matcher, or returns the
 passed-in matcher if the object is already a matcher. As an example, let's
 create a matcher that returns <code>true</code> if exactly one of its arguments is <code>true</code>:</p>
-<pre><code class="c++">template&lt;typename T&gt;
+<pre><code class="language-c++">template&lt;typename T&gt;
 auto either(T &amp;&amp;a, T &amp;&amp;b) {
   auto a_matcher = ensure_matcher(std::forward&lt;T&gt;(a));
   auto b_matcher = ensure_matcher(std::forward&lt;T&gt;(b));
@@ -197,7 +195,6 @@ auto either(T &amp;&amp;a, T &amp;&amp;b) {
   }, a_matcher.desc() + &quot; xor &quot; + b_matcher.desc());
 }
 </code></pre>
-
 <h2 id="starting-from-scratch">Starting from scratch<a class="headerlink" href="#starting-from-scratch" title="Permanent link">§</a></h2>
 <p>For particularly complex matchers, <code>basic_matcher</code> may not provide much value.
 In these cases, you can instead build your own matcher from scratch. First, and
@@ -209,7 +206,7 @@ ambiguity between actual matchers and types that just have a similar interface.<
 <p>A matcher made from scratch isn't much more complex than one made using the
 helper functions above; most of the complexity will come from the behaviors you
 define. Here's a simple example that <em>never</em> returns <code>true</code>:</p>
-<pre><code class="c++">struct nothing : matcher_tag {
+<pre><code class="language-c++">struct nothing : matcher_tag {
   template&lt;typename T&gt;
   bool operator ()(const U &amp;value) const {
     return false;
@@ -220,7 +217,6 @@ define. Here's a simple example that <em>never</em> returns <code>true</code>:</
   }
 };
 </code></pre>
-
 <h2 id="further-examples">Further examples<a class="headerlink" href="#further-examples" title="Permanent link">§</a></h2>
 <p>Naturally, many more examples of matchers can be found in mettle's own <a href="https://github.com/jimporter/tree/master/include/mettle/matchers">source
 code</a>. Feel
@@ -237,8 +233,8 @@ free to consult these to get some ideas for how to implement your own matchers!<
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
         <script src="../js/base.js" defer></script>
-        <script src="../js/version-select.js" defer></script>
         <script src="../search/main.js" defer></script>
+        <script src="../js/version-select.js" defer></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
     <div class="modal-dialog">

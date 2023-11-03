@@ -142,9 +142,8 @@ options for running it. There are two main ways to run a test executable.</p>
 <h2 id="running-the-test-executable-directly">Running the test executable directly<a class="headerlink" href="#running-the-test-executable-directly" title="Permanent link">§</a></h2>
 <p>For small projects, you may have only a single test executable. In this case,
 you can simply run the file directly:</p>
-<pre><code class="sh">$ ./test_my_code
+<pre><code class="language-sh">$ ./test_my_code
 </code></pre>
-
 <p><a href="#command-line-options">Below</a>, we'll see a list of the options we can pass to
 the text executable, letting you tailor the output or how the tests are run.</p>
 <h2 id="using-the-mettle-unifieid-test-driver">Using the <em>mettle</em> unifieid test driver<a class="headerlink" href="#using-the-mettle-unifieid-test-driver" title="Permanent link">§</a></h2>
@@ -156,22 +155,19 @@ binaries at once. The interface is much like that of the individual binaries,
 and all of the command-line options above work with the <code>mettle</code> executable as
 well. To specify which of the test binaries to run, just pass their filenames to
 <code>mettle</code>:</p>
-<pre><code class="sh">$ mettle test_file1 test_file2
+<pre><code class="language-sh">$ mettle test_file1 test_file2
 </code></pre>
-
 <p>Like the individual test executables, the <code>mettle</code> driver accepts several
 <a href="#command-line-options">options</a> to modify its behavior and output.</p>
 <h3 id="forwarding-arguments">Forwarding arguments<a class="headerlink" href="#forwarding-arguments" title="Permanent link">§</a></h3>
 <p>You can also pass along arguments to a test binary by quoting the binary:</p>
-<pre><code class="sh">$ mettle test_file1 &quot;caliber test_foo.cpp test_bar.cpp&quot;
+<pre><code class="language-sh">$ mettle test_file1 &quot;caliber test_foo.cpp test_bar.cpp&quot;
 </code></pre>
-
 <p>This executes <code>test_file1</code> and then executes <code>caliber</code> with two arguments:
 <code>test_foo.cpp</code> and <code>test_bar.cpp</code>. You can also pass wildcards (globs) inside
 quoted arguments:</p>
-<pre><code class="sh">$ mettle test_file1 &quot;caliber test_*.cpp&quot;
+<pre><code class="language-sh">$ mettle test_file1 &quot;caliber test_*.cpp&quot;
 </code></pre>
-
 <h2 id="command-line-options">Command-line options<a class="headerlink" href="#command-line-options" title="Permanent link">§</a></h2>
 <h3 id="generic-options">Generic options<a class="headerlink" href="#generic-options" title="Permanent link">§</a></h3>
 <h4 id="help-option"><code>--help</code> (<code>-h</code>)<a class="headerlink" href="#help-option" title="Permanent link">§</a></h4>
@@ -281,8 +277,8 @@ total time of the entire job.</p></div>
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
         <script src="../js/base.js" defer></script>
-        <script src="../js/version-select.js" defer></script>
         <script src="../search/main.js" defer></script>
+        <script src="../js/version-select.js" defer></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
     <div class="modal-dialog">

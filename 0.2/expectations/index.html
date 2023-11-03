@@ -149,30 +149,26 @@ detail <a href="#matchers">later</a>, but for now, let's just look at a simple m
 <code>mettle::equal_to(x)</code> creates a matcher that will return <code>true</code> when the actual
 value passed to <code>expect</code> is equal to <code>x</code> (according to the definition of <code>==</code>
 for the type(s) in question).  Here it is all put together:</p>
-<pre><code class="c++">mettle::expect(the_beast, mettle::equal_to(666));
+<pre><code class="language-c++">mettle::expect(the_beast, mettle::equal_to(666));
 </code></pre>
-
 <p>If this expectation failed, you'd see something like the following logged to
 your console (with the name of the failing <a href="../writing-tests/#tests">test case</a>
 preceding it):</p>
-<pre><code class="plain">/path/to/test_file.cpp:13
+<pre><code class="language-plain">/path/to/test_file.cpp:13
 expected: 666
 actual:   123
 </code></pre>
-
 <h3 id="describing-an-expectation">Describing an expectation<a class="headerlink" href="#describing-an-expectation" title="Permanent link">§</a></h3>
 <p>You can also provide an description for an expectation to make it easier to
 figure out what it was testing if you get a failure:</p>
-<pre><code class="c++">mettle::expect(&quot;is 'to mega therion'?&quot;, the_beast, mettle::equal_to(666));
+<pre><code class="language-c++">mettle::expect(&quot;is 'to mega therion'?&quot;, the_beast, mettle::equal_to(666));
 </code></pre>
-
 <p>If this expectation fails, you'll see a message like the previous failure, but
 with the description shown as well:</p>
-<pre><code class="plain">is 'to mega therion'? (/path/to/test_file.cpp:13)
+<pre><code class="language-plain">is 'to mega therion'? (/path/to/test_file.cpp:13)
 expected: 666
 actual:   123
 </code></pre>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Currently, only GCC supports getting the filename and line number
@@ -223,7 +219,7 @@ be called with a single argument (the <em>actual</em> value in the expectation) 
 returns whether the match was successful or not. To illustrate this more
 concretely, the following defines a very simple matcher that checks if an <code>int</code>
 is 0:</p>
-<pre><code class="c++">struct int_zero : matcher_tag {
+<pre><code class="language-c++">struct int_zero : matcher_tag {
   bool operator ()(int actual) const {
     return actual == 0;
   }
@@ -233,7 +229,6 @@ is 0:</p>
   }
 };
 </code></pre>
-
 <h2 id="composing-matchers">Composing matchers<a class="headerlink" href="#composing-matchers" title="Permanent link">§</a></h2>
 <p>Many of the built-in matchers, such as the <a href="../built-in-matchers/#combinatoric">combinatoric
 matchers</a>, are <em>higher-order matchers</em>. That
@@ -241,17 +236,15 @@ is, they are created by taking other matchers as arguments. This allows you to
 build more complex matchers that test multiple aspects of an object at once. For
 instance, you might want to check that a value is in the range [2, 4). With
 the <a href="../built-in-matchers/#all"><code>all</code></a> matcher, this is easy:</p>
-<pre><code class="c++">using namespace mettle;
+<pre><code class="language-c++">using namespace mettle;
 expect(x, all(greater_equal(2), less(4)));
 </code></pre>
-
 <p>Similarly, there are higher-order matchers that operate on
 <a href="../built-in-matchers/#collection">collections</a>, allowing you, for example, to
 test that all elements of a container meet a certain condition:</p>
-<pre><code class="c++">using namespace mettle;
+<pre><code class="language-c++">using namespace mettle;
 expect(v, each(greater(0)));
 </code></pre>
-
 <p>By composing matchers together, you can express <em>all</em> the expected state of an
 object in one place, making it clearer what exactly you're testing. Furthermore,
 since all matchers provide a description of what they match, these higher-order
@@ -261,7 +254,6 @@ something like this if it fails:</p>
 <pre><code>expected: all(&gt;=2, &lt;4)
 actual:   5
 </code></pre>
-
 <h2 id="mismatch-messages">Mismatch messages<a class="headerlink" href="#mismatch-messages" title="Permanent link">§</a></h2>
 <p>As we saw above, for most simple expectations, a failure will cause the
 matcher's description to be printed out along with the actual value supplied to
@@ -279,7 +271,6 @@ any). In this case, the matcher returns a <code>mettle::match_result</code> obje
 <pre><code>expected: threw std::runtime_error(what: &quot;bad&quot;)
 actual:   threw std::runtime_error(what: &quot;worse&quot;)
 </code></pre>
-
 <p>A <code>match_result</code> is implicity convertible to and from a <code>bool</code>, so matchers that
 return <code>match_result</code>s can easily be mixed with ones that return <code>bool</code>s. You
 can also use the <code>!</code> operator to invert a <code>match_result</code> and preserve its
@@ -302,8 +293,8 @@ using the <code>is_not</code> matcher.</p>
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
         <script src="../js/base.js" defer></script>
-        <script src="../js/version-select.js" defer></script>
         <script src="../search/main.js" defer></script>
+        <script src="../js/version-select.js" defer></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
     <div class="modal-dialog">

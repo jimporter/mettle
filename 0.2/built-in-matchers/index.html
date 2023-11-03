@@ -162,10 +162,9 @@ description is unclear or overly-verbose.</p>
 <p>A matcher that filters the expected value through a function before passing it
 to another matcher. This helps when creating complex matchers that test multiple
 parts of a type, such as:</p>
-<pre><code class="c++">all( filter([](auto &amp;&amp;x) { return x.first;  }, equal_to(&quot;first&quot;)),
+<pre><code class="language-c++">all( filter([](auto &amp;&amp;x) { return x.first;  }, equal_to(&quot;first&quot;)),
      filter([](auto &amp;&amp;x) { return x.second; }, greater(0)) );
 </code></pre>
-
 <p>Additionally, you may pass in a string for <code>desc</code>, which will be added as a
 prefix to <code>matcher</code>'s description. This helps provide useful output explaining
 what exactly <code>func</code> is doing to the expected value.</p>
@@ -201,10 +200,9 @@ according to the <code>&lt;</code> operator.</p>
 <h3 id="near_tovalue-epsilon">near_to(<em>value</em>[, <em>epsilon</em>])<a class="headerlink" href="#near_tovalue-epsilon" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when the actual value is approximately equal to
 <code>value</code>, specifically when:</p>
-<pre><code class="c++">auto mag = std::max&lt;T&gt;(std::abs(expected), std::abs(actual));
+<pre><code class="language-c++">auto mag = std::max&lt;T&gt;(std::abs(expected), std::abs(actual));
 std::abs(actual - expected) &lt;= mag * epsilon;
 </code></pre>
-
 <p>If <code>epsilon</code> is not specified, it defaults to
 <code>std::numeric_limits&lt;T&gt;::epsilon() * 10</code>.</p>
 <div class="admonition warning">
@@ -254,10 +252,9 @@ composed matcher.</p>
 corresponding item in <em>range</em> according to the matcher built from
 <code>meta_matcher</code>. <em>range</em> can be any iterable collection, including a
 <code>std::initializer_list</code>. This is roughly equivalent to:</p>
-<pre><code class="c++">array( meta_matcher(range[0]), meta_matcher(range[1]), ...
+<pre><code class="language-c++">array( meta_matcher(range[0]), meta_matcher(range[1]), ...
        meta_matcher(range[n]) )
 </code></pre>
-
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>When <code>meta_matcher</code> is a template function, be careful about how you pass it
@@ -296,10 +293,9 @@ if <code>predicate</code> isn't supplied).</p>
 <p>Exception matchers work a bit differently from other matchers. Since we can't
 catch an exception after the fact, we have to pass a function to our
 expectation instead:</p>
-<pre><code class="c++">expect([]() { throw std::runtime_error(&quot;uh oh&quot;); },
+<pre><code class="language-c++">expect([]() { throw std::runtime_error(&quot;uh oh&quot;); },
        thrown&lt;std::runtime_error&gt;(&quot;uh oh&quot;));
 </code></pre>
-
 <h3 id="throwntypewhat_matcher">thrown&lt;<em>Type</em>&gt;(<em>what_matcher</em>)<a class="headerlink" href="#throwntypewhat_matcher" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if an exception of type <code>Type</code> (or a subclass of
 <code>Type</code>) is thrown and whose <code>what()</code> member function matches <code>what_matcher</code>.
@@ -329,9 +325,8 @@ the process to terminate, either by signalling or by exiting. (These matchers
 will fork a child process before calling the function so that the test
 framework doesn't terminate.) Like <a href="#exception-matchers">exception matchers</a>,
 death matchers require a function to be passed to the expectation:</p>
-<pre><code class="c++">expect([]() { abort(); }, killed(SIGABRT));
+<pre><code class="language-c++">expect([]() { abort(); }, killed(SIGABRT));
 </code></pre>
-
 <h3 id="killedmatcher">killed([<em>matcher</em>])<a class="headerlink" href="#killedmatcher" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> if the function terminated the process via a
 signal. If <code>matcher</code> is specified, <code>killed</code> will only return <code>true</code> if the
@@ -352,8 +347,8 @@ will only return <code>true</code> if the exit status matches <code>matcher</cod
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
         <script src="../js/base.js" defer></script>
-        <script src="../js/version-select.js" defer></script>
         <script src="../search/main.js" defer></script>
+        <script src="../js/version-select.js" defer></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
     <div class="modal-dialog">

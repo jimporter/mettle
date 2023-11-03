@@ -146,13 +146,12 @@ Before we can start using mettle, we'll need to build and install it.</p>
 <p>Here are the necessary commands to build and install mettle, assuming you
 already have Boost and a C++17 compiler (we'll discuss all of these parts in
 more detail below):</p>
-<pre><code class="sh">pip install bfg9000
+<pre><code class="language-sh">pip install bfg9000
 cd path/to/mettle
 9k build/
 cd build/
 ninja install
 </code></pre>
-
 <h2 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">§</a></h2>
 <p>Before you get started with mettle, you'll need to install its dependencies:</p>
 <ul>
@@ -176,9 +175,8 @@ build Boost to link to it.</p>
 <p>If you don't want to install all of the above dependencies and build the
 binaries for mettle, you can use this library in a header-only mode by using
 the following instead of the usual <code>#include &lt;mettle.hpp&gt;</code>:</p>
-<pre><code class="c++">#include &lt;mettle/header_only.hpp&gt;
+<pre><code class="language-c++">#include &lt;mettle/header_only.hpp&gt;
 </code></pre>
-
 <p>However, the header-only version is quite limited and doesn't support any of the
 command-line arguments described in <a href="../running-tests/">Running Tests</a>.</p>
 <h2 id="building-and-installing">Building and installing<a class="headerlink" href="#building-and-installing" title="Permanent link">§</a></h2>
@@ -188,12 +186,11 @@ To build mettle, you'll first need to install
 you're using the <a href="https://ninja-build.org/">Ninja</a> backend for bfg9000, but you
 can replace this with any other build system bfg supports.</p>
 <p>Building with bfg9000 is straightforward. Just run the following:</p>
-<pre><code class="sh">cd path/to/mettle/
+<pre><code class="language-sh">cd path/to/mettle/
 9k build/ --vendorize
 cd build/
 ninja install
 </code></pre>
-
 <p>As noted above, if you already have bencode.hpp installed, you can remove the
 <code>--vendorize</code> argument. If you'd like to build with C++17 support, you can pass
 <code>--std=c++17</code> during configuration.</p>
@@ -205,9 +202,8 @@ about how to use bfg9000, such as changing the build backend, see its
 <p>Mettle's own tests are written entirely in mettle. (It wouldn't be a very good
 test framework otherwise!) To build and run all the tests, just call the
 following from the build directory:</p>
-<pre><code class="sh">ninja test
+<pre><code class="language-sh">ninja test
 </code></pre>
-
 <p>If you'd rather build the tests <em>without</em> running them, you can call
 <code>ninja tests</code>. In that case, you can execute the tests as described later in
 <a href="../running-tests/">Running Tests</a>.</p>
@@ -232,8 +228,8 @@ documentation.</p></div>
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
         <script src="../js/base.js" defer></script>
-        <script src="../js/version-select.js" defer></script>
         <script src="../search/main.js" defer></script>
+        <script src="../js/version-select.js" defer></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
     <div class="modal-dialog">
