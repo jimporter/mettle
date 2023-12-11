@@ -70,5 +70,5 @@ This library is licensed under the [BSD 3-Clause license](LICENSE).
 [release-link]: https://github.com/jimporter/mettle/releases/latest
 [documentation-image]: https://img.shields.io/badge/docs-mettle-blue.svg
 [documentation-link]: https://jimporter.github.io/mettle/
-[ci-image]: https://github.com/jimporter/mettle/workflows/build/badge.svg
-[ci-link]: https://github.com/jimporter/mettle/actions?query=branch%3Amaster+workflow%3Abuild
+[ci-image]: https://github.com/jimporter/mettle/actions/workflows/build.yml/badge.svg
+[ci-link]: https://github.com/jimporter/mettle/actions/workflows/build.yml?query=branch%3Amaster
