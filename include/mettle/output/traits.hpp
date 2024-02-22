@@ -38,7 +38,7 @@ namespace mettle {
 
   template<typename T>
   struct is_iterable<T, std::void_t<
-    decltype(std::begin(std::declval<T>()), std::end(std::declval<T>()))
+    decltype(std::begin(std::declval<T&>()), std::end(std::declval<T&>()))
   >> : std::true_type {};
 
 
