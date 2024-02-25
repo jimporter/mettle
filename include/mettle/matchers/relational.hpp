@@ -86,9 +86,13 @@ namespace mettle {
   };
 
   template<typename Low, typename High>
-  in_interval(Low &&, High &&) -> in_interval<Low, High>;
+  in_interval(Low &&, High &&) -> in_interval<
+    std::remove_reference_t<Low>, std::remove_reference_t<High>
+  >;
   template<typename Low, typename High>
-  in_interval(Low &&, High &&, interval) -> in_interval<Low, High>;
+  in_interval(Low &&, High &&, interval) -> in_interval<
+    std::remove_reference_t<Low>, std::remove_reference_t<High>
+  >;
 
 } // namespace mettle
 
