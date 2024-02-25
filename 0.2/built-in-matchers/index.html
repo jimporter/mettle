@@ -195,6 +195,15 @@ according to the <code>&lt;</code> operator.</p>
 <h3 id="less_equalvalue">less_equal(<em>value</em>)<a class="headerlink" href="#less_equalvalue" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when the actual value is less than or equal to
 <code>value</code> according to the <code>&lt;=</code> operator.</p>
+<h3 id="in_intervallow-high-bounds">in_interval(<em>low</em>, <em>high</em>[, <em>bounds</em>])<a class="headerlink" href="#in_intervallow-high-bounds" title="Permanent link">§</a></h3>
+<p>A matcher that returns <code>true</code> when the actual value is between <code>low</code> and <code>high</code>.
+<code>bounds</code> can be one of the following:</p>
+<ul>
+<li><code>interval::closed</code>: expects <code>low &lt;= actual &lt;= high</code></li>
+<li><code>interval::left_open</code>: expects <code>low &lt; actual &lt;= high</code></li>
+<li><code>interval::right_open</code>: expects <code>low &lt;= actual &lt; high</code> (the default)</li>
+<li><code>interval::open</code>: expects <code>low &lt; actual &lt; high</code></li>
+</ul>
 <h2 id="arithmetic">Arithmetic<a class="headerlink" href="#arithmetic" title="Permanent link">§</a></h2>
 <p class="subtitle"><em>&lt;mettle/matchers/arithmetic.hpp&gt;</em></p>
 <h3 id="near_tovalue-epsilon">near_to(<em>value</em>[, <em>epsilon</em>])<a class="headerlink" href="#near_tovalue-epsilon" title="Permanent link">§</a></h3>
