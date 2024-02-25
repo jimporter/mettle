@@ -81,6 +81,16 @@ according to the `<` operator.
 A matcher that returns `true` when the actual value is less than or equal to
 `value` according to the `<=` operator.
 
+### in_interval(*low*, *high*[, *bounds*])
+
+A matcher that returns `true` when the actual value is between `low` and `high`.
+`bounds` can be one of the following:
+
+* `interval::closed`: expects `low <= actual <= high`
+* `interval::left_open`: expects `low < actual <= high`
+* `interval::right_open`: expects `low <= actual < high` (the default)
+* `interval::open`: expects `low < actual < high`
+
 ## Arithmetic
 *&lt;mettle/matchers/arithmetic.hpp&gt;*
 {: .subtitle}

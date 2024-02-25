@@ -34,6 +34,62 @@ namespace mettle {
     return basic_matcher(std::forward<T>(expected), std::less_equal<>(), "<= ");
   }
 
+  enum class interval {
+    closed     = 0b00,
+    left_open  = 0b10,
+    right_open = 0b01,
+    open       = 0b11
+  };
+
+  template<typename Low, typename High>
+  class in_interval : public matcher_tag {
+  public:
+    in_interval(detail::any_capture<Low> low, detail::any_capture<High> high,
+                interval bounds = interval::right_open) :
+      low_(std::move(low)), high_(std::move(high)), bounds_(bounds) {}
+
+    template<typename U>
+    bool operator ()(U &&actual) const {
+      if (left_open()) {
+        if (actual <= low_.value) return false;
+      } else {
+        if (actual < low_.value) return false;
+      }
+
+      if (right_open()) {
+        if (actual >= high_.value) return false;
+      } else {
+        if (actual > high_.value) return false;
+      }
+
+      return true;
+    }
+
+    std::string desc() const {
+      std::ostringstream ss;
+      ss << "in " << (left_open() ? "(" : "[") << to_printable(low_.value)
+         << " .. " << to_printable(high_.value) << (right_open() ? ")" : "]");
+      return ss.str();
+    }
+  private:
+    inline bool left_open() const {
+      return static_cast<int>(bounds_) & static_cast<int>(interval::left_open);
+    }
+
+    inline bool right_open() const {
+      return static_cast<int>(bounds_) & static_cast<int>(interval::right_open);
+    }
+
+    detail::any_capture<Low> low_;
+    detail::any_capture<High> high_;
+    interval bounds_;
+  };
+
+  template<typename Low, typename High>
+  in_interval(Low &&, High &&) -> in_interval<Low, High>;
+  template<typename Low, typename High>
+  in_interval(Low &&, High &&, interval) -> in_interval<Low, High>;
+
 } // namespace mettle
 
 #endif

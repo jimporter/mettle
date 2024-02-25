@@ -221,6 +221,45 @@ suite<> test_matchers("matchers", [](auto &_) {
 
       expect(less_equal(123).desc(), equal_to("<= 123"));
     });
+
+    subsuite<>(_, "in_interval()", [](auto &_) {
+      _.test("right_open", []() {
+        expect(123, in_interval(100, 200));
+        expect(100, in_interval(100, 200));
+        expect(200, is_not(in_interval(100, 200)));
+        expect(in_interval(100, 200).desc(), equal_to("in [100 .. 200)"));
+
+        expect(123, in_interval(100, 200, interval::right_open));
+        expect(100, in_interval(100, 200, interval::right_open));
+        expect(200, is_not(in_interval(100, 200, interval::right_open)));
+        expect(in_interval(100, 200, interval::right_open).desc(),
+               equal_to("in [100 .. 200)"));
+      });
+
+      _.test("left_open", [] () {
+        expect(123, in_interval(100, 200, interval::left_open));
+        expect(100, is_not(in_interval(100, 200, interval::left_open)));
+        expect(200, in_interval(100, 200, interval::left_open));
+        expect(in_interval(100, 200, interval::left_open).desc(),
+               equal_to("in (100 .. 200]"));
+      });
+
+      _.test("open", [] () {
+        expect(123, in_interval(100, 200, interval::open));
+        expect(100, is_not(in_interval(100, 200, interval::open)));
+        expect(200, is_not(in_interval(100, 200, interval::open)));
+        expect(in_interval(100, 200, interval::open).desc(),
+               equal_to("in (100 .. 200)"));
+      });
+
+      _.test("closed", [] () {
+        expect(123, in_interval(100, 200, interval::closed));
+        expect(100, in_interval(100, 200, interval::closed));
+        expect(200, in_interval(100, 200, interval::closed));
+        expect(in_interval(100, 200, interval::closed).desc(),
+               equal_to("in [100 .. 200]"));
+      });
+    });
   });
 
   subsuite<>(_, "arithmetic", [](auto &_) {
