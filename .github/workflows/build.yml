@@ -98,7 +98,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Cache Boost binaries
         if: startsWith(matrix.os, 'windows-') && matrix.boost-version
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-boost
         with:
           path: C:\boost-${{ matrix.boost-version }}
