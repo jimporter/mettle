@@ -137,7 +137,9 @@ jobs:
       - name: Install macOS dependencies
         if: startsWith(matrix.os, 'macos-')
         run: |
-          brew install ninja pkg-config boost
+          brew install boost ninja pkg-config
+          echo "CPATH=/opt/homebrew/include" >> ${GITHUB_ENV}
+          echo "LIBRARY_PATH=/opt/homebrew/lib" >> ${GITHUB_ENV}
           echo "CXXFLAGS=${COMMONFLAGS} ${{ matrix.flags }}" >> ${GITHUB_ENV}
       - name: Install Boost ${{ matrix.boost-version }} from source
         if: "!startsWith(matrix.os, 'windows-') && matrix.boost-version"
