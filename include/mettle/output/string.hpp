@@ -80,10 +80,13 @@ namespace mettle {
     return s;
   }
 
-// Ignore warnings from MSVC about deprecated <codecvt>
+// Ignore warnings about deprecated <codecvt>.
 #if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(push)
 #  pragma warning(disable:4996)
+#elif defined(__GNUG__)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wdeprecated"
 #endif
 
   inline std::string
@@ -126,6 +129,8 @@ namespace mettle {
 
 #if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(pop)
+#elif defined(__GNUG__)
+#  pragma GCC diagnostic pop
 #endif
 
   }

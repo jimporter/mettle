@@ -57,8 +57,7 @@ jobs:
              boost-version: '1.80.0'}
 
           # macOS builds
-          # FIXME: Remove -Wno-deprecated flag.
-          - {os: macos-latest, compiler: clang, flags: '-Wno-deprecated'}
+          - {os: macos-latest, compiler: clang}
 
           # Boost 1.58 builds
           # (Test 1.58 specifically because it has very strict rules for
@@ -73,9 +72,8 @@ jobs:
              flags: '-DNDEBUG', extra-desc: 'NDEBUG'}
           - {os: windows-latest, compiler: msvc, flags: '/DNDEBUG',
              version: '14.3', boost-version: '1.80.0', extra-desc: 'NDEBUG'}
-          # FIXME: Remove -Wno-deprecated flag.
-          - {os: macos-latest, compiler: clang,
-             flags: '-Wno-deprecated -DNDEBUG', extra-desc: 'NDEBUG'}
+          - {os: macos-latest, compiler: clang, flags: '-DNDEBUG',
+             extra-desc: 'NDEBUG'}
 
           # C++20 builds
           - {os: ubuntu-latest, compiler: gcc, version: '13',

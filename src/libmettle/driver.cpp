@@ -4,8 +4,20 @@
 #include <vector>
 
 #define NOMINMAX
+
+// Ignore warnings about deprecated implicit copy constructor.
+#if defined(__clang__)
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wdeprecated"
+#endif
+
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
+
+#if defined(__clang__)
+#  pragma clang diagnostic pop
+#endif
+
 #include <boost/program_options.hpp>
 
 #include <mettle/driver/cmd_line.hpp>

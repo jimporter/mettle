@@ -8,8 +8,18 @@
 #include <cstdint>
 #include <sstream>
 
+// Ignore warnings about deprecated implicit copy constructor.
+#if defined(__clang__)
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wdeprecated"
+#endif
+
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
+
+#if defined(__clang__)
+#  pragma clang diagnostic pop
+#endif
 
 #include <mettle/detail/source_location.hpp>
 #include <mettle/driver/exit_code.hpp>
