@@ -1,7 +1,9 @@
 #ifndef INC_METTLE_OUTPUT_TRAITS_HPP
 #define INC_METTLE_OUTPUT_TRAITS_HPP
 
-#include <cstdint>
+#include <exception>
+#include <iterator>
+#include <ostream>
 #include <type_traits>
 
 namespace mettle {
