@@ -5,22 +5,18 @@
 #include <type_traits>
 
 namespace mettle {
+  template<typename T> struct is_any_char : std::false_type {};
+  template<typename T> struct is_any_char<const T> : is_any_char<T> {};
+  template<typename T> struct is_any_char<volatile T> : is_any_char<T> {};
+  template<typename T> struct is_any_char<const volatile T> : is_any_char<T> {};
 
-  namespace detail {
-    template<typename T>
-    struct is_any_char_helper : std::false_type {};
+  template<> struct is_any_char<char> : std::true_type {};
+  template<> struct is_any_char<signed char> : std::true_type {};
+  template<> struct is_any_char<unsigned char> : std::true_type {};
 
-    template<> struct is_any_char_helper<char> : std::true_type {};
-    template<> struct is_any_char_helper<signed char> : std::true_type {};
-    template<> struct is_any_char_helper<unsigned char> : std::true_type {};
-
-    template<> struct is_any_char_helper<wchar_t> : std::true_type {};
-    template<> struct is_any_char_helper<char16_t> : std::true_type {};
-    template<> struct is_any_char_helper<char32_t> : std::true_type {};
-  }
-
-  template<typename T>
-  struct is_any_char : detail::is_any_char_helper<std::remove_cv_t<T>> {};
+  template<> struct is_any_char<wchar_t> : std::true_type {};
+  template<> struct is_any_char<char16_t> : std::true_type {};
+  template<> struct is_any_char<char32_t> : std::true_type {};
 
   template<typename T>
   using is_exception = std::is_base_of<std::exception, T>;
