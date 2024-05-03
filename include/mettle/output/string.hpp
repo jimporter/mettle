@@ -33,15 +33,6 @@ namespace mettle {
       }
     }
 
-    template<typename Char = char, typename Traits = std::char_traits<Char>,
-             typename Alloc = std::allocator<Char>>
-    std::basic_string<Char, Traits, Alloc>
-    null_str() {
-      std::basic_ostringstream<Char, Traits, Alloc> ss;
-      ss << static_cast<const void *>(nullptr);
-      return ss.str();
-    }
-
   }
 
   template<typename Char, typename Traits,
@@ -78,6 +69,18 @@ namespace mettle {
   inline std::string_view
   string_convert(const std::string_view &s) {
     return s;
+  }
+
+  inline std::string_view
+  string_convert(const std::basic_string_view<unsigned char> &s) {
+    auto begin = reinterpret_cast<const char *>(s.data());
+    return std::string_view(begin, s.size());
+  }
+
+  inline std::string_view
+  string_convert(const std::basic_string_view<signed char> &s) {
+    auto begin = reinterpret_cast<const char *>(s.data());
+    return std::string_view(begin, s.size());
   }
 
 // Ignore warnings about deprecated <codecvt>.

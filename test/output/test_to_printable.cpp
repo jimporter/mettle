@@ -16,12 +16,6 @@ auto stringified(T &&thing) {
   );
 }
 
-auto nil() {
-  std::ostringstream ss;
-  ss << static_cast<void*>(0);
-  return stringified(ss.str());
-}
-
 struct my_type {};
 std::string to_printable(const my_type &) {
   return "{my_type}";
@@ -83,12 +77,12 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
     expect(nullptr, stringified("nullptr"));
 
     void *x = 0;
-    expect(x, nil());
-    expect(const_cast<const void*>(x), nil());
+    expect(x, stringified("nullptr"));
+    expect(const_cast<const void*>(x), stringified("nullptr"));
 
     int *y = 0;
-    expect(y, nil());
-    expect(const_cast<const int*>(y), nil());
+    expect(y, stringified("nullptr"));
+    expect(const_cast<const int*>(y), stringified("nullptr"));
 
     struct some_type {};
     expect(some_type{}, stringified(none("true", "1")));
@@ -239,7 +233,7 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(static_cast<const char*>(cs), stringified("\"text\""));
 
       char *ns = nullptr;
-      expect(ns, nil());
+      expect(ns, stringified("nullptr"));
     });
 
     _.test("signed char", []() {
@@ -257,7 +251,7 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(static_cast<const signed char*>(cs), stringified("\"text\""));
 
       signed char *ns = nullptr;
-      expect(ns, nil());
+      expect(ns, stringified("nullptr"));
     });
 
     _.test("unsigned char", []() {
@@ -275,7 +269,7 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(static_cast<const unsigned char*>(cs), stringified("\"text\""));
 
       unsigned char *ns = nullptr;
-      expect(ns, nil());
+      expect(ns, stringified("nullptr"));
     });
 
     _.test("wchar_t", []() {
@@ -299,7 +293,7 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(static_cast<const wchar_t*>(cs), stringified("\"text\""));
 
       wchar_t *ns = nullptr;
-      expect(ns, nil());
+      expect(ns, stringified("nullptr"));
     });
 
     _.test("char16_t", []() {
@@ -323,7 +317,7 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(static_cast<const char16_t*>(cs), stringified("\"text\""));
 
       char16_t *ns = nullptr;
-      expect(ns, nil());
+      expect(ns, stringified("nullptr"));
     });
 
     _.test("char32_t", []() {
@@ -347,7 +341,7 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(static_cast<const char32_t*>(cs), stringified("\"text\""));
 
       char32_t *ns = nullptr;
-      expect(ns, nil());
+      expect(ns, stringified("nullptr"));
     });
   });
 });

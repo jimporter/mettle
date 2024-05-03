@@ -61,41 +61,12 @@ namespace mettle {
     return escape_string(string_convert(std::u32string(1, c)), '\'');
   }
 
-  inline std::string to_printable(const char *s) {
-    if(!s) return detail::null_str();
-    return escape_string(s);
-  }
-
-  inline std::string to_printable(const unsigned char *s) {
-    if(!s) return detail::null_str();
-    return escape_string(reinterpret_cast<const char*>(s));
-  }
-
-  inline std::string to_printable(const signed char *s) {
-    if(!s) return detail::null_str();
-    return escape_string(reinterpret_cast<const char*>(s));
-  }
-
-  inline std::string to_printable(const wchar_t *s) {
-    if(!s) return detail::null_str();
-    return escape_string(string_convert(s));
-  }
-
-  inline std::string to_printable(const char16_t *s) {
-    if(!s) return detail::null_str();
-    return escape_string(string_convert(s));
-  }
-
-  inline std::string to_printable(const char32_t *s) {
-    if(!s) return detail::null_str();
-    return escape_string(string_convert(s));
-  }
-
   template<typename T>
-  inline auto to_printable(T *t) -> std::enable_if_t<
+  inline auto to_printable(const T *s) -> std::enable_if_t<
     is_any_char_v<T>, std::string
   > {
-    return to_printable(const_cast<const T *>(t));
+    if(!s) return to_printable(nullptr);
+    return escape_string(string_convert(s));
   }
 
   template<typename Ret, typename ...Args>
@@ -121,7 +92,7 @@ namespace mettle {
   }
 
   template<typename T, std::size_t N>
-  auto to_printable(T (&v)[N]) -> std::enable_if_t<
+  auto to_printable(const T (&v)[N]) -> std::enable_if_t<
     !is_any_char_v<T>, std::string
   > {
     return to_printable(std::begin(v), std::end(v));
@@ -133,7 +104,17 @@ namespace mettle {
 
   template<typename T>
   inline auto to_printable(const T &t) {
-    if constexpr(std::is_enum_v<T>) {
+    if constexpr(std::is_pointer_v<T>) {
+      using ValueType = std::remove_pointer_t<T>;
+      if constexpr(!std::is_const_v<ValueType>) {
+        return to_printable(const_cast<const ValueType*>(t));
+      } else {
+        if(!t) return to_printable(nullptr);
+        std::ostringstream ss;
+        ss << t;
+        return ss.str();
+      }
+    } else if constexpr(std::is_enum_v<T>) {
       return type_name<T>() + "(" + std::to_string(
         static_cast<typename std::underlying_type<T>::type>(t)
       ) + ")";
@@ -150,6 +131,11 @@ namespace mettle {
     } else {
       return type_name<T>();
     }
+  }
+
+  template<typename T>
+  inline auto to_printable(const volatile T &t) {
+    return to_printable(const_cast<const T &>(t));
   }
 
   // These need to be last in order for the `to_printable()` calls inside to
