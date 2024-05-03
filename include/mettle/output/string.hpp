@@ -129,14 +129,13 @@ namespace mettle {
     std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
     return conv.to_bytes(s.data(), s.data() + s.size());
 #endif
+  }
 
 #if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(pop)
 #elif defined(__GNUG__)
 #  pragma GCC diagnostic pop
 #endif
-
-  }
 
 } // namespace mettle
 
