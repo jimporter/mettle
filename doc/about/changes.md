@@ -13,7 +13,7 @@ in progress
 - New matchers `in_interval` and `exception_what`
 
 ### Bug fixes
-- Test failures across multiple runs are now correctly groups in the summary
+- Test failures across multiple runs are now correctly grouped in the summary
   results
 - `bencode.hpp` is now installed alongside mettle when `--vendorize` is used
 - Arithmetic matchers now use ADL to find `max` and `abs`, allowing custom
