@@ -10,21 +10,20 @@ namespace mettle {
 
   namespace detail {
 
-    template<typename Char, typename Traits>
-    void escape_char(std::basic_ostream<Char, Traits> &os, Char c, Char delim) {
+    inline void escape_char(std::ostream &os, char c, char delim) {
       const char escape = '\\';
       if(c < 32 || c == 0x7f) {
         os << escape;
         switch(c) {
-        case '\0': os << os.widen('0'); break;
-        case '\a': os << os.widen('a'); break;
-        case '\b': os << os.widen('b'); break;
-        case '\f': os << os.widen('f'); break;
-        case '\n': os << os.widen('n'); break;
-        case '\r': os << os.widen('r'); break;
-        case '\t': os << os.widen('t'); break;
-        case '\v': os << os.widen('v'); break;
-        default:   os << os.widen('x') << static_cast<unsigned long>(c);
+        case '\0': os << '0'; break;
+        case '\a': os << 'a'; break;
+        case '\b': os << 'b'; break;
+        case '\f': os << 'f'; break;
+        case '\n': os << 'n'; break;
+        case '\r': os << 'r'; break;
+        case '\t': os << 't'; break;
+        case '\v': os << 'v'; break;
+        default:   os << 'x' << static_cast<unsigned long>(c);
         }
       } else if(c == delim || c == escape) {
         os << escape << c;
@@ -35,12 +34,9 @@ namespace mettle {
 
   }
 
-  template<typename Char, typename Traits,
-           typename Alloc = std::allocator<Char>>
-  std::basic_string<Char, Traits, Alloc>
-  escape_string(const std::basic_string_view<Char, Traits> &s,
-                Char delim = '"') {
-    std::basic_ostringstream<Char, Traits, Alloc> ss;
+  inline std::string
+  escape_string(const std::string_view &s, char delim = '"') {
+    std::ostringstream ss;
     ss << std::hex << delim;
     for(const auto &c : s)
       detail::escape_char(ss, c, delim);
@@ -48,37 +44,19 @@ namespace mettle {
     return ss.str();
   }
 
-  template<typename Char, typename Traits, typename Alloc>
-  std::basic_string<Char, Traits>
-  escape_string(const std::basic_string<Char, Traits, Alloc> &s,
-                Char delim = '"') {
-    return escape_string<Char, Traits, Alloc>(
-      std::basic_string_view<Char, Traits>(s), delim
-    );
-  }
-
-  template<typename Char, typename Traits = std::char_traits<Char>,
-           typename Alloc = std::allocator<Char>>
-  std::basic_string<Char, Traits, Alloc>
-  escape_string(const Char *s, Char delim = '"') {
-    return escape_string<Char, Traits, Alloc>(
-      std::basic_string_view<Char>(s), delim
-    );
-  }
-
   inline std::string_view
-  string_convert(const std::string_view &s) {
+  convert_string(const std::string_view &s) {
     return s;
   }
 
   inline std::string_view
-  string_convert(const std::basic_string_view<unsigned char> &s) {
+  convert_string(const std::basic_string_view<unsigned char> &s) {
     auto begin = reinterpret_cast<const char *>(s.data());
     return std::string_view(begin, s.size());
   }
 
   inline std::string_view
-  string_convert(const std::basic_string_view<signed char> &s) {
+  convert_string(const std::basic_string_view<signed char> &s) {
     auto begin = reinterpret_cast<const char *>(s.data());
     return std::string_view(begin, s.size());
   }
@@ -93,13 +71,13 @@ namespace mettle {
 #endif
 
   inline std::string
-  string_convert(const std::wstring_view &s) {
+  convert_string(const std::wstring_view &s) {
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
     return conv.to_bytes(s.data(), s.data() + s.size());
   }
 
   inline std::string
-  string_convert(const std::u16string_view &s) {
+  convert_string(const std::u16string_view &s) {
 #if defined(_MSC_VER) && !defined(__clang__)
     // MSVC's codecvt expects uint16_t instead of char16_t because char16_t
     // used to just be a typedef of uint16_t.
@@ -116,7 +94,7 @@ namespace mettle {
   }
 
   inline std::string
-  string_convert(const std::u32string_view &s) {
+  convert_string(const std::u32string_view &s) {
 #if defined(_MSC_VER) && !defined(__clang__)
     // MSVC's codecvt expects uint32_t instead of char32_t because char32_t
     // used to just be a typedef of uint32_t.
@@ -136,6 +114,27 @@ namespace mettle {
 #elif defined(__GNUG__)
 #  pragma GCC diagnostic pop
 #endif
+
+  namespace detail {
+    template<typename, typename = std::void_t<>>
+    struct is_string_convertible : std::false_type {};
+
+    template<typename T>
+    struct is_string_convertible<T, std::void_t<
+      decltype(convert_string(std::declval<T&>()))
+    >> : std::true_type {};
+  }
+
+  template<typename String>
+  inline auto
+  represent_string(const String &s,
+                   [[maybe_unused]] char delim = '"') { // Silence GCC < 10.
+    if constexpr(detail::is_string_convertible<String>::value) {
+      return escape_string(convert_string(s), delim);
+    } else {
+      return std::string("(unrepresentable string)");
+    }
+  }
 
 } // namespace mettle
 

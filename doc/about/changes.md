@@ -18,6 +18,7 @@ in progress
 - `bencode.hpp` is now installed alongside mettle when `--vendorize` is used
 - Arithmetic matchers now use ADL to find `max` and `abs`, allowing custom
   arithmetic types to use their own implementations of these functions
+- Attempt to print strings of arbitrary character type in messages
 
 ### Breaking changes
 - Implementation updated to require C++17

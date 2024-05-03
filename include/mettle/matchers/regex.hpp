@@ -13,7 +13,7 @@ namespace mettle {
                      std::regex_constants::ECMAScript,
                    std::regex_constants::match_flag_type match = {}) {
     std::ostringstream ss;
-    ss << "matched " << escape_string(string_convert(ex), '/');
+    ss << "matched " << represent_string(ex, '/');
     if(syntax & std::regex_constants::icase)
       ss << "i";
 
@@ -39,7 +39,7 @@ namespace mettle {
                       std::regex_constants::ECMAScript,
                     std::regex_constants::match_flag_type match = {}) {
     std::ostringstream ss;
-    ss << "searched " << escape_string(string_convert(ex), '/');
+    ss << "searched " << represent_string(ex, '/');
     if(syntax & std::regex_constants::icase)
       ss << "i";
 

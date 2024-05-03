@@ -28,37 +28,37 @@ namespace mettle {
   template<typename Char, typename Traits, typename Alloc>
   inline std::string
   to_printable(const std::basic_string<Char, Traits, Alloc> &s) {
-    return escape_string(string_convert(s));
+    return represent_string(s);
   }
 
   template<typename Char, typename Traits>
   inline std::string
   to_printable(const std::basic_string_view<Char, Traits> &s) {
-    return escape_string(string_convert(s));
+    return represent_string(s);
   }
 
   inline std::string to_printable(char c) {
-    return escape_string(std::string(1, c), '\'');
+    return represent_string(std::string(1, c), '\'');
   }
 
   inline std::string to_printable(unsigned char c) {
-    return escape_string(std::string(1, c), '\'');
+    return represent_string(std::string(1, c), '\'');
   }
 
   inline std::string to_printable(signed char c) {
-    return escape_string(std::string(1, c), '\'');
+    return represent_string(std::string(1, c), '\'');
   }
 
   inline std::string to_printable(wchar_t c) {
-    return escape_string(string_convert(std::wstring(1, c)), '\'');
+    return represent_string(std::wstring(1, c), '\'');
   }
 
   inline std::string to_printable(char16_t c) {
-    return escape_string(string_convert(std::u16string(1, c)), '\'');
+    return represent_string(std::u16string(1, c), '\'');
   }
 
   inline std::string to_printable(char32_t c) {
-    return escape_string(string_convert(std::u32string(1, c)), '\'');
+    return represent_string(std::u32string(1, c), '\'');
   }
 
   template<typename T>
@@ -66,7 +66,7 @@ namespace mettle {
     is_any_char_v<T>, std::string
   > {
     if(!s) return to_printable(nullptr);
-    return escape_string(string_convert(s));
+    return represent_string(s);
   }
 
   template<typename Ret, typename ...Args>
