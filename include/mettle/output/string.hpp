@@ -1,6 +1,7 @@
 #ifndef INC_METTLE_OUTPUT_STRING_HPP
 #define INC_METTLE_OUTPUT_STRING_HPP
 
+#include <cstddef>
 #include <codecvt>
 #include <ostream>
 #include <string>
@@ -57,6 +58,12 @@ namespace mettle {
 
   inline std::string_view
   convert_string(const std::basic_string_view<signed char> &s) {
+    auto begin = reinterpret_cast<const char *>(s.data());
+    return std::string_view(begin, s.size());
+  }
+
+  inline std::string_view
+  convert_string(const std::basic_string_view<std::byte> &s) {
     auto begin = reinterpret_cast<const char *>(s.data());
     return std::string_view(begin, s.size());
   }

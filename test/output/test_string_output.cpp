@@ -6,9 +6,9 @@ using namespace mettle;
 template<typename Char>
 std::basic_string<Char> make_string(const char *s) {
   std::size_t n = std::strlen(s);
-  std::basic_string<Char> result(n, '\0');
+  std::basic_string<Char> result(n, static_cast<Char>('\0'));
   for(std::size_t i = 0; i != n; i++)
-    result[i] = s[i];
+    result[i] = static_cast<Char>(s[i]);
   return result;
 }
 
@@ -44,26 +44,27 @@ suite<> test_string_output("string output", [](auto &_) {
   });
 
   subsuite<
-    char, unsigned char, signed char, wchar_t, char16_t, char32_t
+    char, unsigned char, signed char, wchar_t, char16_t, char32_t, std::byte
   >(_, "convert_string()", type_only, [](auto &_) {
-    using Char = fixture_type_t<decltype(_)>;
-    auto S = &make_string<Char>;
+    using C = fixture_type_t<decltype(_)>;
+    auto T = &make_string<C>;
+    using S = std::basic_string<C>;
+    using SV = std::basic_string_view<C>;
 
-    _.test("std::basic_string", [S]() {
-      expect(convert_string(S("text")), equal_to("text"));
-      expect(convert_string(std::basic_string<Char>{'a', '\0', 'b'}),
+    _.test("std::basic_string", [T]() {
+      expect(convert_string(T("text")), equal_to("text"));
+      expect(convert_string(S{C('a'), C('\0'), C('b')}),
              equal_to(std::string{'a', '\0', 'b'}));
     });
 
-    _.test("std::basic_string_view", [S]() {
-      using sv = std::basic_string_view<Char>;
-      expect(convert_string(sv(S("text"))), equal_to("text"));
-      expect(convert_string(sv(std::basic_string<Char>{'a', '\0', 'b'})),
+    _.test("std::basic_string_view", [T]() {
+      expect(convert_string(SV(T("text"))), equal_to("text"));
+      expect(convert_string(SV(S{C('a'), C('\0'), C('b')})),
              equal_to(std::string{'a', '\0', 'b'}));
     });
 
-    _.test("C string", [S]() {
-      expect(convert_string(S("text").c_str()), equal_to("text"));
+    _.test("C string", [T]() {
+      expect(convert_string(T("text").c_str()), equal_to("text"));
     });
   });
 
@@ -82,6 +83,12 @@ suite<> test_string_output("string output", [](auto &_) {
 
     _.test("char32_t", []() {
       expect(represent_string(U"text"), equal_to("\"text\""));
+    });
+
+    _.test("std::byte", []() {
+      using B = std::byte;
+      B s[] = {B('t'), B('e'), B('x'), B('t'), B('\0')};
+      expect(represent_string(s), equal_to("\"text\""));
     });
 
     _.test("int", []() {
