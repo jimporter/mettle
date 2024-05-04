@@ -9,38 +9,31 @@
 
 namespace mettle {
 
-  namespace detail {
-
-    inline void escape_char(std::ostream &os, char c, char delim) {
-      const char escape = '\\';
-      if(c < 32 || c == 0x7f) {
-        os << escape;
-        switch(c) {
-        case '\0': os << '0'; break;
-        case '\a': os << 'a'; break;
-        case '\b': os << 'b'; break;
-        case '\f': os << 'f'; break;
-        case '\n': os << 'n'; break;
-        case '\r': os << 'r'; break;
-        case '\t': os << 't'; break;
-        case '\v': os << 'v'; break;
-        default:   os << 'x' << static_cast<unsigned long>(c);
-        }
-      } else if(c == delim || c == escape) {
-        os << escape << c;
-      } else {
-        os << c;
-      }
-    }
-
-  }
-
   inline std::string
   escape_string(const std::string_view &s, char delim = '"') {
     std::ostringstream ss;
     ss << std::hex << delim;
-    for(const auto &c : s)
-      detail::escape_char(ss, c, delim);
+    for(auto c : s) {
+      const char escape = '\\';
+      if(c < 32 || c == 0x7f) {
+        ss << escape;
+        switch(c) {
+        case '\0': ss << '0'; break;
+        case '\a': ss << 'a'; break;
+        case '\b': ss << 'b'; break;
+        case '\f': ss << 'f'; break;
+        case '\n': ss << 'n'; break;
+        case '\r': ss << 'r'; break;
+        case '\t': ss << 't'; break;
+        case '\v': ss << 'v'; break;
+        default:   ss << 'x' << static_cast<unsigned long>(c);
+        }
+      } else if(c == delim || c == escape) {
+        ss << escape << c;
+      } else {
+        ss << c;
+      }
+    }
     ss << delim;
     return ss.str();
   }
