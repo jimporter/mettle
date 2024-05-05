@@ -43,12 +43,13 @@ namespace mettle {
 
     template<typename U>
     decltype(auto) operator ()(U &&actual) const {
-      return f_(std::forward<U>(actual), thing_.value);
+      return f_(std::forward<U>(actual), detail::unwrap_capture(thing_));
     }
 
     std::string desc() const {
       std::ostringstream ss;
-      ss << prefix_ << detail::matcher_desc(thing_.value) << suffix_;
+      ss << prefix_ << detail::matcher_desc(detail::unwrap_capture(thing_))
+         << suffix_;
       return ss.str();
     }
   private:
@@ -95,7 +96,7 @@ namespace mettle {
   }
 
   template<typename T>
-  inline auto ensure_matcher(T &&t) {
+  inline decltype(auto) ensure_matcher(T &&t) {
     if constexpr(is_matcher_v<T>) {
       return std::forward<T>(t);
     } else {
