@@ -290,13 +290,13 @@ namespace mettle {
         using std::begin, std::end;
         return std::is_permutation(
           begin(actual), end(actual),
-          begin(container_.value), end(container_.value)
+          begin(unwrap_capture(container_)), end(unwrap_capture(container_))
         );
       }
 
       std::string desc() const {
         std::ostringstream ss;
-        ss << "permutation of " << to_printable(container_.value);
+        ss << "permutation of " << to_printable(unwrap_capture(container_));
         return ss.str();
       }
     private:
@@ -314,15 +314,15 @@ namespace mettle {
         using std::begin, std::end;
         return std::is_permutation(
           begin(actual), end(actual),
-          begin(container_.value), end(container_.value),
+          begin(unwrap_capture(container_)), end(unwrap_capture(container_)),
           predicate_
         );
       }
 
       std::string desc() const {
         std::ostringstream ss;
-        ss << "permutation of " << to_printable(container_.value) << " for "
-           << to_printable(predicate_);
+        ss << "permutation of " << to_printable(unwrap_capture(container_))
+           << " for " << to_printable(predicate_);
         return ss.str();
       }
     private:

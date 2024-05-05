@@ -50,25 +50,28 @@ namespace mettle {
 
     template<typename U>
     bool operator ()(U &&actual) const {
+      using detail::unwrap_capture;
       if (left_open()) {
-        if (actual <= low_.value) return false;
+        if (actual <= unwrap_capture(low_)) return false;
       } else {
-        if (actual < low_.value) return false;
+        if (actual < unwrap_capture(low_)) return false;
       }
 
       if (right_open()) {
-        if (actual >= high_.value) return false;
+        if (actual >= unwrap_capture(high_)) return false;
       } else {
-        if (actual > high_.value) return false;
+        if (actual > unwrap_capture(high_)) return false;
       }
 
       return true;
     }
 
     std::string desc() const {
+      using detail::unwrap_capture;
       std::ostringstream ss;
-      ss << "in " << (left_open() ? "(" : "[") << to_printable(low_.value)
-         << " .. " << to_printable(high_.value) << (right_open() ? ")" : "]");
+      ss << "in " << (left_open() ? "(" : "[")
+         << to_printable(unwrap_capture(low_)) << " .. "
+         << to_printable(unwrap_capture(high_)) << (right_open() ? ")" : "]");
       return ss.str();
     }
   private:

@@ -46,7 +46,7 @@ namespace mettle {
     private:
       template<typename T, std::size_t ...I>
       T make_impl(std::index_sequence<I...>) const {
-        return T(std::get<I>(args_).value...);
+        return T(detail::unwrap_capture(std::get<I>(args_))...);
       }
 
       tuple_type args_;

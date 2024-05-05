@@ -6,69 +6,72 @@ using namespace mettle;
 void func() {}
 
 suite<> test_capture("any_capture", [](auto &_) {
+  using detail::any_capture;
+  using detail::unwrap_capture;
+
   _.test("capture int", []() {
-    detail::any_capture<int> capture1(1);
-    expect(capture1.value, equal_to(1));
+    any_capture<int> capture1(1);
+    expect(unwrap_capture(capture1), equal_to(1));
 
     int i = 2;
-    detail::any_capture<int> capture2(i);
-    expect(capture2.value, equal_to(i));
+    any_capture<int> capture2(i);
+    expect(unwrap_capture(capture2), equal_to(i));
   });
 
   _.test("capture std::string", []() {
-    detail::any_capture<std::string> capture1("foo");
-    expect(capture1.value, equal_to("foo"));
+    any_capture<std::string> capture1("foo");
+    expect(unwrap_capture(capture1), equal_to("foo"));
 
     std::string s = "bar";
-    detail::any_capture<std::string> capture2(s);
-    expect(capture2.value, equal_to(s));
+    any_capture<std::string> capture2(s);
+    expect(unwrap_capture(capture2), equal_to(s));
   });
 
   _.test("capture char[]", []() {
     char s[] = "foo";
-    detail::any_capture<char[4]> capture(s);
-    expect(capture.value, equal_to(std::string("foo")));
+    any_capture<char[4]> capture(s);
+    expect(unwrap_capture(capture), equal_to(std::string("foo")));
   });
 
   _.test("capture function", []() {
-    detail::any_capture<void()> capture(func);
+    any_capture<void()> capture(func);
 
-    expect(capture.value, equal_to(func));
-    expect(capture.value, equal_to(&func));
+    expect(unwrap_capture(capture), equal_to(func));
+    expect(unwrap_capture(capture), equal_to(&func));
   });
 
   _.test("capture by copy", []() {
     copyable_type t;
-    detail::any_capture<copyable_type> capture(t);
+    any_capture<copyable_type> capture(t);
 
-    expect("number of copies", capture.value.copies, equal_to(1));
+    expect("number of copies", unwrap_capture(capture).copies, equal_to(1));
   });
 
   _.test("capture by move", []() {
     moveable_type t;
-    detail::any_capture<moveable_type> capture(std::move(t));
+    any_capture<moveable_type> capture(std::move(t));
 
-    expect("number of copies", capture.value.copies, equal_to(0));
-    expect("number of moves", capture.value.moves, equal_to(1));
+    expect("number of copies", unwrap_capture(capture).copies, equal_to(0));
+    expect("number of moves", unwrap_capture(capture).moves, equal_to(1));
   });
 
   _.test("capture array by copy", []() {
     copyable_type t[2];
-    detail::any_capture<copyable_type[2]> capture(t);
+    any_capture<copyable_type[2]> capture(t);
 
-    expect("number of copies", capture.value, each(
+    expect("number of copies", unwrap_capture(capture), each(
       filter([](auto &&x) { return x.copies; }, equal_to(1))
     ));
   });
 
   _.test("capture array by move", []() {
     moveable_type t[2];
-    detail::any_capture<moveable_type[2]> capture(std::move(t));
+    any_capture<moveable_type[2]> capture(std::move(t));
 
-    expect("number of copies", capture.value, each(
+    expect("number of copies", unwrap_capture(capture), each(
       filter([](auto &&x) { return x.copies; }, equal_to(0))
     ));
-    expect("number of moves", capture.value, each(
+    expect("number of moves", unwrap_capture(capture), each(
       filter([](auto &&x) { return x.moves; }, equal_to(1))
     ));
   });
