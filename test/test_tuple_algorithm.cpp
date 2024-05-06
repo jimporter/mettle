@@ -57,17 +57,6 @@ suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
       expect("number of iterations", count, equal_to(2));
     });
 
-    _.test("early exit", []() {
-      std::tuple<int, std::string> tup(1, "two");
-      std::size_t count = 0;
-      tuple_for_each(tup, [&count](auto &&) {
-        count++;
-        return true;
-      });
-
-      expect("number of iterations", count, equal_to(1));
-    });
-
     _.test("modification", []() {
       std::tuple<int, int> tup(1, 2);
       tuple_for_each(tup, [](auto &&item) {
@@ -75,6 +64,65 @@ suite<> test_tuple_alg("tuple algorithms", [](auto &_) {
       });
 
       expect(tup, equal_to(std::make_tuple(2, 3)));
+    });
+  });
+
+  subsuite<>(_, "tuple_for_each_while()", [](auto &_) {
+    using detail::tuple_for_each_while;
+
+    _.test("empty tuple", []() {
+      std::tuple<> tup;
+      std::size_t count = 0;
+      tuple_for_each_while(tup, [&count](auto &&) {
+        count++;
+        return true;
+      });
+
+      expect("number of iterations", count, equal_to(0));
+    });
+
+    _.test("1-tuple", []() {
+      std::tuple<int> tup(1);
+      std::size_t count = 0;
+      tuple_for_each_while(tup, [&count](auto &&item) {
+        expect("tuple value", item, equal_to(1));
+        count++;
+        return true;
+      });
+
+      expect("number of iterations", count, equal_to(1));
+    });
+
+    _.test("2-tuple", []() {
+      std::tuple<int, std::string> tup(1, "two");
+      std::size_t count = 0;
+      tuple_for_each_while(tup, [&count](auto &&) {
+        count++;
+        return true;
+      });
+
+      expect("number of iterations", count, equal_to(2));
+
+      std::tuple<int, int> tup2(0, 1);
+      count = 0;
+      tuple_for_each_while(tup2, [&count](auto &&item) {
+        expect("tuple value", item, equal_to(count));
+        count++;
+        return true;
+      });
+
+      expect("number of iterations", count, equal_to(2));
+    });
+
+    _.test("early exit", []() {
+      std::tuple<int, std::string> tup(1, "two");
+      std::size_t count = 0;
+      tuple_for_each_while(tup, [&count](auto &&) {
+        count++;
+        return false;
+      });
+
+      expect("number of iterations", count, equal_to(1));
     });
   });
 

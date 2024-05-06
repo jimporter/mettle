@@ -163,18 +163,20 @@ namespace mettle {
         auto i = begin(actual), end_i = end(actual);
 
         ss << "[";
-        tuple_for_each(matchers_, [&i, &end_i, &good, &ola](const auto &m) {
-          if(i == end_i) {
-            good = false;
+        tuple_for_each_while(
+          matchers_, [&i, &end_i, &good, &ola](const auto &m) {
+            if(i == end_i) {
+              good = false;
+              return false;
+            }
+
+            auto result = m(*i);
+            good &= result;
+            ola(matcher_message(result, *i));
+            ++i;
             return true;
           }
-
-          auto result = m(*i);
-          good &= result;
-          ola(matcher_message(result, *i));
-          ++i;
-          return false;
-        });
+        );
 
         // Print any remaining expected values (if `actual` is longer than the
         // list of matchers).
@@ -227,7 +229,6 @@ namespace mettle {
           auto result = get<i>(matchers_)(v);
           good &= result;
           ola(matcher_message(result, v));
-          return false;
         });
         ss << "]";
 

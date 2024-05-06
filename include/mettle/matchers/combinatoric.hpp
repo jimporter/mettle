@@ -21,12 +21,12 @@ namespace mettle {
       template<typename U>
       match_result operator ()(U &&actual) const {
         match_result result = initial_;
-        tuple_for_each(matchers_, [&, this](const auto &matcher) {
+        tuple_for_each_while(matchers_, [&, this](const auto &matcher) {
           auto m = matcher(actual);
           bool done = reducer_(initial_, m) != initial_;
           if(done)
             result = std::move(m);
-          return done;
+          return !done;
         });
         return result;
       }
