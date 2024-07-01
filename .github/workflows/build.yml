@@ -53,7 +53,7 @@ jobs:
              boost-version: '1.80.0'}
           - {os: windows-2019,   compiler: msvc, version: '14.2',  # VS 2019
              boost-version: '1.80.0'}
-          - {os: windows-latest, compiler: msvc, version: '14.3',  # VS 2022
+          - {os: windows-latest, compiler: msvc, version: '14.4',  # VS 2022
              boost-version: '1.80.0'}
 
           # macOS builds
@@ -71,7 +71,7 @@ jobs:
           - {os: ubuntu-latest, compiler: clang, version: '16',
              flags: '-DNDEBUG', extra-desc: 'NDEBUG'}
           - {os: windows-latest, compiler: msvc, flags: '/DNDEBUG',
-             version: '14.3', boost-version: '1.80.0', extra-desc: 'NDEBUG'}
+             version: '14.4', boost-version: '1.80.0', extra-desc: 'NDEBUG'}
           - {os: macos-latest, compiler: clang, flags: '-DNDEBUG',
              extra-desc: 'NDEBUG'}
 
@@ -156,7 +156,7 @@ jobs:
         if: startsWith(matrix.os, 'windows-') && matrix.boost-version
         run: |
           ${boostroot} = "C:\boost-${{ matrix.boost-version }}"
-          ${msvcver} = "${{ matrix.version }}" -replace '(\d+\.\d).*','$1'
+          ${msvcver} = "${{ matrix.version }}" -replace '14.4','14.3'
           if ("${{ steps.cache-boost.outputs.cache-hit }}" -ne "true" ) {
             ${boost_ver} = "${{ matrix.boost-version }}" -replace '\.','_'
             ${boostexe} = "boost_${boost_ver}-msvc-${msvcver}-64.exe"
