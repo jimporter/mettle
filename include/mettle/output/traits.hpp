@@ -13,9 +13,6 @@ namespace mettle {
   template<typename T> struct is_any_char<const volatile T> : is_any_char<T> {};
 
   template<> struct is_any_char<char> : std::true_type {};
-  template<> struct is_any_char<signed char> : std::true_type {};
-  template<> struct is_any_char<unsigned char> : std::true_type {};
-
   template<> struct is_any_char<wchar_t> : std::true_type {};
   template<> struct is_any_char<char16_t> : std::true_type {};
   template<> struct is_any_char<char32_t> : std::true_type {};

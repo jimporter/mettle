@@ -44,7 +44,7 @@ suite<> test_string_output("string output", [](auto &_) {
   });
 
   subsuite<
-    char, unsigned char, signed char, wchar_t, char16_t, char32_t, std::byte
+    char, wchar_t, char16_t, char32_t
   >(_, "convert_string()", type_only, [](auto &_) {
     using C = fixture_type_t<decltype(_)>;
     auto T = &make_string<C>;
@@ -68,32 +68,23 @@ suite<> test_string_output("string output", [](auto &_) {
     });
   });
 
-  subsuite<>(_, "represent_string()", [](auto &_) {
-    _.test("char", []() {
-      expect(represent_string("text"), equal_to("\"text\""));
+  subsuite<
+    char, wchar_t, char16_t, char32_t
+  >(_, "represent_string()", type_only, [](auto &_) {
+    using C = fixture_type_t<decltype(_)>;
+    auto T = &make_string<C>;
+    using SV = std::basic_string_view<C>;
+
+    _.test("std::basic_string", [T]() {
+      expect(represent_string(T("text")), equal_to("\"text\""));
     });
 
-    _.test("wchar_t", []() {
-      expect(represent_string(L"text"), equal_to("\"text\""));
+    _.test("std::basic_string_view", [T]() {
+      expect(represent_string(SV(T("text"))), equal_to("\"text\""));
     });
 
-    _.test("char16_t", []() {
-      expect(represent_string(u"text"), equal_to("\"text\""));
-    });
-
-    _.test("char32_t", []() {
-      expect(represent_string(U"text"), equal_to("\"text\""));
-    });
-
-    _.test("std::byte", []() {
-      using B = std::byte;
-      B s[] = {B('t'), B('e'), B('x'), B('t'), B('\0')};
-      expect(represent_string(s), equal_to("\"text\""));
-    });
-
-    _.test("int", []() {
-      expect(represent_string(std::basic_string<int>{'t', 'e', 'x', 't'}),
-             equal_to("(unrepresentable string)"));
+    _.test("C string", [T]() {
+      expect(represent_string(T("text").c_str()), equal_to("\"text\""));
     });
   });
 });

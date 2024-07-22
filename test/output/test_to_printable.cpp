@@ -8,13 +8,15 @@ template<typename T>
 auto stringified(T &&thing) {
   return basic_matcher(
     ensure_matcher(std::forward<T>(thing)),
-    [](const auto &value, auto &&matcher) -> bool {
+    [](const auto &value, auto &&matcher) -> match_result {
       std::ostringstream ss;
       ss << to_printable(value);
-      return matcher(ss.str());
+      return {matcher(ss.str()), to_printable(ss.str())};
     }, ""
   );
 }
+
+auto stringified_ptr = stringified(regex_match("(0x)?[0-9a-fA-F]+"));
 
 struct my_type {};
 std::string to_printable(const my_type &) {
@@ -32,6 +34,35 @@ struct unprintable_type {};
 
 enum my_enum {
   enum_value = 0
+};
+
+template<>
+struct std::char_traits<my_enum> {
+  using char_type = my_enum;
+
+  static void assign(char_type& c1, const char_type& c2) {
+    c1 = c2;
+  }
+
+  static char_type* assign(char_type* ptr, std::size_t count, char_type c) {
+    for (std::size_t i = 0; i != count; i++)
+      ptr[i] = c;
+    return ptr;
+  }
+
+  static char_type*
+  copy(char_type* dest, const char_type* src, std::size_t count) {
+    for (std::size_t i = 0; i != count; i++)
+      dest[i] = src[i];
+    return dest;
+  }
+
+  static char_type*
+  move(char_type* dest, const char_type* src, std::size_t count) {
+    for (std::size_t i = 0; i != count; i++)
+      dest[i] = src[i];
+    return dest;
+  }
 };
 
 enum class my_enum_class {
@@ -236,42 +267,6 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(ns, stringified("nullptr"));
     });
 
-    _.test("signed char", []() {
-      expect(static_cast<signed char>('x'), stringified("'x'"));
-      expect(static_cast<signed char>('\n'), stringified("'\\n'"));
-      expect(static_cast<signed char>('\0'), stringified("'\\0'"));
-      expect(static_cast<signed char>('\x1f'), stringified("'\\x1f'"));
-
-      signed char s[] = "text";
-      expect(s, stringified("\"text\""));
-      expect(static_cast<signed char*>(s), stringified("\"text\""));
-
-      const signed char cs[] = "text";
-      expect(cs, stringified("\"text\""));
-      expect(static_cast<const signed char*>(cs), stringified("\"text\""));
-
-      signed char *ns = nullptr;
-      expect(ns, stringified("nullptr"));
-    });
-
-    _.test("unsigned char", []() {
-      expect(static_cast<unsigned char>('x'), stringified("'x'"));
-      expect(static_cast<unsigned char>('\n'), stringified("'\\n'"));
-      expect(static_cast<unsigned char>('\0'), stringified("'\\0'"));
-      expect(static_cast<unsigned char>('\x1f'), stringified("'\\x1f'"));
-
-      unsigned char s[] = "text";
-      expect(s, stringified("\"text\""));
-      expect(static_cast<unsigned char*>(s), stringified("\"text\""));
-
-      const unsigned char cs[] = "text";
-      expect(cs, stringified("\"text\""));
-      expect(static_cast<const unsigned char*>(cs), stringified("\"text\""));
-
-      unsigned char *ns = nullptr;
-      expect(ns, stringified("nullptr"));
-    });
-
     _.test("wchar_t", []() {
       expect(L'x', stringified("'x'"));
       expect(L'\n', stringified("'\\n'"));
@@ -342,6 +337,71 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
 
       char32_t *ns = nullptr;
       expect(ns, stringified("nullptr"));
+    });
+
+    _.test("unsigned char", []() {
+      expect(static_cast<unsigned char>('x'), stringified("0x78"));
+      expect(static_cast<unsigned char>('\0'), stringified("0x00"));
+      expect(static_cast<unsigned char>('\x1f'), stringified("0x1f"));
+
+      unsigned char s[] = "text";
+      expect(s, stringified("[0x74, 0x65, 0x78, 0x74, 0x00]"));
+      expect(static_cast<unsigned char*>(s), stringified_ptr);
+
+      const unsigned char cs[] = "text";
+      expect(cs, stringified("[0x74, 0x65, 0x78, 0x74, 0x00]"));
+      expect(static_cast<const unsigned char*>(cs), stringified_ptr);
+
+      unsigned char *ns = nullptr;
+      expect(ns, stringified("nullptr"));
+    });
+
+    _.test("signed char", []() {
+      expect(static_cast<signed char>('x'), stringified("+0x78"));
+      expect(static_cast<signed char>('\0'), stringified("+0x00"));
+      expect(static_cast<signed char>('\x1f'), stringified("+0x1f"));
+
+      signed char s[] = "text";
+      expect(s, stringified("[+0x74, +0x65, +0x78, +0x74, +0x00]"));
+      expect(static_cast<signed char*>(s), stringified_ptr);
+
+      const signed char cs[] = "text";
+      expect(cs, stringified("[+0x74, +0x65, +0x78, +0x74, +0x00]"));
+      expect(static_cast<const signed char*>(cs), stringified_ptr);
+
+      signed char *ns = nullptr;
+      expect(ns, stringified("nullptr"));
+    });
+
+    _.test("std::byte", []() {
+      expect(static_cast<std::byte>('x'), stringified("0x78"));
+      expect(static_cast<std::byte>('\0'), stringified("0x00"));
+      expect(static_cast<std::byte>('\x1f'), stringified("0x1f"));
+
+      std::byte s[] = {std::byte('t'), std::byte('e'), std::byte('x'),
+                       std::byte('t'), std::byte('\0')};
+      expect(s, stringified("[0x74, 0x65, 0x78, 0x74, 0x00]"));
+      expect(static_cast<std::byte*>(s), stringified_ptr);
+
+      const std::byte cs[] = {std::byte('t'), std::byte('e'), std::byte('x'),
+                              std::byte('t'), std::byte('\0')};
+      expect(cs, stringified("[0x74, 0x65, 0x78, 0x74, 0x00]"));
+      expect(static_cast<const std::byte*>(cs), stringified_ptr);
+
+      std::byte *ns = nullptr;
+      expect(ns, stringified("nullptr"));
+    });
+
+    _.test("custom character type", []() {
+      auto string_match = stringified(
+        regex_match("\\[.+\\(1\\), .+\\(2\\), .+\\(3\\)\\]")
+      );
+
+      std::basic_string<my_enum> s = {my_enum(1), my_enum(2), my_enum(3)};
+      expect(s, string_match);
+
+      std::basic_string_view<my_enum> sv = s;
+      expect(sv, string_match);
     });
   });
 });

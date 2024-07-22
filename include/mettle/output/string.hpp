@@ -50,24 +50,6 @@ namespace mettle {
     return s;
   }
 
-  inline std::string_view
-  convert_string(const std::basic_string_view<unsigned char> &s) {
-    auto begin = reinterpret_cast<const char *>(s.data());
-    return std::string_view(begin, s.size());
-  }
-
-  inline std::string_view
-  convert_string(const std::basic_string_view<signed char> &s) {
-    auto begin = reinterpret_cast<const char *>(s.data());
-    return std::string_view(begin, s.size());
-  }
-
-  inline std::string_view
-  convert_string(const std::basic_string_view<std::byte> &s) {
-    auto begin = reinterpret_cast<const char *>(s.data());
-    return std::string_view(begin, s.size());
-  }
-
 // Ignore warnings about deprecated <codecvt>.
 #if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(push)
@@ -122,25 +104,23 @@ namespace mettle {
 #  pragma GCC diagnostic pop
 #endif
 
-  namespace detail {
-    template<typename, typename = std::void_t<>>
-    struct is_string_convertible : std::false_type {};
+  template<typename, typename = std::void_t<>>
+  struct is_string_convertible : std::false_type {};
 
-    template<typename T>
-    struct is_string_convertible<T, std::void_t<
-      decltype(convert_string(std::declval<T&>()))
-    >> : std::true_type {};
-  }
+  template<typename T>
+  struct is_string_convertible<T, std::void_t<
+    decltype(convert_string(std::declval<T&>()))
+  >> : std::true_type {};
+
+  template<typename T>
+  inline constexpr bool is_string_convertible_v =
+    is_string_convertible<T>::value;
 
   template<typename String>
   inline auto
-  represent_string(const String &s,
-                   [[maybe_unused]] char delim = '"') { // Silence GCC < 10.
-    if constexpr(detail::is_string_convertible<String>::value) {
-      return escape_string(convert_string(s), delim);
-    } else {
-      return std::string("(unrepresentable string)");
-    }
+  represent_string(const String &s, char delim = '"') {
+    static_assert(is_string_convertible_v<String>);
+    return escape_string(convert_string(s), delim);
   }
 
 } // namespace mettle

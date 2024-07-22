@@ -1,7 +1,9 @@
 #ifndef INC_METTLE_OUTPUT_TO_PRINTABLE_HPP
 #define INC_METTLE_OUTPUT_TO_PRINTABLE_HPP
 
+#include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <locale>
 #include <iomanip>
 #include <sstream>
@@ -26,26 +28,20 @@ namespace mettle {
   }
 
   template<typename Char, typename Traits, typename Alloc>
-  inline std::string
-  to_printable(const std::basic_string<Char, Traits, Alloc> &s) {
+  inline auto to_printable(const std::basic_string<Char, Traits, Alloc> &s) ->
+    std::enable_if_t<is_string_convertible_v<
+      std::basic_string<Char, Traits, Alloc>>, std::string> {
     return represent_string(s);
   }
 
   template<typename Char, typename Traits>
-  inline std::string
-  to_printable(const std::basic_string_view<Char, Traits> &s) {
+  inline auto to_printable(const std::basic_string_view<Char, Traits> &s) ->
+    std::enable_if_t<is_string_convertible_v<
+      std::basic_string_view<Char, Traits>>, std::string> {
     return represent_string(s);
   }
 
   inline std::string to_printable(char c) {
-    return represent_string(std::string(1, c), '\'');
-  }
-
-  inline std::string to_printable(unsigned char c) {
-    return represent_string(std::string(1, c), '\'');
-  }
-
-  inline std::string to_printable(signed char c) {
     return represent_string(std::string(1, c), '\'');
   }
 
@@ -59,6 +55,24 @@ namespace mettle {
 
   inline std::string to_printable(char32_t c) {
     return represent_string(std::u32string(1, c), '\'');
+  }
+
+  inline std::string to_printable(unsigned char c) {
+    std::ostringstream ss;
+    ss << "0x" << std::setw(2) << std::setfill('0') << std::hex
+       << static_cast<unsigned int>(c);
+    return ss.str();
+  }
+
+  inline std::string to_printable(signed char c) {
+    std::ostringstream ss;
+    ss << (c >= 0 ? '+' : '-') << "0x" << std::setw(2) << std::setfill('0')
+       << std::hex << std::abs(static_cast<int>(c));
+    return ss.str();
+  }
+
+  inline std::string to_printable(std::byte b) {
+    return to_printable(static_cast<unsigned char>(b));
   }
 
   template<typename T>
@@ -107,11 +121,17 @@ namespace mettle {
     if constexpr(std::is_pointer_v<T>) {
       using ValueType = std::remove_pointer_t<T>;
       if constexpr(!std::is_const_v<ValueType>) {
-        return to_printable(const_cast<const ValueType*>(t));
+        return to_printable(const_cast<const ValueType *>(t));
       } else {
         if(!t) return to_printable(nullptr);
         std::ostringstream ss;
-        ss << t;
+        if constexpr (std::is_same_v<ValueType, const unsigned char> ||
+                      std::is_same_v<ValueType, const signed char>) {
+          // Don't print signed/unsigned char* as regular strings.
+          ss << static_cast<const void *>(t);
+        } else {
+          ss << t;
+        }
         return ss.str();
       }
     } else if constexpr(std::is_enum_v<T>) {

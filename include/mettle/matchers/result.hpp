@@ -28,6 +28,12 @@ namespace mettle {
     return {!m.matched, std::move(m.message)};
   }
 
+// Ignore warnings about const-qualified function types
+#if defined(_MSC_VER) && !defined(__clang__)
+#  pragma warning(push)
+#  pragma warning(disable:4180)
+#endif
+
   namespace detail {
     template<typename T>
     class message_impl {
@@ -48,6 +54,10 @@ namespace mettle {
       const T &fallback;
     };
   }
+
+#if defined(_MSC_VER) && !defined(__clang__)
+#  pragma warning(pop)
+#endif
 
   template<typename T>
   inline const detail::message_impl<T>
