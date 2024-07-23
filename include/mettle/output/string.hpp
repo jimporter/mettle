@@ -50,6 +50,14 @@ namespace mettle {
     return s;
   }
 
+#if __cpp_char8_t
+  inline std::string_view
+  convert_string(const std::u8string_view &s) {
+    return std::string_view(reinterpret_cast<const char *>(s.begin()),
+                            reinterpret_cast<const char *>(s.end()));
+  }
+#endif
+
 // Ignore warnings about deprecated <codecvt>.
 #if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(push)

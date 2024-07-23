@@ -11,6 +11,7 @@ in progress
   matchers which need access to non-const objects (e.g. to call a non-const
   member function)
 - New matchers `in_interval` and `exception_what`
+- Add support for `char8_t`
 
 ### Bug fixes
 - Test failures across multiple runs are now correctly grouped in the summary

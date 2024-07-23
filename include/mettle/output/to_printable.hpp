@@ -49,6 +49,12 @@ namespace mettle {
     return represent_string(std::wstring(1, c), '\'');
   }
 
+#if __cpp_char8_t
+  inline std::string to_printable(char8_t c) {
+    return represent_string(std::u8string(1, c), '\'');
+  }
+#endif
+
   inline std::string to_printable(char16_t c) {
     return represent_string(std::u16string(1, c), '\'');
   }

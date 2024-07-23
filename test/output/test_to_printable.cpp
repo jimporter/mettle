@@ -291,6 +291,32 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(ns, stringified("nullptr"));
     });
 
+#if __cpp_char8_t
+    _.test("char8_t", []() {
+      expect(u8'x', stringified("'x'"));
+      expect(u8'\n', stringified("'\\n'"));
+      expect(u8'\0', stringified("'\\0'"));
+      expect(u8'\x1f', stringified("'\\x1f'"));
+
+      expect(u8"text", stringified("\"text\""));
+      expect(u8"text\nmore", stringified("\"text\\nmore\""));
+      expect(std::u8string(u8"text"), stringified("\"text\""));
+      expect(std::u8string_view(u8"text"), stringified("\"text\""));
+      expect(std::u8string{u8'a', u8'\0', u8'b'}, stringified("\"a\\0b\""));
+
+      char8_t s[] = u8"text";
+      expect(s, stringified("\"text\""));
+      expect(static_cast<char8_t*>(s), stringified("\"text\""));
+
+      const char8_t cs[] = u8"text";
+      expect(cs, stringified("\"text\""));
+      expect(static_cast<const char8_t*>(cs), stringified("\"text\""));
+
+      char8_t *ns = nullptr;
+      expect(ns, stringified("nullptr"));
+    });
+#endif
+
     _.test("char16_t", []() {
       expect(u'x', stringified("'x'"));
       expect(u'\n', stringified("'\\n'"));

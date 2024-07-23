@@ -44,7 +44,11 @@ suite<> test_string_output("string output", [](auto &_) {
   });
 
   subsuite<
-    char, wchar_t, char16_t, char32_t
+    char,
+#if __cpp_char8_t
+    char8_t,
+#endif
+    wchar_t, char16_t, char32_t
   >(_, "convert_string()", type_only, [](auto &_) {
     using C = fixture_type_t<decltype(_)>;
     auto T = &make_string<C>;
@@ -69,7 +73,11 @@ suite<> test_string_output("string output", [](auto &_) {
   });
 
   subsuite<
-    char, wchar_t, char16_t, char32_t
+    char,
+#if __cpp_char8_t
+    char8_t,
+#endif
+    wchar_t, char16_t, char32_t
   >(_, "represent_string()", type_only, [](auto &_) {
     using C = fixture_type_t<decltype(_)>;
     auto T = &make_string<C>;
