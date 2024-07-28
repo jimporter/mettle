@@ -53,8 +53,7 @@ namespace mettle {
 #if __cpp_char8_t
   inline std::string_view
   convert_string(const std::u8string_view &s) {
-    return std::string_view(reinterpret_cast<const char *>(s.begin()),
-                            reinterpret_cast<const char *>(s.end()));
+    return std::string_view(reinterpret_cast<const char *>(s.data()), s.size());
   }
 #endif
 
