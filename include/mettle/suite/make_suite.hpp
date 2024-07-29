@@ -134,13 +134,13 @@ namespace mettle {
   } // namespace detail
 
   template<typename ParentFixture, typename ...Fixture, typename ...Args>
-  std::array<compiled_suite<detail::to_func<ParentFixture>>,
-             std::max(sizeof...(Fixture), std::size_t(1))>
+  inline std::array<compiled_suite<detail::to_func<ParentFixture>>,
+                    std::max(sizeof...(Fixture), std::size_t(1))>
   make_subsuites(const std::string &name, const attributes &attrs,
                  Args &&...args);
 
   template<typename ParentFixture, typename ...Fixture, typename ...Args>
-  std::array<compiled_suite<detail::to_func<ParentFixture>>,
+  inline std::array<compiled_suite<detail::to_func<ParentFixture>>,
              std::max(sizeof...(Fixture), std::size_t(1))>
   make_subsuites(const std::string &name, Args &&...args);
 

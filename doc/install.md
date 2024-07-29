@@ -7,7 +7,7 @@ Before we can start using mettle, we'll need to build and install it.
 ## Just show me what to type!
 
 Here are the necessary commands to build and install mettle, assuming you
-already have Boost and a C++17 compiler (we'll discuss all of these parts in
+already have Boost and a C++20 compiler (we'll discuss all of these parts in
 more detail below):
 
 ```sh
@@ -22,11 +22,11 @@ ninja install
 
 Before you get started with mettle, you'll need to install its dependencies:
 
-* A C++17-compliant compiler
-    * [Clang](http://clang.llvm.org/) 7.0+
-    * [GCC](https://gcc.gnu.org/) 7.2+
-    * [MSVC](https://www.visualstudio.com/) 2017+
-* [Boost](http://www.boost.org/) 1.55+
+* A C++20-compliant compiler
+    * [Clang](http://clang.llvm.org/) 9.0+
+    * [GCC](https://gcc.gnu.org/) 8.1+
+    * [MSVC](https://www.visualstudio.com/) 2022+
+* [Boost](http://www.boost.org/) 1.67+
 * [bencode.hpp](https://github.com/jimporter/bencode.hpp)
 * [bfg9000](https://jimporter.github.io/bfg9000/)
 
@@ -66,8 +66,8 @@ ninja install
 ```
 
 As noted above, if you already have bencode.hpp installed, you can remove the
-`--vendorize` argument. If you'd like to build with C++17 support, you can pass
-`--std=c++17` during configuration.
+`--vendorize` argument. If you'd like to build with C++23 support, you can pass
+`--std=c++23` during configuration.
 
 You can specify the compiler to use and its options with the usual (Unix-style)
 environment variables, such as `CXX` and `CXXFLAGS`. For further information

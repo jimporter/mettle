@@ -22,7 +22,7 @@ in progress
 - Print strings with unusual character types as an array of characters
 
 ### Breaking changes
-- Implementation updated to require C++17
+- Implementation updated to require C++20
 - `make_matcher` helper has been removed; use `basic_matcher` directly instead
 
 ---

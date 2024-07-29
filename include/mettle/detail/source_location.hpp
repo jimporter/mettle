@@ -3,7 +3,10 @@
 
 #include <ciso646>
 
-#if __cplusplus > 201703L && __has_include(<source_location>)
+// Try to use `std::source_location`, except on Clang 15, where it's broken.
+// See <https://github.com/llvm/llvm-project/issues/56379>.
+#if __cplusplus > 201703L && __has_include(<source_location>) &&        \
+    (!defined(__clang__) || __clang_major__ >= 16)
 #  include <source_location>
 #  ifdef __cpp_lib_source_location
 #    define METTLE_FOUND_SOURCE_LOCATION

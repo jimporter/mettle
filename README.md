@@ -4,7 +4,7 @@
 [![Documentation][documentation-image]][documentation-link]
 [![Build status][ci-image]][ci-link]
 
-**mettle** is a "batteries included" unit testing framework for C++17. Its
+**mettle** is a "batteries included" unit testing framework for C++20. Its
 mission is to provide a full toolbox to address your testing needs and to look
 good doing it.
 

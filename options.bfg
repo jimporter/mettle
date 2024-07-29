@@ -1,5 +1,5 @@
 # -*- mode: python; mode: bfg9000-options -*-
 
-argument('std', default='c++17', help='set the C++ standard to compile with')
+argument('std', default='c++20', help='set the C++ standard to compile with')
 argument('safe-exit', action='store_true',
          help='use safe exit function (_exit) when exiting test subprocesses')
