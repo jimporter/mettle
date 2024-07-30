@@ -23,7 +23,7 @@ jobs:
       matrix:
         include:
           # GCC builds
-          - {os: ubuntu-20.04, compiler: gcc, version:   '8',
+          - {os: ubuntu-20.04,  compiler: gcc, version:   '8',
              options: '--std=c++2a', flags: '-Wsuggest-override'}
           - {os: ubuntu-latest, compiler: gcc, version:  '9',
              options: '--std=c++2a', flags: '-Wsuggest-override'}
@@ -34,6 +34,8 @@ jobs:
           - {os: ubuntu-latest, compiler: gcc, version: '12',
              flags: '-Wsuggest-override'}
           - {os: ubuntu-latest, compiler: gcc, version: '13',
+             flags: '-Wsuggest-override'}
+          - {os: ubuntu-24.04,  compiler: gcc, version: '14',
              flags: '-Wsuggest-override'}
 
           # Clang builds
@@ -46,6 +48,8 @@ jobs:
           - {os: ubuntu-latest, compiler: clang, version: '14'}
           - {os: ubuntu-latest, compiler: clang, version: '15'}
           - {os: ubuntu-latest, compiler: clang, version: '16'}
+          - {os: ubuntu-latest, compiler: clang, version: '17'}
+          - {os: ubuntu-latest, compiler: clang, version: '18'}
 
           # Windows builds
           - {os: windows-latest, compiler: msvc, version: '14.4',  # VS 2022
@@ -55,13 +59,13 @@ jobs:
           - {os: macos-latest, compiler: clang}
 
           # Boost 1.67 builds (our minimum required Boost)
-          - {os: ubuntu-latest, compiler: gcc, version: '13',
+          - {os: ubuntu-24.04, compiler: gcc, version: '14',
              boost-version: '1.67.0'}
 
           # NDEBUG builds
-          - {os: ubuntu-latest, compiler: gcc, version: '13',
+          - {os: ubuntu-24.04, compiler: gcc, version: '14',
              flags: '-Wsuggest-override -DNDEBUG', extra-desc: 'NDEBUG'}
-          - {os: ubuntu-latest, compiler: clang, version: '16',
+          - {os: ubuntu-latest, compiler: clang, version: '18',
              flags: '-DNDEBUG', extra-desc: 'NDEBUG'}
           - {os: windows-latest, compiler: msvc, flags: '/DNDEBUG',
              version: '14.4', boost-version: '1.80.0', extra-desc: 'NDEBUG'}
@@ -69,17 +73,17 @@ jobs:
              extra-desc: 'NDEBUG'}
 
           # C++23 builds
-          - {os: ubuntu-latest, compiler: gcc, version: '13',
+          - {os: ubuntu-24.04, compiler: gcc, version: '14',
              options: '--std=c++23', flags: '-Wsuggest-override',
              boost-version: '1.85.0', extra-desc: 'c++23'}
-          - {os: ubuntu-latest, compiler: clang, version: '16',
+          - {os: ubuntu-latest, compiler: clang, version: '18',
              options: '--std=c++2b', boost-version: '1.85.0',
              extra-desc: 'c++23'}
 
           # Make-backend builds
-          - {os: ubuntu-latest, compiler: gcc, version: '13',
+          - {os: ubuntu-24.04, compiler: gcc, version: '14',
              backend: 'make', flags: '-Wsuggest-override'}
-          - {os: ubuntu-latest, compiler: clang, version: '16',
+          - {os: ubuntu-latest, compiler: clang, version: '18',
              backend: 'make'}
       fail-fast: false
     env:
