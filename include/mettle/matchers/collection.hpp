@@ -68,7 +68,7 @@ namespace mettle {
     public:
       template<typename T, typename U>
       each_impl(T begin, T end, U &&meta_matcher) {
-        static_assert(is_matcher_v<decltype(meta_matcher(*begin))>,
+        static_assert(any_matcher<decltype(meta_matcher(*begin))>,
                       "meta_matcher must be a function that returns a matcher");
         for(; begin != end; ++begin)
           matchers_.push_back(meta_matcher(*begin));

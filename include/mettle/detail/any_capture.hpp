@@ -7,7 +7,7 @@
 
 namespace mettle::detail {
 
-  template<typename T, typename Enable = void>
+  template<typename T>
   class any_capture {
   public:
     using type = T;
@@ -18,8 +18,8 @@ namespace mettle::detail {
     T value;
   };
 
-  template<typename T, std::size_t N>
-  class any_capture<T[N], std::enable_if_t<std::is_trivial_v<T>>> {
+  template<typename T, std::size_t N> requires(std::is_trivial_v<T>)
+  class any_capture<T[N]> {
   public:
     using type = T[N];
 
@@ -42,7 +42,7 @@ namespace mettle::detail {
 #endif
 
   template<typename T, std::size_t N>
-  class any_capture<T[N], std::enable_if_t<!std::is_trivial_v<T>>> {
+  class any_capture<T[N]> {
   public:
     using type = T[N];
 

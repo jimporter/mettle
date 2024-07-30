@@ -28,8 +28,7 @@ namespace mettle {
     using std::runtime_error::runtime_error;
   };
 
-  template<typename T, typename Matcher,
-           typename = std::enable_if_t< is_matcher_v<Matcher> >>
+  template<typename T, any_matcher Matcher>
   void expect(T &&value, const Matcher &matcher,
               detail::source_location loc =
                 detail::source_location::current()) {
@@ -44,8 +43,7 @@ namespace mettle {
     }
   }
 
-  template<typename T, typename Matcher,
-           typename = std::enable_if_t< is_matcher_v<Matcher> >>
+  template<typename T, any_matcher Matcher>
   void expect(const std::string &desc, T &&value, const Matcher &matcher,
               detail::source_location loc =
                 detail::source_location::current()) {

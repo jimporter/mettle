@@ -23,8 +23,8 @@ ninja install
 Before you get started with mettle, you'll need to install its dependencies:
 
 * A C++20-compliant compiler
-    * [Clang](http://clang.llvm.org/) 9.0+
-    * [GCC](https://gcc.gnu.org/) 8.1+
+    * [Clang](http://clang.llvm.org/) 10.0+
+    * [GCC](https://gcc.gnu.org/) 10.1+
     * [MSVC](https://www.visualstudio.com/) 2022+
 * [Boost](http://www.boost.org/) 1.67+
 * [bencode.hpp](https://github.com/jimporter/bencode.hpp)

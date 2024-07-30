@@ -28,16 +28,16 @@ namespace mettle {
   }
 
   template<typename Char, typename Traits, typename Alloc>
-  inline auto to_printable(const std::basic_string<Char, Traits, Alloc> &s) ->
-    std::enable_if_t<is_string_convertible_v<
-      std::basic_string<Char, Traits, Alloc>>, std::string> {
+  inline std::string to_printable(
+    const std::basic_string<Char, Traits, Alloc> &s
+  ) requires string_convertible<std::basic_string<Char, Traits, Alloc>> {
     return represent_string(s);
   }
 
   template<typename Char, typename Traits>
-  inline auto to_printable(const std::basic_string_view<Char, Traits> &s) ->
-    std::enable_if_t<is_string_convertible_v<
-      std::basic_string_view<Char, Traits>>, std::string> {
+  inline std::string to_printable(
+    const std::basic_string_view<Char, Traits> &s
+  ) requires string_convertible<std::basic_string_view<Char, Traits>> {
     return represent_string(s);
   }
 
@@ -81,10 +81,8 @@ namespace mettle {
     return to_printable(static_cast<unsigned char>(b));
   }
 
-  template<typename T>
-  inline auto to_printable(const T *s) -> std::enable_if_t<
-    is_any_char_v<T>, std::string
-  > {
+  template<character T>
+  inline std::string to_printable(const T *s) {
     if(!s) return to_printable(nullptr);
     return represent_string(s);
   }
@@ -112,9 +110,7 @@ namespace mettle {
   }
 
   template<typename T, std::size_t N>
-  auto to_printable(const T (&v)[N]) -> std::enable_if_t<
-    !is_any_char_v<T>, std::string
-  > {
+  std::string to_printable(const T (&v)[N]) requires(!character<T>) {
     return to_printable(std::begin(v), std::end(v));
   }
 
@@ -146,13 +142,13 @@ namespace mettle {
       ) + ")";
     } else if constexpr(std::is_same_v<std::remove_cv_t<T>, bool>) {
       return t ? "true" : "false";
-    } else if constexpr(is_printable_v<T>) {
+    } else if constexpr(printable<T>) {
       return t;
-    } else if constexpr(is_exception_v<T>) {
+    } else if constexpr(any_exception<T>) {
       std::ostringstream ss;
       ss << type_name(t) << "(" << to_printable(t.what()) << ")";
       return ss.str();
-    } else if constexpr(is_iterable_v<T>) {
+    } else if constexpr(iterable<T>) {
       return to_printable(std::begin(t), std::end(t));
     } else {
       return type_name<T>();

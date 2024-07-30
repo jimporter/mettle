@@ -28,7 +28,7 @@ namespace mettle {
     return {!m.matched, std::move(m.message)};
   }
 
-// Ignore warnings about const-qualified function types
+// Ignore warnings about const-qualified function types.
 #if defined(_MSC_VER) && !defined(__clang__)
 #  pragma warning(push)
 #  pragma warning(disable:4180)

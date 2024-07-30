@@ -15,17 +15,14 @@ namespace mettle {
   struct matcher_tag {};
 
   template<typename T>
-  struct is_matcher : public std::is_base_of<
-    matcher_tag, std::remove_reference_t<T>
-  > {};
-
-  template<typename T>
-  constexpr bool is_matcher_v = is_matcher<T>::value;
+  concept any_matcher = std::derived_from<
+    std::remove_reference_t<T>, matcher_tag
+  >;
 
   namespace detail {
     template<typename T>
     inline auto matcher_desc(T &&t) {
-      if constexpr(is_matcher_v<T>) {
+      if constexpr(any_matcher<T>) {
         return std::forward<T>(t).desc();
       } else {
         return to_printable(std::forward<T>(t));
@@ -96,7 +93,7 @@ namespace mettle {
 
   template<typename T>
   inline auto ensure_matcher(T &&t) {
-    if constexpr(is_matcher_v<T>) {
+    if constexpr(any_matcher<T>) {
       return std::forward<T>(t);
     } else {
       return equal_to(std::forward<T>(t));

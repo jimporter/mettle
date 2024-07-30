@@ -23,10 +23,6 @@ jobs:
       matrix:
         include:
           # GCC builds
-          - {os: ubuntu-20.04,  compiler: gcc, version:   '8',
-             options: '--std=c++2a', flags: '-Wsuggest-override'}
-          - {os: ubuntu-latest, compiler: gcc, version:  '9',
-             options: '--std=c++2a', flags: '-Wsuggest-override'}
           - {os: ubuntu-latest, compiler: gcc, version: '10',
              flags: '-Wsuggest-override'}
           - {os: ubuntu-latest, compiler: gcc, version: '11',
@@ -39,8 +35,6 @@ jobs:
              flags: '-Wsuggest-override'}
 
           # Clang builds
-          - {os: ubuntu-20.04,  compiler: clang, version:  '9',
-             options: '--std=c++2a'}
           - {os: ubuntu-20.04,  compiler: clang, version: '10'}
           - {os: ubuntu-20.04,  compiler: clang, version: '11'}
           - {os: ubuntu-20.04,  compiler: clang, version: '12'}

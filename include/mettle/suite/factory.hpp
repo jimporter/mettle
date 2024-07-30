@@ -31,9 +31,10 @@ namespace mettle {
     class bind_factory_t {
       using tuple_type = std::tuple<detail::any_capture<Args>...>;
     public:
-      template<typename ...CallArgs, typename = std::enable_if_t<
-        std::is_constructible<tuple_type, CallArgs...>::value
-      >> explicit bind_factory_t(CallArgs &&...args) : args_(args...) {}
+      template<typename ...CallArgs>
+      explicit bind_factory_t(CallArgs &&...args)
+        requires std::constructible_from<tuple_type, CallArgs...> :
+        args_(args...) {}
 
       template<typename T>
       T make() const {

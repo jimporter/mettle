@@ -111,22 +111,12 @@ namespace mettle {
 #  pragma GCC diagnostic pop
 #endif
 
-  template<typename, typename = std::void_t<>>
-  struct is_string_convertible : std::false_type {};
-
   template<typename T>
-  struct is_string_convertible<T, std::void_t<
-    decltype(convert_string(std::declval<T&>()))
-  >> : std::true_type {};
+  concept string_convertible = requires(T &t) { convert_string(t); };
 
-  template<typename T>
-  inline constexpr bool is_string_convertible_v =
-    is_string_convertible<T>::value;
-
-  template<typename String>
+  template<string_convertible String>
   inline auto
   represent_string(const String &s, char delim = '"') {
-    static_assert(is_string_convertible_v<String>);
     return escape_string(convert_string(s), delim);
   }
 
