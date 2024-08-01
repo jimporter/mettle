@@ -5,7 +5,7 @@
 
 // Try to use `std::source_location`, except on Clang 15, where it's broken.
 // See <https://github.com/llvm/llvm-project/issues/56379>.
-#if __cplusplus > 201703L && __has_include(<source_location>) &&        \
+#if __has_include(<source_location>) &&                 \
     (!defined(__clang__) || __clang_major__ >= 16)
 #  include <source_location>
 #  ifdef __cpp_lib_source_location
@@ -18,23 +18,11 @@ namespace mettle::detail {
 
 #if !defined(METTLE_FOUND_SOURCE_LOCATION) &&           \
     __has_include(<experimental/source_location>)
-// Older versions of clang (8 and below) don't have `__builtin_FILE` and so
-// won't work with libstdc++'s `std:experimental::source_location`.
-#  if defined(__clang__)
-#    if __has_builtin(__builtin_FILE)
-#      include <experimental/source_location>
-#      define METTLE_FOUND_SOURCE_LOCATION
+#  include <experimental/source_location>
+#  define METTLE_FOUND_SOURCE_LOCATION
 namespace mettle::detail {
   using source_location = std::experimental::source_location;
 }
-#    endif
-#  else
-#    include <experimental/source_location>
-#    define METTLE_FOUND_SOURCE_LOCATION
-namespace mettle::detail {
-  using source_location = std::experimental::source_location;
-}
-#  endif
 #endif
 
 #ifndef METTLE_FOUND_SOURCE_LOCATION
