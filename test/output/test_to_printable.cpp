@@ -291,7 +291,6 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       expect(ns, stringified("nullptr"));
     });
 
-#if __cpp_char8_t
     _.test("char8_t", []() {
       expect(u8'x', stringified("'x'"));
       expect(u8'\n', stringified("'\\n'"));
@@ -315,7 +314,6 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
       char8_t *ns = nullptr;
       expect(ns, stringified("nullptr"));
     });
-#endif
 
     _.test("char16_t", []() {
       expect(u'x', stringified("'x'"));

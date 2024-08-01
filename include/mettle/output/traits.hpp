@@ -15,9 +15,7 @@ namespace mettle {
 
   template<> struct is_character<char> : std::true_type {};
   template<> struct is_character<wchar_t> : std::true_type {};
-#if __cpp_char8_t
   template<> struct is_character<char8_t> : std::true_type {};
-#endif
   template<> struct is_character<char16_t> : std::true_type {};
   template<> struct is_character<char32_t> : std::true_type {};
 
