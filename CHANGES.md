@@ -22,6 +22,7 @@
 ### Breaking changes
 - Implementation updated to require C++20
 - `make_matcher` helper has been removed; use `basic_matcher` directly instead
+- `METTLE_EXPECT` macro has been removed; use `expect` instead
 
 ---
 

@@ -46,15 +46,6 @@ expected: 666
 actual:   123
 ```
 
-!!! note
-    Currently, only GCC supports getting the filename and line number
-    automatically for an expectation. However, as compilers add support for
-    `std::experimental::source_location`, mettle will automatically switch to
-    showing these values. However, in the meantime you can use the
-    `METTLE_EXPECT` macro in place of `mettle::expect` if you need to see the
-    filename and line number.
-
-
 ## Printing objects
 
 In the examples above, the error output shows the expected and actual values.

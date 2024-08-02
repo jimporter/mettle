@@ -9,19 +9,6 @@
 #include "result.hpp"
 #include "../detail/source_location.hpp"
 
-#ifndef METTLE_NO_MACROS
-#  ifdef METTLE_NO_SOURCE_LOCATION
-#    define METTLE_EXPECT(...) ::mettle::expect(                     \
-       __VA_ARGS__,                                                  \
-       ::mettle::detail::source_location::current(                   \
-         __FILE__, __func__, __LINE__                                \
-       )                                                             \
-     )
-#  else
-#    define METTLE_EXPECT(...) ::mettle::expect(__VA_ARGS__)
-#  endif
-#endif
-
 namespace mettle {
 
   class expectation_error : public std::runtime_error {
