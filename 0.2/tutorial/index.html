@@ -190,10 +190,10 @@ to <em>test</em> in our tests. This expectation makes sure that <code>true</code
 <p>Building a test is straightforward. Since mettle provides its own test runner
 with a <code>main()</code> function, the above source code is all you need for a
 fully-operational test. Just compile the test like so:</p>
-<pre><code class="language-sh">$ clang++ -std=c++17 -o test_first test_first.cpp -lmettle
+<pre><code class="language-sh">$ clang++ -std=c++20 -o test_first test_first.cpp -lmettle
 </code></pre>
-<p>Remember, mettle is a C++17 library, so you'll likely need to tell the compiler
-to use C++17 mode (or C++1z mode for slightly older compilers).</p>
+<p>Remember, mettle is a C++20 library, so you'll likely need to tell the compiler
+to use C++20 mode (or C++2a mode for slightly older compilers).</p>
 <h2 id="running-the-test">Running the test<a class="headerlink" href="#running-the-test" title="Permanent link">§</a></h2>
 <p>Once you've built the test, you just need to run the binary and observe the
 results. In this case, the results will look like:</p>

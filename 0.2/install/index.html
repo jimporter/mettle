@@ -144,7 +144,7 @@ library (<code>libmettle.so</code> or <code>mettle.dll</code>), and a unified te
 Before we can start using mettle, we'll need to build and install it.</p>
 <h2 id="just-show-me-what-to-type">Just show me what to type!<a class="headerlink" href="#just-show-me-what-to-type" title="Permanent link">§</a></h2>
 <p>Here are the necessary commands to build and install mettle, assuming you
-already have Boost and a C++17 compiler (we'll discuss all of these parts in
+already have Boost and a C++20 compiler (we'll discuss all of these parts in
 more detail below):</p>
 <pre><code class="language-sh">pip install bfg9000
 cd path/to/mettle
@@ -155,13 +155,13 @@ ninja install
 <h2 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">§</a></h2>
 <p>Before you get started with mettle, you'll need to install its dependencies:</p>
 <ul>
-<li>A C++17-compliant compiler<ul>
-<li><a href="http://clang.llvm.org/">Clang</a> 7.0+</li>
-<li><a href="https://gcc.gnu.org/">GCC</a> 7.2+</li>
-<li><a href="https://www.visualstudio.com/">MSVC</a> 2017+</li>
+<li>A C++20-compliant compiler<ul>
+<li><a href="http://clang.llvm.org/">Clang</a> 10.0+</li>
+<li><a href="https://gcc.gnu.org/">GCC</a> 10.1+</li>
+<li><a href="https://www.visualstudio.com/">MSVC</a> 2022+</li>
 </ul>
 </li>
-<li><a href="http://www.boost.org/">Boost</a> 1.55+</li>
+<li><a href="http://www.boost.org/">Boost</a> 1.67+</li>
 <li><a href="https://github.com/jimporter/bencode.hpp">bencode.hpp</a></li>
 <li><a href="https://jimporter.github.io/bfg9000/">bfg9000</a></li>
 </ul>
@@ -192,8 +192,8 @@ cd build/
 ninja install
 </code></pre>
 <p>As noted above, if you already have bencode.hpp installed, you can remove the
-<code>--vendorize</code> argument. If you'd like to build with C++17 support, you can pass
-<code>--std=c++17</code> during configuration.</p>
+<code>--vendorize</code> argument. If you'd like to build with C++23 support, you can pass
+<code>--std=c++23</code> during configuration.</p>
 <p>You can specify the compiler to use and its options with the usual (Unix-style)
 environment variables, such as <code>CXX</code> and <code>CXXFLAGS</code>. For further information
 about how to use bfg9000, such as changing the build backend, see its
