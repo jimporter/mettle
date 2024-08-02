@@ -46,9 +46,6 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     );
 
     using compiled_test = basic_test_info<outer_func>;
-    // XXX: Work around GCC bug 64194.
-    { auto x = equal_test_info<compiled_test>; (void)x; }
-
     expect(compiled.name(), equal_to("suite"));
     expect(compiled.tests(), each<compiled_test>(
       {{ "test 1", nullptr, {skip("2")} },
