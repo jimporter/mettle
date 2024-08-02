@@ -7,20 +7,22 @@
 #include <type_traits>
 
 namespace mettle {
-  template<typename T> struct is_character : std::false_type {};
-  template<typename T> struct is_character<const T> : is_character<T> {};
-  template<typename T> struct is_character<volatile T> : is_character<T> {};
-  template<typename T> struct is_character<const volatile T>
-    : is_character<T> {};
+  template<typename T> constexpr bool is_character = false;
+  template<typename T>
+  constexpr bool is_character<const T> = is_character<T>;
+  template<typename T>
+  constexpr bool is_character<volatile T> = is_character<T>;
+  template<typename T>
+  constexpr bool is_character<const volatile T> = is_character<T>;
 
-  template<> struct is_character<char> : std::true_type {};
-  template<> struct is_character<wchar_t> : std::true_type {};
-  template<> struct is_character<char8_t> : std::true_type {};
-  template<> struct is_character<char16_t> : std::true_type {};
-  template<> struct is_character<char32_t> : std::true_type {};
+  template<> constexpr bool is_character<char> = true;
+  template<> constexpr bool is_character<wchar_t> = true;
+  template<> constexpr bool is_character<char8_t> = true;
+  template<> constexpr bool is_character<char16_t> = true;
+  template<> constexpr bool is_character<char32_t> = true;
 
   template<typename T>
-  concept character = is_character<T>::value;
+  concept character = is_character<T>;
 
   template<typename T>
   concept any_exception = std::derived_from<T, std::exception>;
