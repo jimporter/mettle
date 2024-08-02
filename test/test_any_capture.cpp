@@ -61,12 +61,7 @@ suite<> test_capture("any_capture", [](auto &_) {
     ));
   });
 
-  attributes move_arr_attrs;
-#if defined(_MSC_VER) && _MSC_VER < 1920
-  move_arr_attrs.insert(skip("capture array by move fails on MSVC 2017"));
-#endif
-
-  _.test("capture array by move", move_arr_attrs, []() {
+  _.test("capture array by move", []() {
     moveable_type t[2];
     detail::any_capture<moveable_type[2]> capture(std::move(t));
 
