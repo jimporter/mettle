@@ -28,7 +28,7 @@ namespace mettle {
 
   template<typename T>
   inline auto near_to(T &&expected) {
-    using ValueType = std::remove_cv_t<std::remove_reference_t<T>>;
+    using ValueType = std::remove_cvref_t<T>;
     static_assert(!std::numeric_limits<ValueType>::is_integer,
                   "near_to(x) not defined for integral types");
 
