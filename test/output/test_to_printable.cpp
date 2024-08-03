@@ -44,21 +44,21 @@ struct std::char_traits<my_enum> {
     c1 = c2;
   }
 
-  static char_type* assign(char_type* ptr, std::size_t count, char_type c) {
+  static char_type * assign(char_type *ptr, std::size_t count, char_type c) {
     for (std::size_t i = 0; i != count; i++)
       ptr[i] = c;
     return ptr;
   }
 
-  static char_type*
-  copy(char_type* dest, const char_type* src, std::size_t count) {
+  static char_type *
+  copy(char_type *dest, const char_type *src, std::size_t count) {
     for (std::size_t i = 0; i != count; i++)
       dest[i] = src[i];
     return dest;
   }
 
-  static char_type*
-  move(char_type* dest, const char_type* src, std::size_t count) {
+  static char_type *
+  move(char_type *dest, const char_type *src, std::size_t count) {
     for (std::size_t i = 0; i != count; i++)
       dest[i] = src[i];
     return dest;
