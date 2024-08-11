@@ -19,24 +19,28 @@ namespace mettle {
     std::remove_reference_t<T>, matcher_tag
   >;
 
-  namespace detail {
-    template<typename T>
-    inline auto matcher_desc(T &&t) {
-      if constexpr(any_matcher<T>) {
-        return std::forward<T>(t).desc();
-      } else {
-        return to_printable(std::forward<T>(t));
-      }
-    }
-  }
+  class desc_wrapper {
+  public:
+    desc_wrapper(std::string prefix, std::string suffix = "")
+      : prefix_(std::move(prefix)), suffix_(std::move(suffix)) {}
 
-  template<typename T, typename F>
+    template<typename T>
+    std::string format_desc(T &&t) const {
+      std::ostringstream ss;
+      ss << prefix_ << std::forward<T>(t) << suffix_;
+      return ss.str();
+    }
+  private:
+    std::string prefix_, suffix_;
+  };
+
+  template<typename T, typename Func>
   class basic_matcher : public matcher_tag {
   public:
-    basic_matcher(detail::any_capture<T> thing, F f, std::string prefix,
+    basic_matcher(detail::any_capture<T> thing, Func f, std::string prefix,
                   std::string suffix = "")
       : thing_(std::move(thing)), f_(std::move(f)),
-        prefix_(std::move(prefix)), suffix_(std::move(suffix)) {}
+        desc_(std::move(prefix), std::move(suffix)) {}
 
     template<typename U>
     decltype(auto) operator ()(U &&actual) const {
@@ -44,41 +48,85 @@ namespace mettle {
     }
 
     std::string desc() const {
-      std::ostringstream ss;
-      ss << prefix_ << detail::matcher_desc(thing_.value) << suffix_;
-      return ss.str();
+      return desc_.format_desc(to_printable(thing_.value));
     }
   private:
     detail::any_capture<T> thing_;
-    F f_;
-    std::string prefix_, suffix_;
+    Func f_;
+    desc_wrapper desc_;
   };
 
-  template<typename F>
-  class basic_matcher<void, F> : public matcher_tag {
+  template<typename Func>
+  class basic_matcher<void, Func> : public matcher_tag {
   public:
-    basic_matcher(F f, std::string desc)
+    basic_matcher(Func f, std::string desc)
       : f_(std::move(f)), desc_(std::move(desc)) {}
 
-    template<typename U>
-    decltype(auto) operator ()(U &&actual) const {
-      return f_(std::forward<U>(actual));
+    template<typename T>
+    decltype(auto) operator ()(T &&actual) const {
+      return f_(std::forward<T>(actual));
     }
 
     const std::string & desc() const {
       return desc_;
     }
   private:
-    F f_;
+    Func f_;
     std::string desc_;
   };
 
-  template<typename T, typename F>
-  basic_matcher(T, F, std::string) -> basic_matcher<T, F>;
-  template<typename T, typename F>
-  basic_matcher(T, F, std::string, std::string) -> basic_matcher<T, F>;
-  template<typename F>
-  basic_matcher(F, std::string) -> basic_matcher<void, F>;
+  template<typename T, typename Func>
+  basic_matcher(T, Func, std::string) -> basic_matcher<T, Func>;
+  template<typename T, typename Func>
+  basic_matcher(T, Func, std::string, std::string) -> basic_matcher<T, Func>;
+  template<typename Func>
+  basic_matcher(Func, std::string) -> basic_matcher<void, Func>;
+
+  template<any_matcher Matcher, typename Func>
+  class transform_matcher : public matcher_tag {
+  public:
+    transform_matcher(Matcher matcher, Func f, std::string prefix,
+                      std::string suffix = "")
+      : matcher_(std::move(matcher)), f_(std::move(f)),
+        desc_(std::move(prefix), std::move(suffix)) {}
+
+    template<typename T>
+    decltype(auto) operator ()(T &&actual) const {
+      return f_(matcher_(std::forward<T>(actual)));
+    }
+
+    std::string desc() const {
+      return desc_.format_desc(matcher_.desc());
+    }
+  private:
+    Matcher matcher_;
+    Func f_;
+    desc_wrapper desc_;
+  };
+
+  template<typename Func, any_matcher Matcher>
+  class filter_matcher : public matcher_tag {
+  public:
+    filter_matcher(Func f, Matcher matcher, std::string prefix,
+                   std::string suffix = "")
+      : f_(std::move(f)), matcher_(std::move(matcher)),
+        desc_(std::move(prefix), std::move(suffix)) {}
+
+    template<typename T>
+    match_result operator ()(T &&actual) const {
+      auto filtered = f_(std::forward<T>(actual));
+      auto result = matcher_(filtered);
+      return {result, desc_.format_desc(matcher_message(result, filtered))};
+    }
+
+    std::string desc() const {
+      return desc_.format_desc(matcher_.desc());
+    }
+  private:
+    Func f_;
+    Matcher matcher_;
+    desc_wrapper desc_;
+  };
 
   template<typename T>
   auto equal_to(T &&expected) {
@@ -110,30 +158,21 @@ namespace mettle {
 
   template<typename T>
   inline auto is_not(T &&thing) {
-    return basic_matcher(
+    return transform_matcher(
       ensure_matcher(std::forward<T>(thing)),
-      [](auto &&actual, auto &&matcher) {
-        return !matcher(std::forward<decltype(actual)>(actual));
-      }, "not "
+      std::logical_not<>{}, "not "
     );
   }
 
-  template<typename T>
-  inline auto describe(T &&matcher, const std::string &desc) {
-    return basic_matcher(std::forward<T>(matcher), desc);
+  template<any_matcher Matcher>
+  inline auto describe(Matcher &&matcher, const std::string &desc) {
+    return basic_matcher(std::forward<Matcher>(matcher), desc);
   }
 
-  template<typename Filter, typename Matcher>
-  auto filter(Filter &&f, Matcher &&matcher, const std::string &desc = "") {
-    return basic_matcher(
-      std::forward<Matcher>(matcher),
-      [f = std::forward<Filter>(f), desc](auto &&actual, auto &&matcher) {
-        auto filtered = f(std::forward<decltype(actual)>(actual));
-        auto result = matcher(filtered);
-        std::ostringstream ss;
-        ss << desc << matcher_message(result, filtered);
-        return match_result(result, ss.str());
-      }, desc
+  template<typename Func, any_matcher Matcher>
+  auto filter(Func &&f, Matcher &&matcher, const std::string &desc = "") {
+    return filter_matcher(
+      std::forward<Func>(f), std::forward<Matcher>(matcher), desc
     );
   }
 
