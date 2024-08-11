@@ -32,18 +32,6 @@ namespace mettle {
       return s + " (" + type_name<T>() + ")";
     }
 
-    template<typename Tuple>
-    struct to_func_impl;
-
-    template<typename ...T>
-    struct to_func_impl<std::tuple<T...>> {
-      using type = void(T&...);
-    };
-
-    template<typename T>
-    using to_func = typename to_func_impl<T>::type;
-
-
     template<typename Exception>
     struct wrap_test {
       using compiled_suite_type = runnable_suite;
@@ -72,9 +60,7 @@ namespace mettle {
 
     template<typename Wrap, typename Builder, typename = std::void_t<>>
     struct wrapped_suite {
-      using type = compiled_suite<to_func<
-        typename Builder::parent_fixture_type
-      >>;
+      using type = compiled_suite<typename Builder::parent_fixture_signature>;
     };
 
     template<typename Wrap, typename Builder>
@@ -172,7 +158,7 @@ namespace mettle {
 
 
   template<typename ParentFixture, typename ...Fixture, typename ...Args>
-  inline compiled_suite<detail::to_func<ParentFixture>>
+  inline auto
   make_subsuite(const std::string &name, const attributes &attrs,
                 Args &&...args) {
     return detail::do_build<ParentFixture, Fixture...>(
@@ -181,7 +167,7 @@ namespace mettle {
   }
 
   template<typename ParentFixture, typename ...Fixture, typename ...Args>
-  inline compiled_suite<detail::to_func<ParentFixture>>
+  inline auto
   make_subsuite(const std::string &name, Args &&...args) {
     return detail::do_build<ParentFixture, Fixture...>(
       name, {}, std::forward<Args>(args)..., detail::identity{}
@@ -189,8 +175,7 @@ namespace mettle {
   }
 
   template<typename ParentFixture, typename ...Fixture, typename ...Args>
-  inline std::array<compiled_suite<detail::to_func<ParentFixture>>,
-                    std::max(sizeof...(Fixture), std::size_t(1))>
+  inline auto
   make_subsuites(const std::string &name, const attributes &attrs,
                  Args &&...args) {
     return detail::do_builds<ParentFixture, Fixture...>(
@@ -199,8 +184,7 @@ namespace mettle {
   }
 
   template<typename ParentFixture, typename ...Fixture, typename ...Args>
-  inline std::array<compiled_suite<detail::to_func<ParentFixture>>,
-                    std::max(sizeof...(Fixture), std::size_t(1))>
+  inline auto
   make_subsuites(const std::string &name, Args &&...args) {
     return detail::do_builds<ParentFixture, Fixture...>(
       name, {}, std::forward<Args>(args)..., detail::identity{}
@@ -308,39 +292,52 @@ namespace mettle {
     std::vector<compiled_suite<void(T&...)>> subsuites_;
   };
 
-  template<typename Factory, typename Parent, typename InChild>
-  struct suite_builder_base_type;
-
-  template<typename Factory, typename ...Parent, typename InChild>
-  struct suite_builder_base_type<Factory, std::tuple<Parent...>, InChild> {
-    using out_child_type = detail::transform_fixture_t<Factory, InChild>;
-    using type = std::conditional_t<
-      std::is_same_v<out_child_type, void>,
-      suite_builder_base<Parent...>,
-      suite_builder_base<Parent..., out_child_type>
-    >;
-  };
-
-  template<typename Factory, typename Parent, typename InChild>
-  using suite_builder_base_t = typename suite_builder_base_type<
-    Factory, Parent, InChild
-  >::type;
-
-  template<typename Factory, typename ParentFixture,
-           typename Fixture /* = detail::no_fixture_t */>
-  class suite_builder
-    : public suite_builder_base_t<Factory, ParentFixture, Fixture> {
-    using base = suite_builder_base_t<Factory, ParentFixture, Fixture>;
-      public:
+  template<typename Factory, typename ...ParentFixture,
+           typename Fixture /* = detail::no_fixture_t*/>
+  requires(std::same_as<detail::transform_fixture_t<Factory, Fixture>, void>)
+  class suite_builder<Factory, std::tuple<ParentFixture...>, Fixture>
+    : public suite_builder_base<ParentFixture...> {
+    using base = suite_builder_base<ParentFixture...>;
+  public:
     using factory_type = Factory;
-    using parent_fixture_type = ParentFixture;
+    using parent_fixture_type = std::tuple<ParentFixture...>;
+    using parent_fixture_signature = void(ParentFixture&...);
     using fixture_type = Fixture;
 
     suite_builder(const std::string &name, const attributes &attrs,
                   Factory factory)
       : base(name, attrs), factory_(factory) {}
   private:
-    using test_caller = detail::test_caller<Factory, ParentFixture, Fixture>;
+    using test_caller = detail::test_caller<ParentFixture...>;
+
+    template<typename Builder, typename Wrap>
+    friend typename detail::wrapped_suite<Wrap, Builder>::type
+    detail::finalize(Builder &, const Wrap &);
+
+    factory_type factory_;
+  };
+
+  template<typename Factory, typename ...ParentFixture,
+           typename Fixture /* = detail::no_fixture_t*/>
+  class suite_builder<Factory, std::tuple<ParentFixture...>, Fixture>
+    : public suite_builder_base<ParentFixture...,
+                                detail::transform_fixture_t<Factory, Fixture>> {
+    using base = suite_builder_base<
+      ParentFixture..., detail::transform_fixture_t<Factory, Fixture>
+    >;
+  public:
+    using factory_type = Factory;
+    using parent_fixture_type = std::tuple<ParentFixture...>;
+    using parent_fixture_signature = void(ParentFixture&...);
+    using fixture_type = Fixture;
+
+    suite_builder(const std::string &name, const attributes &attrs,
+                  Factory factory)
+      : base(name, attrs), factory_(factory) {}
+  private:
+    using test_caller = detail::fixture_test_caller<
+      Factory, Fixture, ParentFixture...
+    >;
 
     template<typename Builder, typename Wrap>
     friend typename detail::wrapped_suite<Wrap, Builder>::type
