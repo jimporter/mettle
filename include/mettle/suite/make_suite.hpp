@@ -76,9 +76,9 @@ namespace mettle {
       return {
         std::move(b.name_), std::move(b.tests_), std::move(b.subsuites_),
         std::move(b.attrs_),
-        [&b, &wrap](auto &&test) { return wrap(typename Builder::test_caller{
-          b.factory_, b.setup_, b.teardown_, std::move(test)
-        }); }
+        [&b, &wrap](auto &&test) {
+          return wrap(b.make_test_caller(std::move(test)));
+        }
       };
     }
 
@@ -305,16 +305,17 @@ namespace mettle {
     using fixture_type = Fixture;
 
     suite_builder(const std::string &name, const attributes &attrs,
-                  Factory factory)
-      : base(name, attrs), factory_(factory) {}
+                  Factory)
+      : base(name, attrs) {}
   private:
-    using test_caller = detail::test_caller<ParentFixture...>;
+    template<typename T>
+    detail::test_caller<ParentFixture...> make_test_caller(T &&test) {
+      return {base::setup_, base::teardown_, std::forward<T>(test)};
+    }
 
     template<typename Builder, typename Wrap>
     friend typename detail::wrapped_suite<Wrap, Builder>::type
     detail::finalize(Builder &, const Wrap &);
-
-    factory_type factory_;
   };
 
   template<typename Factory, typename ...ParentFixture,
@@ -335,9 +336,11 @@ namespace mettle {
                   Factory factory)
       : base(name, attrs), factory_(factory) {}
   private:
-    using test_caller = detail::fixture_test_caller<
-      Factory, Fixture, ParentFixture...
-    >;
+    template<typename T>
+    detail::fixture_test_caller<Factory, Fixture, ParentFixture...>
+    make_test_caller(T &&test) {
+      return {{base::setup_, base::teardown_, std::forward<T>(test)}, factory_};
+    }
 
     template<typename Builder, typename Wrap>
     friend typename detail::wrapped_suite<Wrap, Builder>::type

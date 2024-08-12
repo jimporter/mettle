@@ -25,7 +25,7 @@ namespace mettle::detail {
   >::type;
 
   template<typename ...Args>
-  struct test_caller_base {
+  struct test_caller {
     using function_type = std::function<void(Args&...)>;
 
     void operator ()(Args &...args) {
@@ -48,30 +48,12 @@ namespace mettle::detail {
     function_type setup, teardown, test;
   };
 
-  template<typename ...Parent>
-  struct test_caller : test_caller_base<Parent &...> {
-  private:
-    using base = test_caller_base<Parent &...>;
-  public:
-    template<typename Factory, typename ...T>
-    test_caller(const Factory &, T &&...t)
-      : base{std::forward<T>(t)...} {}
-  };
-
   template<typename Factory, typename Child, typename ...Parent>
-  struct fixture_test_caller : test_caller_base<
-    Parent &..., transform_fixture_t<Factory, Child> &
+  struct fixture_test_caller : test_caller<
+    Parent..., transform_fixture_t<Factory, Child>
   > {
-  private:
-    using base = test_caller_base<
-      Parent &..., transform_fixture_t<Factory, Child> &
-    >;
-  public:
-    template<typename ...T>
-    fixture_test_caller(Factory f, T &&...t)
-      : base{std::forward<T>(t)...}, factory(std::move(f)) {}
-
     inline void operator ()(Parent &...args) {
+      using base = test_caller<Parent..., transform_fixture_t<Factory, Child>>;
       auto &&child = factory.template make<Child>();
       base::operator ()(args..., child);
     }

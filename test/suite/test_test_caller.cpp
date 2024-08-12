@@ -31,9 +31,9 @@ test_test_caller("test_caller", [](auto &_) {
 
   _.test("no fixture", [](auto &tup) {
     run_counter_from_tuple<Fixture> setup, teardown, test;
-    apply_tuple<test_caller, Fixture> caller(
-      auto_factory, setup, teardown, test
-    );
+    apply_tuple<test_caller, Fixture> caller{
+      setup, teardown, test
+    };
     std::apply(caller, tup);
 
     expect("setup run count", setup.runs(), equal_to(1));
@@ -47,7 +47,7 @@ test_test_caller("test_caller", [](auto &_) {
     )> setup, teardown, test;
     apply_tuple<fixture_test_caller, decltype(
       std::tuple_cat(std::tuple<auto_factory_t, int>(), tup)
-    )> caller(auto_factory, setup, teardown, test);
+    )> caller{{setup, teardown, test}, auto_factory};
     std::apply(caller, tup);
 
     expect("setup run count", setup.runs(), equal_to(1));
