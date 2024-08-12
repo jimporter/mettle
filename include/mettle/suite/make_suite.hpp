@@ -162,7 +162,7 @@ namespace mettle {
   make_subsuite(const std::string &name, const attributes &attrs,
                 Args &&...args) {
     return detail::do_build<ParentFixture, Fixture...>(
-      name, attrs, std::forward<Args>(args)..., detail::identity{}
+      name, attrs, std::forward<Args>(args)..., std::identity{}
     );
   }
 
@@ -170,7 +170,7 @@ namespace mettle {
   inline auto
   make_subsuite(const std::string &name, Args &&...args) {
     return detail::do_build<ParentFixture, Fixture...>(
-      name, {}, std::forward<Args>(args)..., detail::identity{}
+      name, {}, std::forward<Args>(args)..., std::identity{}
     );
   }
 
@@ -179,7 +179,7 @@ namespace mettle {
   make_subsuites(const std::string &name, const attributes &attrs,
                  Args &&...args) {
     return detail::do_builds<ParentFixture, Fixture...>(
-      name, attrs, std::forward<Args>(args)..., detail::identity{}
+      name, attrs, std::forward<Args>(args)..., std::identity{}
     );
   }
 
@@ -187,7 +187,7 @@ namespace mettle {
   inline auto
   make_subsuites(const std::string &name, Args &&...args) {
     return detail::do_builds<ParentFixture, Fixture...>(
-      name, {}, std::forward<Args>(args)..., detail::identity{}
+      name, {}, std::forward<Args>(args)..., std::identity{}
     );
   }
 

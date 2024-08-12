@@ -64,7 +64,7 @@ namespace mettle::log {
 
   void xunit::started_suite(const std::vector<std::string> &suites) {
     using namespace mettle::detail;
-    auto name = stringify(joined(suites, identity{}, " > "));
+    auto name = stringify(joined(suites, std::identity{}, " > "));
     suite_stack_.emplace(std::move(name));
   }
 

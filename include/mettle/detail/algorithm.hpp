@@ -8,14 +8,6 @@
 
 namespace mettle::detail {
 
-  // XXX: When we start requiring C++20, we can remove this.
-  struct identity {
-    template<typename T>
-    constexpr decltype(auto) operator ()(T &&t) const {
-      return std::forward<T>(t);
-    }
-  };
-
   template<typename T>
   std::string stringify(const T &t) {
     std::ostringstream ss;
@@ -23,8 +15,7 @@ namespace mettle::detail {
     return ss.str();
   }
 
-  template<typename ...Args>
-  const std::string & stringify(const std::string &s) {
+  inline const std::string & stringify(const std::string &s) {
     return s;
   }
 
@@ -68,22 +59,22 @@ namespace mettle::detail {
     const std::string &delim_;
   };
 
-  template<typename Iter, typename Func = identity>
+  template<typename Iter, typename Func = std::identity>
   inline const string_joiner<Iter, Func>
-  iter_joined(Iter begin, Iter end, const Func &func = identity{},
+  iter_joined(Iter begin, Iter end, const Func &func = Func{},
               const std::string &delim = ", ") {
     return {begin, end, func, delim};
   }
 
-  template<typename T, typename Func = identity>
-  inline auto joined(const T &t, const Func &func = identity{},
+  template<typename T, typename Func = std::identity>
+  inline auto joined(const T &t, const Func &func = Func{},
                      const std::string &delim = ", ") ->
   const string_joiner<decltype(std::begin(t)), Func> {
     return {std::begin(t), std::end(t), func, delim};
   }
 
-  template<typename T, typename Func = identity>
-  inline auto joined(std::initializer_list<T> t, const Func &func = identity{},
+  template<typename T, typename Func = std::identity>
+  inline auto joined(std::initializer_list<T> t, const Func &func = Func{},
                      const std::string &delim = ", ") ->
   const string_joiner<decltype(std::begin(t)), Func> {
     return {std::begin(t), std::end(t), func, delim};
