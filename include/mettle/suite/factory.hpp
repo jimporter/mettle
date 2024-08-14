@@ -12,8 +12,6 @@ namespace mettle {
   namespace detail {
 
     struct auto_factory_t {
-      constexpr auto_factory_t() {}
-
       template<typename T>
       T make() const {
         return {};
@@ -21,8 +19,6 @@ namespace mettle {
     };
 
     struct type_only_factory_t {
-      constexpr type_only_factory_t() {}
-
       template<typename T>
       void make() const {}
     };
@@ -38,9 +34,7 @@ namespace mettle {
 
       template<typename T>
       T make() const {
-        using Indices = std::make_index_sequence<
-          std::tuple_size<tuple_type>::value
-        >;
+        using Indices = std::make_index_sequence<std::tuple_size_v<tuple_type>>;
         return make_impl<T>(Indices());
       }
     private:
@@ -54,8 +48,8 @@ namespace mettle {
 
   }
 
-  constexpr detail::auto_factory_t auto_factory;
-  constexpr detail::type_only_factory_t type_only;
+  inline detail::auto_factory_t auto_factory;
+  inline detail::type_only_factory_t type_only;
 
   template<typename ...Args>
   auto bind_factory(Args &&...args) {
