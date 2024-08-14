@@ -10,33 +10,47 @@
 
 namespace mettle::detail {
 
-  template<std::size_t I, std::size_t N>
-  struct do_iterate {
-    template<typename Func>
-    do_iterate(Func &&f) {
-      constexpr std::integral_constant<std::size_t, I> index{};
-      if constexpr(std::is_same_v<decltype(f(index)), void>) {
-        f(index);
-        do_iterate<I+1, N>(std::forward<Func>(f));
-      } else {
-        if(!f(index))
-          do_iterate<I+1, N>(std::forward<Func>(f));
-      }
+  template<typename Func, std::size_t ...I>
+  constexpr void static_for_impl(Func &&f, std::index_sequence<I...>) {
+    (f(std::integral_constant<std::size_t, I>{}),...);
+  }
+
+  template<std::size_t I, typename Func>
+  constexpr bool static_for_while_impl(Func &&f) {
+    std::integral_constant<std::size_t, I> index{};
+    if constexpr(I == 0) {
+      return f(index);
+    } else {
+      if(!static_for_while_impl<I-1>(f))
+        return f(index);
+      return false;
     }
-  };
+  }
 
-  template<std::size_t N>
-  struct do_iterate<N, N> {
-    do_iterate(...) {}
-  };
+  template<std::size_t N, typename Func>
+  requires(N == 0)
+  constexpr void static_for(Func &&) {}
 
-  template<std::size_t N>
-  using static_for = do_iterate<0, N>;
+  template<std::size_t N, typename Func>
+  requires(N > 0 && std::same_as<std::invoke_result_t<
+    Func, std::integral_constant<std::size_t, 0>
+  >, void>)
+  constexpr void static_for(Func &&f) {
+    static_for_impl(std::forward<Func>(f), std::make_index_sequence<N>{});
+  }
+
+  template<std::size_t N, typename Func>
+  requires(N > 0 && std::convertible_to<std::invoke_result_t<
+    Func, std::integral_constant<std::size_t, 0>
+  >, bool>)
+  constexpr void static_for(Func &&f) {
+    static_for_while_impl<N-1>(std::forward<Func>(f));
+  }
 
   template<typename Tuple, typename Func>
   void tuple_for_each(Tuple &&tuple, Func &&f) {
-    using T = typename std::remove_reference<Tuple>::type;
-    static_for<std::tuple_size<T>::value>([&](auto i) {
+    using T = std::remove_reference_t<Tuple>;
+    static_for<std::tuple_size_v<T>>([&](auto i) {
       return f(std::get<decltype(i)::value>(tuple));
     });
   }
