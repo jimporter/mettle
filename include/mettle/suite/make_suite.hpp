@@ -308,9 +308,9 @@ namespace mettle {
                   Factory)
       : base(name, attrs) {}
   private:
-    template<typename T>
-    detail::test_caller<ParentFixture...> make_test_caller(T &&test) {
-      return {base::setup_, base::teardown_, std::forward<T>(test)};
+    detail::test_caller<ParentFixture...>
+    make_test_caller(typename base::function_type &&test) {
+      return {base::setup_, base::teardown_, std::move(test)};
     }
 
     template<typename Builder, typename Wrap>
@@ -336,10 +336,9 @@ namespace mettle {
                   Factory factory)
       : base(name, attrs), factory_(factory) {}
   private:
-    template<typename T>
     detail::fixture_test_caller<Factory, Fixture, ParentFixture...>
-    make_test_caller(T &&test) {
-      return {{base::setup_, base::teardown_, std::forward<T>(test)}, factory_};
+    make_test_caller(typename base::function_type &&test) {
+      return {{base::setup_, base::teardown_, std::move(test)}, factory_};
     }
 
     template<typename Builder, typename Wrap>
