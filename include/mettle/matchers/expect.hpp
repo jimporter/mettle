@@ -15,17 +15,28 @@ namespace mettle {
     using std::runtime_error::runtime_error;
   };
 
+  namespace detail {
+    inline void
+    expect_fail(std::ostream &os, const detail::source_location &loc,
+                std::string_view user_desc, std::string_view matcher_desc) {
+      if(!user_desc.empty())
+        os << user_desc << " (";
+      os << loc.file_name() << ":" << loc.line();
+      if(!user_desc.empty())
+        os << ")";
+      os << std::endl << "expected: " << matcher_desc
+         << std::endl << "actual:   ";
+    }
+  }
+
   template<typename T, any_matcher Matcher>
   void expect(T &&value, const Matcher &matcher,
               detail::source_location loc =
                 detail::source_location::current()) {
-    auto m = matcher(value);
-    if(m == false) {
+    if(auto m = matcher(value); m == false) {
       std::ostringstream ss;
-      if(loc.line())
-        ss << loc.file_name() << ":" << loc.line() << std::endl;
-      ss << "expected: " << matcher.desc() << std::endl
-         << "actual:   " << matcher_message(m, value);
+      detail::expect_fail(ss, loc, "", matcher.desc());
+      ss << matcher_message(m, value);
       throw expectation_error(ss.str());
     }
   }
@@ -34,14 +45,10 @@ namespace mettle {
   void expect(const std::string &desc, T &&value, const Matcher &matcher,
               detail::source_location loc =
                 detail::source_location::current()) {
-    auto m = matcher(value);
-    if(m == false) {
+    if(auto m = matcher(value); m == false) {
       std::ostringstream ss;
-      ss << desc;
-      if(loc.line())
-        ss << " (" << loc.file_name() << ":" << loc.line() << ")";
-      ss << std::endl << "expected: " << matcher.desc() << std::endl
-         << "actual:   " << matcher_message(m, value);
+      detail::expect_fail(ss, loc, desc, matcher.desc());
+      ss << matcher_message(m, value);
       throw expectation_error(ss.str());
     }
   }
