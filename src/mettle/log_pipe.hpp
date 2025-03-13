@@ -15,7 +15,7 @@ namespace mettle::log {
       : logger_(logger), file_uid_(file_uid) {}
 
     void operator ()(std::istream &s) {
-      auto tmp = bencode::decode(s, bencode::no_check_eof);
+      auto tmp = bencode::decode_some(s, bencode::no_check_eof);
       auto &data = std::get<bencode::dict>(tmp);
       auto &&event = std::get<bencode::string>(data.at("event"));
 

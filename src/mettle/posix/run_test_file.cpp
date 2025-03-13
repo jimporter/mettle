@@ -56,7 +56,7 @@ namespace mettle::posix {
         io::stream<io::file_descriptor_sink> stream(
           fd, io::never_close_handle
         );
-        bencode::encode(stream, bencode::dict_view{
+        bencode::encode_to(stream, bencode::dict_view{
           {"event", "failed_file"},
           {"file", file},
           {"message", err}
