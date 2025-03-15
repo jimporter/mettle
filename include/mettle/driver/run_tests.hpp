@@ -66,7 +66,8 @@ namespace mettle {
         parents.push(suite.name());
 
         for(const auto &test : suite.tests()) {
-          const test_name name = {parents.all(), test.name, test.id};
+          const test_name name = {parents.all(), test.name, test.id,
+                                  test.loc.file_name(), test.loc.line()};
           auto action = filter(name, test.attrs);
           if(action.action == test_action::indeterminate)
             action = filter_by_attr(test.attrs);

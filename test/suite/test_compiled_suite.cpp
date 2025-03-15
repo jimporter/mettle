@@ -8,6 +8,7 @@ struct mock_test {
   std::string name;
   std::function<T> function;
   attributes attrs;
+  detail::source_location loc;
 };
 
 template<typename>

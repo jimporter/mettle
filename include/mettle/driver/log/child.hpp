@@ -88,7 +88,9 @@ namespace mettle::log {
       return bencode::dict_view{
         {"id", bencode::integer(test.id)},
         {"suites", wrap_suites(test.suites)},
-        {"test", test.name}
+        {"test", test.name},
+        {"file", test.file},
+        {"line", test.line},
       };
     }
 
