@@ -128,7 +128,7 @@ suite<fixture> test_child("child/pipe loggers", [](auto &_) {
   });
 
   _.test("started_test()", [](fixture &f) {
-    test_name test = {{"suite", "subsuite"}, "test", 1};
+    test_name test = {1, {"suite", "subsuite"}, "test", "file.cpp", 10};
     f.child.started_test(test);
     f.pipe(f.stream);
 
@@ -137,7 +137,7 @@ suite<fixture> test_child("child/pipe loggers", [](auto &_) {
   });
 
   _.test("passed_test()", [](fixture &f) {
-    test_name test = {{"suite", "subsuite"}, "test", 1};
+    test_name test = {1, {"suite", "subsuite"}, "test", "file.cpp", 10};
     log::test_output output = {"stdout", "stderr"};
     log::test_duration duration(1000);
 
@@ -152,7 +152,7 @@ suite<fixture> test_child("child/pipe loggers", [](auto &_) {
   });
 
   _.test("failed_test()", [](fixture &f) {
-    test_name test = {{"suite", "subsuite"}, "test", 1};
+    test_name test = {1, {"suite", "subsuite"}, "test", "file.cpp", 10};
     std::string message = "failure";
     log::test_output output = {"stdout", "stderr"};
     log::test_duration duration(1000);
@@ -169,7 +169,7 @@ suite<fixture> test_child("child/pipe loggers", [](auto &_) {
   });
 
   _.test("skipped_test()", [](fixture &f) {
-    test_name test = {{"suite", "subsuite"}, "test", 1};
+    test_name test = {1, {"suite", "subsuite"}, "test", "file.cpp", 10};
     std::string message = "message";
     f.child.skipped_test(test, message);
     f.pipe(f.stream);

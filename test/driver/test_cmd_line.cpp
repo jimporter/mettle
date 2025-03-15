@@ -284,11 +284,11 @@ suite<> test_program_options("program_options utilities", [](auto &_) {
       auto filter = boost::any_cast<name_filter_set>(value);
 
       expect(
-        filter({{"suite", "subsuite"}, "name", 1}, {}),
+        filter({1, {"suite", "subsuite"}, "name", "file.cpp", 10}, {}),
         equal_filter_result({test_action::run, ""})
       );
       expect(
-        filter({{"suite", "subsuite"}, "mismatch", 1}, {}),
+        filter({1, {"suite", "subsuite"}, "mismatch", "file.cpp", 10}, {}),
         equal_filter_result({test_action::hide, ""})
       );
 

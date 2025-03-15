@@ -8,6 +8,7 @@ struct mock_test {
   std::string name;
   std::function<T> function;
   attributes attrs;
+  detail::source_location location;
 };
 
 template<typename>
@@ -37,8 +38,8 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     using outer_func = void();
 
     std::vector<mock_test<inner_func>> tests = {
-      { "test 1", nullptr, {} },
-      { "test 2", nullptr, {skip("1")} }
+      { "test 1", nullptr, {}, {} },
+      { "test 2", nullptr, {skip("1")}, {} }
     };
     std::vector<compiled_suite<inner_func>> subsuites;
     compiled_suite<outer_func> compiled(
@@ -61,8 +62,8 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     using outer_func = void();
 
     std::vector<mock_test<inner_func>> tests = {
-      { "test 1", nullptr, {} },
-      { "test 2", nullptr, {skip("1")} }
+      { "test 1", nullptr, {}, {} },
+      { "test 2", nullptr, {skip("1")}, {} }
     };
     std::vector<compiled_suite<inner_func>> subsuites;
     compiled_suite<mid_func> suite(
@@ -88,8 +89,8 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     using outer_func = void();
 
     std::vector<mock_test<inner_func>> tests = {
-      { "test 1", nullptr, {} },
-      { "test 2", nullptr, {skip("1")} }
+      { "test 1", nullptr, {}, {} },
+      { "test 2", nullptr, {skip("1")}, {} }
     };
     std::vector<compiled_suite<inner_func>> subsuites;
     compiled_suite<mid_func> suite(
@@ -115,8 +116,8 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     using outer_func = void();
 
     std::vector<mock_test<inner_func>> subtests = {
-      { "subtest 1", nullptr, {} },
-      { "subtest 2", nullptr, {skip("1")} }
+      { "subtest 1", nullptr, {}, {} },
+      { "subtest 2", nullptr, {skip("1")}, {} }
     };
     std::vector<compiled_suite<inner_func>> subsubsuites;
     std::vector<compiled_suite<mid_func>> subsuites = {
@@ -124,8 +125,8 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     };
 
     std::vector<mock_test<mid_func>> tests = {
-      { "test 1", nullptr, {} },
-      { "test 2", nullptr, {skip("3")} }
+      { "test 1", nullptr, {}, {} },
+      { "test 2", nullptr, {skip("3")}, {} }
     };
     compiled_suite<outer_func> compiled(
       "suite", tests, subsuites, {skip("4")}, wrap_test<outer_func>()

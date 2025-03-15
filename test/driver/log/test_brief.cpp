@@ -35,22 +35,23 @@ suite<logger_factory> test_brief("brief logger", [](auto &_) {
   });
 
   _.test("started_test()", [](logger_factory &f) {
-    f.logger.started_test({{"suite"}, "test", 1});
+    f.logger.started_test({1, {"suite"}, "test", "file.cpp", 10});
     expect(f.ss.str(), equal_to(""));
   });
 
   _.test("passed_test()", [](logger_factory &f) {
-    f.logger.passed_test({{"suite"}, "test", 1}, {}, {});
+    f.logger.passed_test({1, {"suite"}, "test", "file.cpp", 10}, {}, {});
     expect(f.ss.str(), equal_to("."));
   });
 
   _.test("failed_test()", [](logger_factory &f) {
-    f.logger.failed_test({{"suite"}, "test", 1}, "error", {}, {});
+    f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10}, "error", {},
+                         {});
     expect(f.ss.str(), equal_to("!"));
   });
 
   _.test("skipped_test()", [](logger_factory &f) {
-    f.logger.skipped_test({{"suite"}, "test", 1}, "message");
+    f.logger.skipped_test({1, {"suite"}, "test", "file.cpp", 10}, "message");
     expect(f.ss.str(), equal_to("_"));
   });
 

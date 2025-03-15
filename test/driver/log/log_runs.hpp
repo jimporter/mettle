@@ -16,15 +16,18 @@ inline void passing_run(mettle::log::test_logger &logger) {
 
   uid = f.make_file_uid();
   logger.started_suite(suites);
-  logger.started_test({suites, "test 1", uid + 1});
-  logger.passed_test({suites, "test 1", uid + 1}, log::test_output{}, 100ms);
-  logger.started_test({suites, "test 2", uid + 2});
-  logger.passed_test({suites, "test 2", uid + 2}, log::test_output{}, 100ms);
+  logger.started_test({uid + 1, suites, "test 1", "file.cpp", 10});
+  logger.passed_test({uid + 1, suites, "test 1", "file.cpp", 10},
+                     log::test_output{}, 100ms);
+  logger.started_test({uid + 2, suites, "test 2", "file.cpp", 20});
+  logger.passed_test({uid + 2, suites, "test 2", "file.cpp", 20},
+                     log::test_output{}, 100ms);
 
   suites.push_back("subsuite");
   logger.started_suite(suites);
-  logger.started_test({suites, "test 3", uid + 3});
-  logger.passed_test({suites, "test 3", uid + 3}, output, 100ms);
+  logger.started_test({uid + 3, suites, "test 3", "file.cpp", 30});
+  logger.passed_test({uid + 3, suites, "test 3", "file.cpp", 30},
+                     output, 100ms);
   logger.ended_suite(suites);
 
   logger.ended_suite(suites);
@@ -32,8 +35,9 @@ inline void passing_run(mettle::log::test_logger &logger) {
   uid = f.make_file_uid();
   suites = {"second suite"};
   logger.started_suite(suites);
-  logger.started_test({suites, "test 4", uid + 1});
-  logger.passed_test({suites, "test 4", uid + 1}, output, 100ms);
+  logger.started_test({uid + 1, suites, "test 4", "file.cpp", 40});
+  logger.passed_test({uid + 1, suites, "test 4", "file.cpp", 40},
+                     output, 100ms);
   logger.ended_suite(suites);
 
   logger.ended_run();
@@ -51,16 +55,18 @@ inline void failing_run(mettle::log::test_logger &logger) {
 
   uid = f.make_file_uid();
   logger.started_suite(suites);
-  logger.started_test({suites, "test 1", uid + 1});
-  logger.passed_test({suites, "test 1", uid + 1}, output, 100ms);
-  logger.started_test({suites, "test 2", uid + 2});
-  logger.failed_test({suites, "test 2", uid + 2}, "error", log::test_output{},
-                     100ms);
+  logger.started_test({uid + 1, suites, "test 1", "file.cpp", 10});
+  logger.passed_test({uid + 1, suites, "test 1", "file.cpp", 10},
+                     output, 100ms);
+  logger.started_test({uid + 2, suites, "test 2", "file.cpp", 20});
+  logger.failed_test({uid + 2, suites, "test 2", "file.cpp", 20},
+                     "error", log::test_output{}, 100ms);
 
   suites.push_back("subsuite");
   logger.started_suite(suites);
-  logger.started_test({suites, "test 3", uid + 3});
-  logger.skipped_test({suites, "test 3", uid + 3}, "message\nmore");
+  logger.started_test({uid + 3, suites, "test 3", "file.cpp", 30});
+  logger.skipped_test({uid + 3, suites, "test 3", "file.cpp", 30},
+                      "message\nmore");
   logger.ended_suite(suites);
 
   logger.ended_suite(suites);
@@ -68,8 +74,9 @@ inline void failing_run(mettle::log::test_logger &logger) {
   uid = f.make_file_uid();
   suites = {"second suite"};
   logger.started_suite(suites);
-  logger.started_test({suites, "test 4", uid + 1});
-  logger.failed_test({suites, "test 4", uid + 1}, "error\nmore", output, 100ms);
+  logger.started_test({uid + 1, suites, "test 4", "file.cpp", 40});
+  logger.failed_test({uid + 1, suites, "test 4", "file.cpp", 40},
+                     "error\nmore", output, 100ms);
   logger.ended_suite(suites);
 
   logger.ended_run();
@@ -87,22 +94,26 @@ inline void failing_file_run(mettle::log::file_logger &logger) {
 
   uid = f.make_file_uid();
   logger.started_suite(suites);
-  logger.started_test({suites, "test 1", uid + 1});
-  logger.passed_test({suites, "test 1", uid + 1}, log::test_output{}, 100ms);
-  logger.started_test({suites, "test 2", uid + 2});
-  logger.passed_test({suites, "test 2", uid + 2}, log::test_output{}, 100ms);
+  logger.started_test({uid + 1, suites, "test 1", "file.cpp", 10});
+  logger.passed_test({uid + 1, suites, "test 1", "file.cpp", 10},
+                     log::test_output{}, 100ms);
+  logger.started_test({uid + 2, suites, "test 2", "file.cpp", 20});
+  logger.passed_test({uid + 2, suites, "test 2", "file.cpp", 20},
+                     log::test_output{}, 100ms);
 
   suites.push_back("subsuite");
   logger.started_suite(suites);
-  logger.started_test({suites, "test 3", uid + 3});
-  logger.skipped_test({suites, "test 3", uid + 3}, "message\nmore");
+  logger.started_test({uid + 3, suites, "test 3", "file.cpp", 30});
+  logger.skipped_test({uid + 3, suites, "test 3", "file.cpp", 30},
+                      "message\nmore");
   logger.failed_file({"test_file", uid}, "error\nmore");
 
   uid = f.make_file_uid();
   suites = {"second suite"};
   logger.started_suite(suites);
-  logger.started_test({suites, "test 4", uid + 1});
-  logger.passed_test({suites, "test 4", uid + 1}, output, 100ms);
+  logger.started_test({uid + 1, suites, "test 4", "file.cpp", 40});
+  logger.passed_test({uid + 1, suites, "test 4", "file.cpp", 40},
+                     output, 100ms);
   logger.ended_suite(suites);
 
   logger.ended_run();
@@ -120,23 +131,26 @@ inline void failing_test_and_file_run(mettle::log::file_logger &logger) {
 
   uid = f.make_file_uid();
   logger.started_suite(suites);
-  logger.started_test({suites, "test 1", uid + 1});
-  logger.passed_test({suites, "test 1", uid + 1}, output, 100ms);
-  logger.started_test({suites, "test 2", uid + 2});
-  logger.failed_test({suites, "test 2", uid + 2}, "error", log::test_output{},
-                     100ms);
+  logger.started_test({uid + 1, suites, "test 1", "file.cpp", 10});
+  logger.passed_test({uid + 1, suites, "test 1", "file.cpp", 10},
+                     output, 100ms);
+  logger.started_test({uid + 2, suites, "test 2", "file.cpp", 20});
+  logger.failed_test({uid + 2, suites, "test 2", "file.cpp", 20},
+                     "error", log::test_output{}, 100ms);
 
   suites.push_back("subsuite");
   logger.started_suite(suites);
-  logger.started_test({suites, "test 3", uid + 3});
-  logger.skipped_test({suites, "test 3", uid + 3}, "message\nmore");
+  logger.started_test({uid + 3, suites, "test 3", "file.cpp", 30});
+  logger.skipped_test({uid + 3, suites, "test 3", "file.cpp", 30},
+                      "message\nmore");
   logger.failed_file({"test_file", uid}, "error\nmore");
 
   uid = f.make_file_uid();
   suites = {"second suite"};
   logger.started_suite(suites);
-  logger.started_test({suites, "test 4", uid + 1});
-  logger.failed_test({suites, "test 4", uid + 1}, "error\nmore", output, 100ms);
+  logger.started_test({uid + 1, suites, "test 4", "file.cpp", 40});
+  logger.failed_test({uid + 1, suites, "test 4", "file.cpp", 40},
+                     "error\nmore", output, 100ms);
   logger.ended_suite(suites);
 
   logger.ended_run();

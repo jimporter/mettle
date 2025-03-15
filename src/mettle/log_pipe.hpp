@@ -65,9 +65,13 @@ namespace mettle::log {
         std::get<bencode::integer>(data.at("id"))
       );
       return {
+        id,
         read_suites( std::move(data.at("suites")) ),
         std::move(std::get<bencode::string>( data.at("test") )),
-        id
+        std::move(std::get<bencode::string>( data.at("file") )),
+        static_cast<std::uint_least32_t>(
+          std::get<bencode::integer>(data.at("line") )
+        ),
       };
     }
 

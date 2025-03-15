@@ -17,6 +17,7 @@
 #include "detail/test_caller.hpp"
 #include "../output.hpp"
 #include "../detail/algorithm.hpp"
+#include "../detail/source_location.hpp"
 
 
 namespace mettle {
@@ -246,12 +247,19 @@ namespace mettle {
       teardown_ = std::move(f);
     }
 
-    void test(std::string name, function_type f) {
-      tests_.push_back({ std::move(name), std::move(f), {} });
+    void test(
+      std::string name, function_type f,
+      detail::source_location loc = detail::source_location::current()
+    ) {
+      tests_.push_back({ std::move(name), std::move(f), {}, std::move(loc) });
     }
 
-    void test(std::string name, attributes attrs, function_type f) {
-      tests_.push_back({ std::move(name), std::move(f), std::move(attrs) });
+    void test(
+      std::string name, attributes attrs, function_type f,
+      detail::source_location loc = detail::source_location::current()
+    ) {
+      tests_.push_back({ std::move(name), std::move(f), std::move(attrs),
+                         std::move(loc) });
     }
 
     void subsuite(compiled_suite<void(T&...)> subsuite) {
@@ -283,6 +291,7 @@ namespace mettle {
       std::string name;
       function_type function;
       attributes attrs;
+      detail::source_location location;
     };
 
     std::string name_;

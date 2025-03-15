@@ -41,22 +41,23 @@ suite<> test_verbose("verbose logger", [](auto &_) {
     });
 
     _.test("started_test()", [](logger_factory &f) {
-      f.logger.started_test({{"suite"}, "test", 1});
+      f.logger.started_test({1, {"suite"}, "test", "file.cpp", 10});
       expect(f.ss.str(), equal_to("test "));
     });
 
     _.test("passed_test()", [](logger_factory &f) {
-      f.logger.passed_test({{"suite"}, "test", 1}, {}, 0ms);
+      f.logger.passed_test({1, {"suite"}, "test", "file.cpp", 10}, {}, 0ms);
       expect(f.ss.str(), equal_to("PASSED\n"));
     });
 
     _.test("failed_test()", [](logger_factory &f) {
-      f.logger.failed_test({{"suite"}, "test", 1}, "error", {}, 0ms);
+      f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10}, "error", {},
+                           0ms);
       expect(f.ss.str(), equal_to("FAILED\n  error\n"));
     });
 
     _.test("skipped_test()", [](logger_factory &f) {
-      f.logger.skipped_test({{"suite"}, "test", 1}, "message");
+      f.logger.skipped_test({1, {"suite"}, "test", "file.cpp", 10}, "message");
       expect(f.ss.str(), equal_to("SKIPPED\n  message\n"));
     });
 
@@ -260,12 +261,13 @@ suite<> test_verbose("verbose logger", [](auto &_) {
   subsuite<logger_factory>(_, "show time", bind_factory(1, true, false),
                            [](auto &_) {
     _.test("passed_test()", [](logger_factory &f) {
-      f.logger.passed_test({{"suite"}, "test", 1}, {}, 100ms);
+      f.logger.passed_test({1, {"suite"}, "test", "file.cpp", 10}, {}, 100ms);
       expect(f.ss.str(), equal_to("PASSED (100 ms)\n"));
     });
 
     _.test("failed_test()", [](logger_factory &f) {
-      f.logger.failed_test({{"suite"}, "test", 1}, "error", {}, 100ms);
+      f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10}, "error", {},
+                           100ms);
       expect(f.ss.str(), equal_to("FAILED (100 ms)\n  error\n"));
     });
 
@@ -353,15 +355,16 @@ suite<> test_verbose("verbose logger", [](auto &_) {
   subsuite<logger_factory>(_, "show terminal", bind_factory(1, false, true),
                            [](auto &_) {
     _.test("passed_test()", [](logger_factory &f) {
-      f.logger.passed_test({{"suite"}, "test", 1}, {"foo", "bar"}, 0ms);
+      f.logger.passed_test({1, {"suite"}, "test", "file.cpp", 10},
+                           {"foo", "bar"}, 0ms);
       expect(f.ss.str(), equal_to(
         "PASSED\n  stdout:\n  foo\n  stderr:\n  bar\n"
       ));
     });
 
     _.test("failed_test()", [](logger_factory &f) {
-      f.logger.failed_test({{"suite"}, "test", 1}, "error", {"foo", "bar"},
-                           0ms);
+      f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10}, "error",
+                           {"foo", "bar"}, 0ms);
       expect(f.ss.str(), equal_to(
         "FAILED\n  error\n\n  stdout:\n  foo\n  stderr:\n  bar\n"
       ));

@@ -12,6 +12,7 @@ in progress
   member function)
 - New matchers `in_interval` and `exception_what`
 - Add support for `char8_t`
+- xUnit test output now includes file and line number in `<testcase>` tags
 
 ### Bug fixes
 - Test failures across multiple runs are now correctly grouped in the summary
