@@ -169,15 +169,6 @@ with the description shown as well:</p>
 expected: 666
 actual:   123
 </code></pre>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Currently, only GCC supports getting the filename and line number
-automatically for an expectation. However, as compilers add support for
-<code>std::experimental::source_location</code>, mettle will automatically switch to
-showing these values. However, in the meantime you can use the
-<code>METTLE_EXPECT</code> macro in place of <code>mettle::expect</code> if you need to see the
-filename and line number.</p>
-</div>
 <h2 id="printing-objects">Printing objects<a class="headerlink" href="#printing-objects" title="Permanent link">§</a></h2>
 <p>In the examples above, the error output shows the expected and actual values.
 This is easy for simple types, like integers, but what about complex
@@ -285,7 +276,7 @@ using the <code>is_not</code> matcher.</p>
 
         <footer class="col-md-12">
             <hr>
-                <p>Copyright &copy; 2014-2023 Jim Porter</p>
+                <p>Copyright &copy; 2014-2025 Jim Porter</p>
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
         <script>
