@@ -58,7 +58,7 @@ namespace mettle {
 
 } // namespace mettle
 
-#if defined(__clang__) || defined(__GNUG__)
+#if __has_include(<cxxabi.h>)
 
 #include <cxxabi.h>
 
