@@ -1,9 +1,7 @@
 #ifndef INC_METTLE_OUTPUT_TYPE_NAME_HPP
 #define INC_METTLE_OUTPUT_TYPE_NAME_HPP
 
-#include <memory>
 #include <string>
-#include <typeinfo>
 
 namespace mettle {
 
@@ -58,8 +56,9 @@ namespace mettle {
 
 } // namespace mettle
 
-#if defined(__clang__) || defined(__GNUG__)
+#ifdef __GNUG__
 
+#include <memory>
 #include <cxxabi.h>
 
 template<typename T>
