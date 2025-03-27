@@ -2,7 +2,7 @@
 #define INC_METTLE_OUTPUT_TYPE_NAME_HPP
 
 #include <string>
-#include <typename>
+#include <typeinfo>
 
 namespace mettle {
 
