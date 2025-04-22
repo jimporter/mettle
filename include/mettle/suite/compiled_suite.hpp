@@ -8,6 +8,7 @@
 #include "attributes.hpp"
 #include "../test_uid.hpp"
 #include "../detail/forward_like.hpp"
+#include "../detail/source_location.hpp"
 
 namespace mettle {
 
@@ -20,14 +21,17 @@ namespace mettle {
   struct basic_test_info {
     using function_type = std::function<Function>;
 
-    basic_test_info(std::string name, function_type function, attributes attrs)
+    basic_test_info(std::string name, function_type function, attributes attrs,
+                      detail::source_location loc = detail::source_location::current())
       : name(std::move(name)), function(std::move(function)),
-        attrs(std::move(attrs)), id(detail::make_test_uid()) {}
+        attrs(std::move(attrs)), id(detail::make_test_uid()),
+        loc(std::move(loc)) {}
 
     std::string name;
     function_type function;
     attributes attrs;
     test_uid id;
+    detail::source_location loc;
   };
 
   template<typename Function>
@@ -48,7 +52,8 @@ namespace mettle {
         tests_.emplace_back(
           detail::forward_like<Tests>(test.name),
           compile(detail::forward_like<Tests>(test.function)),
-          unite(detail::forward_like<Tests>(test.attrs), attrs)
+          unite(detail::forward_like<Tests>(test.attrs), attrs),
+          detail::forward_like<Tests>(test.loc)
         );
       }
       for(auto &&ss : subsuites) {

@@ -67,7 +67,9 @@ namespace mettle::log {
       return {
         read_suites( std::move(data.at("suites")) ),
         std::move(std::get<bencode::string>( data.at("test") )),
-        id
+        id,
+        std::move(std::get<bencode::string>( data.at("file") )),
+        std::move(std::get<bencode::integer>( data.at("line") )),
       };
     }
 
