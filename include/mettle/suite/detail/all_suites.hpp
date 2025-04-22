@@ -5,7 +5,7 @@
 
 namespace mettle::detail {
 
-  inline suites_list all_suites;
+  static suites_list all_suites;
 
 } // namespace mettle::detail
 
