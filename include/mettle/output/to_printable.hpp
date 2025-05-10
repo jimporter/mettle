@@ -155,10 +155,6 @@ namespace mettle {
   inline auto to_printable(const T &t) {
     if constexpr(printable<T>) {
       return t;
-    } else if constexpr(any_exception<T>) {
-      std::ostringstream ss;
-      ss << type_name(t) << "(" << to_printable(t.what()) << ")";
-      return ss.str();
     } else if constexpr(iterable<T>) {
       return to_printable(std::begin(t), std::end(t));
     } else {
@@ -168,6 +164,13 @@ namespace mettle {
 
   // These need to be last in order for the `to_printable()` calls inside to
   // pick up all the above implementations (plus any others via ADL).
+
+  template<any_exception T>
+  std::string to_printable(const T &t) {
+    std::ostringstream ss;
+    ss << type_name(t) << "(" << to_printable(t.what()) << ")";
+    return ss.str();
+  }
 
   template<typename T>
   inline auto to_printable(const volatile T &t) {
