@@ -23,27 +23,29 @@ jobs:
       matrix:
         include:
           # GCC builds
-          - {os: ubuntu-latest, compiler: gcc, version: '10',
+          - {os: ubuntu-24.04, compiler: gcc, version: '10',
              flags: '-Wsuggest-override'}
-          - {os: ubuntu-latest, compiler: gcc, version: '11',
+          - {os: ubuntu-24.04, compiler: gcc, version: '11',
              flags: '-Wsuggest-override'}
-          - {os: ubuntu-latest, compiler: gcc, version: '12',
+          - {os: ubuntu-24.04, compiler: gcc, version: '12',
              flags: '-Wsuggest-override'}
-          - {os: ubuntu-latest, compiler: gcc, version: '13',
+          - {os: ubuntu-24.04, compiler: gcc, version: '13',
              flags: '-Wsuggest-override'}
-          - {os: ubuntu-24.04,  compiler: gcc, version: '14',
+          - {os: ubuntu-24.04, compiler: gcc, version: '14',
              flags: '-Wsuggest-override'}
 
           # Clang builds
-          - {os: ubuntu-20.04,  compiler: clang, version: '10'}
-          - {os: ubuntu-20.04,  compiler: clang, version: '11'}
-          - {os: ubuntu-20.04,  compiler: clang, version: '12'}
-          - {os: ubuntu-22.04,  compiler: clang, version: '13'}
-          - {os: ubuntu-22.04,  compiler: clang, version: '14'}
-          - {os: ubuntu-22.04,  compiler: clang, version: '15'}
-          - {os: ubuntu-22.04,  compiler: clang, version: '16'}
-          - {os: ubuntu-latest, compiler: clang, version: '17'}
-          - {os: ubuntu-latest, compiler: clang, version: '18'}
+          - {os: ubuntu-22.04, compiler: clang, version: '10'}
+          - {os: ubuntu-22.04, compiler: clang, version: '11'}
+          - {os: ubuntu-22.04, compiler: clang, version: '12'}
+          - {os: ubuntu-24.04, compiler: clang, version: '13'}
+          - {os: ubuntu-24.04, compiler: clang, version: '14'}
+          - {os: ubuntu-24.04, compiler: clang, version: '15'}
+          - {os: ubuntu-24.04, compiler: clang, version: '16'}
+          - {os: ubuntu-24.04, compiler: clang, version: '17'}
+          - {os: ubuntu-24.04, compiler: clang, version: '18'}
+          - {os: ubuntu-24.04, compiler: clang, version: '19', llvm-apt: true}
+          - {os: ubuntu-24.04, compiler: clang, version: '20', llvm-apt: true}
 
           # Windows builds
           - {os: windows-latest, compiler: msvc, version: '14.4',  # VS 2022
@@ -59,7 +61,7 @@ jobs:
           # NDEBUG builds
           - {os: ubuntu-24.04, compiler: gcc, version: '14',
              flags: '-Wsuggest-override -DNDEBUG', extra-desc: 'NDEBUG'}
-          - {os: ubuntu-latest, compiler: clang, version: '18',
+          - {os: ubuntu-24.04, compiler: clang, version: '20', llvm-apt: true,
              flags: '-DNDEBUG', extra-desc: 'NDEBUG'}
           - {os: windows-latest, compiler: msvc, flags: '/DNDEBUG',
              version: '14.4', boost-version: '1.80.0', extra-desc: 'NDEBUG'}
@@ -70,14 +72,14 @@ jobs:
           - {os: ubuntu-24.04, compiler: gcc, version: '14',
              options: '--std=c++23', flags: '-Wsuggest-override',
              boost-version: '1.85.0', extra-desc: 'c++23'}
-          - {os: ubuntu-latest, compiler: clang, version: '18',
+          - {os: ubuntu-24.04, compiler: clang, version: '20', llvm-apt: true,
              options: '--std=c++2b', boost-version: '1.85.0',
              extra-desc: 'c++23'}
 
           # Make-backend builds
           - {os: ubuntu-24.04, compiler: gcc, version: '14',
              backend: 'make', flags: '-Wsuggest-override'}
-          - {os: ubuntu-latest, compiler: clang, version: '18',
+          - {os: ubuntu-latest, compiler: clang, version: '20', llvm-apt: true,
              backend: 'make'}
       fail-fast: false
     env:
@@ -165,7 +167,8 @@ jobs:
           echo "CXX=g++-${{ matrix.version }}" >> ${GITHUB_ENV}
           echo "CXXFLAGS=${COMMONFLAGS} ${{ matrix.flags }}" >> ${GITHUB_ENV}
       - name: Install clang
-        if: startsWith(matrix.os, 'ubuntu-') && matrix.compiler == 'clang'
+        if: startsWith(matrix.os, 'ubuntu-') && matrix.compiler == 'clang' &&
+          matrix.llvm-apt
         run: |
           export CODENAME=`lsb_release -c | sed 's/Codename:\t//'`
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key 2>/dev/null | sudo apt-key add -
