@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <locale>
 #include <iomanip>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -164,6 +165,15 @@ namespace mettle {
 
   // These need to be last in order for the `to_printable()` calls inside to
   // pick up all the above implementations (plus any others via ADL).
+
+  template<typename T>
+  std::string to_printable(const std::optional<T> &t) {
+    if(!t)
+      return "std::nullopt";
+    std::ostringstream ss;
+    ss << "std::optional(" << to_printable(*t) << ")";
+    return ss.str();
+  }
 
   template<any_exception T>
   std::string to_printable(const T &t) {

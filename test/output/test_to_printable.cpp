@@ -192,6 +192,13 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
     expect(sample_function, stringified(type_name<void(void)>()));
   });
 
+  _.test("optional", []() {
+    std::optional<std::string> empty;
+    expect(empty, stringified("std::nullopt"));
+    std::optional<std::string> filled{"hello"};
+    expect(filled, stringified("std::optional(\"hello\")"));
+  });
+
   _.test("exceptions", []() {
     std::runtime_error e("what");
     expect(e, stringified(type_name<std::runtime_error>() + "(\"what\")"));
@@ -227,6 +234,16 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
                       my_namespace::another_type>{},
            stringified("[{another_type}, {another_type}]"));
     expect(std::tuple<unprintable_type, unprintable_type>{}, match_unprintable);
+
+    expect(std::optional<my_type>{my_type{}},
+           stringified("std::optional({my_type})"));
+    expect(std::optional<my_namespace::another_type>{
+      my_namespace::another_type{}
+    }, stringified("std::optional({another_type})"));
+    expect(
+      std::optional<unprintable_type>{unprintable_type{}},
+      stringified(regex_match("std::optional\\((struct )?unprintable_type\\)$"))
+    );
   });
 
   _.test("fallback", []() {
