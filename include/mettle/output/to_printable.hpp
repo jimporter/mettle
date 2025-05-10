@@ -21,6 +21,19 @@ namespace mettle {
   template<typename T>
   std::string to_printable(T begin, T end);
 
+  // Fallback implementation. Try to print various types in a reasonable way.
+
+  template<typename T>
+  inline auto to_printable(const T &t) {
+    if constexpr(printable<T>) {
+      return t;
+    } else if constexpr(iterable<T>) {
+      return to_printable(std::begin(t), std::end(t));
+    } else {
+      return type_name<T>();
+    }
+  }
+
   // Non-generic overloads
 
   inline std::string to_printable(std::nullptr_t) {
@@ -147,19 +160,6 @@ namespace mettle {
   template<typename T, std::size_t N>
   std::string to_printable(const T (&t)[N]) {
     return to_printable(std::begin(t), std::end(t));
-  }
-
-  // Fallback implementation. Try to print various types in a reasonable way.
-
-  template<typename T>
-  inline auto to_printable(const T &t) {
-    if constexpr(printable<T>) {
-      return t;
-    } else if constexpr(iterable<T>) {
-      return to_printable(std::begin(t), std::end(t));
-    } else {
-      return type_name<T>();
-    }
   }
 
   // These need to be last in order for the `to_printable()` calls inside to
