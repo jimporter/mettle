@@ -13,6 +13,8 @@ namespace mettle {
     std::vector<std::string> suites;
     std::string name;
     test_uid id;
+    std::string file = "";
+    long long line = 0;
 
     std::string full_name() const {
       std::ostringstream ss;
