@@ -16,6 +16,8 @@ prog_opts = package('boost', 'program_options', version='>=1.55')
 compile_opts = [opts.define('METTLE_VERSION', '"{}"'.format(mettle_version))]
 if argv.safe_exit:
     compile_opts.append(opts.define('METTLE_SAFE_EXIT'))
+if env.target_platform.family == 'windows':
+    compile_opts.append(opts.define('UNICODE'))
 
 includes = header_directory('include', include='**/*.hpp')
 
