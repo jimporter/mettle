@@ -48,7 +48,10 @@ namespace mettle {
     }
 
     std::string desc() const {
-      return desc_.format_desc(to_printable(detail::unwrap_capture(thing_)));
+      if constexpr(any_matcher<T>)
+        return desc_.format_desc(detail::unwrap_capture(thing_).desc());
+      else
+        return desc_.format_desc(to_printable(detail::unwrap_capture(thing_)));
     }
   private:
     detail::any_capture<T> thing_;
