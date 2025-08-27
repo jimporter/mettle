@@ -21,19 +21,20 @@ namespace mettle::log {
   void brief::passed_test(const test_name &, const test_output &,
                           test_duration) {
     using namespace term;
-    out_ << format(sgr::bold, fg(color::green)) << "." << reset()
+    out_ << format(sgr::bold, sgr::inverse, fg(color::green)) << "." << reset()
          << std::flush;
   }
 
   void brief::failed_test(const test_name &, const std::string &,
                           const test_output &, test_duration) {
     using namespace term;
-    out_ << format(sgr::bold, fg(color::red)) << "!" << reset() << std::flush;
+    out_ << format(sgr::bold, sgr::inverse, fg(color::red)) << "!" << reset()
+         << std::flush;
   }
 
   void brief::skipped_test(const test_name &, const std::string &) {
     using namespace term;
-    out_ << format(sgr::bold, fg(color::blue)) << "_" << reset()
+    out_ << format(sgr::bold, sgr::inverse, fg(color::blue)) << "_" << reset()
          << std::flush;
   }
 
@@ -42,7 +43,8 @@ namespace mettle::log {
 
   void brief::failed_file(const test_file &, const std::string &) {
     using namespace term;
-    out_ << format(sgr::bold, fg(color::red)) << "X" << reset() << std::flush;
+    out_ << format(sgr::bold, sgr::inverse, fg(color::red)) << "X" << reset()
+         << std::flush;
   }
 
 } // namespace mettle::log
