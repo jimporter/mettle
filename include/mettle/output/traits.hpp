@@ -33,9 +33,24 @@ namespace mettle {
     std::end(t);
   };
 
+  namespace detail {
+    // Make a special kind of ostream that can't print types that would use the
+    // boolean overload.
+    struct strict_ostream : std::ostream {};
+    inline void operator <<(strict_ostream &, bool) {}
+
+    template<typename T>
+    struct ostream_for { using type = std::ostream; };
+    template<typename T> requires std::is_class_v<T>
+    struct ostream_for<T> { using type = strict_ostream; };
+
+    template<typename T>
+    using ostream_for_t = typename ostream_for<T>::type;
+  }
+
   template<typename T>
-  concept printable = requires(std::ostream &os, T &t) {
-    os << t;
+  concept printable = requires(detail::ostream_for_t<T> &os, T &t) {
+    { os << t } -> std::convertible_to<std::ostream&>;
   };
 
 } // namespace mettle

@@ -22,6 +22,7 @@ in progress
 - Arithmetic matchers now use ADL to find `max` and `abs`, allowing custom
   arithmetic types to use their own implementations of these functions
 - Print strings with unusual character types as an array of characters
+- Class types that are convertible to `bool` are now printed correctly
 
 ### Breaking changes
 - Implementation updated to require C++20

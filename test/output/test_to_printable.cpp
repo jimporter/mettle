@@ -32,6 +32,10 @@ namespace my_namespace {
 
 struct unprintable_type {};
 
+struct unprintable_bool_type {
+  operator bool() { return true; }
+};
+
 enum my_enum {
   enum_value = 0
 };
@@ -209,52 +213,60 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
   _.test("custom types", []() {
     expect(my_type{}, stringified("{my_type}"));
     expect(my_namespace::another_type{}, stringified("{another_type}"));
-    expect(unprintable_type{}, stringified(regex_match(
-      "(struct )?unprintable_type$"
-    )));
 
-    auto match_unprintable = stringified(regex_match(
-      "\\[(struct )?unprintable_type, (struct )?unprintable_type\\]$"
-    ));
     expect(std::vector<my_type>(2), stringified("[{my_type}, {my_type}]"));
     expect(std::vector<my_namespace::another_type>(2),
            stringified("[{another_type}, {another_type}]"));
-    expect(std::vector<unprintable_type>(2), match_unprintable);
 
     expect(std::pair<my_type, my_type>{},
            stringified("[{my_type}, {my_type}]"));
     expect(std::pair<my_namespace::another_type,
                      my_namespace::another_type>{},
            stringified("[{another_type}, {another_type}]"));
-    expect(std::pair<unprintable_type, unprintable_type>{}, match_unprintable);
 
     expect(std::tuple<my_type, my_type>{},
            stringified("[{my_type}, {my_type}]"));
     expect(std::tuple<my_namespace::another_type,
                       my_namespace::another_type>{},
            stringified("[{another_type}, {another_type}]"));
-    expect(std::tuple<unprintable_type, unprintable_type>{}, match_unprintable);
 
     expect(std::optional<my_type>{my_type{}},
            stringified("std::optional({my_type})"));
     expect(std::optional<my_namespace::another_type>{
       my_namespace::another_type{}
     }, stringified("std::optional({another_type})"));
-    expect(
-      std::optional<unprintable_type>{unprintable_type{}},
-      stringified(regex_match("std::optional\\((struct )?unprintable_type\\)$"))
-    );
   });
 
-  _.test("fallback", []() {
-    struct some_type {};
-    struct another_type {
-      operator bool() { return true; }
-    };
+  _.test("unprintable types", []() {
+    std::string up_ex = "(struct )?unprintable_type";
+    std::string upb_ex = "(struct )?unprintable_bool_type";
 
-    // This will get a string from type_info, which could be anything...
-    expect(some_type{}, anything());
-    expect(another_type{}, stringified(none("true", "1")));
+    expect(unprintable_type{}, stringified(regex_match(up_ex + "$")));
+    expect(unprintable_bool_type{}, stringified(regex_match(upb_ex + "$")));
+
+    auto match_unprintables = stringified(regex_match(
+      "\\[" + up_ex + ", " + up_ex + "\\]$"
+    ));
+    auto match_unprintable_bools = stringified(regex_match(
+      "\\[" + upb_ex + ", " + upb_ex + "\\]$"
+    ));
+
+    expect(std::vector<unprintable_type>(2), match_unprintables);
+    expect(std::vector<unprintable_bool_type>(2), match_unprintable_bools);
+
+    expect(std::pair<unprintable_type, unprintable_type>{}, match_unprintables);
+    expect(std::pair<unprintable_bool_type, unprintable_bool_type>{},
+           match_unprintable_bools);
+
+    expect(std::tuple<unprintable_type, unprintable_type>{},
+           match_unprintables);
+    expect(std::tuple<unprintable_bool_type, unprintable_bool_type>{},
+           match_unprintable_bools);
+
+    expect(std::optional<unprintable_type>{unprintable_type{}},
+           stringified(regex_match("std::optional\\(" + up_ex + "\\)$")));
+    expect(std::optional<unprintable_bool_type>{unprintable_bool_type{}},
+           stringified(regex_match("std::optional\\(" + upb_ex + "\\)$")));
   });
 
   // Lots of code duplication here, but sadly, it's not easy to make generic
