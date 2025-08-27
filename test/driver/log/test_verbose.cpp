@@ -62,18 +62,18 @@ suite<> test_verbose("verbose logger", [](auto &_) {
     });
 
     _.test("started_file()", [](logger_factory &f) {
-      f.logger.started_file({"test_file", 100});
+      f.logger.started_file({100, "file.cpp"});
       expect(f.ss.str(), equal_to(""));
     });
 
     _.test("ended_file()", [](logger_factory &f) {
-      f.logger.ended_file({"test_file", 100});
+      f.logger.ended_file({100, "file.cpp"});
       expect(f.ss.str(), equal_to(""));
     });
 
     _.test("failed_file()", [](logger_factory &f) {
-      f.logger.failed_file({"test_file", 100}, "error");
-      expect(f.ss.str(), equal_to("`test_file` FAILED\n  error\n"));
+      f.logger.failed_file({100, "file.cpp"}, "error");
+      expect(f.ss.str(), equal_to("`file.cpp` FAILED\n  error\n"));
     });
 
     _.test("passing run", [](logger_factory &f) {
@@ -123,7 +123,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "      message\n"
         "      more\n"
         "\n"
-        "`test_file` FAILED\n"
+        "`file.cpp` FAILED\n"
         "  error\n"
         "  more\n"
         "\n"
@@ -145,7 +145,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "      message\n"
         "      more\n"
         "\n"
-        "`test_file` FAILED\n"
+        "`file.cpp` FAILED\n"
         "  error\n"
         "  more\n"
         "\n"
@@ -222,7 +222,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "        message\n"
         "        more\n"
         "\n"
-        "  `test_file` FAILED\n"
+        "  `file.cpp` FAILED\n"
         "    error\n"
         "    more\n"
         "\n"
@@ -246,7 +246,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "        message\n"
         "        more\n"
         "\n"
-        "  `test_file` FAILED\n"
+        "  `file.cpp` FAILED\n"
         "    error\n"
         "    more\n"
         "\n"
@@ -318,7 +318,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "      message\n"
         "      more\n"
         "\n"
-        "`test_file` FAILED\n"
+        "`file.cpp` FAILED\n"
         "  error\n"
         "  more\n"
         "\n"
@@ -340,7 +340,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "      message\n"
         "      more\n"
         "\n"
-        "`test_file` FAILED\n"
+        "`file.cpp` FAILED\n"
         "  error\n"
         "  more\n"
         "\n"
@@ -434,7 +434,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "      message\n"
         "      more\n"
         "\n"
-        "`test_file` FAILED\n"
+        "`file.cpp` FAILED\n"
         "  error\n"
         "  more\n"
         "\n"
@@ -464,7 +464,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "      message\n"
         "      more\n"
         "\n"
-        "`test_file` FAILED\n"
+        "`file.cpp` FAILED\n"
         "  error\n"
         "  more\n"
         "\n"

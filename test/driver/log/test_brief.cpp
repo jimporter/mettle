@@ -56,17 +56,17 @@ suite<logger_factory> test_brief("brief logger", [](auto &_) {
   });
 
   _.test("started_file()", [](logger_factory &f) {
-    f.logger.started_file({"test_file", 100});
+    f.logger.started_file({100, "file.cpp"});
     expect(f.ss.str(), equal_to(""));
   });
 
   _.test("ended_file()", [](logger_factory &f) {
-    f.logger.ended_file({"test_file", 100});
+    f.logger.ended_file({100, "file.cpp"});
     expect(f.ss.str(), equal_to(""));
   });
 
   _.test("failed_file()", [](logger_factory &f) {
-    f.logger.failed_file({"test_file", 100}, "error");
+    f.logger.failed_file({100, "file.cpp"}, "error");
     expect(f.ss.str(), equal_to("X"));
   });
 

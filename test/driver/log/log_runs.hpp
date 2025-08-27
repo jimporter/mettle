@@ -106,7 +106,7 @@ inline void failing_file_run(mettle::log::file_logger &logger) {
   logger.started_test({uid + 3, suites, "test 3", "file.cpp", 30});
   logger.skipped_test({uid + 3, suites, "test 3", "file.cpp", 30},
                       "message\nmore");
-  logger.failed_file({"test_file", uid}, "error\nmore");
+  logger.failed_file({uid, "file.cpp"}, "error\nmore");
 
   uid = f.make_file_uid();
   suites = {"second suite"};
@@ -143,7 +143,7 @@ inline void failing_test_and_file_run(mettle::log::file_logger &logger) {
   logger.started_test({uid + 3, suites, "test 3", "file.cpp", 30});
   logger.skipped_test({uid + 3, suites, "test 3", "file.cpp", 30},
                       "message\nmore");
-  logger.failed_file({"test_file", uid}, "error\nmore");
+  logger.failed_file({uid, "file.cpp"}, "error\nmore");
 
   uid = f.make_file_uid();
   suites = {"second suite"};

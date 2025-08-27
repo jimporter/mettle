@@ -112,7 +112,7 @@ suite<> test_verbose("xunit logger", [](auto &_) {
         XML
         "<testsuites failures=\"1\" skipped=\"1\" tests=\"5\" "
                     "time=\"0.300000\">\n"
-        "  <testsuite failures=\"1\" name=\"file `test_file`\" tests=\"1\" "
+        "  <testsuite failures=\"1\" name=\"file `file.cpp`\" tests=\"1\" "
                      "time=\"0\">\n"
         "    <testcase name=\"&lt;file&gt;\" time=\"0\">\n"
         "      <failure message=\"error&#10;more\"/>\n"
@@ -140,7 +140,7 @@ suite<> test_verbose("xunit logger", [](auto &_) {
         XML
         "<testsuites failures=\"3\" skipped=\"1\" tests=\"5\" "
                     "time=\"0.300000\">\n"
-        "  <testsuite failures=\"1\" name=\"file `test_file`\" tests=\"1\" "
+        "  <testsuite failures=\"1\" name=\"file `file.cpp`\" tests=\"1\" "
                      "time=\"0\">\n"
         "    <testcase name=\"&lt;file&gt;\" time=\"0\">\n"
         "      <failure message=\"error&#10;more\"/>\n"

@@ -28,47 +28,20 @@ namespace mettle {
   inline bool operator ==(const test_name &lhs, const test_name &rhs) {
     return lhs.id == rhs.id;
   }
-  inline bool operator !=(const test_name &lhs, const test_name &rhs) {
-    return lhs.id != rhs.id;
-  }
-  inline bool operator <(const test_name &lhs, const test_name &rhs) {
-    return lhs.id < rhs.id;
-  }
-  inline bool operator <=(const test_name &lhs, const test_name &rhs) {
-    return lhs.id <= rhs.id;
-  }
-  inline bool operator >(const test_name &lhs, const test_name &rhs) {
-    return lhs.id > rhs.id;
-  }
-  inline bool operator >=(const test_name &lhs, const test_name &rhs) {
-    return lhs.id >= rhs.id;
+  inline auto operator <=>(const test_name &lhs, const test_name &rhs) {
+    return lhs.id <=> rhs.id;
   }
 
   struct test_file {
-    test_file(std::string name, test_uid id)
-      : name(std::move(name)), id(id) {}
-
-    std::string name;
     test_uid id;
+    std::string name;
   };
 
   inline bool operator ==(const test_file &lhs, const test_file &rhs) {
     return lhs.id == rhs.id;
   }
-  inline bool operator !=(const test_file &lhs, const test_file &rhs) {
-    return lhs.id != rhs.id;
-  }
-  inline bool operator <(const test_file &lhs, const test_file &rhs) {
-    return lhs.id < rhs.id;
-  }
-  inline bool operator <=(const test_file &lhs, const test_file &rhs) {
-    return lhs.id <= rhs.id;
-  }
-  inline bool operator >(const test_file &lhs, const test_file &rhs) {
-    return lhs.id > rhs.id;
-  }
-  inline bool operator >=(const test_file &lhs, const test_file &rhs) {
-    return lhs.id >= rhs.id;
+  inline auto operator <=>(const test_file &lhs, const test_file &rhs) {
+    return lhs.id <=> rhs.id;
   }
 
 } // namespace mettle

@@ -21,7 +21,7 @@ namespace mettle {
 
     detail::file_uid_maker uid;
     for(const auto &command : commands) {
-      test_file file = {command, uid.make_file_uid()};
+      test_file file = {uid.make_file_uid(), command};
       logger.started_file(file);
 
       std::vector<std::string> final_args = command.args();
