@@ -13,6 +13,7 @@
 - xUnit test output now includes file and line number in `<testcase>` tags
 
 ### Bug fixes
+- `none` matcher now reports failed matches as expected
 - Test failures across multiple runs are now correctly grouped in the summary
   results
 - `bencode.hpp` is now installed alongside mettle when `--vendorize` is used

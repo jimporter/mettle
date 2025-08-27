@@ -10,20 +10,20 @@
 namespace mettle {
 
   namespace detail {
-    template<typename Reducer, typename ...T>
+    template<typename Filter, typename Done, typename ...T>
     class reduce_impl : public matcher_tag {
     public:
-      reduce_impl(std::string desc, bool initial, Reducer reducer,
+      reduce_impl(std::string desc, Filter filter, Done done,
                   T ...matchers)
-        : desc_(std::move(desc)), initial_(initial),
-          reducer_(std::move(reducer)), matchers_(std::move(matchers)...) {}
+        : desc_(std::move(desc)), filter_(std::move(filter)),
+          done_(std::move(done)), matchers_(std::move(matchers)...) {}
 
       template<typename U>
       match_result operator ()(U &&actual) const {
-        match_result result = initial_;
+        match_result result = done_(false);
         tuple_for_each(matchers_, [&, this](const auto &matcher) {
-          auto m = matcher(actual);
-          bool done = reducer_(initial_, m) != initial_;
+          auto m = filter_(matcher(actual));
+          bool done = done_(m);
           if(done)
             result = std::move(m);
           return done;
@@ -40,8 +40,8 @@ namespace mettle {
       }
     private:
       const std::string desc_;
-      const bool initial_;
-      Reducer reducer_;
+      Filter filter_;
+      Done done_;
       std::tuple<T...> matchers_;
     };
   }
@@ -52,20 +52,20 @@ namespace mettle {
 
   template<typename ...T>
   inline auto any(T &&...things) {
-    return detail::reduce_impl("any of", false, std::logical_or<bool>(),
+    return detail::reduce_impl("any of", std::identity{}, std::identity{},
                                ensure_matcher(std::forward<T>(things))...);
   }
 
   template<typename ...T>
   inline auto all(T &&...things) {
-    return detail::reduce_impl("all of", true, std::logical_and<bool>(),
+    return detail::reduce_impl("all of", std::identity{}, std::logical_not<>{},
                                ensure_matcher(std::forward<T>(things))...);
   }
 
   template<typename ...T>
   inline auto none(T &&...things) {
     return detail::reduce_impl(
-      "none of", true, [](bool a, bool b) { return a && !b; },
+      "none of", std::logical_not<>{}, std::logical_not<>{},
       ensure_matcher(std::forward<T>(things))...
     );
   }

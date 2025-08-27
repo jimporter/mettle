@@ -351,6 +351,7 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(123, any(1, 2, 123));
       expect(123, is_not(any(1, 2, 3)));
       expect(123, is_not(any()));
+      expect(123, is_not(any(equal_to(1), equal_to(2), equal_to(3))));
 
       auto m = equal_to(123);
       expect(123, any(m));
@@ -366,6 +367,7 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(123, all(123));
       expect(123, all(not_equal_to(1), not_equal_to(2), greater(3)));
       expect(123, all());
+      expect(123, is_not(all(not_equal_to(1), not_equal_to(123), greater(3))));
 
       auto m = equal_to(123);
       expect(123, all(m));
@@ -381,6 +383,7 @@ suite<> test_matchers("matchers", [](auto &_) {
       expect(123, none(1));
       expect(123, none(equal_to(1), equal_to(2), less(3)));
       expect(123, none());
+      expect(123, is_not(none(equal_to(1), equal_to(123), less(3))));
 
       auto m = equal_to(1);
       expect(123, none(m));
