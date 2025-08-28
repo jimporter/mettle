@@ -6,16 +6,12 @@
 #include <vector>
 
 #include "attributes.hpp"
+#include "../test_result.hpp"
 #include "../test_uid.hpp"
 #include "../detail/forward_like.hpp"
 #include "../detail/source_location.hpp"
 
 namespace mettle {
-
-  struct test_result {
-    bool passed;
-    std::string message;
-  };
 
   template<typename Function>
   struct basic_test_info {

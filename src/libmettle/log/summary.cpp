@@ -47,12 +47,12 @@ namespace mettle::log {
     if(log_) log_->passed_test(test, output, duration);
   }
 
-  void summary::failed_test(const test_name &test, const std::string &message,
+  void summary::failed_test(const test_name &test, const test_failure &failure,
                             const test_output &output, test_duration duration) {
-    if(log_) log_->failed_test(test, message, output, duration);
+    if(log_) log_->failed_test(test, failure, output, duration);
 
     add_unpass(test.id, test.full_name(), fail).failures.push_back({
-      runs_, message, show_terminal_ ? output : log::test_output()
+      runs_, failure.message, show_terminal_ ? output : log::test_output()
     });
   }
 

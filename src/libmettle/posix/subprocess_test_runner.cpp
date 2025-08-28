@@ -59,7 +59,7 @@ namespace mettle {
       std::ostringstream ss;
       ss << "Fatal error at " << loc.file_name() << ":" << loc.line() << "\n"
          << err_string(errno);
-      return { false, err_string(errno) };
+      return {{ss.str()}};
     }
 
     [[noreturn]] inline void child_failed() {
@@ -123,14 +123,14 @@ namespace mettle {
       if(timeout_)
         make_timeout_monitor(*timeout_);
 
-      auto result = test.function();
-      if(write(log_pipe.write_fd, result.message.c_str(),
-               result.message.length()) < 0)
+      auto failed = test.function();
+      if(failed && write(log_pipe.write_fd, failed->message.c_str(),
+                         failed->message.length()) < 0)
         child_failed();
 
       fflush(nullptr);
 
-      EXIT_FUNC(result.passed ? exit_code::success : exit_code::failure);
+      EXIT_FUNC(failed ? exit_code::failure : exit_code::success);
     } else {
       scoped_sigaction sigint, sigquit, sigchld;
 
@@ -189,12 +189,14 @@ namespace mettle {
         if(exit_status == exit_code::timeout) {
           std::ostringstream ss;
           ss << "Timed out after " << timeout_->count() << " ms";
-          return { false, ss.str() };
+          return {{ss.str()}};
+        } else if(exit_status == exit_code::success) {
+          return std::nullopt;
         } else {
-          return { exit_status == exit_code::success, message };
+          return {{message}};
         }
       } else { // WIFSIGNALED
-        return { false, strsignal(WTERMSIG(status)) };
+        return {{ strsignal(WTERMSIG(status)) }};
       }
     }
   }

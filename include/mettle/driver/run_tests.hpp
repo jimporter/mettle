@@ -92,14 +92,14 @@ namespace mettle {
 
           using namespace std::chrono;
           auto then = steady_clock::now();
-          auto result = runner(test, output);
+          auto failed = runner(test, output);
           auto now = steady_clock::now();
           auto duration = duration_cast<log::test_duration>(now - then);
 
-          if(result.passed)
-            logger.passed_test(name, output, duration);
+          if(failed)
+            logger.failed_test(name, *failed, output, duration);
           else
-            logger.failed_test(name, result.message, output, duration);
+            logger.passed_test(name, output, duration);
         }
 
         run_tests_impl(suite.subsuites(), logger, runner, filter, parents);

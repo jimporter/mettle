@@ -45,12 +45,12 @@ struct recording_logger : log::file_logger {
     duration = actual_duration;
   }
   void failed_test(const test_name &actual_test,
-                   const std::string &actual_message,
+                   const test_failure &actual_failure,
                    const log::test_output &actual_output,
                    log::test_duration actual_duration) override {
     called = "failed_test";
     test = actual_test;
-    message = actual_message;
+    message = actual_failure.message;
     output = actual_output;
     duration = actual_duration;
   }
@@ -169,7 +169,7 @@ suite<fixture> test_child("child/pipe loggers", [](auto &_) {
     log::test_output output = {"stdout", "stderr"};
     log::test_duration duration(1000);
 
-    f.child.failed_test(f.test, message, output, duration);
+    f.child.failed_test(f.test, {message}, output, duration);
     f.pipe(f.stream);
 
     expect(f.parent.called, equal_to("failed_test"));

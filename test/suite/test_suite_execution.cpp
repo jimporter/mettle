@@ -4,28 +4,9 @@ using namespace mettle;
 #include "run_counter.hpp"
 
 namespace mettle {
-  std::string to_printable(const test_result &result) {
-    std::ostringstream ss;
-    ss << "test_result(" << to_printable(result.passed) << ", "
-       << to_printable(result.message) << ")";
-    return ss.str();
+  auto to_printable(const test_failure &failure) {
+    return to_printable(failure.message);
   }
-}
-
-template<typename T, typename U>
-auto equal_test_result(T &&result, U &&message) {
-  auto res = ensure_matcher(std::forward<T>(result));
-  auto msg = ensure_matcher(std::forward<U>(message));
-
-  std::ostringstream ss;
-  ss << "test_result(" << res.desc() << ", " << msg.desc() << ")";
-
-  return basic_matcher(
-    [res = std::move(res), msg = std::move(msg)]
-    (const auto &actual) -> bool {
-      return res(actual.passed) && msg(actual.message);
-    }, ss.str()
-  );
 }
 
 struct basic_fixture {
@@ -57,8 +38,8 @@ suite<> test_calling("test calling", [](auto &_) {
       _.test("inner test", test);
     });
 
-    auto result = s.tests()[0].function();
-    expect(result, equal_test_result(true, ""));
+    auto failed = s.tests()[0].function();
+    expect(failed, equal_to(std::nullopt));
 
     expect("test run count", test.runs(), equal_to(1));
   });
@@ -71,10 +52,11 @@ suite<> test_calling("test calling", [](auto &_) {
       _.test("inner test", test);
     });
 
-    auto result = s.tests()[0].function();
-    expect(result, equal_test_result(
-      false, regex_match("(.*\n)?expected: true\nactual:   false$")
-    ));
+    auto failed = s.tests()[0].function();
+    expect(failed, dereferenced(filter(
+      [](auto &&i) { return i.message; },
+      regex_match("(.*\n)?expected: true\nactual:   false$")
+    )));
 
     expect("test run count", test.runs(), equal_to(1));
   });
@@ -87,8 +69,8 @@ suite<> test_calling("test calling", [](auto &_) {
       _.test("inner test", test);
     });
 
-    auto result = s.tests()[0].function();
-    expect("test passed", result, equal_test_result(true, ""));
+    auto failed = s.tests()[0].function();
+    expect("test passed", failed, equal_to(std::nullopt));
 
     expect("setup run count", setup.runs(), equal_to(1));
     expect("test run count", test.runs(), equal_to(1));
@@ -106,10 +88,11 @@ suite<> test_calling("test calling", [](auto &_) {
       _.test("inner test", test);
     });
 
-    auto result = s.tests()[0].function();
-    expect(result, equal_test_result(
-      false, regex_match("(.*\n)?expected: true\nactual:   false$")
-    ));
+    auto failed = s.tests()[0].function();
+    expect(failed, dereferenced(filter(
+      [](auto &&i) { return i.message; },
+      regex_match("(.*\n)?expected: true\nactual:   false$")
+    )));
 
     expect("setup run count", setup.runs(), equal_to(1));
     expect("test run count", test.runs(), equal_to(1));
@@ -127,10 +110,11 @@ suite<> test_calling("test calling", [](auto &_) {
       _.test("inner test", test);
     });
 
-    auto result = s.tests()[0].function();
-    expect(result, equal_test_result(
-      false, regex_match("(.*\n)?expected: true\nactual:   false$")
-    ));
+    auto failed = s.tests()[0].function();
+    expect(failed, dereferenced(filter(
+      [](auto &&i) { return i.message; },
+      regex_match("(.*\n)?expected: true\nactual:   false$")
+    )));
 
     expect("setup run count", setup.runs(), equal_to(1));
     expect("test run count", test.runs(), equal_to(0));
@@ -148,10 +132,11 @@ suite<> test_calling("test calling", [](auto &_) {
       _.test("inner test", test);
     });
 
-    auto result = s.tests()[0].function();
-    expect(result, equal_test_result(
-      false, regex_match("(.*\n)?expected: true\nactual:   false$")
-    ));
+    auto failed = s.tests()[0].function();
+    expect(failed, dereferenced(filter(
+      [](auto &&i) { return i.message; },
+      regex_match("(.*\n)?expected: true\nactual:   false$")
+    )));
 
     expect("setup run count", setup.runs(), equal_to(1));
     expect("test run count", test.runs(), equal_to(1));
@@ -172,10 +157,11 @@ suite<> test_calling("test calling", [](auto &_) {
       _.test("inner test", test);
     });
 
-    auto result = s.tests()[0].function();
-    expect(result, equal_test_result(
-      false, regex_match("(.*\n)?expected: \"foo\"\nactual:   \"test\"$")
-    ));
+    auto failed = s.tests()[0].function();
+    expect(failed, dereferenced(filter(
+      [](auto &&i) { return i.message; },
+      regex_match("(.*\n)?expected: \"foo\"\nactual:   \"test\"$")
+    )));
 
     expect("setup run count", setup.runs(), equal_to(1));
     expect("test run count", test.runs(), equal_to(1));

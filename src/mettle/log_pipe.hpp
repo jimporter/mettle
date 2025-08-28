@@ -34,7 +34,7 @@ namespace mettle::log {
       } else if(event == "failed_test") {
         logger_.failed_test(
           read_test_name( std::move(data.at("test")) ),
-          read_string( std::move(data.at("message")) ),
+          {read_string( std::move(data.at("message")) )},
           read_test_output( std::move(data.at("output")) ),
           read_test_duration( std::move(data.at("duration")) )
         );

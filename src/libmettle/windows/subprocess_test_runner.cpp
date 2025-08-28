@@ -31,7 +31,7 @@ namespace mettle {
       std::ostringstream ss;
       ss << "Fatal error at " << loc.file_name() << ":" << loc.line() << "\n"
          << err_string(GetLastError());
-      return {false, ss.str()};
+      return {{ss.str()}};
     }
   }
 
@@ -123,12 +123,15 @@ namespace mettle {
     if(finished == timeout_event) {
       std::ostringstream ss;
       ss << "Timed out after " << timeout_->count() << " ms";
-      return { false, ss.str() };
+      return {{ss.str()}};
     } else {
       DWORD exit_status;
       if(!GetExitCodeProcess(proc_info.hProcess, &exit_status))
         return METTLE_FAILED();
-      return {exit_status == exit_code::success, message};
+      else if(exit_status == exit_code::success)
+        return std::nullopt;
+      else
+        return {{message}};
     }
   }
 
@@ -148,15 +151,17 @@ namespace mettle {
     return nullptr;
   }
 
-  bool run_single_test(const test_info &test, HANDLE log_pipe) {
-    auto result = test.function();
+  int run_single_test(const test_info &test, HANDLE log_pipe) {
+    auto failed = test.function();
 
     DWORD size;
-    if(!WriteFile(log_pipe, result.message.c_str(),
-                  static_cast<DWORD>(result.message.size()), &size, nullptr)) {
-      return false;
+    if(failed && !WriteFile(
+      log_pipe, failed->message.c_str(),
+      static_cast<DWORD>(failed->message.size()), &size, nullptr
+    )) {
+      return exit_code::fatal;
     }
-    return result.passed;
+    return failed ? exit_code::failure : exit_code::success;
   }
 
   int make_fd_private(HANDLE handle) {

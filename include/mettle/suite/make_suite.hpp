@@ -17,6 +17,7 @@
 #include "factory.hpp"
 #include "detail/test_caller.hpp"
 #include "../output.hpp"
+#include "../test_result.hpp"
 #include "../detail/algorithm.hpp"
 #include "../detail/source_location.hpp"
 
@@ -46,21 +47,17 @@ namespace mettle {
       template<typename T>
       auto operator ()(T &&t) const {
         return [test_function = std::move(t)]() mutable -> test_result {
-          bool passed = false;
-          std::string message;
-
           try {
             test_function();
-            passed = true;
           } catch(const Exception &e) {
-            message = e.what();
+            return {{e.what()}};
           } catch(const std::exception &e) {
-            message = std::string("Uncaught exception: ") + to_printable(e);
+            return {{std::string("Uncaught exception: ") + to_printable(e)}};
           } catch(...) {
-            message = "Unknown exception";
+            return {{"Unknown exception"}};
           }
 
-          return { passed, message };
+          return std::nullopt;
         };
       }
     };

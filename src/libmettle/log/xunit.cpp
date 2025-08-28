@@ -98,12 +98,12 @@ namespace mettle::log {
     duration_ += duration;
   }
 
-  void xunit::failed_test(const test_name &test, const std::string &message,
+  void xunit::failed_test(const test_name &test, const test_failure &failure,
                           const test_output &output, test_duration duration) {
     auto &suite = current_suite();
     auto t = test_element(test);
     t->attr("time", get_duration(duration));
-    t->append_child(message_element("failure", message));
+    t->append_child(message_element("failure", failure.message));
     append_test_output(t, output);
     suite.elt->append_child(std::move(t));
 

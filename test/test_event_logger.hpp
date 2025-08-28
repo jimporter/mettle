@@ -33,7 +33,7 @@ struct test_event_logger : log::file_logger {
     events.push_back("passed_test");
     tests.insert(test);
   }
-  void failed_test(const test_name &test, const std::string &,
+  void failed_test(const test_name &test, const test_failure &,
                    const log::test_output &, log::test_duration) override {
     events.push_back("failed_test");
     tests.insert(test);

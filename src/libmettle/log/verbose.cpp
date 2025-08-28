@@ -65,7 +65,7 @@ namespace mettle::log {
     log_output(output, false);
   }
 
-  void verbose::failed_test(const test_name &, const std::string &message,
+  void verbose::failed_test(const test_name &, const test_failure &failure,
                             const test_output &output, test_duration duration) {
     using namespace term;
     out_ << format(sgr::bold, fg(color::red)) << "FAILED" << reset();
@@ -74,9 +74,9 @@ namespace mettle::log {
     out_ << std::endl;
 
     scoped_indent si(out_);
-    if(!message.empty())
-      out_ << message << std::endl;
-    log_output(output, !message.empty());
+    if(!failure.message.empty())
+      out_ << failure.message << std::endl;
+    log_output(output, !failure.message.empty());
   }
 
   void verbose::skipped_test(const test_name &, const std::string &message) {

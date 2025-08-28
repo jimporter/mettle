@@ -26,9 +26,9 @@ namespace mettle::log {
     void passed_test(const test_name &, const test_output &,
                      test_duration) override {}
 
-    void failed_test(const test_name &test, const std::string &message,
+    void failed_test(const test_name &test, const test_failure &failure,
                      const test_output &, test_duration) override {
-      unpasses_.push_back({test, true, message});
+      unpasses_.push_back({test, true, failure.message});
       failures_++;
     }
 

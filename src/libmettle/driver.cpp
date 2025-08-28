@@ -115,8 +115,7 @@ namespace mettle {
           report_error(argv[0], "unable to find test");
           return exit_code::bad_args;
         }
-        return run_single_test(*test, *args.log_fd) ?
-               exit_code::success : exit_code::failure;
+        return run_single_test(*test, *args.log_fd);
       }
 #endif
 

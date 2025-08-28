@@ -28,7 +28,7 @@ namespace mettle::log {
     void started_test(const test_name &test) override;
     void passed_test(const test_name &test, const test_output &output,
                      test_duration duration) override;
-    void failed_test(const test_name &test, const std::string &message,
+    void failed_test(const test_name &test, const test_failure &failure,
                      const test_output &output,
                      test_duration duration) override;
     void skipped_test(const test_name &test,
