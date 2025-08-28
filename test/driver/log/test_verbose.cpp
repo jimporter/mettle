@@ -51,8 +51,8 @@ suite<> test_verbose("verbose logger", [](auto &_) {
     });
 
     _.test("failed_test()", [](logger_factory &f) {
-      f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10}, "error", {},
-                           0ms);
+      f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10}, {"error"},
+                           {}, 0ms);
       expect(f.ss.str(), equal_to("FAILED\n  error\n"));
     });
 
@@ -266,8 +266,8 @@ suite<> test_verbose("verbose logger", [](auto &_) {
     });
 
     _.test("failed_test()", [](logger_factory &f) {
-      f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10}, "error", {},
-                           100ms);
+      f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10}, {"error"},
+                           {}, 100ms);
       expect(f.ss.str(), equal_to("FAILED (100 ms)\n  error\n"));
     });
 
@@ -363,7 +363,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
     });
 
     _.test("failed_test()", [](logger_factory &f) {
-      f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10}, "error",
+      f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10}, {"error"},
                            {"foo", "bar"}, 0ms);
       expect(f.ss.str(), equal_to(
         "FAILED\n  error\n\n  stdout:\n  foo\n  stderr:\n  bar\n"

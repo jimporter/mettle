@@ -7,6 +7,7 @@
 
 #include "../test_name.hpp"
 #include "../detail/export.hpp"
+#include "../../test_result.hpp"
 
 namespace mettle::log {
 
@@ -40,7 +41,7 @@ namespace mettle::log {
     passed_test(const test_name &test, const test_output &output,
                 test_duration duration) = 0;
     virtual void
-    failed_test(const test_name &test, const std::string &message,
+    failed_test(const test_name &test, const test_failure &failure,
                 const test_output &output, test_duration duration) = 0;
     virtual void
     skipped_test(const test_name &test, const std::string &message) = 0;

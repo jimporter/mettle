@@ -45,7 +45,7 @@ suite<logger_factory> test_brief("brief logger", [](auto &_) {
   });
 
   _.test("failed_test()", [](logger_factory &f) {
-    f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10}, "error", {},
+    f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10}, {"error"}, {},
                          {});
     expect(f.ss.str(), equal_to("!"));
   });

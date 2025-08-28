@@ -28,9 +28,8 @@ test_fork("posix::subprocess_test_runner", bind_factory(500ms), [](auto &_) {
         _.test("test", []() {});
       });
 
-      auto result = runner(s.tests()[0], output);
-      expect(result.passed, equal_to(true));
-      expect(result.message, equal_to(""));
+      auto failed = runner(s.tests()[0], output);
+      expect(failed, equal_to(std::nullopt));
     });
 
     _.test("failing test", [](subprocess_test_runner &runner,
@@ -41,8 +40,8 @@ test_fork("posix::subprocess_test_runner", bind_factory(500ms), [](auto &_) {
         });
       });
 
-      auto result = runner(s.tests()[0], output);
-      expect(result.passed, equal_to(false));
+      auto failed = runner(s.tests()[0], output);
+      expect(failed, is_not(std::nullopt));
     });
 
     _.test("aborting test", [](subprocess_test_runner &runner,
@@ -53,9 +52,11 @@ test_fork("posix::subprocess_test_runner", bind_factory(500ms), [](auto &_) {
         });
       });
 
-      auto result = runner(s.tests()[0], output);
-      expect(result.passed, equal_to(false));
-      expect(result.message, equal_to(strsignal(SIGABRT)));
+      auto failed = runner(s.tests()[0], output);
+      expect(failed, dereferenced(filter(
+        [](auto &&i) { return i.message; },
+        equal_to(strsignal(SIGABRT))
+      )));
     });
 
     _.test("segfaulting test", [](subprocess_test_runner &runner,
@@ -66,9 +67,11 @@ test_fork("posix::subprocess_test_runner", bind_factory(500ms), [](auto &_) {
         });
       });
 
-      auto result = runner(s.tests()[0], output);
-      expect(result.passed, equal_to(false));
-      expect(result.message, equal_to(strsignal(SIGSEGV)));
+      auto failed = runner(s.tests()[0], output);
+      expect(failed, dereferenced(filter(
+        [](auto &&i) { return i.message; },
+        equal_to(strsignal(SIGSEGV))
+      )));
     });
 
     _.test("timed out test", [](subprocess_test_runner &runner,
@@ -80,11 +83,13 @@ test_fork("posix::subprocess_test_runner", bind_factory(500ms), [](auto &_) {
       });
 
       auto then = std::chrono::steady_clock::now();
-      auto result = runner(s.tests()[0], output);
+      auto failed = runner(s.tests()[0], output);
       auto now = std::chrono::steady_clock::now();
 
-      expect(result.passed, equal_to(false));
-      expect(result.message, equal_to("Timed out after 500 ms"));
+      expect(failed, dereferenced(filter(
+        [](auto &&i) { return i.message; },
+        equal_to("Timed out after 500 ms")
+      )));
       expect(now - then, less(1s));
     });
 
@@ -98,14 +103,13 @@ test_fork("posix::subprocess_test_runner", bind_factory(500ms), [](auto &_) {
           int pid;
           if((pid = fork()) < 0)
             throw std::system_error(errno, std::system_category());
-          if(pid == 0) {
+          if(pid == 0)
             std::this_thread::sleep_for(2s);
-          }
         });
       });
 
       auto then = std::chrono::steady_clock::now();
-      auto result = runner(s.tests()[0], output);
+      auto failed = runner(s.tests()[0], output);
       // Try to read from our pipe; if the test's child process isn't killed,
       // this will block.
       block.close_write();
@@ -113,7 +117,7 @@ test_fork("posix::subprocess_test_runner", bind_factory(500ms), [](auto &_) {
       read(block.read_fd, buf, 1);
       auto now = std::chrono::steady_clock::now();
 
-      expect(result.passed, equal_to(true));
+      expect(failed, equal_to(std::nullopt));
       expect(now - then, less(1s));
     });
 
@@ -134,10 +138,10 @@ test_fork("posix::subprocess_test_runner", bind_factory(500ms), [](auto &_) {
       });
 
       auto then = std::chrono::steady_clock::now();
-      auto result = runner(s.tests()[0], output);
+      auto failed = runner(s.tests()[0], output);
       auto now = std::chrono::steady_clock::now();
 
-      expect(result.passed, equal_to(true));
+      expect(failed, equal_to(std::nullopt));
       expect(now - then, less(1s));
     });
 
@@ -154,11 +158,13 @@ test_fork("posix::subprocess_test_runner", bind_factory(500ms), [](auto &_) {
       });
 
       auto then = std::chrono::steady_clock::now();
-      auto result = runner(s.tests()[0], output);
+      auto failed = runner(s.tests()[0], output);
       auto now = std::chrono::steady_clock::now();
 
-      expect(result.passed, equal_to(false));
-      expect(result.message, equal_to("Timed out after 500 ms"));
+      expect(failed, dereferenced(filter(
+        [](auto &&i) { return i.message; },
+        equal_to("Timed out after 500 ms")
+      )));
       expect(now - then, less(1s));
     });
 
@@ -170,7 +176,7 @@ test_fork("posix::subprocess_test_runner", bind_factory(500ms), [](auto &_) {
         });
       });
 
-      auto result = runner(s.tests()[0], output);
+      auto failed = runner(s.tests()[0], output);
       expect(output.stdout_log, equal_to("stdout"));
     });
 
@@ -183,7 +189,7 @@ test_fork("posix::subprocess_test_runner", bind_factory(500ms), [](auto &_) {
         });
       });
 
-      auto result = runner(s.tests()[0], output);
+      auto failed = runner(s.tests()[0], output);
       expect(output.stdout_log, equal_to("stdout"));
       expect(output.stderr_log, equal_to("stderr"));
     });

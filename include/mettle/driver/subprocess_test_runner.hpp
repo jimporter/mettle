@@ -49,7 +49,7 @@ namespace mettle {
   METTLE_PUBLIC const test_info *
   find_test(const suites_list &suites, test_uid id);
 
-  METTLE_PUBLIC bool run_single_test(const test_info &test, HANDLE log_pipe);
+  METTLE_PUBLIC int run_single_test(const test_info &test, HANDLE log_pipe);
 
 #endif
 

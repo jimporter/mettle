@@ -33,7 +33,7 @@ namespace mettle::log {
     print_counter();
   }
 
-  void counter::failed_test(const test_name &, const std::string &,
+  void counter::failed_test(const test_name &, const test_failure &,
                             const test_output &, test_duration) {
     tests_++;
     failures_++;

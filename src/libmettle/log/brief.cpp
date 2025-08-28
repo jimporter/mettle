@@ -25,7 +25,7 @@ namespace mettle::log {
          << std::flush;
   }
 
-  void brief::failed_test(const test_name &, const std::string &,
+  void brief::failed_test(const test_name &, const test_failure &,
                           const test_output &, test_duration) {
     using namespace term;
     out_ << format(sgr::bold, sgr::inverse, fg(color::red)) << "!" << reset()

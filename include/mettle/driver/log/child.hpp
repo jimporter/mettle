@@ -61,14 +61,14 @@ namespace mettle::log {
       out.flush();
     }
 
-    void failed_test(const test_name &test, const std::string &message,
+    void failed_test(const test_name &test, const test_failure &failure,
                      const test_output &output,
                      test_duration duration) override {
       bencode::encode(out, bencode::dict_view{
         {"event", "failed_test"},
         {"test", wrap_test(test)},
         {"duration", duration.count()},
-        {"message", message},
+        {"message", failure.message},
         {"output", wrap_output(output)}
       });
       out.flush();
