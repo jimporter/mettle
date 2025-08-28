@@ -156,6 +156,15 @@ A matcher that returns `true` when *all of* its composed matchers are true.
 
 A matcher that returns `true` when *none of* its composed matchers are true.
 
+## Memory
+*&lt;mettle/matchers/memory.hpp&gt;*
+{: .subtitle}
+
+### dereferenced(*matcher*)
+
+A matcher that checks if the actual value can be dereferenced and then passes
+the dereferenced value to the composed matcher.
+
 ## Collection
 *&lt;mettle/matchers/collection.hpp&gt;*
 {: .subtitle}

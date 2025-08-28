@@ -396,6 +396,36 @@ suite<> test_matchers("matchers", [](auto &_) {
     });
   });
 
+  subsuite<>(_, "memory", [](auto &_) {
+    _.test("dereferenced()", []() {
+      int i = 1;
+      expect(&i, dereferenced(1));
+      expect(&i, is_not(dereferenced(2)));
+      expect(static_cast<int*>(nullptr), is_not(dereferenced(1)));
+
+      auto ui = std::make_unique<int>(1);
+      expect(ui, dereferenced(1));
+      expect(ui, is_not(dereferenced(2)));
+      ui.reset();
+      expect(ui, is_not(dereferenced(1)));
+
+      std::optional<int> oi = {1};
+      expect(oi, dereferenced(1));
+      expect(oi, is_not(dereferenced(2)));
+      oi.reset();
+      expect(oi, is_not(dereferenced(1)));
+
+      expect(dereferenced(123).desc(), equal_to("-> 123"));
+      expect(dereferenced(123)(&i).message, equal_to("-> 1"));
+      expect(dereferenced(123)(static_cast<int*>(nullptr)).message,
+             equal_to("-> nullptr"));
+      expect(dereferenced(msg_matcher(true))(&i).message,
+             equal_to("-> message"));
+      expect(dereferenced(msg_matcher(true, ""))(&i).message,
+             equal_to("-> 1"));
+    });
+  });
+
   subsuite<>(_, "collection", [](auto &_) {
     _.test("member()", []() {
       expect(std::vector<int>{}, is_not(member(0)));

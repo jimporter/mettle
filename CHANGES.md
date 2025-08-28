@@ -8,7 +8,7 @@
 - `expect` now takes a universal reference for the value to test to support
   matchers which need access to non-const objects (e.g. to call a non-const
   member function)
-- New matchers `in_interval` and `exception_what`
+- New matchers `dereferenced`, `exception_what`, and `in_interval`
 - Add support for `char8_t`
 - xUnit test output now includes file and line number in `<testcase>` tags
 

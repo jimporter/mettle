@@ -7,6 +7,7 @@
 #include "matchers/arithmetic.hpp"
 #include "matchers/regex.hpp"
 #include "matchers/combinatoric.hpp"
+#include "matchers/memory.hpp"
 #include "matchers/collection.hpp"
 #include "matchers/exception.hpp"
 #include "matchers/death.hpp"
