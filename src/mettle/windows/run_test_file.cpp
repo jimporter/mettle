@@ -74,13 +74,31 @@ namespace mettle::windows {
       const std::string &str_;
     };
 
-    std::string
+    template<typename T>
+    struct arg_converter {
+      static std::basic_string<T> convert(std::string_view arg) {
+        return arg;
+      }
+    };
+
+    template<>
+    struct arg_converter<wchar_t> {
+      static std::wstring convert(std::string_view arg) {
+        std::wstring result(arg.size(), L'\0');
+        int len = MultiByteToWideChar(CP_UTF8, 0, arg.data(), arg.size(),
+                                      result.data(), result.size());
+        result.resize(len);
+        return result;
+      }
+    };
+
+    std::basic_string<TCHAR>
     make_command(const std::vector<std::string> &argv) {
       std::ostringstream ss;
       ss << quoted_arg(argv[0]);
       for(std::size_t i = 1; i != argv.size(); i++)
         ss << " " << quoted_arg(argv[i]);
-      return ss.str();
+      return arg_converter<TCHAR>::convert(ss.str());
     }
   }
 
@@ -94,13 +112,13 @@ namespace mettle::windows {
     std::ostringstream ss;
     ss << message_pipe.write_handle.handle();
     args.insert(args.end(), { "--output-fd", ss.str() });
-    std::string command = make_command(args);
+    std::basic_string<TCHAR> command = make_command(args);
 
-    STARTUPINFOA startup_info = { sizeof(STARTUPINFOA) };
+    STARTUPINFO startup_info = { sizeof(STARTUPINFO) };
     PROCESS_INFORMATION proc_info;
 
-    if(!CreateProcessA(
-         args[0].c_str(), const_cast<char*>(command.c_str()), nullptr,
+    if(!CreateProcess(
+         nullptr, const_cast<PTCHAR>(command.c_str()), nullptr,
          nullptr, true, 0, nullptr, nullptr, &startup_info, &proc_info
        )) {
       return METTLE_FAILED();

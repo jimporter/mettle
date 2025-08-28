@@ -49,15 +49,16 @@ namespace mettle {
        !log_pipe.set_write_inherit(true))
       return METTLE_FAILED();
 
-    char file[_MAX_PATH];
-    if(GetModuleFileNameA(nullptr, file, sizeof(file)) == sizeof(file))
+    TCHAR file[_MAX_PATH];
+    DWORD result = GetModuleFileName(nullptr, file, _countof(file));
+    if (result == 0 || result >= _countof(file))
       return METTLE_FAILED();
 
-    std::ostringstream args;
-    args << file << " --test-id " << test.id << " --log-fd "
+    std::basic_ostringstream<TCHAR> args;
+    args << file << TEXT(" --test-id ") << test.id << TEXT(" --log-fd ")
          << log_pipe.write_handle.handle();
 
-    STARTUPINFOA startup_info = { sizeof(STARTUPINFOA) };
+    STARTUPINFO startup_info = { sizeof(STARTUPINFO) };
     startup_info.dwFlags = STARTF_USESTDHANDLES;
     startup_info.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
     startup_info.hStdOutput = stdout_pipe.write_handle;
@@ -80,8 +81,8 @@ namespace mettle {
         return METTLE_FAILED();
     }
 
-    if(!CreateProcessA(
-         file, const_cast<char*>(args.str().c_str()), nullptr, nullptr, true,
+    if(!CreateProcess(
+         nullptr, const_cast<PTCHAR>(args.str().c_str()), nullptr, nullptr, true,
          CREATE_SUSPENDED, nullptr, nullptr, &startup_info, &proc_info
        )) {
       return METTLE_FAILED();
