@@ -48,7 +48,7 @@ namespace mettle::posix {
     }
 
     [[noreturn]] void
-    child_failed(int fd, const std::string &file) {
+    child_failed(int fd, const std::string &file_name) {
       auto err = err_string(errno);
 
       try {
@@ -58,7 +58,7 @@ namespace mettle::posix {
         );
         bencode::encode(stream, bencode::dict_view{
           {"event", "failed_file"},
-          {"file", file},
+          {"file_name", file_name},
           {"message", err}
         });
         stream.flush();

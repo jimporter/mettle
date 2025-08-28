@@ -82,9 +82,9 @@ namespace mettle {
       (",c", value(&opts.color)->zero_tokens()
             ->implicit_value(color_option::always, "always"),
        "show colored output (equivalent to `--color=always`)")
-      ("file,f", value(&opts.file)->value_name("FILE"),
-       ("file to print test results to (for xunit only; default: " + opts.file +
-        ")").c_str())
+      ("file,f", value(&opts.file_name)->value_name("FILE"),
+       ("file to print test results to (for xunit only; default: " +
+        opts.file_name + ")").c_str())
       ("output,o", value(&opts.output)->value_name("FORMAT"), ss.str().c_str())
       ("runs,n", value(&opts.runs)->value_name("N"), "number of test runs")
       ("show-terminal", value(&opts.show_terminal)->zero_tokens(),
@@ -123,7 +123,7 @@ namespace mettle {
       );
     });
     f.add("xunit", [](indenting_ostream &, const output_options &args) {
-      return std::make_unique<log::xunit>(args.file, args.runs);
+      return std::make_unique<log::xunit>(args.file_name, args.runs);
     });
 
     return f;

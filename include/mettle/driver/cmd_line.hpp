@@ -56,7 +56,7 @@ namespace mettle {
     std::size_t runs = 1;
     bool show_terminal = false;
     bool show_time = false;
-    std::string file = "mettle.xml";
+    std::string file_name = "mettle.xml";
   };
 
   using logger_factory = object_factory<std::unique_ptr<log::file_logger>(

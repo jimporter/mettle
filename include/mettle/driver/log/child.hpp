@@ -89,7 +89,7 @@ namespace mettle::log {
         {"id", bencode::integer(test.id)},
         {"suites", wrap_suites(test.suites)},
         {"test", test.name},
-        {"file", test.file},
+        {"file_name", test.file_name},
         {"line", test.line},
       };
     }

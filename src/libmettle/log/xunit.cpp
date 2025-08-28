@@ -24,7 +24,7 @@ namespace mettle::log {
   static xml::element_ptr test_element(const test_name &test) {
     auto e = xml::element::make("testcase");
     e->attr("name", test.name);
-    e->attr("file", test.file);
+    e->attr("file", test.file_name);
     e->attr("line", std::to_string(test.line));
     return e;
   }

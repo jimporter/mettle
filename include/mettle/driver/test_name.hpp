@@ -13,7 +13,7 @@ namespace mettle {
   struct test_name {
     test_uid id;
     std::vector<std::string> suites;
-    std::string name, file;
+    std::string name, file_name;
     std::uint_least32_t line = 0;
 
     std::string full_name() const {

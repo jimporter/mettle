@@ -43,7 +43,7 @@ namespace mettle::log {
                              read_string( std::move(data.at("message"))) );
       } else if(event == "failed_file") {
         logger_.failed_file(
-          {file_uid_, read_string( std::move(data.at("file")) )},
+          {file_uid_, read_string( std::move(data.at("file_name")) )},
           read_string( std::move(data.at("message")) )
         );
       }
@@ -68,7 +68,7 @@ namespace mettle::log {
         id,
         read_suites( std::move(data.at("suites")) ),
         std::move(std::get<bencode::string>( data.at("test") )),
-        std::move(std::get<bencode::string>( data.at("file") )),
+        std::move(std::get<bencode::string>( data.at("file_name") )),
         static_cast<std::uint_least32_t>(
           std::get<bencode::integer>(data.at("line") )
         ),
