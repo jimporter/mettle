@@ -25,7 +25,7 @@ namespace mettle {
   // Fallback implementation. Try to print various types in a reasonable way.
 
   template<typename T>
-  inline auto to_printable(const T &t) {
+  inline decltype(auto) to_printable(const T &t) {
     if constexpr(printable<T>) {
       return t;
     } else if constexpr(iterable<T>) {

@@ -119,8 +119,8 @@ suite<> test_to_printable("to_printable()", [](auto &_) {
     expect(y, stringified("nullptr"));
     expect(const_cast<const int*>(y), stringified("nullptr"));
 
-    struct some_type {};
-    expect(some_type{}, stringified(none("true", "1")));
+    std::unique_ptr<int> u;
+    expect(u, anything()); // This should output some pointer value...
   });
 
   _.test("iterables", []() {
