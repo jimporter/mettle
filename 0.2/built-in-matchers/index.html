@@ -133,6 +133,7 @@
             <li><a href="#arithmetic">Arithmetic</a></li>
             <li><a href="#regular-expression">Regular expression</a></li>
             <li><a href="#combinatoric">Combinatoric</a></li>
+            <li><a href="#memory">Memory</a></li>
             <li><a href="#collection">Collection</a></li>
             <li><a href="#exception">Exception</a></li>
             <li><a href="#death">Death</a></li>
@@ -248,6 +249,11 @@ console if the matcher fails.</p>
 <p>A matcher that returns <code>true</code> when <em>all of</em> its composed matchers are true.</p>
 <h3 id="nonematchers">none(<em>matchers...</em>)<a class="headerlink" href="#nonematchers" title="Permanent link">§</a></h3>
 <p>A matcher that returns <code>true</code> when <em>none of</em> its composed matchers are true.</p>
+<h2 id="memory">Memory<a class="headerlink" href="#memory" title="Permanent link">§</a></h2>
+<p class="subtitle"><em>&lt;mettle/matchers/memory.hpp&gt;</em></p>
+<h3 id="dereferencedmatcher">dereferenced(<em>matcher</em>)<a class="headerlink" href="#dereferencedmatcher" title="Permanent link">§</a></h3>
+<p>A matcher that checks if the actual value can be dereferenced and then passes
+the dereferenced value to the composed matcher.</p>
 <h2 id="collection">Collection<a class="headerlink" href="#collection" title="Permanent link">§</a></h2>
 <p class="subtitle"><em>&lt;mettle/matchers/collection.hpp&gt;</em></p>
 <h3 id="membermatcher">member(<em>matcher</em>)<a class="headerlink" href="#membermatcher" title="Permanent link">§</a></h3>

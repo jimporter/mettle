@@ -144,18 +144,21 @@
 <li><code>expect</code> now takes a universal reference for the value to test to support
   matchers which need access to non-const objects (e.g. to call a non-const
   member function)</li>
-<li>New matchers <code>in_interval</code> and <code>exception_what</code></li>
+<li>New matchers <code>dereferenced</code>, <code>exception_what</code>, and <code>in_interval</code></li>
 <li>Add support for <code>char8_t</code></li>
 <li>xUnit test output now includes file and line number in <code>&lt;testcase&gt;</code> tags</li>
 </ul>
 <h3 id="bug-fixes">Bug fixes<a class="headerlink" href="#bug-fixes" title="Permanent link">§</a></h3>
 <ul>
+<li><code>none</code> matcher now reports failed matches as expected</li>
 <li>Test failures across multiple runs are now correctly grouped in the summary
   results</li>
 <li><code>bencode.hpp</code> is now installed alongside mettle when <code>--vendorize</code> is used</li>
 <li>Arithmetic matchers now use ADL to find <code>max</code> and <code>abs</code>, allowing custom
   arithmetic types to use their own implementations of these functions</li>
 <li>Print strings with unusual character types as an array of characters</li>
+<li>Class types that are convertible to <code>bool</code> are now printed correctly</li>
+<li>Allow expectations using non-copyable types</li>
 </ul>
 <h3 id="breaking-changes">Breaking changes<a class="headerlink" href="#breaking-changes" title="Permanent link">§</a></h3>
 <ul>
