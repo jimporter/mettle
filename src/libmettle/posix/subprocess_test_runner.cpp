@@ -8,6 +8,21 @@
 
 #include <sstream>
 
+#include <bencode.hpp>
+
+// Ignore warnings about deprecated implicit copy constructor.
+#if defined(__clang__)
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wdeprecated"
+#endif
+
+#include <boost/iostreams/device/file_descriptor.hpp>
+#include <boost/iostreams/stream.hpp>
+
+#if defined(__clang__)
+#  pragma clang diagnostic pop
+#endif
+
 #include <mettle/detail/source_location.hpp>
 #include <mettle/driver/exit_code.hpp>
 #include <mettle/driver/posix/scoped_pipe.hpp>
@@ -124,9 +139,19 @@ namespace mettle {
         make_timeout_monitor(*timeout_);
 
       auto failed = test.function();
-      if(failed && write(log_pipe.write_fd, failed->message.c_str(),
-                         failed->message.length()) < 0)
-        child_failed();
+      if(failed) {
+        try {
+          namespace io = boost::iostreams;
+          io::stream<io::file_descriptor_sink> stream(
+            log_pipe.write_fd, io::never_close_handle
+          );
+          stream.exceptions(stream.failbit | stream.badbit);
+          bencode::encode(stream, failed->to_bencode<bencode::data_view>());
+          stream.flush();
+        } catch(...) {
+          child_failed();
+        }
+      }
 
       fflush(nullptr);
 
@@ -193,7 +218,7 @@ namespace mettle {
         } else if(exit_status == exit_code::success) {
           return std::nullopt;
         } else {
-          return {{message}};
+          return {test_failure::from_bencode(bencode::decode(message))};
         }
       } else { // WIFSIGNALED
         return {{ strsignal(WTERMSIG(status)) }};

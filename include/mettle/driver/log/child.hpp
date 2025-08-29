@@ -68,7 +68,7 @@ namespace mettle::log {
         {"event", "failed_test"},
         {"test", wrap_test(test)},
         {"duration", duration.count()},
-        {"message", failure.message},
+        {"failure", failure.to_bencode<bencode::data_view>()},
         {"output", wrap_output(output)}
       });
       out.flush();
@@ -90,7 +90,7 @@ namespace mettle::log {
         {"suites", wrap_suites(test.suites)},
         {"test", test.name},
         {"file_name", test.file_name},
-        {"line", test.line},
+        {"line", test.line}
       };
     }
 
