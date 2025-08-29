@@ -64,7 +64,7 @@ namespace mettle::detail {
 
   template<typename T>
   class capture_array<T[]> : public any_capture_tag {
-    static_assert(std::is_same<T, void>::value,
+    static_assert(std::is_same_v<T, void>,
                   "any_capture can't be used by incomplete array types");
   };
 

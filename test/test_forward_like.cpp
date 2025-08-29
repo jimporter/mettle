@@ -8,7 +8,7 @@ suite<> test_forward_like("forward_like()", [](auto &_) {
     using Fixture = fixture_type_t<decltype(_)>;
 
     _.test("forward_like<T>(moveable)", []() {
-      bool should_move = !std::is_lvalue_reference<Fixture>::value;
+      bool should_move = !std::is_lvalue_reference_v<Fixture>;
       moveable_type from;
       auto to = detail::forward_like<Fixture>(from);
 
