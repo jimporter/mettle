@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <ostream>
+#include <string>
 #include <type_traits>
 #include <vector>
 
@@ -61,6 +62,17 @@ namespace mettle::term {
   inline format reset() {
     return format(sgr::reset);
   }
+
+  class link {
+    friend METTLE_PUBLIC std::ostream &
+    operator <<(std::ostream &, const link &);
+  public:
+    explicit link(std::string url = "") : url_(std::move(url)) {}
+  private:
+    std::string url_;
+  };
+
+  std::string file_url(const std::string &file_name, int line = 0);
 
   METTLE_PUBLIC void enable(std::ios_base &ios, bool enabled);
   METTLE_PUBLIC bool is_enabled(std::ios_base &ios);
