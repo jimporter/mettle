@@ -74,7 +74,8 @@ namespace mettle {
       std::ostringstream ss;
       ss << "Fatal error at " << loc.file_name() << ":" << loc.line() << "\n"
          << err_string(errno);
-      return {{ss.str()}};
+      return {{ .message = ss.str(), .file_name = loc.file_name(),
+                .line = loc.line() }};
     }
 
     [[noreturn]] inline void child_failed() {
@@ -214,14 +215,14 @@ namespace mettle {
         if(exit_status == exit_code::timeout) {
           std::ostringstream ss;
           ss << "Timed out after " << timeout_->count() << " ms";
-          return {{ss.str()}};
+          return {{ .message = ss.str() }};
         } else if(exit_status == exit_code::success) {
           return std::nullopt;
         } else {
           return {test_failure::from_bencode(bencode::decode(message))};
         }
       } else { // WIFSIGNALED
-        return {{ strsignal(WTERMSIG(status)) }};
+        return {{ .message = strsignal(WTERMSIG(status)) }};
       }
     }
   }

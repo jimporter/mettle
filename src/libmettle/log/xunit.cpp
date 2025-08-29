@@ -1,9 +1,11 @@
 #include <mettle/driver/log/xunit.hpp>
 
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 
 #include <mettle/detail/algorithm.hpp>
+#include <mettle/driver/log/format.hpp>
 
 namespace mettle::log {
 
@@ -100,10 +102,13 @@ namespace mettle::log {
 
   void xunit::failed_test(const test_name &test, const test_failure &failure,
                           const test_output &output, test_duration duration) {
+    std::ostringstream ss;
+    ss << failure;
+
     auto &suite = current_suite();
     auto t = test_element(test);
     t->attr("time", get_duration(duration));
-    t->append_child(message_element("failure", failure.message));
+    t->append_child(message_element("failure", ss.str()));
     append_test_output(t, output);
     suite.elt->append_child(std::move(t));
 

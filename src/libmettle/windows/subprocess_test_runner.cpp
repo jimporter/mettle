@@ -46,7 +46,8 @@ namespace mettle {
       std::ostringstream ss;
       ss << "Fatal error at " << loc.file_name() << ":" << loc.line() << "\n"
          << err_string(GetLastError());
-      return {{ss.str()}};
+      return {{ .message = ss.str(), .file_name = loc.file_name(),
+                .line = loc.line() }};
     }
   }
 
@@ -138,7 +139,7 @@ namespace mettle {
     if(finished == timeout_event) {
       std::ostringstream ss;
       ss << "Timed out after " << timeout_->count() << " ms";
-      return {{ss.str()}};
+      return {{ .message = ss.str() }};
     } else {
       DWORD exit_status;
       if(!GetExitCodeProcess(proc_info.hProcess, &exit_status))

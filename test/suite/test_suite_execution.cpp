@@ -5,7 +5,12 @@ using namespace mettle;
 
 namespace mettle {
   auto to_printable(const test_failure &failure) {
-    return to_printable(failure.message);
+    std::ostringstream ss;
+    ss << "test_result(" << to_printable(failure.desc) << ", "
+       << to_printable(failure.message) << ", "
+       << to_printable(failure.file_name) << ", "
+       << to_printable(failure.line) << ")";
+    return ss.str();
   }
 }
 
@@ -55,7 +60,7 @@ suite<> test_calling("test calling", [](auto &_) {
     auto failed = s.tests()[0].function();
     expect(failed, dereferenced(filter(
       [](auto &&i) { return i.message; },
-      regex_match("(.*\n)?expected: true\nactual:   false$")
+      equal_to("expected: true\nactual:   false")
     )));
 
     expect("test run count", test.runs(), equal_to(1));
@@ -91,7 +96,7 @@ suite<> test_calling("test calling", [](auto &_) {
     auto failed = s.tests()[0].function();
     expect(failed, dereferenced(filter(
       [](auto &&i) { return i.message; },
-      regex_match("(.*\n)?expected: true\nactual:   false$")
+      equal_to("expected: true\nactual:   false")
     )));
 
     expect("setup run count", setup.runs(), equal_to(1));
@@ -113,7 +118,7 @@ suite<> test_calling("test calling", [](auto &_) {
     auto failed = s.tests()[0].function();
     expect(failed, dereferenced(filter(
       [](auto &&i) { return i.message; },
-      regex_match("(.*\n)?expected: true\nactual:   false$")
+      equal_to("expected: true\nactual:   false")
     )));
 
     expect("setup run count", setup.runs(), equal_to(1));
@@ -135,7 +140,7 @@ suite<> test_calling("test calling", [](auto &_) {
     auto failed = s.tests()[0].function();
     expect(failed, dereferenced(filter(
       [](auto &&i) { return i.message; },
-      regex_match("(.*\n)?expected: true\nactual:   false$")
+      equal_to("expected: true\nactual:   false")
     )));
 
     expect("setup run count", setup.runs(), equal_to(1));
@@ -160,7 +165,7 @@ suite<> test_calling("test calling", [](auto &_) {
     auto failed = s.tests()[0].function();
     expect(failed, dereferenced(filter(
       [](auto &&i) { return i.message; },
-      regex_match("(.*\n)?expected: \"foo\"\nactual:   \"test\"$")
+      equal_to("expected: \"foo\"\nactual:   \"test\"")
     )));
 
     expect("setup run count", setup.runs(), equal_to(1));

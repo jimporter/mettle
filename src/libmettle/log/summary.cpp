@@ -5,6 +5,7 @@
 
 #include <boost/io/ios_state.hpp>
 
+#include <mettle/driver/log/format.hpp>
 #include <mettle/driver/log/term.hpp>
 
 namespace mettle::log {
@@ -51,8 +52,12 @@ namespace mettle::log {
                             const test_output &output, test_duration duration) {
     if(log_) log_->failed_test(test, failure, output, duration);
 
+    std::ostringstream ss;
+    term::enable(ss, term::is_enabled(out_));
+    ss << failure;
+
     add_unpass(test.id, test.full_name(), fail).failures.push_back({
-      runs_, failure.message, show_terminal_ ? output : log::test_output()
+      runs_, ss.str(), show_terminal_ ? output : log::test_output()
     });
   }
 
@@ -174,7 +179,7 @@ namespace mettle::log {
       auto &&message = failures[0].message;
       if(!message.empty())
         out_ << message << std::endl;
-      log_output(failures[0].output, !message.empty());
+      log_output(failures[0].output, true);
     } else {
       int run_width = static_cast<int>( std::ceil(std::log10(runs_)) );
       for(const auto &i : failures) {

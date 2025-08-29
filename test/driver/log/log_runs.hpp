@@ -60,7 +60,7 @@ inline void failing_run(mettle::log::test_logger &logger) {
                      output, 100ms);
   logger.started_test({uid + 2, suites, "test 2", "file.cpp", 20});
   logger.failed_test({uid + 2, suites, "test 2", "file.cpp", 20},
-                     {"error"}, log::test_output{}, 100ms);
+                     {"desc", "error", "file.cpp", 22}, {}, 100ms);
 
   suites.push_back({"subsuite", "file.cpp", 3});
   logger.started_suite(suites);
@@ -76,7 +76,7 @@ inline void failing_run(mettle::log::test_logger &logger) {
   logger.started_suite(suites);
   logger.started_test({uid + 1, suites, "test 4", "file.cpp", 40});
   logger.failed_test({uid + 1, suites, "test 4", "file.cpp", 40},
-                     {"error\nmore"}, output, 100ms);
+                     {"desc", "error\nmore", "file.cpp", 44}, output, 100ms);
   logger.ended_suite(suites);
 
   logger.ended_run();
@@ -136,7 +136,7 @@ inline void failing_test_and_file_run(mettle::log::file_logger &logger) {
                      output, 100ms);
   logger.started_test({uid + 2, suites, "test 2", "file.cpp", 20});
   logger.failed_test({uid + 2, suites, "test 2", "file.cpp", 20},
-                     {"error"}, log::test_output{}, 100ms);
+                     {"desc", "error", "file.cpp", 22}, {}, 100ms);
 
   suites.push_back({"subsuite", "file.cpp", 3});
   logger.started_suite(suites);
@@ -150,7 +150,7 @@ inline void failing_test_and_file_run(mettle::log::file_logger &logger) {
   logger.started_suite(suites);
   logger.started_test({uid + 1, suites, "test 4", "file.cpp", 40});
   logger.failed_test({uid + 1, suites, "test 4", "file.cpp", 40},
-                     {"error\nmore"}, output, 100ms);
+                     {"desc", "error\nmore", "file.cpp", 44}, output, 100ms);
   logger.ended_suite(suites);
 
   logger.ended_run();

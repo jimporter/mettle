@@ -1,6 +1,8 @@
 #include <mettle.hpp>
 using namespace mettle;
 
+#include <mettle/driver/log/format.hpp>
+
 struct thing {
   int value() {
     return 1;
@@ -18,38 +20,39 @@ auto thing_value(int value) {
 
 
 suite<> test_expect("expect()", [](auto &_) {
+  using namespace std::string_literals;
+
   _.test("expect(value, matcher)", []() {
-    std::string message;
+    std::optional<expectation_error> err;
     try {
       expect(false, equal_to(true));
     } catch(const expectation_error &e) {
-      message = e.what();
+      err = e;
     }
 
-    std::ostringstream ss;
 #ifndef METTLE_NO_SOURCE_LOCATION
-    int line = __LINE__ - 7; // The line the expectation is on.
-    ss << __FILE__ << ":" << line << "\n";
+    int line = __LINE__ - 6; // The line the expectation is on.
+    expect(err->location().file_name(), equal_to(__FILE__));
+    expect(err->location().line(), equal_to(line));
 #endif
-    ss << "expected: true\nactual:   false";
-    expect(message, equal_to(ss.str()));
+    expect(err->desc(), equal_to(""));
+    expect(err->what(), equal_to("expected: true\nactual:   false"s));
   });
 
   _.test("expect(desc, value, matcher)", []() {
-    std::string message;
+    std::optional<expectation_error> err;
     try {
       expect("description", false, equal_to(true));
     } catch(const expectation_error &e) {
-      message = e.what();
+      err = e;
     }
 
-    std::ostringstream ss;
-    ss << "description";
 #ifndef METTLE_NO_SOURCE_LOCATION
-    int line = __LINE__ - 8; // The line the expectation is on.
-    ss << " (" << __FILE__ << ":" << line << ")";
+    int line = __LINE__ - 6; // The line the expectation is on.
+    expect(err->location().file_name(), equal_to(__FILE__));
+    expect(err->location().line(), equal_to(line));
 #endif
-    ss << "\nexpected: true\nactual:   false";
-    expect(message, equal_to(ss.str()));
+    expect(err->desc(), equal_to("description"));
+    expect(err->what(), equal_to("expected: true\nactual:   false"s));
   });
 });

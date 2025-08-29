@@ -41,30 +41,31 @@ suite<> test_verbose("verbose logger", [](auto &_) {
     });
 
     _.test("started_test()", [](logger_factory &f) {
-      f.logger.started_test({
-        1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10
-      });
+      f.logger.started_test(
+        {1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10}
+      );
       expect(f.ss.str(), equal_to("test "));
     });
 
     _.test("passed_test()", [](logger_factory &f) {
-      f.logger.passed_test({
-        1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10
-      }, {}, 0ms);
+      f.logger.passed_test(
+        {1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10}, {}, 0ms
+      );
       expect(f.ss.str(), equal_to("PASSED\n"));
     });
 
     _.test("failed_test()", [](logger_factory &f) {
-      f.logger.failed_test({
-        1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10
-      }, {"error"}, {}, 0ms);
-      expect(f.ss.str(), equal_to("FAILED\n  error\n"));
+      f.logger.failed_test(
+        {1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10},
+        {"desc", "error", "file.cpp", 11}, {}, 0ms
+      );
+      expect(f.ss.str(), equal_to("FAILED\n  desc (file.cpp:11)\n  error\n"));
     });
 
     _.test("skipped_test()", [](logger_factory &f) {
-      f.logger.skipped_test({
-        1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10
-      }, "message");
+      f.logger.skipped_test(
+        {1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10}, "message"
+      );
       expect(f.ss.str(), equal_to("SKIPPED\n  message\n"));
     });
 
@@ -104,6 +105,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "suite\n"
         "  test 1 PASSED [...]\n"
         "  test 2 FAILED\n"
+        "    desc (file.cpp:22)\n"
         "    error\n"
         "\n"
         "  subsuite\n"
@@ -113,6 +115,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "\n"
         "second suite\n"
         "  test 4 FAILED [...]\n"
+        "    desc (file.cpp:44)\n"
         "    error\n"
         "    more\n"
       ));
@@ -145,6 +148,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "suite\n"
         "  test 1 PASSED [...]\n"
         "  test 2 FAILED\n"
+        "    desc (file.cpp:22)\n"
         "    error\n"
         "\n"
         "  subsuite\n"
@@ -158,6 +162,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "\n"
         "second suite\n"
         "  test 4 FAILED [...]\n"
+        "    desc (file.cpp:44)\n"
         "    error\n"
         "    more\n"
       ));
@@ -201,6 +206,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "  suite\n"
         "    test 1 PASSED [...]\n"
         "    test 2 FAILED\n"
+        "      desc (file.cpp:22)\n"
         "      error\n"
         "\n"
         "    subsuite\n"
@@ -210,6 +216,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "\n"
         "  second suite\n"
         "    test 4 FAILED [...]\n"
+        "      desc (file.cpp:44)\n"
         "      error\n"
         "      more\n"
       ));
@@ -246,6 +253,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "  suite\n"
         "    test 1 PASSED [...]\n"
         "    test 2 FAILED\n"
+        "      desc (file.cpp:22)\n"
         "      error\n"
         "\n"
         "    subsuite\n"
@@ -259,6 +267,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "\n"
         "  second suite\n"
         "    test 4 FAILED [...]\n"
+        "      desc (file.cpp:44)\n"
         "      error\n"
         "      more\n"
       ));
@@ -268,17 +277,19 @@ suite<> test_verbose("verbose logger", [](auto &_) {
   subsuite<logger_factory>(_, "show time", bind_factory(1, true, false),
                            [](auto &_) {
     _.test("passed_test()", [](logger_factory &f) {
-      f.logger.passed_test({
-        1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10
-      }, {}, 100ms);
+      f.logger.passed_test(
+        {1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10}, {}, 100ms
+      );
       expect(f.ss.str(), equal_to("PASSED (100 ms)\n"));
     });
 
     _.test("failed_test()", [](logger_factory &f) {
-      f.logger.failed_test({
-        1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10
-      }, {"error"}, {}, 100ms);
-      expect(f.ss.str(), equal_to("FAILED (100 ms)\n  error\n"));
+      f.logger.failed_test(
+        {1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10},
+        {"desc", "error", "file.cpp", 11}, {}, 100ms
+      );
+      expect(f.ss.str(),
+             equal_to("FAILED (100 ms)\n  desc (file.cpp:11)\n  error\n"));
     });
 
     _.test("passing run", [](logger_factory &f) {
@@ -302,6 +313,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "suite\n"
         "  test 1 PASSED [...] (100 ms)\n"
         "  test 2 FAILED (100 ms)\n"
+        "    desc (file.cpp:22)\n"
         "    error\n"
         "\n"
         "  subsuite\n"
@@ -311,6 +323,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "\n"
         "second suite\n"
         "  test 4 FAILED [...] (100 ms)\n"
+        "    desc (file.cpp:44)\n"
         "    error\n"
         "    more\n"
       ));
@@ -343,6 +356,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "suite\n"
         "  test 1 PASSED [...] (100 ms)\n"
         "  test 2 FAILED (100 ms)\n"
+        "    desc (file.cpp:22)\n"
         "    error\n"
         "\n"
         "  subsuite\n"
@@ -356,6 +370,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "\n"
         "second suite\n"
         "  test 4 FAILED [...] (100 ms)\n"
+        "    desc (file.cpp:44)\n"
         "    error\n"
         "    more\n"
       ));
@@ -365,20 +380,23 @@ suite<> test_verbose("verbose logger", [](auto &_) {
   subsuite<logger_factory>(_, "show terminal", bind_factory(1, false, true),
                            [](auto &_) {
     _.test("passed_test()", [](logger_factory &f) {
-      f.logger.passed_test({
-        1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10
-      }, {"foo", "bar"}, 0ms);
+      f.logger.passed_test(
+        {1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10},
+        {"foo", "bar"}, 0ms
+      );
       expect(f.ss.str(), equal_to(
         "PASSED\n  stdout:\n  foo\n  stderr:\n  bar\n"
       ));
     });
 
     _.test("failed_test()", [](logger_factory &f) {
-      f.logger.failed_test({
-        1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10
-      }, {"error"}, {"foo", "bar"}, 0ms);
+      f.logger.failed_test(
+        {1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10},
+        {"desc", "error", "file.cpp", 11}, {"foo", "bar"}, 0ms
+      );
       expect(f.ss.str(), equal_to(
-        "FAILED\n  error\n\n  stdout:\n  foo\n  stderr:\n  bar\n"
+        "FAILED\n  desc (file.cpp:11)\n  error\n\n"
+        "  stdout:\n  foo\n  stderr:\n  bar\n"
       ));
     });
 
@@ -415,6 +433,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "    stderr:\n"
         "    standard error\n"
         "  test 2 FAILED\n"
+        "    desc (file.cpp:22)\n"
         "    error\n"
         "\n"
         "  subsuite\n"
@@ -424,6 +443,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "\n"
         "second suite\n"
         "  test 4 FAILED\n"
+        "    desc (file.cpp:44)\n"
         "    error\n"
         "    more\n"
         "\n"
@@ -469,6 +489,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "    stderr:\n"
         "    standard error\n"
         "  test 2 FAILED\n"
+        "    desc (file.cpp:22)\n"
         "    error\n"
         "\n"
         "  subsuite\n"
@@ -482,6 +503,7 @@ suite<> test_verbose("verbose logger", [](auto &_) {
         "\n"
         "second suite\n"
         "  test 4 FAILED\n"
+        "    desc (file.cpp:44)\n"
         "    error\n"
         "    more\n"
         "\n"

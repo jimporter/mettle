@@ -63,6 +63,7 @@ namespace mettle::term {
   }
 
   METTLE_PUBLIC void enable(std::ios_base &ios, bool enabled);
+  METTLE_PUBLIC bool is_enabled(std::ios_base &ios);
 
 } // namespace mettle::term
 

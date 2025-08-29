@@ -38,30 +38,31 @@ suite<logger_factory> test_verbose("counter logger", [](auto &_) {
   });
 
   _.test("started_test()", [](logger_factory &f) {
-    f.logger.started_test({
-      1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10
-    });
+    f.logger.started_test(
+      {1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10}
+    );
     expect(f.ss.str(), equal_to(""));
   });
 
   _.test("passed_test()", [](logger_factory &f) {
-    f.logger.passed_test({
-      1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10
-    }, {}, 0ms);
+    f.logger.passed_test(
+      {1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10}, {}, 0ms
+    );
     expect(f.ss.str(), equal_to("\r[   1 |   1 |   0 |   0 ]"));
   });
 
   _.test("failed_test()", [](logger_factory &f) {
-    f.logger.failed_test({
-      1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10
-    }, {"error"}, {}, 0ms);
+    f.logger.failed_test(
+      {1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10},
+      {"desc", "error", "file.cpp", 11}, {}, 0ms
+    );
     expect(f.ss.str(), equal_to("\r[   1 |   0 |   0 |   1 ]"));
   });
 
   _.test("skipped_test()", [](logger_factory &f) {
-    f.logger.skipped_test({
-      1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10
-    }, "message");
+    f.logger.skipped_test(
+      {1, {{"suite", "file.cpp", 1}}, "test", "file.cpp", 10}, "message"
+    );
     expect(f.ss.str(), equal_to("\r[   1 |   0 |   1 |   0 ]"));
   });
 

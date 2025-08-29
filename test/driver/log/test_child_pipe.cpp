@@ -50,7 +50,7 @@ struct recording_logger : log::file_logger {
                    log::test_duration actual_duration) override {
     called = "failed_test";
     test = actual_test;
-    message = actual_failure.message;
+    failure = actual_failure;
     output = actual_output;
     duration = actual_duration;
   }
@@ -65,6 +65,7 @@ struct recording_logger : log::file_logger {
   std::vector<suite_name> suites;
   test_name test;
   std::string message;
+  test_failure failure;
   log::test_output output;
   log::test_duration duration;
 };
@@ -165,16 +166,18 @@ suite<fixture> test_child("child/pipe loggers", [](auto &_) {
   });
 
   _.test("failed_test()", [](fixture &f) {
-    std::string message = "failure";
+    test_failure failure = {"desc", "error", "file.cpp", 11};
     log::test_output output = {"stdout", "stderr"};
     log::test_duration duration(1000);
 
-    f.child.failed_test(f.test, {message}, output, duration);
+    f.child.failed_test(f.test, failure, output, duration);
     f.pipe(f.stream);
 
     expect(f.parent.called, equal_to("failed_test"));
     expect(f.parent.test, equal_test_name(f.test));
-    expect(f.parent.message, equal_to(message));
+    expect(f.parent.failure.message, equal_to(failure.message));
+    expect(f.parent.failure.file_name, equal_to(failure.file_name));
+    expect(f.parent.failure.line, equal_to(failure.line));
     expect(f.parent.output.stdout_log, equal_to(output.stdout_log));
     expect(f.parent.output.stderr_log, equal_to(output.stderr_log));
     expect(f.parent.duration, equal_to(duration));

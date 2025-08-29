@@ -50,11 +50,13 @@ namespace mettle {
           try {
             test_function();
           } catch(const Exception &e) {
-            return {{e.what()}};
+            return {{ e.desc(), e.what(), e.location().file_name(),
+                      e.location().line() }};
           } catch(const std::exception &e) {
-            return {{std::string("Uncaught exception: ") + to_printable(e)}};
+            return {{ .message = (std::string("Uncaught exception: ") +
+                                  to_printable(e)) }};
           } catch(...) {
-            return {{"Unknown exception"}};
+            return {{ .message = "Unknown exception" }};
           }
 
           return std::nullopt;
