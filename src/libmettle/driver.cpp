@@ -141,14 +141,20 @@ namespace mettle {
           return exit_code::bad_args;
         }
 
-        make_fd_private(*args.output_fd);
-        namespace io = boost::iostreams;
-        io::stream<io::file_descriptor_sink> fds(
-          *args.output_fd, io::never_close_handle
-        );
-        log::child logger(fds);
-        run_tests(suites, logger, runner, args.filters);
-        return exit_code::success;
+        try {
+          make_fd_private(*args.output_fd);
+          namespace io = boost::iostreams;
+          io::stream<io::file_descriptor_sink> fds(
+            *args.output_fd, io::never_close_handle
+          );
+          fds.exceptions(fds.failbit | fds.badbit);
+          log::child logger(fds);
+          run_tests(suites, logger, runner, args.filters);
+          return exit_code::success;
+        } catch(const std::exception &e) {
+          report_error(argv[0], e.what());
+          return exit_code::unknown_error;
+        }
       }
 
       if(args.no_subproc && args.show_terminal) {

@@ -118,6 +118,7 @@ namespace mettle::windows {
       io::stream<io::file_descriptor_source> fds(
         message_pipe.read_handle.handle(), io::never_close_handle
       );
+      fds.exceptions(fds.failbit | fds.badbit);
       while(fds.peek() != EOF)
         logger(fds);
     } catch(...) {
