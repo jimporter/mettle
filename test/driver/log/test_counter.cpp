@@ -48,8 +48,8 @@ suite<logger_factory> test_verbose("counter logger", [](auto &_) {
   });
 
   _.test("failed_test()", [](logger_factory &f) {
-    f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10}, {"error"}, {},
-                         0ms);
+    f.logger.failed_test({1, {"suite"}, "test", "file.cpp", 10},
+                         {"desc", "error", "file.cpp", 11}, {}, 0ms);
     expect(f.ss.str(), equal_to("\r[   1 |   0 |   0 |   1 ]"));
   });
 

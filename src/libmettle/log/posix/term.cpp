@@ -15,6 +15,10 @@ namespace mettle::term {
     ios.iword(enabled_flag) = enabled;
   }
 
+  bool is_enabled(std::ios_base &ios) {
+    return ios.iword(enabled_flag);
+  }
+
   std::ostream & operator <<(std::ostream &o, const format &fmt) {
     assert(!fmt.values_.empty());
     if(!o.iword(enabled_flag))

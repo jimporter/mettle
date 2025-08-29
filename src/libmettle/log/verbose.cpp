@@ -2,6 +2,7 @@
 
 #include <cassert>
 
+#include <mettle/driver/log/format.hpp>
 #include <mettle/driver/log/term.hpp>
 
 namespace mettle::log {
@@ -74,9 +75,8 @@ namespace mettle::log {
     out_ << std::endl;
 
     scoped_indent si(out_);
-    if(!failure.message.empty())
-      out_ << failure.message << std::endl;
-    log_output(output, !failure.message.empty());
+    out_ << failure << std::endl;
+    log_output(output, true);
   }
 
   void verbose::skipped_test(const test_name &, const std::string &message) {
