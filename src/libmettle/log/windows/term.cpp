@@ -99,6 +99,10 @@ namespace mettle::term {
     ios.iword(enabled_flag) = enabled;
   }
 
+  bool is_enabled(std::ios_base &ios) {
+    return ios.iword(enabled_flag);
+  }
+
   std::ostream & operator <<(std::ostream &o, const format &fmt) {
     if(!o.iword(enabled_flag))
       return o;
@@ -128,6 +132,16 @@ namespace mettle::term {
 
     SetConsoleTextAttribute(o.pword(console_flag), value);
     return o;
+  }
+
+  std::ostream & operator <<(std::ostream &o, const link &fmt) {
+    // Not supported on Windows console.
+    return o;
+  }
+
+  std::string file_url(const std::string &file_name, int line) {
+    // Not supported on Windows console.
+    return "";
   }
 
 } // namespace mettle::term
