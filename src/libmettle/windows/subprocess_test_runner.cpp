@@ -11,6 +11,21 @@
 #include <mettle/driver/windows/scoped_pipe.hpp>
 #include <mettle/driver/windows/subprocess.hpp>
 
+#include <bencode.hpp>
+
+// Ignore warnings about deprecated implicit copy constructor.
+#if defined(__clang__)
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wdeprecated"
+#endif
+
+#include <boost/iostreams/device/file_descriptor.hpp>
+#include <boost/iostreams/stream.hpp>
+
+#if defined(__clang__)
+#  pragma clang diagnostic pop
+#endif
+
 #include "../../err_string.hpp"
 
 #ifdef METTLE_NO_SOURCE_LOCATION
@@ -131,7 +146,7 @@ namespace mettle {
       else if(exit_status == exit_code::success)
         return std::nullopt;
       else
-        return {{message}};
+        return {test_failure::from_bencode(bencode::decode(message))};
     }
   }
 
@@ -153,13 +168,18 @@ namespace mettle {
 
   int run_single_test(const test_info &test, HANDLE log_pipe) {
     auto failed = test.function();
-
-    DWORD size;
-    if(failed && !WriteFile(
-      log_pipe, failed->message.c_str(),
-      static_cast<DWORD>(failed->message.size()), &size, nullptr
-    )) {
-      return exit_code::fatal;
+    if(failed) {
+      try {
+        namespace io = boost::iostreams;
+        io::stream<io::file_descriptor_sink> stream(
+          log_pipe, io::never_close_handle
+        );
+        stream.exceptions(stream.failbit | stream.badbit);
+        bencode::encode(stream, failed->to_bencode<bencode::data_view>());
+        stream.flush();
+      } catch(...) {
+        _exit(exit_code::fatal);
+      }
     }
     return failed ? exit_code::failure : exit_code::success;
   }
