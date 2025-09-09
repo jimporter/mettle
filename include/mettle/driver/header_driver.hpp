@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#define METTLE_STATIC
+#define LIBMETTLE_STATIC
 
 #include "run_tests.hpp"
 #include "log/indent.hpp"
