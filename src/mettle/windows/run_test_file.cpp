@@ -100,9 +100,9 @@ namespace mettle::windows {
     PROCESS_INFORMATION proc_info;
 
     if(!CreateProcessA(
-         args[0].c_str(), const_cast<char*>(command.c_str()), nullptr,
-         nullptr, true, 0, nullptr, nullptr, &startup_info, &proc_info
-       )) {
+      args[0].c_str(), const_cast<char*>(command.c_str()), nullptr,
+      nullptr, true, 0, nullptr, nullptr, &startup_info, &proc_info
+    )) {
       return METTLE_FAILED();
     }
     scoped_handle subproc_handles[] = {proc_info.hProcess, proc_info.hThread};

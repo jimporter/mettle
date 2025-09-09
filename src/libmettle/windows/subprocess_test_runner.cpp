@@ -81,9 +81,9 @@ namespace mettle {
     }
 
     if(!CreateProcessA(
-         file, const_cast<char*>(args.str().c_str()), nullptr, nullptr, true,
-         CREATE_SUSPENDED, nullptr, nullptr, &startup_info, &proc_info
-       )) {
+      file, const_cast<char*>(args.str().c_str()), nullptr, nullptr, true,
+      CREATE_SUSPENDED, nullptr, nullptr, &startup_info, &proc_info
+    )) {
       return METTLE_FAILED();
     }
     scoped_handle subproc_handles[] = {proc_info.hProcess, proc_info.hThread};
