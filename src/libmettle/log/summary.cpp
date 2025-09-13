@@ -189,13 +189,12 @@ namespace mettle::log {
 
   void summary::log_output(const test_output &output,
                            bool extra_newline) const {
-    if(!show_terminal_)
+    if(!show_terminal_ || output.empty())
       return;
 
     using namespace term;
 
-    bool has_output = !output.stdout_log.empty() || !output.stderr_log.empty();
-    if(extra_newline && has_output)
+    if(extra_newline)
       out_ << std::endl;
 
     if(!output.stdout_log.empty()) {
