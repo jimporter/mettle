@@ -42,7 +42,9 @@ namespace mettle::log {
       out_ << std::endl;
     first_ = false;
 
-    out_ << format(sgr::bold) << suites.back().name << reset() << std::endl;
+    const auto &suite = suites.back();
+    out_ << link(file_url(suite.file_name, suite.line)) << format(sgr::bold)
+         << suite.name << reset() << link() << std::endl;
     indent_++;
   }
 
@@ -51,7 +53,9 @@ namespace mettle::log {
   }
 
   void verbose::started_test(const test_name &test) {
-    out_ << test.name << " " << std::flush;
+    using namespace term;
+    out_ << link(file_url(test.file_name, test.line)) << test.name << link()
+         << " " << std::flush;
   }
 
   void verbose::passed_test(const test_name &, const test_output &output,

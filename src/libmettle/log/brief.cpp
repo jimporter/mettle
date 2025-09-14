@@ -18,24 +18,27 @@ namespace mettle::log {
 
   void brief::started_test(const test_name &) {}
 
-  void brief::passed_test(const test_name &, const test_output &,
+  void brief::passed_test(const test_name &test, const test_output &,
                           test_duration) {
     using namespace term;
-    out_ << format(sgr::bold, sgr::inverse, fg(color::green)) << "." << reset()
-         << std::flush;
+    out_ << link(file_url(test.file_name, test.line))
+         << format(sgr::bold, sgr::inverse, fg(color::green)) << "."
+         << reset() << link() << std::flush;
   }
 
-  void brief::failed_test(const test_name &, const test_failure &,
+  void brief::failed_test(const test_name &test, const test_failure &,
                           const test_output &, test_duration) {
     using namespace term;
-    out_ << format(sgr::bold, sgr::inverse, fg(color::red)) << "!" << reset()
-         << std::flush;
+    out_ << link(file_url(test.file_name, test.line))
+         << format(sgr::bold, sgr::inverse, fg(color::red)) << "!"
+         << reset() << link() << std::flush;
   }
 
-  void brief::skipped_test(const test_name &, const std::string &) {
+  void brief::skipped_test(const test_name &test, const std::string &) {
     using namespace term;
-    out_ << format(sgr::bold, sgr::inverse, fg(color::blue)) << "_" << reset()
-         << std::flush;
+    out_ << link(file_url(test.file_name, test.line))
+         << format(sgr::bold, sgr::inverse, fg(color::blue)) << "_"
+         << reset() << link() << std::flush;
   }
 
   void brief::started_file(const test_file &) {}

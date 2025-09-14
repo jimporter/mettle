@@ -27,4 +27,14 @@ namespace mettle {
     return os << failure.message;
   }
 
+  std::ostream & operator <<(std::ostream &os, const test_name &test) {
+    using namespace term;
+
+    for(const auto &i : test.suites)
+      os << link(file_url(i.file_name, i.line)) << i.name << link() << " > ";
+
+    return os << link(file_url(test.file_name, test.line)) << test.name
+              << link();
+  }
+
 } // namespace mettle

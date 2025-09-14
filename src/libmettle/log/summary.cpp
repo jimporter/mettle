@@ -10,6 +10,16 @@
 
 namespace mettle::log {
 
+  namespace {
+    template<typename T>
+    std::string to_term_string(T &&t, bool term_enabled) {
+      std::ostringstream ss;
+      term::enable(ss, term_enabled);
+      ss << t;
+      return ss.str();
+    }
+  }
+
   summary::summary(indenting_ostream &out, std::unique_ptr<file_logger> &&log,
                    bool show_time, bool show_terminal)
     : out_(out), log_(std::move(log)), show_time_(show_time),
@@ -52,13 +62,11 @@ namespace mettle::log {
                             const test_output &output, test_duration duration) {
     if(log_) log_->failed_test(test, failure, output, duration);
 
-    std::ostringstream ss;
-    term::enable(ss, term::is_enabled(out_));
-    ss << failure;
+    bool term_enabled = term::is_enabled(out_);
 
-    add_unpass(test.id, test.full_name(), fail).failures.push_back({
-      runs_, ss.str(), show_terminal_ ? output : log::test_output()
-    });
+    add_unpass(test.id, to_term_string(test, term_enabled), fail)
+      .failures.push_back({ runs_, to_term_string(failure, term_enabled),
+                            show_terminal_ ? output : log::test_output() });
   }
 
   void summary::skipped_test(const test_name &test,
