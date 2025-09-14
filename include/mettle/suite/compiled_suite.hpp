@@ -23,7 +23,7 @@ namespace mettle {
 
     basic_test_info(
       std::string name, function_type function, attributes attrs,
-      detail::source_location loc = detail::source_location::current()
+      detail::source_location loc
     ) : id(detail::make_test_uid()), name(std::move(name)),
         function(std::move(function)), attrs(std::move(attrs)),
         location(std::move(loc)) {}

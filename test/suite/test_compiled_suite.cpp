@@ -49,8 +49,8 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     using compiled_test = basic_test_info<outer_func>;
     expect(compiled.name(), equal_to("suite"));
     expect(compiled.tests(), each<compiled_test>(
-      {{ "test 1", nullptr, {skip("2")} },
-       { "test 2", nullptr, {skip("1")} }},
+      {{ "test 1", nullptr, {skip("2")}, {} },
+       { "test 2", nullptr, {skip("1")}, {} }},
       equal_test_info<compiled_test>
     ));
     expect(compiled.subsuites(), array());
@@ -76,8 +76,8 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     using compiled_test = basic_test_info<outer_func>;
     expect(compiled.name(), equal_to("suite"));
     expect(compiled.tests(), each<compiled_test>(
-      {{ "test 1", nullptr, {skip("2")} },
-       { "test 2", nullptr, {skip("1")} }},
+      {{ "test 1", nullptr, {skip("2")}, {} },
+       { "test 2", nullptr, {skip("1")}, {} }},
       equal_test_info<compiled_test>
     ));
     expect(compiled.subsuites(), array());
@@ -103,8 +103,8 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     using compiled_test = basic_test_info<outer_func>;
     expect(compiled.name(), equal_to("suite"));
     expect(compiled.tests(), each<compiled_test>(
-      {{ "test 1", nullptr, {skip("2")} },
-       { "test 2", nullptr, {skip("1")} }},
+      {{ "test 1", nullptr, {skip("2")}, {} },
+       { "test 2", nullptr, {skip("1")}, {} }},
       equal_test_info<compiled_test>
     ));
     expect(compiled.subsuites(), array());
@@ -135,8 +135,8 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     using compiled_test = basic_test_info<outer_func>;
     expect(compiled.name(), equal_to("suite"));
     expect(compiled.tests(), each<compiled_test>(
-      {{ "test 1", nullptr, {skip("4")} },
-       { "test 2", nullptr, {skip("3")} }},
+      {{ "test 1", nullptr, {skip("4")}, {} },
+       { "test 2", nullptr, {skip("3")}, {} }},
       equal_test_info<compiled_test>
     ));
     expect(compiled.subsuites().size(), equal_to(1));
@@ -144,8 +144,8 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     auto &subsuite = compiled.subsuites()[0];
     expect(subsuite.name(), equal_to("subsuite"));
     expect(subsuite.tests(), each<compiled_test>(
-      {{ "subtest 1", nullptr, {skip("2")} },
-       { "subtest 2", nullptr, {skip("1")} }},
+      {{ "subtest 1", nullptr, {skip("2")}, {} },
+       { "subtest 2", nullptr, {skip("1")}, {} }},
       equal_test_info<compiled_test>
     ));
     expect(subsuite.subsuites(), array());
