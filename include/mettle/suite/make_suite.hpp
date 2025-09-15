@@ -22,6 +22,10 @@
 
 namespace mettle {
 
+  namespace detail {
+    struct no_fixture_t { no_fixture_t() = delete; };
+  }
+
   template<typename Factory, typename ParentFixture,
            typename Fixture = detail::no_fixture_t>
   class suite_builder;
@@ -303,7 +307,8 @@ namespace mettle {
 
   template<typename Factory, typename ...ParentFixture,
            typename Fixture /* = detail::no_fixture_t*/>
-  requires(std::same_as<detail::transform_fixture_t<Factory, Fixture>, void>)
+  requires(std::same_as<Fixture, detail::no_fixture_t> ||
+           std::same_as<detail::transform_fixture_t<Factory, Fixture>, void>)
   class suite_builder<Factory, std::tuple<ParentFixture...>, Fixture>
     : public suite_builder_base<ParentFixture...> {
     using base = suite_builder_base<ParentFixture...>;

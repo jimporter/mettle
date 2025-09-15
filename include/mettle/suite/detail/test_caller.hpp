@@ -7,22 +7,13 @@
 
 namespace mettle::detail {
 
-  struct no_fixture_t {};
-
   template<typename Factory, typename Child>
   struct transform_fixture {
     using type = decltype(std::declval<Factory>().template make<Child>());
   };
 
-  template<typename Factory>
-  struct transform_fixture<Factory, no_fixture_t> {
-    using type = void;
-  };
-
   template<typename Factory, typename Child>
-  using transform_fixture_t = typename transform_fixture<
-    Factory, Child
-  >::type;
+  using transform_fixture_t = typename transform_fixture<Factory, Child>::type;
 
   template<typename ...Args>
   struct test_caller {
