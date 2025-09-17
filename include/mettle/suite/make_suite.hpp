@@ -19,7 +19,6 @@
 #include "../detail/algorithm.hpp"
 #include "../detail/source_location.hpp"
 
-
 namespace mettle {
 
   namespace detail {
@@ -28,6 +27,8 @@ namespace mettle {
 
   template<typename Factory, typename ParentFixture,
            typename Fixture = detail::no_fixture_t>
+  requires(std::same_as<Fixture, detail::no_fixture_t> ||
+           factory_for<Factory, Fixture>)
   class suite_builder;
 
   namespace detail {
@@ -87,8 +88,8 @@ namespace mettle {
       };
     }
 
-    template<typename ParentFixture, typename ...Fixture, typename Factory,
-             typename F, typename Wrap>
+    template<typename ParentFixture, typename ...Fixture,
+             factory_for<Fixture...> Factory, typename F, typename Wrap>
     auto
     do_build(const std::string &name, const attributes &attrs,
              Factory &&factory, const F &f, const Wrap &wrap) {
@@ -308,7 +309,7 @@ namespace mettle {
   template<typename Factory, typename ...ParentFixture,
            typename Fixture /* = detail::no_fixture_t*/>
   requires(std::same_as<Fixture, detail::no_fixture_t> ||
-           std::same_as<detail::transform_fixture_t<Factory, Fixture>, void>)
+           std::same_as<factory_result_t<Factory, Fixture>, void>)
   class suite_builder<Factory, std::tuple<ParentFixture...>, Fixture>
     : public suite_builder_base<ParentFixture...> {
     using base = suite_builder_base<ParentFixture...>;
@@ -336,9 +337,9 @@ namespace mettle {
            typename Fixture /* = detail::no_fixture_t*/>
   class suite_builder<Factory, std::tuple<ParentFixture...>, Fixture>
     : public suite_builder_base<ParentFixture...,
-                                detail::transform_fixture_t<Factory, Fixture>> {
+                                factory_result_t<Factory, Fixture>> {
     using base = suite_builder_base<
-      ParentFixture..., detail::transform_fixture_t<Factory, Fixture>
+      ParentFixture..., factory_result_t<Factory, Fixture>
     >;
   public:
     using factory_type = Factory;

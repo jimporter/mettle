@@ -5,15 +5,9 @@
 #include <tuple>
 #include <utility>
 
+#include "../factory.hpp"
+
 namespace mettle::detail {
-
-  template<typename Factory, typename Child>
-  struct transform_fixture {
-    using type = decltype(std::declval<Factory>().template make<Child>());
-  };
-
-  template<typename Factory, typename Child>
-  using transform_fixture_t = typename transform_fixture<Factory, Child>::type;
 
   template<typename ...Args>
   struct test_caller {
@@ -40,11 +34,12 @@ namespace mettle::detail {
   };
 
   template<typename Factory, typename Child, typename ...Parent>
+  requires factory_for<Factory, Child>
   struct fixture_test_caller : test_caller<
-    Parent..., transform_fixture_t<Factory, Child>
+    Parent..., factory_result_t<Factory, Child>
   > {
     inline void operator ()(Parent &...args) {
-      using base = test_caller<Parent..., transform_fixture_t<Factory, Child>>;
+      using base = test_caller<Parent..., factory_result_t<Factory, Child>>;
       auto &&child = factory.template make<Child>();
       base::operator ()(args..., child);
     }

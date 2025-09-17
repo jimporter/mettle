@@ -48,6 +48,21 @@ namespace mettle {
 
   }
 
+  template<typename Factory, typename ...T>
+  concept factory_for = requires(Factory &f) {
+    (f.template make<T>(), ...);
+  };
+
+  template<typename Factory, typename Child>
+  requires factory_for<Factory, Child>
+  struct factory_result {
+    using type = decltype(std::declval<Factory>().template make<Child>());
+  };
+
+  template<typename Factory, typename Child>
+  using factory_result_t = typename factory_result<Factory, Child>::type;
+
+
   inline detail::auto_factory_t auto_factory;
   inline detail::type_only_factory_t type_only;
 
