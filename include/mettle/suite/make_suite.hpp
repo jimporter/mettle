@@ -390,14 +390,13 @@ namespace mettle {
 
 
   template<typename Parent, typename F>
-  inline void
-  test(Parent &p, const std::string &name, const attributes &attrs, F &&f) {
+  inline void test(Parent &p, const std::string &name, const attributes &attrs,
+                   F &&f) {
     p.test(name, attrs, std::forward<F>(f));
   }
 
-  template<typename ...Fixture, typename Parent, typename F>
-  inline void
-  test(Parent &p, const std::string &name, F &&f) {
+  template<typename Parent, typename F>
+  inline void test(Parent &p, const std::string &name, F &&f) {
     p.test(name, std::forward<F>(f));
   }
 
