@@ -43,12 +43,11 @@ namespace mettle {
     using test_info = basic_test_info<Function>;
     using iterator = typename std::vector<test_info>::const_iterator;
 
-    template<typename String, typename Tests, typename Subsuites,
-             typename Compile>
+    template<typename Tests, typename Subsuites, typename Compile>
     compiled_suite(
-      String &&name, Tests &&tests, Subsuites &&subsuites,
+      std::string name, Tests &&tests, Subsuites &&subsuites,
       const attributes &attrs, Compile &&compile
-    ) : name_(std::forward<String>(name)) {
+    ) : name_(std::move(name)) {
       for(auto &&test : tests) {
         tests_.emplace_back(
           detail::forward_like<Tests>(test.name),

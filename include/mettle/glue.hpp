@@ -11,7 +11,7 @@ namespace mettle {
 
   template<typename ...Fixture, typename ...Args>
   inline auto
-  make_suite(const std::string &name, const attributes &attrs, Args &&...args) {
+  make_suite(std::string_view name, const attributes &attrs, Args &&...args) {
     return make_basic_suite<expectation_error, Fixture...>(
       name, attrs, std::forward<Args>(args)...
     );
@@ -19,7 +19,7 @@ namespace mettle {
 
   template<typename ...Fixture, typename ...Args>
   inline auto
-  make_suite(const std::string &name, Args &&...args) {
+  make_suite(std::string_view name, Args &&...args) {
     return make_basic_suite<expectation_error, Fixture...>(
       name, std::forward<Args>(args)...
     );
@@ -27,8 +27,7 @@ namespace mettle {
 
   template<typename ...Fixture, typename ...Args>
   inline auto
-  make_suites(const std::string &name, const attributes &attrs,
-              Args &&...args) {
+  make_suites(std::string_view name, const attributes &attrs, Args &&...args) {
     return make_basic_suites<expectation_error, Fixture...>(
       name, attrs, std::forward<Args>(args)...
     );
@@ -36,7 +35,7 @@ namespace mettle {
 
   template<typename ...Fixture, typename ...Args>
   inline auto
-  make_suites(const std::string &name, Args &&...args) {
+  make_suites(std::string_view name, Args &&...args) {
     return make_basic_suites<expectation_error, Fixture...>(
       name, std::forward<Args>(args)...
     );
