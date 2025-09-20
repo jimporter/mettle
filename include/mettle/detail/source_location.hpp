@@ -41,7 +41,7 @@ namespace mettle {
       U &&val, detail::source_location loc = detail::source_location::current()
     ) : value(std::forward<U>(val)), location(loc) {}
 
-    operator T & () { return value; }
+    explicit operator T & () { return value; }
 
     T value;
     detail::source_location location;

@@ -35,7 +35,7 @@ namespace mettle {
   namespace detail {
 
     template<typename T>
-    std::string annotate_type(std::string_view &s) {
+    std::string annotate_type(std::string_view s) {
       return std::string(s) + " (" + type_name<T>() + ")";
     }
 
@@ -121,7 +121,9 @@ namespace mettle {
         )};
       } else {
         return std::array{do_build<ParentFixture, Fixture>(
-          detail::annotate_type<Fixture>(name), attrs, args...
+          with_source_location<std::string_view>(
+            detail::annotate_type<Fixture>(name.value), name.location
+          ), attrs, args...
         )...};
       }
     }
