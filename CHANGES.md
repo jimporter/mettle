@@ -10,7 +10,11 @@
   member function)
 - New matchers `dereferenced`, `exception_what`, and `in_interval`
 - Add support for `char8_t`
+- Test output on the terminal now uses [OSC 8][osc-8] hyperlinks where
+  appropriate
 - xUnit test output now includes file and line number in `<testcase>` tags
+
+[osc-8]: https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
 
 ### Bug fixes
 - `none` matcher now reports failed matches as expected
