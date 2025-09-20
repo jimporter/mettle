@@ -283,14 +283,13 @@ suite<> test_program_options("program_options utilities", [](auto &_) {
       validate(value, input, static_cast<name_filter_set*>(nullptr), 0);
       auto filter = boost::any_cast<name_filter_set>(value);
 
-      expect(
-        filter({1, {"suite", "subsuite"}, "name", "file.cpp", 10}, {}),
-        equal_filter_result({test_action::run, ""})
-      );
-      expect(
-        filter({1, {"suite", "subsuite"}, "mismatch", "file.cpp", 10}, {}),
-        equal_filter_result({test_action::hide, ""})
-      );
+      std::vector<suite_name> suites = {
+        {"suite", "file.cpp", 1}, {"subsuite", "file.cpp", 2}
+      };
+      expect(filter({1, suites, "name", "file.cpp", 10}, {}),
+             equal_filter_result({test_action::run, ""}));
+      expect(filter({1, suites, "mismatch", "file.cpp", 10 }, {}),
+             equal_filter_result({test_action::hide, ""}));
 
       expect(
         []() {

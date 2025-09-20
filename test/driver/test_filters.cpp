@@ -4,6 +4,11 @@ using namespace mettle;
 #include <mettle/driver/filters.hpp>
 #include "../helpers.hpp"
 
+const std::vector<suite_name> suites = {
+  {"suite", "file.cpp", 1}, {"subsuite", "file.cpp", 2}
+};
+
+
 suite<> test_core_filters("core filters", [](auto &_) {
   subsuite<>(_, "default_filter", [](auto &_) {
     _.test("no attributes", []() {
@@ -59,9 +64,7 @@ suite<> test_core_filters("core filters", [](auto &_) {
 suite<> test_name_filters("name filters", [](auto &_) {
   _.test("empty set", []() {
     expect(
-      name_filter_set{}(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {}
-      ),
+      name_filter_set{}({1, suites, "test", "file.cpp", 10}, {}),
       equal_filter_result({test_action::indeterminate, ""})
     );
   });
@@ -69,19 +72,19 @@ suite<> test_name_filters("name filters", [](auto &_) {
   _.test("single filter", []() {
     expect(
       name_filter_set{std::regex("test$")}(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {}
+        {1, suites, "test", "file.cpp", 10}, {}
       ),
       equal_filter_result({test_action::run, ""})
     );
     expect(
       name_filter_set{std::regex(R"(\bsubsuite\b)")}(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {}
+        {1, suites, "test", "file.cpp", 10}, {}
       ),
       equal_filter_result({test_action::run, ""})
     );
     expect(
       name_filter_set{std::regex("mismatch")}(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {}
+        {1, suites, "test", "file.cpp", 10}, {}
       ),
       equal_filter_result({test_action::hide, ""})
     );
@@ -91,7 +94,7 @@ suite<> test_name_filters("name filters", [](auto &_) {
     // hide + hide => hide
     expect(
       name_filter_set{std::regex("mismatch"), std::regex("bad")}(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {}
+        {1, suites, "test", "file.cpp", 10}, {}
       ),
       equal_filter_result({test_action::hide, ""})
     );
@@ -99,7 +102,7 @@ suite<> test_name_filters("name filters", [](auto &_) {
     // run + run => run
     expect(
       name_filter_set{std::regex("test"), std::regex("subsuite")}(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {}
+        {1, suites, "test", "file.cpp", 10}, {}
       ),
       equal_filter_result({test_action::run, ""})
     );
@@ -107,7 +110,7 @@ suite<> test_name_filters("name filters", [](auto &_) {
     // hide + run => run
     expect(
       name_filter_set{std::regex("mismatch"), std::regex("test")}(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {}
+        {1, suites, "test", "file.cpp", 10}, {}
       ),
       equal_filter_result({test_action::run, ""})
     );
@@ -604,13 +607,13 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
   _.test("name filter only", []() {
     expect(
       filter_set{ {std::regex("test$")}, {} }(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {}
+        {1, suites, "test", "file.cpp", 10}, {}
       ),
       equal_filter_result({test_action::run, ""})
     );
     expect(
       filter_set{ {std::regex("mismatch")}, {} }(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {}
+        {1, suites, "test", "file.cpp", 10}, {}
       ),
       equal_filter_result({test_action::hide, ""})
     );
@@ -647,7 +650,7 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
     // hide + hide => hide
     expect(
       filter_set{ {std::regex("mismatch")}, {{has_attr("other")}} }(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {attr1}
+        {1, suites, "test", "file.cpp", 10}, {attr1}
       ),
       equal_filter_result({test_action::hide, ""})
     );
@@ -655,7 +658,7 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
     // hide + run => hide
     expect(
       filter_set{ {std::regex("mismatch")}, {{has_attr("first")}} }(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {attr1}
+        {1, suites, "test", "file.cpp", 10}, {attr1}
       ),
       equal_filter_result({test_action::hide, ""})
     );
@@ -663,7 +666,7 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
     // hide + skip => hide
     expect(
       filter_set{ {std::regex("mismatch")}, {{has_attr("second")}} }(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {attr1, attr2}
+        {1, suites, "test", "file.cpp", 10}, {attr1, attr2}
       ),
       equal_filter_result({test_action::hide, ""})
     );
@@ -671,7 +674,7 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
     // run + hide => hide
     expect(
       filter_set{ {std::regex("test$")}, {{has_attr("other")}} }(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {attr1}
+        {1, suites, "test", "file.cpp", 10}, {attr1}
       ),
       equal_filter_result({test_action::hide, ""})
     );
@@ -679,8 +682,7 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
     // run + skip => skip
     expect(
       filter_set{ {std::regex("test$")}, {{has_attr("second")}} }(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10},
-        {attr1("message"), attr2}
+        {1, suites, "test", "file.cpp", 10}, {attr1("message"), attr2}
       ),
       equal_filter_result({test_action::skip, "message"})
     );
@@ -688,7 +690,7 @@ suite<> test_combined_filters("combined filters", [](auto &_) {
     // run + run => run
     expect(
       filter_set{ {std::regex("test$")}, {{has_attr("first")}} }(
-        {1, {"suite", "subsuite"}, "test", "file.cpp", 10}, {attr1}
+        {1, suites, "test", "file.cpp", 10}, {attr1}
       ),
       equal_filter_result({test_action::run, ""})
     );

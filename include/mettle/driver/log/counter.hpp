@@ -22,8 +22,8 @@ namespace mettle::log {
     void started_run() override;
     void ended_run() override;
 
-    void started_suite(const std::vector<std::string> &suites) override;
-    void ended_suite(const std::vector<std::string> &suites) override;
+    void started_suite(const std::vector<suite_name> &suites) override;
+    void ended_suite(const std::vector<suite_name> &suites) override;
 
     void started_test(const test_name &test) override;
     void passed_test(const test_name &test, const test_output &output,

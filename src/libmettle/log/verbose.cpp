@@ -34,18 +34,18 @@ namespace mettle::log {
       run_indent_--;
   }
 
-  void verbose::started_suite(const std::vector<std::string> &suites) {
+  void verbose::started_suite(const std::vector<suite_name> &suites) {
     using namespace term;
 
     if(!first_)
       out_ << std::endl;
     first_ = false;
 
-    out_ << format(sgr::bold) << suites.back() << reset() << std::endl;
+    out_ << format(sgr::bold) << suites.back().name << reset() << std::endl;
     indent_++;
   }
 
-  void verbose::ended_suite(const std::vector<std::string> &) {
+  void verbose::ended_suite(const std::vector<suite_name> &) {
     indent_--;
   }
 

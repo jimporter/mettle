@@ -43,7 +43,7 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     };
     std::vector<compiled_suite<inner_func>> subsuites;
     compiled_suite<outer_func> compiled(
-      "suite", tests, subsuites, {skip("2")}, wrap_test<outer_func>()
+      "suite", tests, subsuites, {skip("2")}, {}, wrap_test<outer_func>()
     );
 
     using compiled_test = basic_test_info<outer_func>;
@@ -67,7 +67,7 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     };
     std::vector<compiled_suite<inner_func>> subsuites;
     compiled_suite<mid_func> suite(
-      "suite", tests, subsuites, {skip("2")}, wrap_test<mid_func>()
+      "suite", tests, subsuites, {skip("2")}, {}, wrap_test<mid_func>()
     );
     compiled_suite<outer_func> compiled(
       suite, {skip("3")}, wrap_test<outer_func>()
@@ -94,7 +94,7 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     };
     std::vector<compiled_suite<inner_func>> subsuites;
     compiled_suite<mid_func> suite(
-      "suite", tests, subsuites, {skip("2")}, wrap_test<mid_func>()
+      "suite", tests, subsuites, {skip("2")}, {}, wrap_test<mid_func>()
     );
     compiled_suite<outer_func> compiled(
       std::move(suite), {skip("3")}, wrap_test<outer_func>()
@@ -121,7 +121,8 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
     };
     std::vector<compiled_suite<inner_func>> subsubsuites;
     std::vector<compiled_suite<mid_func>> subsuites = {
-      { "subsuite", subtests, subsubsuites, {skip("2")}, wrap_test<mid_func>() }
+      { "subsuite", subtests, subsubsuites, {skip("2")}, {},
+        wrap_test<mid_func>() }
     };
 
     std::vector<mock_test<mid_func>> tests = {
@@ -129,7 +130,7 @@ suite<> test_compiled_suite("compiled_suite", [](auto &_) {
       { "test 2", nullptr, {skip("3")}, {} }
     };
     compiled_suite<outer_func> compiled(
-      "suite", tests, subsuites, {skip("4")}, wrap_test<outer_func>()
+      "suite", tests, subsuites, {skip("4")}, {}, wrap_test<outer_func>()
     );
 
     using compiled_test = basic_test_info<outer_func>;

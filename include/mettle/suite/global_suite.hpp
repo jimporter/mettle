@@ -9,7 +9,7 @@ namespace mettle {
   template<typename Exception, typename ...Fixture>
   struct basic_suite {
     template<typename ...Args>
-    basic_suite(suites_list &list, std::string_view name,
+    basic_suite(suites_list &list, with_source_location<std::string_view> name,
                 const attributes &attrs, Args &&...args) {
       auto &&suites = make_basic_suites<Exception, Fixture...>(
         name, attrs, std::forward<Args>(args)...
@@ -19,17 +19,18 @@ namespace mettle {
     }
 
     template<typename ...Args>
-    basic_suite(suites_list &list, std::string_view name, Args &&...args)
+    basic_suite(suites_list &list, with_source_location<std::string_view> name,
+                Args &&...args)
       : basic_suite(list, name, {}, std::forward<Args>(args)...) {}
 
     template<typename ...Args>
-    basic_suite(std::string_view name, const attributes &attrs,
-                Args &&...args)
+    basic_suite(with_source_location<std::string_view> name,
+                const attributes &attrs, Args &&...args)
       : basic_suite(detail::all_suites, name, attrs,
                     std::forward<Args>(args)...) {}
 
     template<typename ...Args>
-    basic_suite(std::string_view name, Args &&...args)
+    basic_suite(with_source_location<std::string_view> name, Args &&...args)
       : basic_suite(name, {}, std::forward<Args>(args)...) {}
   };
 

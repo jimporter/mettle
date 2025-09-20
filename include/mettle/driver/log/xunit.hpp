@@ -28,8 +28,8 @@ namespace mettle::log {
     void started_run() override;
     void ended_run() override;
 
-    void started_suite(const std::vector<std::string> &suites) override;
-    void ended_suite(const std::vector<std::string> &suites) override;
+    void started_suite(const std::vector<suite_name> &suites) override;
+    void ended_suite(const std::vector<suite_name> &suites) override;
 
     void started_test(const test_name &test) override;
     void passed_test(const test_name &test, const test_output &output,
@@ -47,9 +47,10 @@ namespace mettle::log {
                      const std::string &message) override;
   private:
     struct suite_stack_item {
-      suite_stack_item(std::string name)
+      suite_stack_item(std::string name, std::string file_name)
         : elt{xml::element::make("testsuite")} {
         elt->attr("name", std::move(name));
+        elt->attr("file", std::move(file_name));
       }
 
       suite_stack_item(suite_stack_item &&) = default;

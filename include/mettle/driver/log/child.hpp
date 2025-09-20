@@ -27,14 +27,14 @@ namespace mettle::log {
       out.flush();
     }
 
-    void started_suite(const std::vector<std::string> &suites) override {
+    void started_suite(const std::vector<suite_name> &suites) override {
       bencode::encode(out, bencode::dict_view{
         {"event", "started_suite"},
         {"suites", wrap_suites(suites)}
       });
       out.flush();
     }
-    void ended_suite(const std::vector<std::string> &suites) override {
+    void ended_suite(const std::vector<suite_name> &suites) override {
       bencode::encode(out, bencode::dict_view{
         {"event", "ended_suite"},
         {"suites", wrap_suites(suites)}
@@ -101,10 +101,14 @@ namespace mettle::log {
       };
     }
 
-    bencode::list_view wrap_suites(const std::vector<std::string> &suites) {
+    bencode::list_view wrap_suites(const std::vector<suite_name> &suites) {
       bencode::list_view result;
       for(auto &&i : suites)
-        result.push_back(i);
+        result.push_back(bencode::dict_view{
+          {"suite", i.name},
+          {"file_name", i.file_name},
+          {"line", i.line}
+        });
       return result;
     }
 

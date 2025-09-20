@@ -10,32 +10,32 @@
 namespace mettle {
 
   template<typename ...Fixture, typename ...Args>
-  inline auto
-  make_suite(std::string_view name, const attributes &attrs, Args &&...args) {
+  inline auto make_suite(with_source_location<std::string_view> name,
+                         const attributes &attrs, Args &&...args) {
     return make_basic_suite<expectation_error, Fixture...>(
       name, attrs, std::forward<Args>(args)...
     );
   }
 
   template<typename ...Fixture, typename ...Args>
-  inline auto
-  make_suite(std::string_view name, Args &&...args) {
+  inline auto make_suite(with_source_location<std::string_view> name,
+                         Args &&...args) {
     return make_basic_suite<expectation_error, Fixture...>(
       name, std::forward<Args>(args)...
     );
   }
 
   template<typename ...Fixture, typename ...Args>
-  inline auto
-  make_suites(std::string_view name, const attributes &attrs, Args &&...args) {
+  inline auto make_suites(with_source_location<std::string_view> name,
+                          const attributes &attrs, Args &&...args) {
     return make_basic_suites<expectation_error, Fixture...>(
       name, attrs, std::forward<Args>(args)...
     );
   }
 
   template<typename ...Fixture, typename ...Args>
-  inline auto
-  make_suites(std::string_view name, Args &&...args) {
+  inline auto make_suites(with_source_location<std::string_view> name,
+                          Args &&...args) {
     return make_basic_suites<expectation_error, Fixture...>(
       name, std::forward<Args>(args)...
     );

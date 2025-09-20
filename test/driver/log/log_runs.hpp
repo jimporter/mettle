@@ -8,7 +8,7 @@ inline void passing_run(mettle::log::test_logger &logger) {
   using namespace std::literals::chrono_literals;
 
   mettle::log::test_output output = {"standard output", "standard error"};
-  std::vector<std::string> suites = {"suite"};
+  std::vector<suite_name> suites = {{"suite", "file.cpp", 1}};
   mettle::detail::file_uid_maker f;
   mettle::test_uid uid;
 
@@ -23,7 +23,7 @@ inline void passing_run(mettle::log::test_logger &logger) {
   logger.passed_test({uid + 2, suites, "test 2", "file.cpp", 20},
                      log::test_output{}, 100ms);
 
-  suites.push_back("subsuite");
+  suites.push_back({"subsuite", "file.cpp", 3});
   logger.started_suite(suites);
   logger.started_test({uid + 3, suites, "test 3", "file.cpp", 30});
   logger.passed_test({uid + 3, suites, "test 3", "file.cpp", 30},
@@ -33,7 +33,7 @@ inline void passing_run(mettle::log::test_logger &logger) {
   logger.ended_suite(suites);
 
   uid = f.make_file_uid();
-  suites = {"second suite"};
+  suites = {{"second suite", "file.cpp", 4}};
   logger.started_suite(suites);
   logger.started_test({uid + 1, suites, "test 4", "file.cpp", 40});
   logger.passed_test({uid + 1, suites, "test 4", "file.cpp", 40},
@@ -47,7 +47,7 @@ inline void failing_run(mettle::log::test_logger &logger) {
   using namespace std::literals::chrono_literals;
 
   mettle::log::test_output output = {"standard output", "standard error"};
-  std::vector<std::string> suites = {"suite"};
+  std::vector<suite_name> suites = {{"suite", "file.cpp", 1}};
   mettle::detail::file_uid_maker f;
   mettle::test_uid uid;
 
@@ -62,7 +62,7 @@ inline void failing_run(mettle::log::test_logger &logger) {
   logger.failed_test({uid + 2, suites, "test 2", "file.cpp", 20},
                      "error", log::test_output{}, 100ms);
 
-  suites.push_back("subsuite");
+  suites.push_back({"subsuite", "file.cpp", 3});
   logger.started_suite(suites);
   logger.started_test({uid + 3, suites, "test 3", "file.cpp", 30});
   logger.skipped_test({uid + 3, suites, "test 3", "file.cpp", 30},
@@ -72,7 +72,7 @@ inline void failing_run(mettle::log::test_logger &logger) {
   logger.ended_suite(suites);
 
   uid = f.make_file_uid();
-  suites = {"second suite"};
+  suites = {{"second suite", "file.cpp", 4}};
   logger.started_suite(suites);
   logger.started_test({uid + 1, suites, "test 4", "file.cpp", 40});
   logger.failed_test({uid + 1, suites, "test 4", "file.cpp", 40},
@@ -86,7 +86,7 @@ inline void failing_file_run(mettle::log::file_logger &logger) {
   using namespace std::literals::chrono_literals;
 
   mettle::log::test_output output = {"standard output", "standard error"};
-  std::vector<std::string> suites = {"suite"};
+  std::vector<suite_name> suites = {{"suite", "file.cpp", 1}};
   mettle::detail::file_uid_maker f;
   mettle::test_uid uid;
 
@@ -101,7 +101,7 @@ inline void failing_file_run(mettle::log::file_logger &logger) {
   logger.passed_test({uid + 2, suites, "test 2", "file.cpp", 20},
                      log::test_output{}, 100ms);
 
-  suites.push_back("subsuite");
+  suites.push_back({"subsuite", "file.cpp", 3});
   logger.started_suite(suites);
   logger.started_test({uid + 3, suites, "test 3", "file.cpp", 30});
   logger.skipped_test({uid + 3, suites, "test 3", "file.cpp", 30},
@@ -109,7 +109,7 @@ inline void failing_file_run(mettle::log::file_logger &logger) {
   logger.failed_file({uid, "file.cpp"}, "error\nmore");
 
   uid = f.make_file_uid();
-  suites = {"second suite"};
+  suites = {{"second suite", "file.cpp", 4}};
   logger.started_suite(suites);
   logger.started_test({uid + 1, suites, "test 4", "file.cpp", 40});
   logger.passed_test({uid + 1, suites, "test 4", "file.cpp", 40},
@@ -123,7 +123,7 @@ inline void failing_test_and_file_run(mettle::log::file_logger &logger) {
   using namespace std::literals::chrono_literals;
 
   mettle::log::test_output output = {"standard output", "standard error"};
-  std::vector<std::string> suites = {"suite"};
+  std::vector<suite_name> suites = {{"suite", "file.cpp", 1}};
   mettle::detail::file_uid_maker f;
   mettle::test_uid uid;
 
@@ -138,7 +138,7 @@ inline void failing_test_and_file_run(mettle::log::file_logger &logger) {
   logger.failed_test({uid + 2, suites, "test 2", "file.cpp", 20},
                      "error", log::test_output{}, 100ms);
 
-  suites.push_back("subsuite");
+  suites.push_back({"subsuite", "file.cpp", 3});
   logger.started_suite(suites);
   logger.started_test({uid + 3, suites, "test 3", "file.cpp", 30});
   logger.skipped_test({uid + 3, suites, "test 3", "file.cpp", 30},
@@ -146,7 +146,7 @@ inline void failing_test_and_file_run(mettle::log::file_logger &logger) {
   logger.failed_file({uid, "file.cpp"}, "error\nmore");
 
   uid = f.make_file_uid();
-  suites = {"second suite"};
+  suites = {{"second suite", "file.cpp", 4}};
   logger.started_suite(suites);
   logger.started_test({uid + 1, suites, "test 4", "file.cpp", 40});
   logger.failed_test({uid + 1, suites, "test 4", "file.cpp", 40},

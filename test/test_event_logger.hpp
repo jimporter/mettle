@@ -17,10 +17,10 @@ struct test_event_logger : log::file_logger {
     events.push_back("ended_run");
   }
 
-  void started_suite(const std::vector<std::string> &) override {
+  void started_suite(const std::vector<suite_name> &) override {
     events.push_back("started_suite");
   }
-  void ended_suite(const std::vector<std::string> &) override {
+  void ended_suite(const std::vector<suite_name> &) override {
     events.push_back("ended_suite");
   }
 

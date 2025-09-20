@@ -30,9 +30,9 @@ namespace mettle::log {
     ended_run() = 0;
 
     virtual void
-    started_suite(const std::vector<std::string> &suites) = 0;
+    started_suite(const std::vector<suite_name> &suites) = 0;
     virtual void
-    ended_suite(const std::vector<std::string> &suites) = 0;
+    ended_suite(const std::vector<suite_name> &suites) = 0;
 
     virtual void
     started_test(const test_name &test) = 0;

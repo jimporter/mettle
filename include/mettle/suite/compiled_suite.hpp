@@ -46,8 +46,8 @@ namespace mettle {
     template<typename Tests, typename Subsuites, typename Compile>
     compiled_suite(
       std::string name, Tests &&tests, Subsuites &&subsuites,
-      const attributes &attrs, Compile &&compile
-    ) : name_(std::move(name)) {
+      const attributes &attrs, detail::source_location loc, Compile &&compile
+    ) : name_(std::move(name)), location_(loc) {
       for(auto &&test : tests) {
         tests_.emplace_back(
           detail::forward_like<Tests>(test.name),
@@ -67,17 +67,21 @@ namespace mettle {
     compiled_suite(const compiled_suite<Function2> &suite,
                    const attributes &attrs, Compile &&compile)
       : compiled_suite(suite.name_, suite.tests_, suite.subsuites_, attrs,
-                       std::forward<Compile>(compile)) {}
+                       suite.location_, std::forward<Compile>(compile)) {}
 
     template<typename Function2, typename Compile>
     compiled_suite(compiled_suite<Function2> &&suite,
                    const attributes &attrs, Compile &&compile)
       : compiled_suite(std::move(suite.name_), std::move(suite.tests_),
-                       std::move(suite.subsuites_), attrs,
+                       std::move(suite.subsuites_), attrs, suite.location_,
                        std::forward<Compile>(compile)) {}
 
     const std::string & name() const {
       return name_;
+    }
+
+    const detail::source_location & location() const {
+      return location_;
     }
 
     const std::vector<test_info> & tests() const {
@@ -91,6 +95,7 @@ namespace mettle {
     std::string name_;
     std::vector<test_info> tests_;
     std::vector<compiled_suite> subsuites_;
+    detail::source_location location_;
   };
 
   using runnable_suite = compiled_suite<test_result()>;

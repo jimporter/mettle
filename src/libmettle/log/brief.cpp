@@ -13,8 +13,8 @@ namespace mettle::log {
     out_ << std::endl;
   }
 
-  void brief::started_suite(const std::vector<std::string> &) {}
-  void brief::ended_suite(const std::vector<std::string> &) {}
+  void brief::started_suite(const std::vector<suite_name> &) {}
+  void brief::ended_suite(const std::vector<suite_name> &) {}
 
   void brief::started_test(const test_name &) {}
 

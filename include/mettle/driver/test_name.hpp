@@ -10,16 +10,21 @@
 
 namespace mettle {
 
+  struct suite_name {
+    std::string name, file_name;
+    std::uint_least32_t line = 0;
+  };
+
   struct test_name {
     test_uid id;
-    std::vector<std::string> suites;
+    std::vector<suite_name> suites;
     std::string name, file_name;
     std::uint_least32_t line = 0;
 
     std::string full_name() const {
       std::ostringstream ss;
       for(const auto &i : suites)
-        ss << i << " > ";
+        ss << i.name << " > ";
       ss << name;
       return ss.str();
     }

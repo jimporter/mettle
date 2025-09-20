@@ -82,7 +82,7 @@ namespace mettle {
     finalize(Builder &b, const Wrap &wrap) {
       return {
         std::move(b.name_), std::move(b.tests_), std::move(b.subsuites_),
-        std::move(b.attrs_),
+        std::move(b.attrs_), std::move(b.location_),
         [&b, &wrap](auto &&test) {
           return wrap(b.make_test_caller(std::move(test)));
         }
@@ -91,9 +91,9 @@ namespace mettle {
 
     template<typename ParentFixture, typename ...Fixture,
              factory_for<Fixture...> Factory, typename F, typename Wrap>
-    auto
-    do_build(std::string_view name, const attributes &attrs,
-             Factory &&factory, const F &f, const Wrap &wrap) {
+    auto do_build(with_source_location<std::string_view> name,
+                  const attributes &attrs, Factory &&factory, const F &f,
+                  const Wrap &wrap) {
       using factory_type = std::remove_reference_t<Factory>;
       suite_builder<factory_type, ParentFixture, Fixture...> builder(
         name, attrs, std::forward<Factory>(factory)
@@ -104,17 +104,17 @@ namespace mettle {
 
     template<typename ParentFixture, typename ...Fixture, typename F,
              typename Wrap>
-    inline auto
-    do_build(std::string_view name, const attributes &attrs, const F &f,
-             const Wrap &wrap) {
+    inline auto do_build(with_source_location<std::string_view> name,
+                         const attributes &attrs, const F &f,
+                         const Wrap &wrap) {
       return do_build<ParentFixture, Fixture...>(
         name, attrs, auto_factory, f, wrap
       );
     }
 
     template<typename ParentFixture, typename ...Fixture, typename ...Args>
-    inline auto
-    do_builds(std::string_view name, const attributes &attrs, Args &&...args) {
+    inline auto do_builds(with_source_location<std::string_view> name,
+                          const attributes &attrs, Args &&...args) {
       if constexpr(sizeof...(Fixture) < 2) {
         return std::array{do_build<ParentFixture, Fixture...>(
           name, attrs, std::forward<Args>(args)...
@@ -129,34 +129,32 @@ namespace mettle {
   } // namespace detail
 
   template<typename Exception, typename ...Fixture, typename ...Args>
-  inline auto
-  make_basic_suite(std::string_view name, const attributes &attrs,
-                   Args &&...args) {
+  inline auto make_basic_suite(with_source_location<std::string_view> name,
+                               const attributes &attrs, Args &&...args) {
     return detail::do_build<std::tuple<>, Fixture...>(
       name, attrs, std::forward<Args>(args)..., detail::wrap_test<Exception>{}
     );
   }
 
   template<typename Exception, typename ...Fixture, typename ...Args>
-  inline auto
-  make_basic_suite(std::string_view name, Args &&...args) {
+  inline auto make_basic_suite(with_source_location<std::string_view> name,
+                               Args &&...args) {
     return detail::do_build<std::tuple<>, Fixture...>(
       name, {}, std::forward<Args>(args)..., detail::wrap_test<Exception>{}
     );
   }
 
   template<typename Exception, typename ...Fixture, typename ...Args>
-  inline auto
-  make_basic_suites(std::string_view name, const attributes &attrs,
-                    Args &&...args) {
+  inline auto make_basic_suites(with_source_location<std::string_view> name,
+                                const attributes &attrs, Args &&...args) {
     return detail::do_builds<std::tuple<>, Fixture...>(
       name, attrs, std::forward<Args>(args)..., detail::wrap_test<Exception>{}
     );
   }
 
   template<typename Exception, typename ...Fixture, typename ...Args>
-  inline auto
-  make_basic_suites(std::string_view name, Args &&...args) {
+  inline auto make_basic_suites(with_source_location<std::string_view> name,
+                                Args &&...args) {
     return detail::do_builds<std::tuple<>, Fixture...>(
       name, {}, std::forward<Args>(args)..., detail::wrap_test<Exception>{}
     );
@@ -164,34 +162,32 @@ namespace mettle {
 
 
   template<typename ParentFixture, typename ...Fixture, typename ...Args>
-  inline auto
-  make_subsuite(std::string_view name, const attributes &attrs,
-                Args &&...args) {
+  inline auto make_subsuite(with_source_location<std::string_view> name,
+                            const attributes &attrs, Args &&...args) {
     return detail::do_build<ParentFixture, Fixture...>(
       name, attrs, std::forward<Args>(args)..., std::identity{}
     );
   }
 
   template<typename ParentFixture, typename ...Fixture, typename ...Args>
-  inline auto
-  make_subsuite(std::string_view name, Args &&...args) {
+  inline auto make_subsuite(with_source_location<std::string_view> name,
+                            Args &&...args) {
     return detail::do_build<ParentFixture, Fixture...>(
       name, {}, std::forward<Args>(args)..., std::identity{}
     );
   }
 
   template<typename ParentFixture, typename ...Fixture, typename ...Args>
-  inline auto
-  make_subsuites(std::string_view name, const attributes &attrs,
-                 Args &&...args) {
+  inline auto make_subsuites(with_source_location<std::string_view> name,
+                             const attributes &attrs, Args &&...args) {
     return detail::do_builds<ParentFixture, Fixture...>(
       name, attrs, std::forward<Args>(args)..., std::identity{}
     );
   }
 
   template<typename ParentFixture, typename ...Fixture, typename ...Args>
-  inline auto
-  make_subsuites(std::string_view name, Args &&...args) {
+  inline auto make_subsuites(with_source_location<std::string_view> name,
+                             Args &&...args) {
     return detail::do_builds<ParentFixture, Fixture...>(
       name, {}, std::forward<Args>(args)..., std::identity{}
     );
@@ -200,8 +196,8 @@ namespace mettle {
 
   template<typename ...Fixture, typename Parent, typename ...Args>
   inline auto
-  make_subsuite(const Parent &, std::string_view name, const attributes &attrs,
-                Args &&...args) {
+  make_subsuite(const Parent &, with_source_location<std::string_view> name,
+                const attributes &attrs, Args &&...args) {
     return make_subsuite<typename Parent::tuple_type, Fixture...>(
       name, attrs, std::forward<Args>(args)...
     );
@@ -209,7 +205,8 @@ namespace mettle {
 
   template<typename ...Fixture, typename Parent, typename ...Args>
   inline auto
-  make_subsuite(const Parent &, std::string_view name, Args &&...args) {
+  make_subsuite(const Parent &, with_source_location<std::string_view> name,
+                Args &&...args) {
     return make_subsuite<typename Parent::tuple_type, Fixture...>(
       name, std::forward<Args>(args)...
     );
@@ -217,7 +214,7 @@ namespace mettle {
 
   template<typename ...Fixture, typename Parent, typename ...Args>
   inline auto
-  make_subsuites(const Parent &, std::string_view name,
+  make_subsuites(const Parent &, with_source_location<std::string_view> name,
                  const attributes &attrs, Args &&...args) {
     return make_subsuites<typename Parent::tuple_type, Fixture...>(
       name, attrs, std::forward<Args>(args)...
@@ -226,7 +223,8 @@ namespace mettle {
 
   template<typename ...Fixture, typename Parent, typename ...Args>
   inline auto
-  make_subsuites(const Parent &, std::string_view name, Args &&...args) {
+  make_subsuites(const Parent &, with_source_location<std::string_view> name,
+                 Args &&...args) {
     return make_subsuites<typename Parent::tuple_type, Fixture...>(
       name, std::forward<Args>(args)...
     );
@@ -239,8 +237,9 @@ namespace mettle {
     using tuple_type = std::tuple<T...>;
     using function_type = std::function<void(T&...)>;
 
-    suite_builder_base(std::string_view name, attributes attrs)
-      : name_(name), attrs_(std::move(attrs)) {}
+    suite_builder_base(with_source_location<std::string_view> name,
+                       attributes attrs)
+      : name_(name.value), attrs_(std::move(attrs)), location_(name.location) {}
     suite_builder_base(const suite_builder_base &) = delete;
     suite_builder_base & operator =(const suite_builder_base &) = delete;
 
@@ -252,19 +251,15 @@ namespace mettle {
       teardown_ = std::move(f);
     }
 
-    void test(
-      std::string_view name, function_type f,
-      detail::source_location loc = detail::source_location::current()
-    ) {
-      tests_.push_back({ std::string(name), std::move(f), {}, std::move(loc) });
+    void test(with_source_location<std::string_view> name, function_type f) {
+      tests_.emplace_back(std::string(name.value), std::move(f), attributes{},
+                          std::move(name.location));
     }
 
-    void test(
-      std::string_view name, attributes attrs, function_type f,
-      detail::source_location loc = detail::source_location::current()
-    ) {
-      tests_.push_back({ std::string(name), std::move(f), std::move(attrs),
-                         std::move(loc) });
+    void test(with_source_location<std::string_view> name, attributes attrs,
+              function_type f) {
+      tests_.emplace_back(std::string(name.value), std::move(f),
+                          std::move(attrs), std::move(name.location));
     }
 
     void subsuite(compiled_suite<void(T&...)> subsuite) {
@@ -278,15 +273,15 @@ namespace mettle {
     }
 
     template<typename ...Fixture, typename ...Args>
-    void subsuite(std::string_view name, const attributes &attrs,
-                  Args &&...args) {
+    void subsuite(with_source_location<std::string_view> name,
+                  const attributes &attrs, Args &&...args) {
       subsuite(make_subsuites<tuple_type, Fixture...>(
         name, attrs, std::forward<Args>(args)...
       ));
     }
 
     template<typename ...Fixture, typename ...Args>
-    void subsuite(std::string_view name, Args &&...args) {
+    void subsuite(with_source_location<std::string_view> name, Args &&...args) {
       subsuite(make_subsuites<tuple_type, Fixture...>(
         name, std::forward<Args>(args)...
       ));
@@ -304,6 +299,7 @@ namespace mettle {
     function_type setup_, teardown_;
     std::vector<test_info> tests_;
     std::vector<compiled_suite<void(T&...)>> subsuites_;
+    detail::source_location location_;
   };
 
   template<typename Factory, typename ...ParentFixture,
@@ -319,8 +315,8 @@ namespace mettle {
     using parent_fixture_signature = void(ParentFixture&...);
     using fixture_type = Fixture;
 
-    suite_builder(std::string_view name, const attributes &attrs,
-                  Factory)
+    suite_builder(with_source_location<std::string_view> name,
+                  const attributes &attrs, Factory)
       : base(name, attrs) {}
   private:
     detail::test_caller<ParentFixture...>
@@ -347,8 +343,8 @@ namespace mettle {
     using parent_fixture_signature = void(ParentFixture&...);
     using fixture_type = Fixture;
 
-    suite_builder(std::string_view name, const attributes &attrs,
-                  Factory factory)
+    suite_builder(with_source_location<std::string_view> name,
+                  const attributes &attrs, Factory factory)
       : base(name, attrs), factory_(factory) {}
   private:
     detail::fixture_test_caller<Factory, Fixture, ParentFixture...>
@@ -365,15 +361,14 @@ namespace mettle {
 
 
   template<typename ...Fixture, typename Parent, typename ...Args>
-  inline void
-  subsuite(Parent &p, std::string_view name, const attributes &attrs,
-           Args &&...args) {
+  inline void subsuite(Parent &p, with_source_location<std::string_view> name,
+                       const attributes &attrs, Args &&...args) {
     p.template subsuite<Fixture...>(name, attrs, std::forward<Args>(args)...);
   }
 
   template<typename ...Fixture, typename Parent, typename ...Args>
-  inline void
-  subsuite(Parent &p, std::string_view name, Args &&...args) {
+  inline void subsuite(Parent &p, with_source_location<std::string_view> name,
+                       Args &&...args) {
     p.template subsuite<Fixture...>(name, std::forward<Args>(args)...);
   }
 
@@ -390,13 +385,14 @@ namespace mettle {
 
 
   template<typename Parent, typename F>
-  inline void test(Parent &p, std::string_view name, const attributes &attrs,
-                   F &&f) {
+  inline void test(Parent &p, with_source_location<std::string_view> name,
+                   const attributes &attrs, F &&f) {
     p.test(name, attrs, std::forward<F>(f));
   }
 
   template<typename Parent, typename F>
-  inline void test(Parent &p, std::string_view name, F &&f) {
+  inline void test(Parent &p, with_source_location<std::string_view> name,
+                   F &&f) {
     p.test(name, std::forward<F>(f));
   }
 

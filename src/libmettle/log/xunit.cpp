@@ -64,13 +64,15 @@ namespace mettle::log {
     doc_.write(*out_);
   }
 
-  void xunit::started_suite(const std::vector<std::string> &suites) {
+  void xunit::started_suite(const std::vector<suite_name> &suites) {
     using namespace mettle::detail;
-    auto name = stringify(joined(suites, std::identity{}, " > "));
-    suite_stack_.emplace(std::move(name));
+    auto name = stringify(joined(
+      suites, [](const suite_name &s) { return s.name; }, " > "
+    ));
+    suite_stack_.emplace(std::move(name), suites.back().file_name);
   }
 
-  void xunit::ended_suite(const std::vector<std::string> &) {
+  void xunit::ended_suite(const std::vector<suite_name> &) {
     auto &suite = current_suite();
     if(suite.elt->children_size()) {
       suite.elt->attr("tests", std::to_string(suite.elt->children_size()));
@@ -129,6 +131,7 @@ namespace mettle::log {
   void xunit::failed_file(const test_file &file, const std::string &message) {
     auto suite = xml::element::make("testsuite");
     suite->attr("name", "file `" + file.name + "`");
+    suite->attr("file", file.name);
     suite->attr("tests", "1");
     suite->attr("failures", "1");
     suite->attr("time", "0");

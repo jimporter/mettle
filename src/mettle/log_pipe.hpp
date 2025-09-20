@@ -49,10 +49,16 @@ namespace mettle::log {
       }
     }
   private:
-    std::vector<std::string> read_suites(bencode::data &&suites) {
-      std::vector<std::string> result;
-      for(auto &&i : std::get<bencode::list>(suites))
-        result.push_back( read_string(std::move(i)) );
+    std::vector<suite_name> read_suites(bencode::data &&suites) {
+      std::vector<suite_name> result;
+      for(auto &&i : std::get<bencode::list>(suites)) {
+        auto &data = std::get<bencode::dict>(i);
+        result.emplace_back(
+          read_string( std::move(data.at("suite")) ),
+          read_string( std::move(data.at("file_name")) ),
+          read_line( std::move(data.at("line")) )
+        );
+      }
       return result;
     }
 
@@ -69,7 +75,7 @@ namespace mettle::log {
         read_suites( std::move(data.at("suites")) ),
         read_string( std::move(data.at("test")) ),
         read_string( std::move(data.at("file_name")) ),
-        read_line( std::move(data.at("line")) ),
+        read_line( std::move(data.at("line")) )
       };
     }
 

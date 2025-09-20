@@ -28,11 +28,11 @@ namespace mettle::log {
     if(log_) log_->ended_run();
   }
 
-  void summary::started_suite(const std::vector<std::string> &suites) {
+  void summary::started_suite(const std::vector<suite_name> &suites) {
     if(log_) log_->started_suite(suites);
   }
 
-  void summary::ended_suite(const std::vector<std::string> &suites) {
+  void summary::ended_suite(const std::vector<suite_name> &suites) {
     if(log_) log_->ended_suite(suites);
   }
 

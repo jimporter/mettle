@@ -21,8 +21,8 @@ namespace mettle::log {
     out_ << std::endl;
   }
 
-  void counter::started_suite(const std::vector<std::string> &) {}
-  void counter::ended_suite(const std::vector<std::string> &) {}
+  void counter::started_suite(const std::vector<suite_name> &) {}
+  void counter::ended_suite(const std::vector<suite_name> &) {}
 
   void counter::started_test(const test_name &) {}
 

@@ -15,11 +15,11 @@ namespace mettle {
 
     class suite_stack {
     public:
-      using value_type = std::vector<std::string>;
+      using value_type = std::vector<suite_name>;
 
-      template<typename T>
-      void push(T &&t) {
-        queued_.push_back(std::forward<T>(t));
+      template<typename ...T>
+      void push(T &&...t) {
+        queued_.emplace_back(std::forward<T>(t)...);
       }
 
       void pop() {
@@ -63,7 +63,8 @@ namespace mettle {
       const Filter &filter, suite_stack &parents
     ) {
       for(const auto &suite : suites) {
-        parents.push(suite.name());
+        parents.push(suite.name(), suite.location().file_name(),
+                     suite.location().line());
 
         for(const auto &test : suite.tests()) {
           const test_name name = {
