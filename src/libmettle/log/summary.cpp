@@ -65,15 +65,18 @@ namespace mettle::log {
     bool term_enabled = term::is_enabled(out_);
 
     add_unpass(test.id, to_term_string(test, term_enabled), fail)
-      .failures.push_back({ runs_, to_term_string(failure, term_enabled),
-                            show_terminal_ ? output : log::test_output() });
+      .failures.emplace_back(runs_, to_term_string(failure, term_enabled),
+                             show_terminal_ ? output : log::test_output{});
   }
 
   void summary::skipped_test(const test_name &test,
                              const std::string &message) {
     if(log_) log_->skipped_test(test, message);
 
-    add_unpass(test.id, test.full_name(), skip).skip_message = message;
+    bool term_enabled = term::is_enabled(out_);
+
+    add_unpass(test.id, to_term_string(test, term_enabled), skip).skip_message =
+      message;
   }
 
   void summary::started_file(const test_file &file) {
@@ -91,8 +94,14 @@ namespace mettle::log {
     // Max out the local bits of the UID so that it sorts *after* regular
     // file-and-test UIDs.
     test_uid sortid = detail::max_local_bits(file.id);
-    add_unpass(sortid, "`" + file.name + "`", file_fail).failures.push_back(
-      {runs_, message, {}}
+
+    bool term_enabled = term::is_enabled(out_);
+    std::ostringstream ss;
+    term::enable(ss, term_enabled);
+    ss << "`" << term::link(file.name) << file.name << term::link() << "`";
+
+    add_unpass(sortid, ss.str(), file_fail).failures.emplace_back(
+      runs_, message, log::test_output{}
     );
   }
 
