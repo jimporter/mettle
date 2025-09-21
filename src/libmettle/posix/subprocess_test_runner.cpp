@@ -71,11 +71,8 @@ namespace mettle {
         killpg(test_pgid, SIGKILL);
       test_pgid = 0;
 
-      std::ostringstream ss;
-      ss << "Fatal error at " << loc.file_name() << ":" << loc.line() << "\n"
-         << err_string(errno);
-      return {{ .message = ss.str(), .file_name = loc.file_name(),
-                .line = loc.line() }};
+      return {{ .message = "Fatal error: " + err_string(errno),
+                .file_name = loc.file_name(), .line = loc.line() }};
     }
 
     [[noreturn]] inline void child_failed() {

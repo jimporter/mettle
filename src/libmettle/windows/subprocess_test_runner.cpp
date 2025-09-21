@@ -44,8 +44,7 @@ namespace mettle {
     test_result failed(detail::source_location loc =
                          detail::source_location::current()) {
       std::ostringstream ss;
-      ss << "Fatal error at " << loc.file_name() << ":" << loc.line() << "\n"
-         << err_string(GetLastError());
+      ss << "Fatal error: " << err_string(GetLastError());
       return {{ .message = ss.str(), .file_name = loc.file_name(),
                 .line = loc.line() }};
     }
