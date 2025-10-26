@@ -1,0 +1,5 @@
+packages:
+  boost:
+    origin: apt
+    inherit_defaults: true
+    remote: [libboost-iostreams-dev, libboost-program-options-dev]

@@ -1,0 +1,17 @@
+packages:
+  boost:
+    origin: tarball
+    inherit_defaults: true
+    url: https://archives.boost.io/release/1.67.0/source/boost_1_67_0.tar.bz2
+    build:
+      - type: custom
+        outdir: null  # TODO: Remove this after mopack v0.2 is released.
+        build_commands:
+          - >-
+            ${{ host_platform == "windows" ?
+                "bootstrap.bat" : "./bootstrap.sh" }}
+      - type: b2
+        env:
+          B2: ./b2
+        extra_args: ['--with-iostreams', '--with-program_options']
+    linkage: path
