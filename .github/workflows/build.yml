@@ -100,13 +100,6 @@ jobs:
       - name: Install Linux dependencies
         if: startsWith(matrix.os, 'ubuntu-')
         run: sudo apt-get install ninja-build
-      - name: Install Boost from APT
-        if: matrix.boost-version == 'apt'
-        run: >
-          sudo apt-get install
-          libboost-dev
-          libboost-iostreams-dev
-          libboost-program-options-dev
       - name: Install Windows dependencies
         if: startsWith(matrix.os, 'windows-')
         run: |
