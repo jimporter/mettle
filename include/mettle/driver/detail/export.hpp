@@ -1,11 +1,15 @@
 #ifndef INC_METTLE_DRIVER_DETAIL_EXPORT_HPP
 #define INC_METTLE_DRIVER_DETAIL_EXPORT_HPP
 
-#if defined(_WIN32) && !defined(LIBMETTLE_STATIC)
-#  ifdef LIBMETTLE_EXPORTS
-#    define METTLE_PUBLIC __declspec(dllexport)
+#if !defined(METTLE_STATIC)
+#  ifdef _WIN32
+#    ifdef LIBMETTLE_EXPORTS
+#      define METTLE_PUBLIC __declspec(dllexport)
+#    else
+#      define METTLE_PUBLIC __declspec(dllimport)
+#    endif
 #  else
-#    define METTLE_PUBLIC __declspec(dllimport)
+#    define METTLE_PUBLIC __attribute__((visibility("default")))
 #  endif
 #else
 #  define METTLE_PUBLIC
