@@ -62,6 +62,14 @@ jobs:
           - {os: macos-latest, compiler: clang, flags: '-DNDEBUG',
              extra-desc: 'NDEBUG'}
 
+          # Hidden symbols builds
+          - {os: ubuntu-24.04, compiler: gcc, version: '14',
+             flags: '-fvisibility=hidden -fvisibility-inlines-hidden',
+             extra-desc: '-fvisibility=hidden'}
+          - {os: ubuntu-24.04, compiler: clang, version: '20', llvm-apt: true,
+             flags: '-fvisibility=hidden -fvisibility-inlines-hidden',
+             extra-desc: '-fvisibility=hidden'}
+
           # C++23 builds
           - {os: ubuntu-24.04, compiler: gcc, version: '14',
              options: '--std=c++23', flags: '-Wsuggest-override',
