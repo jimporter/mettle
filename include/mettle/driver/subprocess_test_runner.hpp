@@ -39,7 +39,7 @@ namespace mettle {
 #ifndef _WIN32
 
   using fd_type = int;
-  int make_fd_private(int fd);
+  METTLE_PUBLIC int make_fd_private(int fd);
 
 #else
 

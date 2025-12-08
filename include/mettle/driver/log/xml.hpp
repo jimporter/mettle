@@ -19,7 +19,7 @@
 
 namespace mettle::log::xml {
 
-  bool METTLE_PUBLIC valid_name(const std::string &);
+  METTLE_PUBLIC bool valid_name(const std::string &);
 
   class METTLE_PUBLIC node {
   public:

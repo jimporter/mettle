@@ -45,7 +45,7 @@ namespace mettle::term {
   }
 
   class format {
-    friend METTLE_PUBLIC std::ostream &
+    METTLE_PUBLIC_FRIEND friend std::ostream &
     operator <<(std::ostream &, const format &);
   public:
     template<typename ...Args>
@@ -59,18 +59,22 @@ namespace mettle::term {
     std::vector<sgr> values_;
   };
 
+  METTLE_PUBLIC std::ostream & operator <<(std::ostream &, const format &);
+
   inline format reset() {
     return format(sgr::reset);
   }
 
   class link {
-    friend METTLE_PUBLIC std::ostream &
+    METTLE_PUBLIC_FRIEND friend std::ostream &
     operator <<(std::ostream &, const link &);
   public:
     explicit link(std::string url = "") : url_(std::move(url)) {}
   private:
     std::string url_;
   };
+
+  METTLE_PUBLIC std::ostream & operator <<(std::ostream &, const link &);
 
   std::string file_url(const std::string &file_name, int line = 0);
 
