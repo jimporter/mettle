@@ -115,7 +115,9 @@ jobs:
           echo "CXXFLAGS=/W3 /WX ${{ matrix.flags }}" >> ${env:GITHUB_ENV}
       - name: Install macOS dependencies
         if: startsWith(matrix.os, 'macos-')
-        run: brew install ninja pkg-config
+        run: |
+          brew install ninja pkg-config
+          echo "CXXFLAGS=${COMMONFLAGS} ${{ matrix.flags }}" >> ${GITHUB_ENV}
       - name: Install gcc
         if: startsWith(matrix.os, 'ubuntu-') && matrix.compiler == 'gcc'
         run: |
