@@ -111,16 +111,7 @@ jobs:
       - name: Install Windows dependencies
         if: startsWith(matrix.os, 'windows-')
         run: |
-          choco install ninja
-          ${gnomebase} = "https://ftp.gnome.org/pub/gnome/binaries/win32"
-          curl -LO ${gnomebase}/dependencies/pkg-config_0.26-1_win32.zip
-          curl -LO ${gnomebase}/glib/2.28/glib_2.28.8-1_win32.zip
-          curl -LO ${gnomebase}/dependencies/gettext-runtime_0.18.1.1-2_win32.zip
-          7z x -y pkg-config_0.26-1_win32.zip -oC:\pkg-config
-          7z x -y glib_2.28.8-1_win32.zip -oC:\pkg-config
-          7z x -y gettext-runtime_0.18.1.1-2_win32.zip -oC:\pkg-config
-          echo "PKG_CONFIG=C:\pkg-config\bin\pkg-config.exe" >> ${env:GITHUB_ENV}
-
+          choco install ninja pkgconfiglite
           echo "CXXFLAGS=/W3 /WX ${{ matrix.flags }}" >> ${env:GITHUB_ENV}
       - name: Install macOS dependencies
         if: startsWith(matrix.os, 'macos-')
