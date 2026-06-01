@@ -93,6 +93,7 @@ jobs:
       fail-fast: false
     env:
       COMMONFLAGS: '-Wall -Wextra -pedantic -Werror'
+      MOPACK: 'mopack --verbose'
 
     steps:
       - uses: actions/checkout@v4
