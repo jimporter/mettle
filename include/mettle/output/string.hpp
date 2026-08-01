@@ -2,12 +2,44 @@
 #define INC_METTLE_OUTPUT_STRING_HPP
 
 #include <cstddef>
-#include <codecvt>
 #include <ostream>
 #include <string>
 #include <string_view>
 
+#if __has_include(<boost/locale/encoding_utf.hpp>)
+#  include <boost/locale/encoding_utf.hpp>
+
 namespace mettle {
+
+  inline std::string
+  convert_string(const std::wstring_view &s) {
+    return boost::locale::conv::utf_to_utf<char>(s.data(), s.data() + s.size());
+  }
+
+  inline std::string
+  convert_string(const std::u16string_view &s) {
+    return boost::locale::conv::utf_to_utf<char>(s.data(), s.data() + s.size());
+  }
+
+  inline std::string
+  convert_string(const std::u32string_view &s) {
+    return boost::locale::conv::utf_to_utf<char>(s.data(), s.data() + s.size());  }
+
+} // namespace mettle
+
+#endif
+
+namespace mettle {
+
+  inline std::string_view
+  convert_string(const std::string_view &s) {
+    return s;
+  }
+
+  inline std::string_view
+  convert_string(const std::u8string_view &s) {
+    return std::string_view(reinterpret_cast<const char *>(s.data()), s.size());
+  }
 
   namespace detail {
 
@@ -44,70 +76,6 @@ namespace mettle {
     ss << delim;
     return ss.str();
   }
-
-  inline std::string_view
-  convert_string(const std::string_view &s) {
-    return s;
-  }
-
-  inline std::string_view
-  convert_string(const std::u8string_view &s) {
-    return std::string_view(reinterpret_cast<const char *>(s.data()), s.size());
-  }
-
-// Ignore warnings about deprecated <codecvt>.
-#if defined(_MSC_VER) && !defined(__clang__)
-#  pragma warning(push)
-#  pragma warning(disable:4996)
-#elif defined(__GNUG__)
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wdeprecated"
-#endif
-
-  inline std::string
-  convert_string(const std::wstring_view &s) {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
-    return conv.to_bytes(s.data(), s.data() + s.size());
-  }
-
-  inline std::string
-  convert_string(const std::u16string_view &s) {
-#if defined(_MSC_VER) && !defined(__clang__)
-    // MSVC's codecvt expects uint16_t instead of char16_t because char16_t
-    // used to just be a typedef of uint16_t.
-    std::wstring_convert<std::codecvt_utf8_utf16<std::uint16_t>,
-                         std::uint16_t> conv;
-    return conv.to_bytes(
-      reinterpret_cast<const std::uint16_t *>(s.data()),
-      reinterpret_cast<const std::uint16_t *>(s.data() + s.size())
-    );
-#else
-    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
-    return conv.to_bytes(s.data(), s.data() + s.size());
-#endif
-  }
-
-  inline std::string
-  convert_string(const std::u32string_view &s) {
-#if defined(_MSC_VER) && !defined(__clang__)
-    // MSVC's codecvt expects uint32_t instead of char32_t because char32_t
-    // used to just be a typedef of uint32_t.
-    std::wstring_convert<std::codecvt_utf8<std::uint32_t>, std::uint32_t> conv;
-    return conv.to_bytes(
-      reinterpret_cast<const std::uint32_t *>(s.data()),
-      reinterpret_cast<const std::uint32_t *>(s.data() + s.size())
-    );
-#else
-    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-    return conv.to_bytes(s.data(), s.data() + s.size());
-#endif
-  }
-
-#if defined(_MSC_VER) && !defined(__clang__)
-#  pragma warning(pop)
-#elif defined(__GNUG__)
-#  pragma GCC diagnostic pop
-#endif
 
   template<typename T>
   concept string_convertible = requires(T &t) { convert_string(t); };
