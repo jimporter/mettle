@@ -7,6 +7,7 @@
 #include <string_view>
 
 #if __has_include(<boost/locale/encoding_utf.hpp>)
+#  define BOOST_LOCALE_NO_LIB // We only need Boost.Locale headers.
 #  include <boost/locale/encoding_utf.hpp>
 
 namespace mettle {
