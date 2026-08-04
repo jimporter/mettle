@@ -47,7 +47,7 @@ jobs:
           - {os: ubuntu-24.04, compiler: clang, version: '20', llvm-apt: true}
 
           # Windows builds
-          - {os: windows-latest, compiler: msvc, version: '14.4'}  # VS 2022
+          - {os: windows-2022, compiler: msvc, version: '14.4'}  # VS 2022
 
           # macOS builds
           - {os: macos-latest, compiler: clang}
@@ -57,7 +57,7 @@ jobs:
              flags: '-Wsuggest-override -DNDEBUG', extra-desc: 'NDEBUG'}
           - {os: ubuntu-24.04, compiler: clang, version: '20', llvm-apt: true,
              flags: '-DNDEBUG', extra-desc: 'NDEBUG'}
-          - {os: windows-latest, compiler: msvc, flags: '/DNDEBUG',
+          - {os: windows-2022, compiler: msvc, flags: '/DNDEBUG',
              version: '14.4', extra-desc: 'NDEBUG'}
           - {os: macos-latest, compiler: clang, flags: '-DNDEBUG',
              extra-desc: 'NDEBUG'}
